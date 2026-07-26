@@ -20,6 +20,7 @@
 // migration in the directory.
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 const TRANSACTION_TEXT_RE = /\bBEGIN\s+TRANSACTION\b|\bCOMMIT\s*;/i;
 
@@ -69,6 +70,6 @@ function main() {
   console.log(`Migration guard passed: ${files.length} migration(s) OK.`);
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
   main();
 }
