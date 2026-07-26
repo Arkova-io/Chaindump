@@ -3,54 +3,72 @@
 //
 // Enforces the two rules that have actually bitten this project (CLAUDE.md §3.4):
 //   1. Sequential, gap-free, unique NNNN_ numbering.
-//   2. No explicit BEGIN TRANSACTION / COMMIT — `wrangler d1 migrations apply`
-//      wraps each migration itself, and an explicit transaction errors.
+//   2. No literal "BEGIN TRANSACTION" / "COMMIT;" text anywhere in the file —
+//      `wrangler d1 migrations apply` wraps each migration in its own transaction,
+//      and its multi-transaction guard (src/d1/trimmer.ts) does a raw substring
+//      search, not real SQL parsing. It doesn't strip comments or string literals,
+//      so even a comment that merely *mentions* "BEGIN TRANSACTION" (e.g. to say a
+//      migration doesn't use one) trips the same "several transactions" error as a
+//      real one. 0007_mid_chains_stuck.sql hit exactly this — its own comment said
+//      "No BEGIN TRANSACTION / COMMIT" and that phrase alone broke
+//      `wrangler d1 migrations apply --local` for every fresh environment. Fixed by
+//      rewording the comment; the rule below is what would have caught it.
 //
 // Migrations 0001–0009 predate this guard and were loaded out-of-band (0001 is a
-// bulk backup dump; 0007 carries explicit transactions). They are already applied
-// and grandfathered for the transaction rule, so the guard protects every
-// migration written from now on (0010+) without rewriting history.
+// bulk backup dump). None of them actually contain the literal text this guard
+// checks for, so no exemption is needed — the rule applies uniformly to every
+// migration in the directory.
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const DIR = 'migrations';
-// Sequence <= this predates the guard and is exempt from the no-transaction rule.
-const TXN_GRANDFATHERED_MAX = 9;
+const TRANSACTION_TEXT_RE = /\bBEGIN\s+TRANSACTION\b|\bCOMMIT\s*;/i;
 
-const files = readdirSync(DIR)
-  .filter((f) => f.endsWith('.sql'))
-  .sort();
+export function checkMigrationsDir(dir) {
+  const files = readdirSync(dir)
+    .filter((f) => f.endsWith('.sql'))
+    .sort();
 
-const errors = [];
+  const errors = [];
 
-// Rule 1: numbering is sequential and gap-free starting at 0001.
-files.forEach((f, i) => {
-  const m = /^(\d{4})_/.exec(f);
-  if (!m) {
-    errors.push(`${f}: filename must start with a 4-digit sequence like 0010_name.sql`);
-    return;
+  // Rule 1: numbering is sequential and gap-free starting at 0001.
+  files.forEach((f, i) => {
+    const m = /^(\d{4})_/.exec(f);
+    if (!m) {
+      errors.push(`${f}: filename must start with a 4-digit sequence like 0010_name.sql`);
+      return;
+    }
+    const expected = String(i + 1).padStart(4, '0');
+    if (m[1] !== expected) {
+      errors.push(`${f}: out-of-order or gap in numbering (expected ${expected}_…)`);
+    }
+  });
+
+  // Rule 2: no literal BEGIN TRANSACTION / COMMIT; text anywhere in the file,
+  // including comments — wrangler's own check can't tell the difference.
+  for (const f of files) {
+    const sql = readFileSync(join(dir, f), 'utf8');
+    if (TRANSACTION_TEXT_RE.test(sql)) {
+      errors.push(
+        `${f}: contains the literal text "BEGIN TRANSACTION" or "COMMIT;" (even in a ` +
+          `comment) — wrangler's multi-transaction guard does a raw substring search ` +
+          `and will fail with "several transactions" on \`wrangler d1 migrations apply\`. ` +
+          `Reword to avoid that exact phrase.`,
+      );
+    }
   }
-  const expected = String(i + 1).padStart(4, '0');
-  if (m[1] !== expected) {
-    errors.push(`${f}: out-of-order or gap in numbering (expected ${expected}_…)`);
-  }
-});
 
-// Rule 2: no explicit transactions (except the grandfathered early migrations).
-for (const f of files) {
-  const seq = Number(/^(\d{4})_/.exec(f)?.[1] ?? '9999');
-  if (seq <= TXN_GRANDFATHERED_MAX) continue;
-  const sql = readFileSync(join(DIR, f), 'utf8');
-  if (/\bBEGIN\s+TRANSACTION\b|\bCOMMIT\s*;/i.test(sql)) {
-    errors.push(
-      `${f}: contains an explicit BEGIN TRANSACTION/COMMIT — remove it; ` +
-        `wrangler d1 migrations apply wraps the file in its own transaction.`,
-    );
-  }
+  return { files, errors };
 }
 
-if (errors.length) {
-  console.error('Migration guard failed:\n' + errors.map((e) => '  ✗ ' + e).join('\n'));
-  process.exit(1);
+function main() {
+  const { files, errors } = checkMigrationsDir('migrations');
+  if (errors.length) {
+    console.error('Migration guard failed:\n' + errors.map((e) => '  ✗ ' + e).join('\n'));
+    process.exit(1);
+  }
+  console.log(`Migration guard passed: ${files.length} migration(s) OK.`);
 }
-console.log(`Migration guard passed: ${files.length} migration(s) OK.`);
+
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main();
+}
