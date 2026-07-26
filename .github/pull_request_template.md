@@ -15,7 +15,7 @@
 
 - [ ] New pure functions ship with tests (`npm test` green).
 - [ ] Behavior verified live or via `wrangler dev` — describe how below.
-- [ ] New migrations (0010+) pass `node scripts/check-migrations.mjs` and are transaction-free (0001–0009 are grandfathered).
+- [ ] New migrations pass `node scripts/check-migrations.mjs` — sequential numbering, and no literal "BEGIN TRANSACTION"/"COMMIT;" text anywhere in the file (comments included — wrangler's own guard can't tell the difference).
 
 <!-- How you verified: -->
 
