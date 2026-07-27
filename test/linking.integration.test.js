@@ -307,15 +307,6 @@ describe('the lite index never presents an un-enriched figure as a measurement',
 // aggregate and no test would have noticed: a mutant that always stamped
 // 'perChain' survived the whole suite.
 describe('provenance stamps tell the truth', () => {
-  // Answer only the per-chain FEES endpoint, for the named chains.
-  const perChainFees = (m) => (u) => {
-    if (!u.includes('/overview/fees/')) return null;
-    for (const [chain, v] of Object.entries(m)) {
-      if (u.includes(`/overview/fees/${encodeURIComponent(chain)}`)) return json({ total24h: v });
-    }
-    return null;
-  };
-
   it("stamps 'aggregate' on the rows whose per-chain call failed, and 'perChain' on the rest", async () => {
     // A MIXED board is the realistic case (measured live: 4 of 95 candidates 500).
     // An all-aggregate board can no longer be observed here at all — buildSnapshot
