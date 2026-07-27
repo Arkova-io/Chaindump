@@ -190,9 +190,24 @@ describe('rollupDexProtocols', () => {
     const uniswap = out.find((r) => r.key === 'uniswap');
     expect(uniswap).toBeTruthy();
     expect(uniswap.total24h).toBe(839e6 + 738e6 + 45e6);
-    expect(uniswap.name).toBe('Uniswap V4'); // first-seen display name, not a version string
+    expect(uniswap.name).toBe('Uniswap V4'); // the highest-VOLUME version's display name
     // Merged from 3 rows across 3 distinct chains — union, not concatenation.
     expect(new Set(uniswap.chains)).toEqual(new Set(['Ethereum', 'Base', 'Arbitrum']));
+  });
+
+  // Live-verified regression (2026-07-27): the board's #1 slot read "Uniswap V1"
+  // instead of "Uniswap" — a naive rollup took whichever child row the feed
+  // listed FIRST, not the one carrying the most volume. UNISWAP_FEED above lists
+  // V4 (the dominant version) first, so a first-seen implementation passes the
+  // test above by accident. This fixture deliberately lists the SMALLEST version
+  // first to catch that.
+  it('names the brand after its highest-volume version, not whichever row the feed lists first', () => {
+    const feed = { protocols: [
+      { name: 'uniswap-v1', displayName: 'Uniswap V1', category: 'Dexs', parentProtocol: 'parent#uniswap', total24h: 2e6, chains: ['Ethereum'] },
+      { name: 'uniswap-v4', displayName: 'Uniswap V4', category: 'Dexs', parentProtocol: 'parent#uniswap', total24h: 839e6, chains: ['Ethereum'] },
+    ] };
+    const out = rollupDexProtocols(feed, { categories: DEX_CATEGORIES });
+    expect(out.find((r) => r.key === 'uniswap').name).toBe('Uniswap V4');
   });
 
   it('never lists a brand twice — one row per parentProtocol', () => {

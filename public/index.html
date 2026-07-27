@@ -2975,10 +2975,18 @@ function renderExchangeGrave(kind, data, board){
   const t = data.trends || {};
   const maxTag = Math.max(...(t.topTags||[]).map(x=>x.count), 1);
   const tagBars = (t.topTags||[]).map(x=>`<div class="tagrow"><span class="tagn">${esc(x.label)}</span><span class="tagbarwrap"><span class="tagbar" style="width:${(x.count/maxTag)*100}%"></span></span><span class="tagc">${x.count}</span></div>`).join('');
+  // CEX entries mostly have no clean peak/current PAIR — current_metric often
+  // holds "$ lost/owed" instead (no volume history exists to measure a real
+  // peak against). Summing null peaks against loss-amount currents would read
+  // as "$0 -> $11.77B" on a graveyard page — a false growth signal. Only claim
+  // a peak-to-current decline when there IS real peak data to show one.
+  const volumeStat = t.totalPeakMetric > 0
+    ? gstat(fmtUsd(t.totalPeakMetric)+' → '+fmtUsd(t.totalCurrentMetric), 'peak volume'+(t.wipedOut!=null?' — '+t.wipedOut+'% wiped out':''))
+    : gstat(fmtUsd(t.totalCurrentMetric), 'total documented losses / exposure');
   const exStats = `<div class="gstats">
     ${gstat(data.exchanges.length, kindLabel(kind)+'s in the graveyard')}
     ${gstat(t.avgDrawdown!=null?('-'+Math.abs(t.avgDrawdown).toFixed(0)+'%'):'—', 'avg drawdown from peak')}
-    ${gstat(fmtUsd(t.totalPeakMetric)+' → '+fmtUsd(t.totalCurrentMetric), 'peak volume'+(t.wipedOut!=null?' — '+t.wipedOut+'% wiped out':''))}
+    ${volumeStat}
     ${gstat(t.fraudCount!=null?t.fraudCount:'—', 'suspected fraud / collapse')}
   </div>`;
   const trendsPanel = `<div class="gpanel"><div class="gcols">

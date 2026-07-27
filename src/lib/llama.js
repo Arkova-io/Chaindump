@@ -117,12 +117,17 @@ export function rollupDexProtocols(overview, opts = {}) {
     if (categories && p.category != null && !categories.has(p.category)) continue;
     const key = p.parentProtocol ? String(p.parentProtocol).replace(/^parent#/, '') : (p.slug || p.name);
     if (!key) continue;
-    const g = groups.get(key) || { key, name: p.displayName || p.name || key, total24h: 0, chains: new Set() };
-    g.total24h += Number(p.total24h) || 0;
+    const vol = Number(p.total24h) || 0;
+    const g = groups.get(key) || { key, name: p.displayName || p.name || key, nameVol: -1, total24h: 0, chains: new Set() };
+    g.total24h += vol;
     for (const c of p.chains || []) g.chains.add(c);
+    // The displayed brand name must come from whichever VERSION carries the most
+    // volume today (e.g. "Uniswap V4"), not whichever row the feed lists first —
+    // a first-seen pick silently badged the board's #1 DEX as "Uniswap V1".
+    if (vol > g.nameVol) { g.name = p.displayName || p.name || g.name; g.nameVol = vol; }
     groups.set(key, g);
   }
-  return [...groups.values()].map((g) => ({ ...g, chains: [...g.chains] }));
+  return [...groups.values()].map(({ nameVol: _nameVol, ...g }) => ({ ...g, chains: [...g.chains] }));
 }
 
 /**
