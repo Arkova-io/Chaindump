@@ -34,6 +34,12 @@ export const TAG_LABELS = {
   security_failure: 'Security failure', ftx_contagion: 'FTX contagion', centralization: 'Centralization',
   token_inflation: 'Token inflation', insider_concentration: 'Insider concentration',
   misallocated_treasury: 'Misallocated treasury', gamed_metrics: 'Gamed metrics', double_counted_tvl: 'Double-counted TVL',
+  // Exchange-specific (dead_exchanges/mid_exchanges) causes — CEXs fail in ways a
+  // chain doesn't: a bank run is a liquidity event, not mercenary capital leaving;
+  // commingled/misused customer funds and insider fraud are a custodian betraying
+  // its depositors, a different shape of harm than a chain losing users.
+  bank_run: 'Bank run', commingled_funds: 'Commingled customer funds', insider_fraud: 'Insider fraud',
+  regulatory_shutdown: 'Regulatory shutdown', proof_of_reserves_failure: 'Proof-of-reserves failure',
   // mid_chains `success_factors_missing` vocabulary (the "what's missing" gaps).
   // NOTE: this vocabulary is fragmented (~45 tags for ~10 concepts) and mixes
   // polarity — some tags name the deficit (no_killer_app), others the factor
@@ -71,11 +77,16 @@ export const FOLDER_LABELS = {
   security_failure: 'Security failure', ftx_contagion: 'FTX contagion', centralization: 'Centralization',
   token_inflation: 'Token inflation', insider_concentration: 'Insider concentration',
   gamed_metrics: 'Gamed metrics', double_counted_tvl: 'Double-counted TVL', other: 'Other / mixed causes',
+  bank_run: 'Bank run', commingled_funds: 'Commingled customer funds', insider_fraud: 'Insider fraud',
+  regulatory_shutdown: 'Regulatory shutdown', proof_of_reserves_failure: 'Proof-of-reserves failure',
 };
 
 // Tags that mark suspected fraud/extraction. Membership is tested on the
 // CANONICAL tag so adding a synonym to TAG_CANON can never silently undercount.
-export const FRAUDY = new Set(['soft_rug', 'exploit_hack', 'wash_trading', 'token_unlock_dump']);
+// bank_run and regulatory_shutdown are deliberately excluded: a liquidity crunch
+// or a license revocation is not evidence of fraud on its own, and folding them
+// in would inflate the fraud counter for exchanges that failed without stealing.
+export const FRAUDY = new Set(['soft_rug', 'exploit_hack', 'wash_trading', 'token_unlock_dump', 'insider_fraud', 'commingled_funds']);
 
 const titleize = (t) => String(t).replaceAll('_', ' ').replace(/\b\w/g, (m) => m.toUpperCase());
 
