@@ -258,6 +258,11 @@ describe('the rule refuses verdicts it cannot justify', () => {
     // Same shape as the XION bug above, but pinning the actual tolerance boundary
     // (not just "wildly different" vs. "identical") so a change to
     // RECONCILE_TOLERANCE_PCT is caught here rather than only in production.
+    //
+    // Pin the intended value itself first — deriving the fixtures below from
+    // `tol` alone would let the whole test silently re-center on a changed
+    // constant (10 -> 20) without ever failing (flagged by Codex review).
+    expect(RECONCILE_TOLERANCE_PCT).toBe(10);
     const total = 25_414_316;
     const tol = RECONCILE_TOLERANCE_PCT;
     const justInsideBelow = total / (1 + (tol - 1) / 100);
