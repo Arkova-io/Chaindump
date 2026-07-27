@@ -254,6 +254,23 @@ describe('the rule refuses verdicts it cannot justify', () => {
     expect(assessChainDataQuality('Ghost', soleUnaudited, { displayedTvl: 25_000_000 })).toBeTruthy();
   });
 
+  it('reconciles a displayed total within RECONCILE_TOLERANCE_PCT of protocol data, in either direction, but refuses just beyond it', () => {
+    // Same shape as the XION bug above, but pinning the actual tolerance boundary
+    // (not just "wildly different" vs. "identical") so a change to
+    // RECONCILE_TOLERANCE_PCT is caught here rather than only in production.
+    const total = 25_414_316;
+    const tol = RECONCILE_TOLERANCE_PCT;
+    const justInsideBelow = total / (1 + (tol - 1) / 100);
+    const justOutsideBelow = total / (1 + (tol + 1) / 100);
+    const justInsideAbove = total / (1 - (tol - 1) / 100);
+    const justOutsideAbove = total / (1 - (tol + 1) / 100);
+
+    expect(assessChainDataQuality('Ghost', soleUnaudited, { displayedTvl: justInsideBelow })).toBeTruthy();
+    expect(assessChainDataQuality('Ghost', soleUnaudited, { displayedTvl: justOutsideBelow })).toBeNull();
+    expect(assessChainDataQuality('Ghost', soleUnaudited, { displayedTvl: justInsideAbove })).toBeTruthy();
+    expect(assessChainDataQuality('Ghost', soleUnaudited, { displayedTvl: justOutsideAbove })).toBeNull();
+  });
+
   it('holds a large chain for human review rather than auto-branding it', () => {
     const big = [{ name: 'OnlyDex', category: 'Dexs', audits: '0', chainTvls: { Whale: 1.5e9 } }];
     const dq = assessChainDataQuality('Whale', big, { displayedTvl: 1.5e9 });
