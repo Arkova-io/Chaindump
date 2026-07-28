@@ -2718,6 +2718,25 @@ function proseBox(text){
   const id = 'pb'+(pbSeq++);
   return `<div class="prosebox" id="${id}"><div class="proseclamp">${fmtProse(t)}</div><button class="prosetoggle" data-pb="${id}">Show full ▾</button></div>`;
 }
+// Shared detail-panel field/section builders, used by both the chain graveyard
+// (renderGraveyard) and the exchange graveyard (renderExchangeGrave) — same
+// dossier layout over different data shapes.
+const gField = (label, val) => (val ? `<div class="gfield"><span class="gfl">${label}</span> ${val}</div>` : '');
+const gSec = (title, body) => (body ? `<div class="gsec">${title}</div>${body}` : '');
+const gProse = (title, val) => gSec(title, val ? proseBox(val) : '');
+const foundedLine = (p) => {
+  if (!p.founded && !p.founders) return '';
+  const who = p.founders ? ` · ${esc(p.founders)}` : '';
+  return `${esc(p.founded || '—')}${who}`;
+};
+const tokenLineOf = (p) => {
+  if (!p.token_symbol) return 'No live token';
+  if (p.token_ath == null) return esc(p.token_symbol);
+  const td = tokenDrop(p);
+  const when = p.token_ath_date ? ` (${esc(p.token_ath_date)})` : '';
+  const drop = td != null ? ` <span class="tdrop">-${td}%</span>` : '';
+  return `${esc(p.token_symbol)} — ATH $${fmtTok(p.token_ath)}${when} → $${fmtTok(p.token_current)}${drop}`;
+};
 // Renders an outlook that may be either a {bull,base,bear} object or a prose string.
 function outlookHtml(v){
   if (v && typeof v === 'object' && !Array.isArray(v)) {
@@ -2816,24 +2835,9 @@ function renderGraveyard(data){
   // Shared expanded-profile markup, reused by the grave cards AND the dying-watch
   // click-to-open detail. Handles both the dead-chain profile shape (postmortem /
   // lessons / could_differ) and the mid-chain shape (whats_working / whats_not).
-  // Small builders keep graveDetailBody flat: each returns '' when it has nothing,
-  // so the renderer is a list of sections rather than a wall of inline ternaries.
-  const gField = (label, val) => (val ? `<div class="gfield"><span class="gfl">${label}</span> ${val}</div>` : '');
-  const gSec = (title, body) => (body ? `<div class="gsec">${title}</div>${body}` : '');
-  const gProse = (title, val) => gSec(title, val ? proseBox(val) : '');
-  const foundedLine = (p) => {
-    if (!p.founded && !p.founders) return '';
-    const who = p.founders ? ` · ${esc(p.founders)}` : '';
-    return `${esc(p.founded || '—')}${who}`;
-  };
-  const tokenLineOf = (p) => {
-    if (!p.token_symbol) return 'No live token';
-    if (p.token_ath == null) return esc(p.token_symbol);
-    const td = tokenDrop(p);
-    const when = p.token_ath_date ? ` (${esc(p.token_ath_date)})` : '';
-    const drop = td != null ? ` <span class="tdrop">-${td}%</span>` : '';
-    return `${esc(p.token_symbol)} — ATH $${fmtTok(p.token_ath)}${when} → $${fmtTok(p.token_current)}${drop}`;
-  };
+  // gField/gSec/gProse/foundedLine/tokenLineOf are the shared top-level builders
+  // (also used by renderExchangeGrave) — each returns '' when it has nothing, so
+  // the renderer below is a list of sections rather than a wall of inline ternaries.
   const tvlLineOf = (c) => {
     const dd = c.drawdown_pct != null ? `-${Math.abs(c.drawdown_pct).toFixed(0)}%` : '—';
     const when = c.peak_date ? ` (${esc(c.peak_date)})` : '';
@@ -3010,24 +3014,14 @@ function renderExchangeGrave(kind, data, board){
   const causeTagsOf = (x) => (x.profile && x.profile.cause_tags) || [];
   const primaryCause = (x) => canonCause(data, causeTagsOf(x)[0] || 'other');
   const causeFolderLabel = (k) => { const fl = causeVocab(data).folderLabels || {}; return Object.hasOwn(fl,k) ? fl[k] : String(k).replaceAll('_',' ').replace(/\b\w/g, m=>m.toUpperCase()); };
-  const tokenLineOf = (p) => {
-    if (!p.token_symbol) return 'No live token';
-    if (p.token_ath == null) return esc(p.token_symbol);
-    const td = tokenDrop(p);
-    const when = p.token_ath_date ? ` (${esc(p.token_ath_date)})` : '';
-    const drop = td != null ? ` <span class="tdrop">-${td}%</span>` : '';
-    return `${esc(p.token_symbol)} — ATH $${fmtTok(p.token_ath)}${when} → $${fmtTok(p.token_current)}${drop}`;
-  };
+  // gField/gSec/gProse/foundedLine/tokenLineOf are the shared top-level builders
+  // (also used by renderGraveyard).
   const metricLineOf = (c) => {
     if (c.peak_metric == null) return `${esc(c.metric_label||'metric')}: ${fmtUsd(c.current_metric)}`;
     const dd = c.drawdown_pct != null ? `-${Math.abs(c.drawdown_pct).toFixed(0)}%` : '—';
     const when = c.peak_date ? ` (${esc(c.peak_date)})` : '';
     return `${esc(c.metric_label||'metric')}: peak ${fmtUsd(c.peak_metric)}${when} → now ${fmtUsd(c.current_metric)} <span class="tdrop">${dd}</span>`;
   };
-  const gField = (label, val) => (val ? `<div class="gfield"><span class="gfl">${label}</span> ${val}</div>` : '');
-  const gSec = (title, body) => (body ? `<div class="gsec">${title}</div>${body}` : '');
-  const gProse = (title, val) => gSec(title, val ? proseBox(val) : '');
-  const foundedLine = (p) => { if (!p.founded && !p.founders) return ''; const who = p.founders ? ` · ${esc(p.founders)}` : ''; return `${esc(p.founded || '—')}${who}`; };
   const causeChips = (p) => { const tags=(p.cause_tags||[]).map(tg=>`<span class="ctag">${esc(tagLabel(data,tg))}</span>`).join(''); return tags?`<div class="ctags">${tags}</div>`:''; };
   const exDetailBody = (c) => {
     const p = c.profile || {};
