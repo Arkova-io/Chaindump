@@ -1685,7 +1685,7 @@ function renderExchangeMid(kind, data){
     const p = c.profile || {};
     const open = state.midExExpanded === c.slug;
     const td = tokenDrop(p);
-    const tags = (p.success_factors_missing||[]).map(t=>`<span class="ctag">${esc(String(t).replace(/_/g,' '))}</span>`).join('');
+    const tags = (p.success_factors_missing||p.cause_tags||[]).map(t=>`<span class="ctag">${esc(String(t).replace(/_/g,' '))}</span>`).join('');
     const sources = srcHtml(c.sources);
     const tokenLine = p.token_symbol ? `${esc(p.token_symbol)} — ATH $${fmtTok(p.token_ath)}${p.token_ath_date?` (${esc(p.token_ath_date)})`:''} → $${fmtTok(p.token_current)}${td!=null?` <span class="tdrop">-${td}%</span>`:''}` : 'No token';
     const body = open ? `<div class="gexp">
@@ -1722,11 +1722,21 @@ function renderExchangeMid(kind, data){
     const inner = open ? `<div class="folderbody"><div class="gwrap">${chs.map(exMidCard).join('')}</div></div>` : '';
     return `<div class="chainfolder ${open?'open':''}"><div class="folderhead" data-exmidgroup="${esc(k)}"><span class="foldercaret">${open?'▾':'▸'}</span><span class="foldername">${esc(folderLabel(k))}</span><span class="foldercount">${chs.length}</span></div>${inner}</div>`;
   }).join('') + `</div>`;
+  // metric_label varies per row for CEX (daily volume, quarterly volume,
+  // quarterly futures volume, AUM — different units and time windows), so
+  // summing `metric` across rows with different labels produces a number with
+  // no real-world meaning. Only show a combined total when every row shares
+  // the same metric_label; otherwise report the count of comparable metrics
+  // instead of a fabricated sum (CLAUDE.md §1.5 — no fabricated figures).
+  const metricLabels = new Set(data.exchanges.map(c => c.metric_label).filter(Boolean));
   const totalMetric = data.exchanges.reduce((a, c) => a + (c.metric || 0), 0);
+  const volumeMidStat = metricLabels.size === 1
+    ? gstat(fmtUsd(totalMetric), [...metricLabels][0])
+    : gstat(metricLabels.size || '—', 'different metrics in play (not comparable)');
   const topGroup = mkeys.length ? mkeys[0] : null;
   const stats = `<div class="gstats">
     ${gstat(data.exchanges.length, kindLabel(kind)+'s profiled')}
-    ${gstat(fmtUsd(totalMetric), 'combined volume')}
+    ${volumeMidStat}
     ${gstat(gaps.length || '—', 'recurring gaps identified')}
     ${gstat(topGroup ? mgroups[topGroup].length : '—', topGroup ? esc(folderLabel(topGroup).toLowerCase()) : 'largest cohort')}
   </div>`;
@@ -1737,17 +1747,21 @@ async function loadMidExchanges(kind){
   try {
     const d = await fetch(`api/mid-exchanges?kind=${kind}`).then(r=>r.json());
     if (kind === 'dex') state.midDexData = d; else state.midCexData = d;
-    renderExchangeMid(kind, d);
+    // Toggling kinds fast can let an older in-flight request resolve after a
+    // newer one; only paint the DOM if this response's kind is still selected.
+    if (state.xKind === kind) renderExchangeMid(kind, d);
   } catch (e) {
-    document.getElementById('midview').innerHTML = `${MID_HEAD(kind)}<div class="skel">Couldn't load: ${esc(e.message)}</div>`;
+    if (state.xKind === kind) document.getElementById('midview').innerHTML = `${MID_HEAD(kind)}<div class="skel">Couldn't load: ${esc(e.message)}</div>`;
   }
 }
-// Called on every view-entry (switchView) — a no-op unless the current kind's
-// data hasn't been fetched yet, mirroring the graveLoaded/midLoaded lazy pattern.
+// Called on every view-entry (switchView). Renders from cache when the current
+// kind's data was already fetched (the DOM may be showing a different kind's
+// markup from before this view was left), otherwise fetches it fresh.
 function ensureMidKind(kind){
-  if (kind === 'chain') { if (!midLoaded) loadMid(); return; }
+  if (kind === 'chain') { if (state.midData) renderMid(state.midData); else loadMid(); return; }
   const dataKey = kind === 'dex' ? 'midDexData' : 'midCexData';
-  if (!state[dataKey]) loadMidExchanges(kind);
+  if (state[dataKey]) renderExchangeMid(kind, state[dataKey]);
+  else loadMidExchanges(kind);
 }
 // Called from the kind-toggle click — always (re)renders, from cache when possible.
 function switchMidKind(kind){
@@ -2955,7 +2969,7 @@ function renderExchangeBoard(kind, board){
       <div class="rllist">${rows}</div>`;
   }
   const rows = board.map((r,i) => `<div class="rlrow">
-    ${r.image?`<img class="rllogo" src="${esc(r.image)}" alt="" onerror="this.style.visibility='hidden'"/>`:'<span class="rllogo"></span>'}
+    ${r.image?`<img class="rllogo" src="${esc(safeUrl(r.image))}" alt="" onerror="this.style.visibility='hidden'"/>`:'<span class="rllogo"></span>'}
     <span class="rlrank">${i+1}</span>
     <span class="rlname">${r.url?`<a href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener noreferrer">${esc(r.name)}</a>`:esc(r.name)}</span>
     ${r.country?`<span class="rlchain">${esc(r.country)}</span>`:''}
@@ -3005,6 +3019,7 @@ function renderExchangeGrave(kind, data, board){
     return `${esc(p.token_symbol)} — ATH $${fmtTok(p.token_ath)}${when} → $${fmtTok(p.token_current)}${drop}`;
   };
   const metricLineOf = (c) => {
+    if (c.peak_metric == null) return `${esc(c.metric_label||'metric')}: ${fmtUsd(c.current_metric)}`;
     const dd = c.drawdown_pct != null ? `-${Math.abs(c.drawdown_pct).toFixed(0)}%` : '—';
     const when = c.peak_date ? ` (${esc(c.peak_date)})` : '';
     return `${esc(c.metric_label||'metric')}: peak ${fmtUsd(c.peak_metric)}${when} → now ${fmtUsd(c.current_metric)} <span class="tdrop">${dd}</span>`;
@@ -3047,7 +3062,7 @@ function renderExchangeGrave(kind, data, board){
         <div class="gname">${esc(c.name)} <span class="gverdict ${verdictClass(c.verdict)}">${esc(c.verdict||'')}</span></div>
         <div class="gdd">${dd}<span class="gddl">from peak</span></div>
       </div>
-      <div class="gmeta">${p.founded?`Founded ${esc(p.founded)} · `:''}Peak ${fmtUsd(c.peak_metric)} → ${fmtUsd(c.current_metric)}${p.token_symbol&&td!=null?` · ${esc(p.token_symbol)} -${td}%`:''}</div>
+      <div class="gmeta">${p.founded?`Founded ${esc(p.founded)} · `:''}${c.peak_metric!=null?`Peak ${fmtUsd(c.peak_metric)} → ${fmtUsd(c.current_metric)}`:`${esc(c.metric_label||'metric')} ${fmtUsd(c.current_metric)}`}${p.token_symbol&&td!=null?` · ${esc(p.token_symbol)} -${td}%`:''}</div>
       ${body}
       <div class="gexpand">${open?'Hide details ▲':'Full postmortem ▾'}</div>
     </div>`;
@@ -3072,17 +3087,22 @@ async function loadDeadExchanges(kind){
       kind === 'dex' ? ensureDexBoard() : ensureCexBoard(),
     ]);
     if (kind === 'dex') state.deadDexData = d; else state.deadCexData = d;
-    renderExchangeGrave(kind, d, board);
+    // Toggling kinds fast can let an older in-flight request resolve after a
+    // newer one; only paint the DOM if this response's kind is still selected.
+    if (state.xKind === kind) renderExchangeGrave(kind, d, board);
   } catch (e) {
-    document.getElementById('graveview').innerHTML = `${GRAVE_HEAD(kind)}<div class="skel">Couldn't load: ${esc(e.message)}</div>`;
+    if (state.xKind === kind) document.getElementById('graveview').innerHTML = `${GRAVE_HEAD(kind)}<div class="skel">Couldn't load: ${esc(e.message)}</div>`;
   }
 }
-// Called on every view-entry (switchView) — a no-op unless the current kind's
-// data hasn't been fetched yet, mirroring the graveLoaded/midLoaded lazy pattern.
+// Called on every view-entry (switchView). Renders from cache when the current
+// kind's data was already fetched (the DOM may be showing a different kind's
+// markup from before this view was left), otherwise fetches it fresh.
 function ensureGraveKind(kind){
-  if (kind === 'chain') { if (!graveLoaded) loadGraveyard(); return; }
+  if (kind === 'chain') { if (state.graveData) renderGraveyard(state.graveData); else loadGraveyard(); return; }
   const dataKey = kind === 'dex' ? 'deadDexData' : 'deadCexData';
-  if (!state[dataKey]) loadDeadExchanges(kind);
+  const boardKey = kind === 'dex' ? 'dexBoard' : 'cexBoard';
+  if (state[dataKey]) renderExchangeGrave(kind, state[dataKey], state[boardKey]);
+  else loadDeadExchanges(kind);
 }
 // Called from the kind-toggle click — always (re)renders, from cache when possible.
 function switchGraveKind(kind){

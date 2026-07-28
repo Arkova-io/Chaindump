@@ -1590,7 +1590,7 @@ async function getTiers() {
 // ---------------------------------------------------------------------------
 // Dead & Stuck-Mid exchanges (DEX + CEX) — the same curated-dossier pattern as
 // /api/dead and /api/mid above, sharing one pair of tables via `kind` (see
-// migrations/0010_exchange_analysis.sql) rather than duplicating a table and a
+// migrations/0011_exchange_analysis.sql) rather than duplicating a table and a
 // route per kind. Trend aggregation logic is intentionally a near-copy of the
 // chain routes above: it is the same computation over a different table, and
 // the two already drift in shape (peak/current/drawdown vs a flat metric) in
@@ -1647,7 +1647,9 @@ app.get('/api/mid-exchanges', wrap(async (req, res) => {
     const tagCounts = {};
     for (const c of exchanges) {
       const v = (c.verdict || 'unknown').toLowerCase(); verdictCounts[v] = (verdictCounts[v] || 0) + 1;
-      const tags = (c.profile && c.profile.success_factors_missing) || [];
+      // DEX mid rows tag gaps as success_factors_missing; CEX mid rows are
+      // seeded with cause_tags instead (see migrations/0012_exchange_seed.sql).
+      const tags = (c.profile && (c.profile.success_factors_missing || c.profile.cause_tags)) || [];
       canonTags(tags).forEach((t) => { tagCounts[t] = (tagCounts[t] || 0) + 1; });
     }
     const topGaps = Object.entries(tagCounts).sort((a, b) => b[1] - a[1])

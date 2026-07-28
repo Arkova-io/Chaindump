@@ -44,7 +44,12 @@ function makeDB({ dead = [], mid = [], cexCache = null } = {}) {
         async all() {
           if (sql.includes('FROM dead_exchanges')) {
             const kind = this.binds[0];
-            return { results: dead.filter((r) => r.kind === kind) };
+            const rows = dead.filter((r) => r.kind === kind);
+            // Mirror the route's real ORDER BY peak_metric DESC so a dropped
+            // ORDER BY clause actually fails the "sorts descending" test below
+            // (D1 sorts server-side; this stub has to do it explicitly).
+            if (sql.includes('ORDER BY peak_metric DESC')) rows.sort((a, b) => (b.peak_metric || 0) - (a.peak_metric || 0));
+            return { results: rows };
           }
           if (sql.includes('FROM mid_exchanges')) {
             const kind = this.binds[0];
@@ -78,6 +83,13 @@ const MID_DEX = {
   slug: 'dodo-amm', kind: 'dex', name: 'DODO AMM', launched: '2020-08', metric_label: '24h volume',
   metric: 320e3, verdict: 'declining', why_stuck: 'Outcompeted by concentrated-liquidity DEXs.', outlook: 'Long-tail.',
   sources: '[]', profile: '{"success_factors_missing":["no_liquidity_moat"]}', updated_at: '2026-07-27',
+};
+// CEX mid rows are seeded with cause_tags, not success_factors_missing (see
+// migrations/0012_exchange_seed.sql) — the route must read both fields.
+const MID_CEX = {
+  slug: 'htx', kind: 'cex', name: 'HTX', launched: null, metric_label: 'quarterly spot trading volume',
+  metric: 133.6e9, verdict: 'declining', why_stuck: 'Losing licensed jurisdictions.', outlook: 'Structural decline.',
+  sources: '[]', profile: '{"cause_tags":["regulatory","declining_volume"]}', updated_at: '2026-07-27',
 };
 
 describe('GET /api/dead-exchanges', () => {
@@ -124,9 +136,7 @@ describe('GET /api/dead-exchanges', () => {
     const big = { ...DEAD_DEX, slug: 'big-dex', peak_metric: 9e9 };
     const res = await worker.fetch(new Request('http://localhost/api/dead-exchanges'), { DB: makeDB({ dead: [small, big] }) }, ctx());
     const body = await res.json();
-    // The stub DB doesn't implement ORDER BY, so assert the route requests it —
-    // real D1 sorts server-side; this guards the SQL text itself never regresses.
-    expect(body.exchanges.map((e) => e.slug).sort()).toEqual(['big-dex', 'small-dex']);
+    expect(body.exchanges.map((e) => e.slug)).toEqual(['big-dex', 'small-dex']);
   });
 });
 
@@ -148,6 +158,16 @@ describe('GET /api/mid-exchanges', () => {
     const res = await worker.fetch(new Request('http://localhost/api/mid-exchanges?kind=cex'), {}, ctx());
     expect(res.status).toBe(200);
     expect((await res.json()).exchanges).toEqual([]);
+  });
+
+  it('aggregates topGaps from cause_tags for CEX rows (seeded there, not success_factors_missing)', async () => {
+    stubFeed();
+    const worker = await freshWorker();
+    const res = await worker.fetch(new Request('http://localhost/api/mid-exchanges?kind=cex'), { DB: makeDB({ mid: [MID_CEX] }) }, ctx());
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.kind).toBe('cex');
+    expect(body.topGaps.find((g) => g.tag === 'regulatory')).toBeTruthy();
   });
 });
 
