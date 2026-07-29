@@ -4,13 +4,15 @@
 
 - Repository: `carson-see/Chaindump`
 - Root checkout: `/Users/carson/Desktop/chain-monitor-source`
-- Root branch at handoff time: `codex/casino-verified-cohort`, tracking branch is gone.
+- Root branch at latest handoff update: `codex/stuck-mid-dex-cex-ui-parity`, based on `origin/main` at `fab5a2b` after PR #48 merged.
 - Root worktree before this handoff edit had only unrelated untracked files: `.claude/` and `archer-agent-config.md`.
 - Production health endpoint currently reports revision `5f7748b6e1f295d72626c9286c9e3ab20ebd79a9`, which is the merged/deployed casino cohort from PR #45.
 - Goal remains active: deliver Chaindump as a production-verified, citation-backed forensic research product across blockchain, DEX/CEX, Web3 casino, NFT/Ordinals, and future Web3 verticals.
-- Current UI parity PR: `https://github.com/carson-see/Chaindump/pull/48` from branch `codex/forensics-ui-uniformity`.
-- PR #48 adds a visible `Live mid watch` panel to Stuck/Mid chains so the page uses the same live chip/sparkline pattern as Dead & Dying, matches profiled Stuck/Mid chains to the live board, and lets users click or keyboard-open the matching dossier.
-- PR #48 validation: local `npm test`, `npm run lint`, `npm run check:worker`, and `npm run check:migrations` passed; browser verification confirmed the Stuck/Mid live panel renders and watch-chip click opens the dossier; GitHub CI, SonarCloud, and CodeRabbit statuses are green. GitHub reports `mergeable: MERGEABLE`, `mergeStateStatus: CLEAN`, and `isDraft: false`.
+- GitHub open PR state at latest check: no open PRs.
+- PR #46, #47, and #48 are merged into `main`. PR #48 added a visible `Live mid watch` panel to Stuck/Mid chains so the page uses the same live chip/sparkline pattern as Dead & Dying, matches profiled Stuck/Mid chains to the live board, and lets users click or keyboard-open the matching dossier.
+- Current local PR-in-progress: `codex/stuck-mid-dex-cex-ui-parity` standardizes the public analysis surfaces around the Blockchain Analysis contract and also adds the missing DEX/CEX Stuck/Mid UI parity. DEX/CEX mid tabs now fetch/render the same live DEX/CEX board component used by Dead & Dying. Web3 Casino Analysis now has search, status filter, collapsed source/citation state, result count, coverage-ledger link, and direct dossier links. NFT/Ordinals Analysis now has the Blockchain-style honesty note, status/chain filters, sort controls, visible collapsed source previews, field-cited vs legacy metadata, result count, and direct dossier links while keeping the live catalog clearly secondary.
+- Local validation for `codex/stuck-mid-dex-cex-ui-parity`: `npm test -- test/forensics-analysis.integration.test.js` passed with 14 tests; full `npm test` passed with 35 files / 447 tests; `npm run lint` passed; `npm run check:worker` passed; `npm run check:migrations` passed with 18 migrations OK; direct inline SPA parse passed (`Parsed 1 inline script(s)`).
+- Main deployment workflow state from the PR/CI audit: PR mergeability is not blocked, but the latest Deploy workflow was waiting on an approval/environment gate. If production has not updated, approve/resume the waiting Deploy run rather than looking for a PR merge blocker.
 
 ## Original user objective
 
@@ -33,6 +35,20 @@ This is now a hard rule for every forensic category, not just NFTs:
 - Numeric market data may be automatically refreshed, but lifecycle, legal, status, narrative, and causality claims must go through human review/promotion before becoming public analysis.
 - The UI must render this evidence/freshness state visibly. Hidden JSON does not satisfy the requirement.
 
+## Canonical analysis UI contract
+
+The user clarified that Blockchain Analysis is the canonical format/style for all analysis routes. That means every public forensic analysis vertical should converge on this sequence and card anatomy:
+
+- page title/subtitle
+- honest scope/evidence note
+- four stat tiles
+- search/filter/sort toolbar
+- optional related-action row
+- result count
+- uniform card grid with lifecycle/status badge, primary metric, coverage/citation/freshness metadata, short finding, visible source preview/state, and a direct dossier action
+
+Do not interpret "same as Blockchain Analysis" as "add random charts." The chart-heavy Dead & Dying/Stuck pages are legacy/source views; the four Forensics analysis routes should behave like sortable research indexes.
+
 ## Merged and deployed PRs
 
 - PR #33: DEX/CEX graveyard, merged.
@@ -47,6 +63,9 @@ This is now a hard rule for every forensic category, not just NFTs:
 - PR #43: NFT/Ordinals wave, merged before final Sonar.
 - PR #44: NFT Sonar correction, merged and deployed.
 - PR #45: citation-gated Web3 casino initial cohort, merged and deployed to production at revision `5f7748b6e1f295d72626c9286c9e3ab20ebd79a9`.
+- PR #46: DEX/CEX exchange analysis normalization and Sonar cleanup, merged.
+- PR #47: current-state handoff update, merged.
+- PR #48: Stuck/Mid chain live-watch UI parity, merged.
 
 ## Production verification after PR #45
 
@@ -60,10 +79,11 @@ This is now a hard rule for every forensic category, not just NFTs:
 - Casino UI at `/casino-analysis` visibly renders `Web3 Casino Analysis`, publication-gated dossiers, withheld candidates, and full cited dossier links.
 - Blockchain production UI already has the four requested Forensics links and sortable analysis pages, but the full "top 50 all same-format" goal is not complete.
 
-## Active PR #46 - DEX/CEX normalization
+## Historical PR #46 - DEX/CEX normalization
 
 - PR: `https://github.com/carson-see/Chaindump/pull/46`
 - Branch: `codex/exchange-cohort-normalization`
+- State at latest handoff update: merged into `main`.
 - Current substantive head checked: `836bdf42482eb96bccdb2b39667586c0e77c63ac`.
 - Follow-up Sonar cleanup commit pushed to the branch: `776e6f3268ad5bad89f8472f1e2d664c6c666a0a`.
 - State: GitHub metadata briefly showed stale/inconsistent head state after the cleanup push; verify PR #46 head again before merging.
@@ -120,7 +140,7 @@ Those edits were made to address the 5 direct Sonar API findings and were commit
 - `npm run check:worker`: passed.
 - `npm run check:migrations`: passed, 18 migrations OK.
 
-Next immediate action: wait for remote PR #46 metadata/checks to settle on `776e6f3`, then re-run the direct Sonar API query. Only mark PR #46 ready/merge after direct Sonar unresolved issue count is 0 and the adversarial reviewer has rechecked the UI/evidence mapping.
+Historical note: earlier handoff text said to wait for remote PR #46 metadata/checks to settle. That is no longer current; PR #46 is merged. Do not reopen that loop unless a new SonarCloud issue appears on current `main`.
 
 ## Staged NFT/Ordinals wave 2
 
@@ -198,12 +218,13 @@ Recommended six-hour research agent design:
 
 ## Current open work
 
-- Finish PR #46:
-  - Confirm GitHub PR metadata/checks settle on cleanup commit `776e6f3`.
-  - Query direct Sonar API and require unresolved `total: 0`.
-  - Re-run adversarial review for false citation mapping and UI evidence visibility.
-  - Mark ready only after those pass.
-- After #46 merges:
+- Finish and publish `codex/stuck-mid-dex-cex-ui-parity`:
+  - Create PR for the canonical analysis UI standardization branch.
+  - Confirm in a browser that Blockchain, DEX/CEX, Casino, and NFT/Ordinals analysis pages share the canonical information architecture.
+  - Commit only `public/index.html`, `test/forensics-analysis.integration.test.js`, and `handoff.md`.
+  - Push and open a PR.
+- If production has not advanced beyond the casino cohort revision, check/approve the waiting Deploy workflow gate.
+- Continue the original workflow; it is not done:
   - Rebase NFT wave 2.
   - Assign the next migration number.
   - Open PR for NFT wave 2.

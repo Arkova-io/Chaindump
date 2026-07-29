@@ -76,6 +76,23 @@ describe('DEX/CEX Analysis data surface', () => {
   });
 });
 
+describe('Stuck/Mid UI parity', () => {
+  it('keeps the chain Stuck/Mid page visually live, not just a static dossier list', () => {
+    expect(html).toContain('function midLiveWatch(data)');
+    expect(html).toContain('Live mid watch — profiled chains on the live board');
+    expect(html).toContain('data-mid-watch=');
+    expect(html).toContain('sparkline(spark, 58, 18, 2)');
+  });
+
+  it('renders DEX/CEX Stuck/Mid with the same live-board and two-column analysis pattern as Dead & Dying', () => {
+    expect(html).toContain('function renderExchangeMid(kind, data, board)');
+    expect(html).toContain("const boardHtml = renderExchangeBoard(kind, board || (kind === 'dex' ? state.dexBoard : state.cexBoard));");
+    expect(html).toContain("kind === 'dex' ? ensureDexBoard() : ensureCexBoard()");
+    expect(html).toContain('Why exchanges succeed vs fail');
+    expect(html).toContain('${head}${stats}${boardHtml}${panel}');
+  });
+});
+
 describe('Web3 Casino Analysis data surface', () => {
   it('loads only publication-gated dossiers with coverage and lazy cited detail', () => {
     expect(html).toContain('/api/casinos?sort=${encodeURIComponent(state.casinoAnalysisSort)}');
@@ -84,10 +101,38 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('casinoAnalysisLoaded');
   });
 
+  it('follows the Blockchain Analysis index contract with search, filters, sources, and direct dossier links', () => {
+    expect(html).toContain('id="casinoAnalysisSearch"');
+    expect(html).toContain('id="casinoAnalysisStatus"');
+    expect(html).toContain('Cited sources: ${esc(item.source_count)}');
+    expect(html).toContain('Open dossier →');
+    expect(html).toContain('Open coverage ledger →');
+    expect(html).toContain('publication-gated dossier${filtered.length===1');
+  });
+
   it('keeps unverified candidates visibly withheld rather than rendering them as analyses', () => {
     expect(html).toContain('candidates withheld');
     expect(html).toContain('intentionally not presented as analyses');
     expect(html).toContain('No cross-case “largest casino” ranking is computed.');
     expect(html).toContain('No licence observation is published. Do not infer global legality from this dossier.');
+  });
+});
+
+describe('NFT and Ordinals Analysis data surface', () => {
+  it('uses the same sortable research-index pattern as Blockchain Analysis', () => {
+    expect(html).toContain('This index deliberately distinguishes lifecycle research from live catalog coverage.');
+    expect(html).toContain('id="nftCaseStatus"');
+    expect(html).toContain('id="nftCaseChain"');
+    expect(html).toContain('id="nftCaseSort"');
+    expect(html).toContain('Citation count');
+    expect(html).toContain('Open dossier →');
+    expect(html).toContain('Browse live catalog ↓');
+  });
+
+  it('shows collapsed citation and coverage metadata before expansion', () => {
+    expect(html).toContain('field-cited');
+    expect(html).toContain('legacy/collection-cited');
+    expect(html).toContain("srcHtml(sourceArray(c.sources).slice(0, 3), 'Cited sources: ')");
+    expect(html).toContain('lifecycle case stud');
   });
 });

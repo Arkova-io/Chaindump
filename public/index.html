@@ -671,8 +671,9 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   exchangeAnalysisKind: 'all', exchangeAnalysisLifecycle: 'all', exchangeAnalysisSort: 'name',
   exchangeAnalysisCohort: 'all', exchangeAnalysisQuality: 'all',
   exchangeAnalysisDir: 1, exchangeAnalysisExpanded: null,
-  casinoAnalysisData: null, casinoCoverage: null, casinoAnalysisError: '', casinoAnalysisSort: 'reviewed',
-  casinoAnalysisExpanded: null, casinoAnalysisDetails: {} };
+  casinoAnalysisData: null, casinoCoverage: null, casinoAnalysisError: '', casinoAnalysisQuery: '', casinoAnalysisSort: 'reviewed',
+  casinoAnalysisStatus: 'all', casinoAnalysisExpanded: null, casinoAnalysisDetails: {},
+  nftCaseSort: 'name', nftCaseStatus: 'all', nftCaseChain: 'all' };
 
 const fmtUsd = (n) => n == null ? '—' : (n < 0 ? '-' : '') + '$' + Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 2 }).format(Math.abs(n));
 const fmtNum = (n) => n == null ? '—' : Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(n);
@@ -1206,12 +1207,16 @@ function casinoAnalysisCard(item) {
   const detail = state.casinoAnalysisDetails[item.case_id];
   const chains = Array.isArray(item.chains) && item.chains.length ? item.chains.join(' · ') : 'No chain scope published';
   const body = open ? casinoDetailBody(item, detail) : '';
+  const sourceLabel = item.source_count === 1 ? 'reviewed source' : 'reviewed sources';
+  const sourcePreview = `<div class="analysis-src-preview"><div class="asrc">Cited sources: ${esc(item.source_count)} ${sourceLabel}; open dossier for field-level links.</div></div>`;
+  const dossierLink = `/api/casino/${encodeURIComponent(item.case_id)}`;
   return `<div class="gcard ${open ? 'open' : ''}" role="button" tabindex="0" data-casino-case="${esc(item.case_id)}">
     <div class="ghead"><div class="gname">${esc(item.brand_name)} <span class="gverdict ${item.status === 'active' ? 'recover' : 'declining'}">${esc(casinoLabel(item.status))}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${item.source_count}<span class="gddl">reviewed sources</span></div></div>
-    <div class="gmeta">${esc(casinoLabel(item.entity_kind))} · ${esc(casinoLabel(item.product_subtype))} · ${esc(chains)} · ${esc(item.completeness_pct)}% complete</div>
+    <div class="gmeta">${esc(casinoLabel(item.entity_kind))} · ${esc(casinoLabel(item.product_subtype))} · ${esc(chains)} · ${esc(casinoLabel(item.outcome_label || 'outcome unknown'))} · ${esc(item.completeness_pct)}% complete · last reviewed ${esc(item.last_reviewed || '—')}</div>
     <div class="gbody">${esc(item.product_scope_note || 'Scoped research dossier.')}</div>
-    ${body}<div class="gexpand">${open ? 'Hide dossier ▲' : 'Full cited dossier ▾'}</div>
+    ${sourcePreview}
+    ${body}<div class="gexpand">${open ? 'Hide dossier ▲' : 'Full cited dossier ▾'} · <a href="${esc(dossierLink)}" target="_blank" rel="noopener noreferrer">Open dossier →</a></div>
   </div>`;
 }
 function renderCasinoAnalysis() {
@@ -1221,6 +1226,12 @@ function renderCasinoAnalysis() {
   const coverage = state.casinoCoverage || {};
   const cases = state.casinoAnalysisData.cases || [];
   const unpublished = Math.max(0, Number(coverage.target_count || 0) - cases.length);
+  const q = state.casinoAnalysisQuery.toLowerCase();
+  const filtered = cases.filter((item) => (
+    (state.casinoAnalysisStatus === 'all' || item.status === state.casinoAnalysisStatus) &&
+    (!q || `${item.brand_name} ${item.entity_kind} ${item.product_subtype} ${item.status} ${item.outcome_label} ${(item.chains || []).join(' ')} ${item.product_scope_note}`.toLowerCase().includes(q))
+  ));
+  const statuses = [...new Set(cases.map((item) => item.status).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   if (!cases.length) {
     const emptyCopy = coverage.target_count ? `${esc(coverage.target_count)} candidates remain research pending and are intentionally not presented as analyses.` : 'Cases appear only after sources and claims pass the publication gate.';
     const unavailable = state.casinoAnalysisError ? '<br/><span class="muted">The public dossier service is temporarily unavailable; candidates remain withheld.</span>' : '';
@@ -1230,9 +1241,20 @@ function renderCasinoAnalysis() {
   el.innerHTML = `${head}
     <div class="analysis-note">Only records with reviewed primary evidence, explicit scope, status evidence, an as-of metric, no blockers, and a defined outcome rule appear here. No cross-case “largest casino” ranking is computed.</div>
     <div class="gstats">${gstat(cases.length, 'published dossiers')}${gstat(unpublished, 'candidates withheld')}${gstat(cases.filter(item=>item.token_status==='documented').length, 'documented tokens')}${gstat(cases.filter(item=>item.outcome_label==='unclassified').length, 'outcomes unclassified')}</div>
-    <div class="toolbar"><div class="analysis-controls"><label class="muted" for="casinoAnalysisSort">Sort</label><select id="casinoAnalysisSort" class="analysis-select"><option value="reviewed"${state.casinoAnalysisSort==='reviewed'?' selected':''}>Last reviewed</option><option value="name"${state.casinoAnalysisSort==='name'?' selected':''}>Name</option><option value="sources"${state.casinoAnalysisSort==='sources'?' selected':''}>Reviewed source count</option></select></div></div>
-    <div class="dsec" style="margin:18px 0 10px">${cases.length} publication-gated dossier${cases.length===1?'':'s'} · cohort as of ${esc(coverage.universe_as_of || state.casinoAnalysisData.as_of || '—')}</div>
-    <div class="gwrap">${cases.map(casinoAnalysisCard).join('')}</div>`;
+    <div class="toolbar"><div class="analysis-controls">
+      <input id="casinoAnalysisSearch" class="search" placeholder="Search casinos, chains or findings…" value="${esc(state.casinoAnalysisQuery)}" />
+      <label class="muted" for="casinoAnalysisStatus">Status</label>
+      <select id="casinoAnalysisStatus" class="analysis-select">
+        <option value="all">All statuses</option>
+        ${statuses.map((status) => exchangeOption(status, casinoLabel(status), state.casinoAnalysisStatus === status)).join('')}
+      </select>
+      <span class="analysis-spacer"></span>
+      <label class="muted" for="casinoAnalysisSort">Sort</label>
+      <select id="casinoAnalysisSort" class="analysis-select"><option value="reviewed"${state.casinoAnalysisSort==='reviewed'?' selected':''}>Last reviewed</option><option value="name"${state.casinoAnalysisSort==='name'?' selected':''}>Name</option><option value="sources"${state.casinoAnalysisSort==='sources'?' selected':''}>Reviewed source count</option></select>
+    </div></div>
+    <div class="analysis-actions"><a class="kindbtn" href="/api/casino-coverage" target="_blank" rel="noopener noreferrer">Open coverage ledger →</a></div>
+    <div class="dsec" style="margin:18px 0 10px">${filtered.length} publication-gated dossier${filtered.length===1?'':'s'} shown · cohort as of ${esc(coverage.universe_as_of || state.casinoAnalysisData.as_of || '—')}</div>
+    <div class="gwrap">${filtered.map(casinoAnalysisCard).join('') || '<div class="skel">No casino dossiers match these filters.</div>'}</div>`;
 }
 async function loadCasinoAnalysis() {
   renderCasinoAnalysis();
@@ -1321,11 +1343,25 @@ document.getElementById('exchangeanalysisview').addEventListener('keydown', (e) 
   card.click();
 });
 document.getElementById('casinoanalysisview').addEventListener('change', (e) => {
-  if (e.target.id !== 'casinoAnalysisSort') return;
-  state.casinoAnalysisSort = e.target.value;
-  state.casinoAnalysisData = null;
-  state.casinoAnalysisExpanded = null;
-  loadCasinoAnalysis();
+  if (e.target.id === 'casinoAnalysisSort') {
+    state.casinoAnalysisSort = e.target.value;
+    state.casinoAnalysisData = null;
+    state.casinoAnalysisExpanded = null;
+    loadCasinoAnalysis();
+    return;
+  }
+  if (e.target.id === 'casinoAnalysisStatus') {
+    state.casinoAnalysisStatus = e.target.value;
+    renderCasinoAnalysis();
+  }
+});
+document.getElementById('casinoanalysisview').addEventListener('input', (e) => {
+  if (e.target.id !== 'casinoAnalysisSearch') return;
+  state.casinoAnalysisQuery = e.target.value;
+  const caret = e.target.selectionStart;
+  renderCasinoAnalysis();
+  const input = document.getElementById('casinoAnalysisSearch');
+  if (input) { input.focus(); try { input.setSelectionRange(caret, caret); } catch (err) {} }
 });
 document.getElementById('casinoanalysisview').addEventListener('click', (e) => {
   if (e.target.closest('a,button,select,input')) return;
@@ -2357,15 +2393,19 @@ async function loadMid(){
 // slug instead of chain) rather than touching renderMid itself. Grouped by
 // verdict, same component as the chain version (.chainfolders/.gcard/.gexp).
 // ---------------------------------------------------------------------------
-function renderExchangeMid(kind, data){
+function renderExchangeMid(kind, data, board){
   const el = document.getElementById('midview');
   const head = MID_HEAD(kind);
-  if (data.error && !data.exchanges.length) { el.innerHTML = `${head}<div class="skel">Couldn't load: ${esc(data.error)}</div>`; return; }
-  if (!data.exchanges.length) { el.innerHTML = `${head}<div class="skel">No ${kindLabel(kind)} postmortems are published yet.</div>`; return; }
+  const boardHtml = renderExchangeBoard(kind, board || (kind === 'dex' ? state.dexBoard : state.cexBoard));
+  if (data.error && !data.exchanges.length) { el.innerHTML = `${head}${boardHtml}<div class="skel">Couldn't load: ${esc(data.error)}</div>`; return; }
+  if (!data.exchanges.length) { el.innerHTML = `${head}${boardHtml}<div class="skel">No ${kindLabel(kind)} postmortems are published yet.</div>`; return; }
   const gaps = (data.topGaps||[]).slice(0,6);
   const maxG = Math.max(...gaps.map(x=>x.count),1);
   const gapBars = gaps.map(x=>`<div class="tagrow"><span class="tagn">${esc(x.label)}</span><span class="tagbarwrap"><span class="tagbar" style="width:${(x.count/maxG)*100}%;background:linear-gradient(90deg,var(--yellow),#f59e0b)"></span></span><span class="tagc">${x.count}</span></div>`).join('');
-  const panel = `<div class="gpanel"><div class="dsec">What they're missing — common gaps</div><div class="taglist">${gapBars||'<span class="muted">—</span>'}</div></div>`;
+  const panel = `<div class="gpanel"><div class="gcols">
+    <div><div class="dsec">What they're missing — common gaps</div><div class="taglist">${gapBars||'<span class="muted">—</span>'}</div></div>
+    <div>${data.framework?accordion('Why exchanges succeed vs fail', data.framework.text, true):'<div class="gnar muted">Exchange success/failure framework compiling…</div>'}</div>
+  </div></div>`;
   const folderLabel = (k) => String(k||'other').replace(/_/g,' ').replace(/\b\w/g, m=>m.toUpperCase());
   const exMidCard = (c) => {
     const p = c.profile || {};
@@ -2426,16 +2466,19 @@ function renderExchangeMid(kind, data){
     ${gstat(gaps.length || '—', 'recurring gaps identified')}
     ${gstat(topGroup ? mgroups[topGroup].length : '—', topGroup ? esc(folderLabel(topGroup).toLowerCase()) : 'largest cohort')}
   </div>`;
-  el.innerHTML = `${head}${stats}${panel}<div class="dsec" style="margin:20px 0 10px">Grouped by where they stand — ${data.exchanges.length} ${kindLabel(kind).toLowerCase()}s</div>${cards}`;
+  el.innerHTML = `${head}${stats}${boardHtml}${panel}<div class="dsec" style="margin:20px 0 10px">Grouped by where they stand — ${data.exchanges.length} ${kindLabel(kind).toLowerCase()}s</div>${cards}`;
 }
 async function loadMidExchanges(kind){
   document.getElementById('midview').innerHTML = `${MID_HEAD(kind)}<div class="skel">Loading…</div>`;
   try {
-    const d = await fetch(`api/mid-exchanges?kind=${kind}`).then(r=>r.json());
+    const [d, board] = await Promise.all([
+      fetch(`api/mid-exchanges?kind=${kind}`).then(r=>r.json()),
+      kind === 'dex' ? ensureDexBoard() : ensureCexBoard(),
+    ]);
     if (kind === 'dex') state.midDexData = d; else state.midCexData = d;
     // Toggling kinds fast can let an older in-flight request resolve after a
     // newer one; only paint the DOM if this response's kind is still selected.
-    if (state.xKind === kind) renderExchangeMid(kind, d);
+    if (state.xKind === kind) renderExchangeMid(kind, d, board);
   } catch (e) {
     if (state.xKind === kind) document.getElementById('midview').innerHTML = `${MID_HEAD(kind)}<div class="skel">Couldn't load: ${esc(e.message)}</div>`;
   }
@@ -2514,6 +2557,16 @@ const CHAIN_ICON = { ethereum:'⟠', solana:'◎', 'bitcoin-ordinals':'₿', ord
 const CHAIN_LABEL = { 'polygon-pos':'Polygon', 'binance-smart-chain':'BNB Chain', 'optimistic-ethereum':'Optimism', ordinals:'Bitcoin Ordinals', hyperevm:'HyperEVM', apechain:'ApeChain' };
 function chainLabel(c){ c=(c||'').toString(); return CHAIN_LABEL[c] || c.replace(/-/g,' ').replace(/\b\w/g, m=>m.toUpperCase()); }
 const NFT_HEAD = pageHead('NFT and Ordinals Analysis', 'A lifecycle library for NFT &amp; Ordinals collections — mint raise vs secondary, holder and founder engagement, royalty capture, and how long projects actually last.');
+function nftLifecycleMetric(profile) {
+  if (profile.secondary_volume_usd != null) return fmtUsd(profile.secondary_volume_usd);
+  if (profile.mint_raise_usd != null) return fmtUsd(profile.mint_raise_usd);
+  return '—';
+}
+function nftLifecycleMetricLabel(profile) {
+  if (profile.secondary_volume_usd != null) return '2nd vol';
+  if (profile.mint_raise_usd != null) return 'mint raise';
+  return 'metric';
+}
 function renderNft(data){
   const el = document.getElementById('nftview');
   state.nftData = data;
@@ -2542,13 +2595,28 @@ function renderNft(data){
     ${data.analysis?accordion('Lifecycle analysis — what the data says', data.analysis.text, true):'<div class="gnar muted">Aggregate analysis compiling…</div>'}
   </div>`;
   const caseQ = state.nftCaseQuery || '';
-  const caseList = caseQ ? data.collections.filter(c => (c.name||'').toLowerCase().includes(caseQ) || (c.chain||'').toLowerCase().includes(caseQ) || (c.status||'').toLowerCase().includes(caseQ)) : data.collections;
+  const chains = [...new Set(data.collections.map((c) => c.chain).filter(Boolean))].sort((a, b) => chainLabel(a).localeCompare(chainLabel(b)));
+  const statuses = [...new Set(data.collections.map((c) => c.status).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  let caseList = data.collections.filter(c => (
+    (state.nftCaseStatus === 'all' || c.status === state.nftCaseStatus) &&
+    (state.nftCaseChain === 'all' || c.chain === state.nftCaseChain) &&
+    (!caseQ || (c.name||'').toLowerCase().includes(caseQ) || (c.chain||'').toLowerCase().includes(caseQ) || (c.status||'').toLowerCase().includes(caseQ))
+  ));
+  const nftSorters = {
+    name: (a, b) => a.name.localeCompare(b.name),
+    status: (a, b) => String(a.status || '').localeCompare(String(b.status || '')) || a.name.localeCompare(b.name),
+    chain: (a, b) => chainLabel(a.chain).localeCompare(chainLabel(b.chain)) || a.name.localeCompare(b.name),
+    citations: (a, b) => sourceArray(b.sources).length - sourceArray(a.sources).length || a.name.localeCompare(b.name),
+    launched: (a, b) => String((a.profile || {}).launched || '').localeCompare(String((b.profile || {}).launched || '')) || a.name.localeCompare(b.name),
+  };
+  caseList = [...caseList].sort(nftSorters[state.nftCaseSort] || nftSorters.name);
   const cards = caseList.map(c => {
     const p = c.profile || {};
     const open = state.nftExpanded === c.slug;
     const icon = CHAIN_ICON[(c.chain||'').toLowerCase()] || '◆';
-    let sources = '';
-    sources = srcHtml(c.sources);
+    const sources = srcHtml(c.sources);
+    const sourceCount = sourceArray(c.sources).length;
+    const sourcePreview = srcHtml(sourceArray(c.sources).slice(0, 3), 'Cited sources: ') || '<div class="analysis-src-preview"><div class="asrc">No cited sources published for this case study.</div></div>';
     const mkt = mktUrl(c);
     const body = open ? `<div class="gexp">
       ${c.risk?riskBanner(c.risk):''}
@@ -2569,18 +2637,39 @@ function renderNft(data){
       ${nftEvidenceHtml(p, c.sources)}
       ${sources}
     </div>` : '';
-    return `<div class="gcard ${open?'open':''}" data-slug="${esc(c.slug)}">
+    return `<div class="gcard ${open?'open':''}" role="button" tabindex="0" data-slug="${esc(c.slug)}">
       <div class="ghead">
         <div class="gname">${icon} ${esc(c.name)} <span class="gverdict ${verdictClass(c.status)}">${esc(c.status||'')}</span></div>
-        <div class="gdd" style="color:var(--muted2);font-size:13px">${p.secondary_volume_usd?fmtUsd(p.secondary_volume_usd):'—'}<span class="gddl">2nd vol</span></div>
+        <div class="gdd" style="color:var(--muted2);font-size:13px">${nftLifecycleMetric(p)}<span class="gddl">${nftLifecycleMetricLabel(p)}</span></div>
       </div>
-      <div class="gmeta">${esc((c.chain||'').replace('-',' '))}${p.launched?` · ${esc(p.launched)}`:''}${p.holder_retention_pct!=null?` · ${p.holder_retention_pct}% holders retained`:''}</div>
+      <div class="gmeta">${esc(chainLabel(c.chain))}${p.launched?` · launched ${esc(p.launched)}`:''}${p.holder_retention_pct!=null?` · ${p.holder_retention_pct}% holders retained`:''} · ${sourceCount} cited source${sourceCount===1?'':'s'} · ${c.citation?.fieldCited?'field-cited':'legacy/collection-cited'}</div>
+      ${p.analysis?`<div class="gbody">${esc(String(p.analysis).slice(0, 260))}${String(p.analysis).length>260?'…':''}</div>`:''}
+      <div class="analysis-src-preview">${sourcePreview}</div>
       ${body}
-      <div class="gexpand">${open?'Hide details ▲':'Full lifecycle ▾'}</div>
+      <div class="gexpand">${open?'Hide details ▲':'Full lifecycle ▾'} · <a href="/collection/${encodeURIComponent(c.slug)}">Open dossier →</a></div>
     </div>`;
   }).join('');
-  el.innerHTML = `${NFT_HEAD}${stats}${evidenceCoverage}${panel}<div class="dsec" style="margin:20px 0 10px">Deep-dive case studies — ${data.collections.length}</div>
-  <div class="toolbar"><input id="casesearch" class="search wide" placeholder="Search case studies by name, chain or status…" value="${esc(caseQ)}" /></div>
+  el.innerHTML = `${NFT_HEAD}${stats}
+  <div class="analysis-note">This index deliberately distinguishes lifecycle research from live catalog coverage. Field-cited dossiers are reviewed at claim level; legacy dossiers keep collection-level source lists until they are retrofitted.</div>
+  ${evidenceCoverage}${panel}
+  <div class="toolbar"><div class="analysis-controls">
+    <input id="casesearch" class="search" placeholder="Search case studies by name, chain or status…" value="${esc(caseQ)}" />
+    <label class="muted" for="nftCaseStatus">Status</label>
+    <select id="nftCaseStatus" class="analysis-select"><option value="all">All statuses</option>${statuses.map((status) => exchangeOption(status, status, state.nftCaseStatus === status)).join('')}</select>
+    <label class="muted" for="nftCaseChain">Chain</label>
+    <select id="nftCaseChain" class="analysis-select"><option value="all">All chains</option>${chains.map((chain) => exchangeOption(chain, chainLabel(chain), state.nftCaseChain === chain)).join('')}</select>
+    <span class="analysis-spacer"></span>
+    <label class="muted" for="nftCaseSort">Sort</label>
+    <select id="nftCaseSort" class="analysis-select">
+      <option value="name"${state.nftCaseSort==='name'?' selected':''}>Name</option>
+      <option value="status"${state.nftCaseSort==='status'?' selected':''}>Lifecycle/status</option>
+      <option value="chain"${state.nftCaseSort==='chain'?' selected':''}>Chain</option>
+      <option value="citations"${state.nftCaseSort==='citations'?' selected':''}>Citation count</option>
+      <option value="launched"${state.nftCaseSort==='launched'?' selected':''}>Launch date</option>
+    </select>
+  </div></div>
+  <div class="analysis-actions"><a class="kindbtn" href="#nftcatalog">Browse live catalog ↓</a></div>
+  <div class="dsec" style="margin:20px 0 10px">${caseList.length} lifecycle case stud${caseList.length===1?'y':'ies'} shown · ${data.collections.length} total</div>
   <div class="gwrap">${cards || '<div class="skel">No case studies match.</div>'}</div>
   <div class="dsec" style="margin:28px 0 4px">Browse the full catalog by chain</div>
   <div class="gnar muted" style="margin-bottom:12px">Every NFT &amp; Ordinals collection tracked, grouped by chain — open a chain to browse its collections, or search across all chains. Each card opens live floor, market cap, 24h volume and holders.</div>
@@ -2728,6 +2817,13 @@ document.getElementById('nftview').addEventListener('input', (e) => {
       if (inp) { inp.focus(); try { inp.setSelectionRange(caret, caret); } catch(e){} }
     }, 200);
   }
+});
+document.getElementById('nftview').addEventListener('change', (e) => {
+  if (e.target.id === 'nftCaseSort') state.nftCaseSort = e.target.value;
+  else if (e.target.id === 'nftCaseStatus') state.nftCaseStatus = e.target.value;
+  else if (e.target.id === 'nftCaseChain') state.nftCaseChain = e.target.value;
+  else return;
+  renderNft(state.nftData);
 });
 document.getElementById('nftview').addEventListener('click', (e) => {
   const fh = e.target.closest('.folderhead');
