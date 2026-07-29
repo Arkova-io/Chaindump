@@ -55,6 +55,22 @@ export async function checkProduction({
     throw new Error('/api/successful-exchanges?kind=dex returned no seeded dossiers');
   }
 
+  const normalized = {};
+  for (const kind of ['dex', 'cex']) {
+    const path = `/api/exchange-analysis?kind=${kind}`;
+    const payload = await jsonAt(fetchImpl, base + path);
+    if (!Array.isArray(payload.cases)) throw new Error(`${path} omitted cases[]`);
+    if (!Array.isArray(payload.summary?.comparisonGroups)) {
+      throw new Error(`${path} omitted cohort-safe comparisonGroups[]`);
+    }
+    if (Object.hasOwn(payload.summary, 'totalMetric')) {
+      throw new Error(`${path} exposed an incomparable pooled metric`);
+    }
+    normalized[kind] = payload.cases.length;
+  }
+  if (normalized.dex < 29) throw new Error(`/api/exchange-analysis?kind=dex returned ${normalized.dex} cases; expected at least 29`);
+  if (normalized.cex < 18) throw new Error(`/api/exchange-analysis?kind=cex returned ${normalized.cex} cases; expected at least 18`);
+
   const uiResponse = await fetchImpl(`${base}/exchange-analysis`, {
     headers: { accept: 'text/html', 'cache-control': 'no-cache' },
     signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
@@ -67,6 +83,8 @@ export async function checkProduction({
   return {
     revision: health.revision,
     chains: chains.count,
+    normalizedDex: normalized.dex,
+    normalizedCex: normalized.cex,
     ...cohorts,
   };
 }

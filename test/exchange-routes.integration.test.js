@@ -32,7 +32,7 @@ function stubFeed() {
 // Minimal D1 stub: serves dead_exchanges/mid_exchanges rows filtered by the
 // bound `kind` and the route's exchange-only venue scope, plus a generic
 // snapshot_cache key='cex' single-row lookup.
-function makeDB({ dead = [], mid = [], successful = [], cexCache = null } = {}) {
+function makeDB({ dead = [], mid = [], successful = [], features = [], cexCache = null } = {}) {
   return {
     prepare(sql) {
       return {
@@ -43,6 +43,39 @@ function makeDB({ dead = [], mid = [], successful = [], cexCache = null } = {}) 
           return null;
         },
         async all() {
+          if (sql.includes('WITH lifecycle_cases')) {
+            const kind = this.binds[0];
+            const lifecycleRows = [
+              ...dead.map((r) => ({
+                ...r, lifecycle: 'dead', status: r.verdict, metric: r.current_metric,
+                event_date: r.collapse_date, summary: r.why,
+              })),
+              ...mid.map((r) => ({
+                ...r, lifecycle: 'mid', status: r.verdict, peak_metric: null,
+                drawdown_pct: null, event_date: null, summary: r.why_stuck,
+              })),
+              ...successful.map((r) => ({
+                ...r, kind: r.type, lifecycle: 'successful', peak_metric: null,
+                drawdown_pct: null, event_date: null, summary: r.why_successful,
+              })),
+            ].filter((r) => r.kind === kind && r.venue_type === 'exchange');
+            const featureKeys = [
+              'operating_model', 'product_cohort', 'custody_model', 'primary_chain',
+              'chains', 'token_status', 'token_symbol', 'token_launch_date',
+              'token_launch_timing', 'token_strategy', 'token_source_url', 'metric_type',
+              'metric_unit', 'metric_window', 'metric_as_of', 'comparability_key',
+              'evidence', 'quality_label', 'quality_issues',
+            ];
+            return {
+              results: lifecycleRows.map((row) => {
+                const feature = features.find((item) => (
+                  item.kind === row.kind && item.slug === row.slug && item.lifecycle === row.lifecycle
+                )) || {};
+                const prefixed = Object.fromEntries(featureKeys.map((key) => [`feature_${key}`, feature[key] ?? null]));
+                return { ...row, ...prefixed };
+              }),
+            };
+          }
           if (sql.includes('FROM dead_exchanges')) {
             const kind = this.binds[0];
             const rows = dead.filter((r) => r.kind === kind && (!sql.includes(`venue_type = 'exchange'`) || r.venue_type === 'exchange'));
@@ -150,6 +183,65 @@ const SUCCESS_DEX = {
   profile: '{"token":{"launched":true,"symbol":"UNI"},"success_factors":["first_mover_amm"]}',
   sources: '[{"title":"DefiLlama","url":"https://api.llama.fi/summary/dexs/uniswap?dataType=dailyVolume"}]', updated_at: '2026-07-29',
 };
+const SUCCESS_FEATURE = {
+  kind: 'dex', slug: 'uniswap', lifecycle: 'successful',
+  operating_model: 'Permissionless multi-chain spot AMM.',
+  product_cohort: 'spot_amm_multichain', custody_model: 'non_custodial',
+  primary_chain: 'Ethereum', chains: '["Ethereum","Base"]',
+  token_status: 'launched', token_symbol: 'UNI', token_launch_date: '2020-09-16',
+  token_launch_timing: 'post_product', token_strategy: 'protocol_governance',
+  token_source_url: 'https://blog.uniswap.org/uni',
+  metric_type: 'spot_volume_24h', metric_unit: 'usd', metric_window: 'rolling_24h',
+  metric_as_of: '2026-07-29',
+  comparability_key: 'dex|spot_amm_multichain|spot_volume_24h|usd|rolling_24h',
+  evidence: '{"source_count":1}', quality_label: 'partial', quality_issues: '["single_source_case"]',
+};
+
+describe('GET /api/exchange-analysis', () => {
+  it('publishes normalized citation, token, metric, and data-quality fields', async () => {
+    stubFeed();
+    const worker = await freshWorker();
+    const res = await worker.fetch(
+      new Request('http://localhost/api/exchange-analysis?kind=dex'),
+      { DB: makeDB({ successful: [SUCCESS_DEX], features: [SUCCESS_FEATURE] }) },
+      ctx(),
+    );
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.kind).toBe('dex');
+    expect(body.cases).toHaveLength(1);
+    expect(body.cases[0].analysis).toMatchObject({
+      operating_model: 'Permissionless multi-chain spot AMM.',
+      product_cohort: 'spot_amm_multichain',
+      token: { status: 'launched', symbol: 'UNI', launch_timing: 'post_product' },
+      metric: { type: 'spot_volume_24h', unit: 'usd', window: 'rolling_24h', as_of: '2026-07-29' },
+      data_quality: { label: 'partial', issues: ['single_source_case'] },
+    });
+    expect(body.summary.comparisonGroups).toHaveLength(1);
+    expect(body.summary).not.toHaveProperty('totalMetric');
+    expect(body.summary.comparisonGroups[0]).not.toHaveProperty('total');
+  });
+
+  it('keeps centralized venues out of the DEX population', async () => {
+    stubFeed();
+    const worker = await freshWorker();
+    const cexFeature = {
+      ...SUCCESS_FEATURE,
+      kind: 'cex', slug: 'ftx', lifecycle: 'dead',
+      product_cohort: 'centralized_multi_product_exchange',
+      custody_model: 'custodial',
+      comparability_key: 'cex|centralized_multi_product_exchange|loss_exposure|usd|event_exposure',
+    };
+    const res = await worker.fetch(
+      new Request('http://localhost/api/exchange-analysis?kind=dex'),
+      { DB: makeDB({ dead: [DEAD_CEX], successful: [SUCCESS_DEX], features: [SUCCESS_FEATURE, cexFeature] }) },
+      ctx(),
+    );
+    const body = await res.json();
+    expect(body.cases.map((row) => row.slug)).toEqual(['uniswap']);
+    expect(body.summary.kind).toBe('dex');
+  });
+});
 
 describe('GET /api/dead-exchanges', () => {
   it('defaults to kind=dex and returns the trend envelope', async () => {
