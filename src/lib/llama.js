@@ -96,6 +96,41 @@ export function selectCandidates(rows, { boardSize, scoreBuffer = 30, axisTop = 
 }
 
 /**
+ * Roll up DefiLlama's /overview/dexs protocol rows into one row per DEX BRAND.
+ *
+ * DefiLlama splits a versioned DEX into separate protocol entries that all share
+ * one `parentProtocol` (e.g. "Uniswap V4"/"V3"/"V2" all carry
+ * parentProtocol: "parent#uniswap"). A top-25 DEX leaderboard built on raw
+ * protocol rows would badge one brand across multiple slots (Uniswap V4 AND V3
+ * both independently ranking top-3) while burying everything below it — the
+ * same shape of error as the chain-level Injective overstatement above, just on
+ * a different axis. Verified live 2026-07-27 against api.llama.fi/overview/dexs.
+ *
+ * @param {object} overview  the /overview/dexs payload
+ * @param {{categories?: Set<string>}} [opts]  same category filter as aggregateBreakdown
+ * @returns {Array<{key:string, name:string, total24h:number, chains:string[]}>}
+ */
+export function rollupDexProtocols(overview, opts = {}) {
+  const { categories } = opts;
+  const groups = new Map();
+  for (const p of (overview && overview.protocols) || []) {
+    if (categories && p.category != null && !categories.has(p.category)) continue;
+    const key = p.parentProtocol ? String(p.parentProtocol).replace(/^parent#/, '') : (p.slug || p.name);
+    if (!key) continue;
+    const vol = Number(p.total24h) || 0;
+    const g = groups.get(key) || { key, name: p.displayName || p.name || key, nameVol: -1, total24h: 0, chains: new Set() };
+    g.total24h += vol;
+    for (const c of p.chains || []) g.chains.add(c);
+    // The displayed brand name must come from whichever VERSION carries the most
+    // volume today (e.g. "Uniswap V4"), not whichever row the feed lists first —
+    // a first-seen pick silently badged the board's #1 DEX as "Uniswap V1".
+    if (vol > g.nameVol) { g.name = p.displayName || p.name || g.name; g.nameVol = vol; }
+    groups.set(key, g);
+  }
+  return [...groups.values()].map(({ nameVol: _nameVol, ...g }) => ({ ...g, chains: [...g.chains] }));
+}
+
+/**
  * DefiLlama's /v2/chains double-lists some chains under one chainId: a real entry
  * and a legacy alias carrying $0 TVL. Measured 2026-07-17 — exactly two:
  *   chainId 56: BSC ($4.87B)        vs Binance ($0.00B)

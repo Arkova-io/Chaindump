@@ -13,7 +13,7 @@ import { TAG_LABELS, canonTags, isFraudy, causeVocab } from './lib/causes.js';
 // no error, just wrong labels on the graveyard chips.
 import { cohortFor, tagVocab, parseLaunch, canonTags as canonChainTags, isTheme as isChainTheme, isCohort as isChainCohort, themesForCategory } from './lib/tags.js';
 import { SCORE_META, TIER_CRITERIA, TIERS, BOARD_SIZE, CHANGE_90D_MIN_SPAN_DAYS, scoreRows, classifyTier, baselineOk, activityIndex } from './lib/scoring.js';
-import { DEX_CATEGORIES, aggregateBreakdown, feedIsDegenerate, selectCandidates, dedupeChains } from './lib/llama.js';
+import { DEX_CATEGORIES, aggregateBreakdown, feedIsDegenerate, selectCandidates, dedupeChains, rollupDexProtocols } from './lib/llama.js';
 import { renderSsrRows } from './lib/ssr-rows.js';
 
 const ENV = {};
@@ -1485,11 +1485,35 @@ const toISO = (unix) => new Date(unix * 1000).toISOString().slice(0, 10);
 // Flatten a previous classifyChains() result into a { chainName: metric } map,
 // so a later cycle can recover a chain's known peak/drawdown when this
 // cycle's own historicalChainTvl fetch fails for it.
-export function priorMetricsByChain(tierData) {
+function flattenTierMetrics(tierData) {
   const map = {};
   if (!tierData) return map;
   for (const t of TIERS) for (const m of (tierData[t] || [])) map[m.chain] = m;
   return map;
+}
+export const priorMetricsByChain = (tierData) => flattenTierMetrics(tierData);
+
+function summarizeMetricHistory(series, current) {
+  let peak = current;
+  let peakDate = null;
+  let launched = null;
+  let ago90 = null;
+  let spanDays = 0;
+  if (series.length) {
+    launched = series[0].d;
+    spanDays = (series[series.length - 1].d - series[0].d) / 86400;
+    for (const point of series) if (point.v > peak) { peak = point.v; peakDate = point.d; }
+    const last = series[series.length - 1].d;
+    const target = last - 90 * 86400;
+    let closest = series[0];
+    for (const point of series) { if (point.d <= target) closest = point; else break; }
+    ago90 = closest.v;
+  }
+  const drawdown = peak > 0 ? ((peak - current) / peak) * 100 : 0;
+  const change90 = spanDays >= CHANGE_90D_MIN_SPAN_DAYS && baselineOk(ago90, peak)
+    ? ((current - ago90) / ago90) * 100
+    : null;
+  return { peak, peakDate, launched, spanDays, drawdown, change90 };
 }
 
 export async function classifyChains(priorMetrics = {}) {
@@ -1524,20 +1548,7 @@ export async function classifyChains(priorMetrics = {}) {
         stale: true,
       };
     }
-    let peak = cur, peakDate = null, launched = null, ago90 = null, spanDays = 0;
-    if (series.length) {
-      launched = series[0].d;
-      spanDays = (series[series.length - 1].d - series[0].d) / 86400;
-      for (const p of series) if (p.v > peak) { peak = p.v; peakDate = p.d; }
-      const last = series[series.length - 1].d, target = last - 90 * 86400;
-      let closest = series[0];
-      for (const p of series) { if (p.d <= target) closest = p; else break; }
-      ago90 = closest.v;
-    }
-    const drawdown = peak > 0 ? ((peak - cur) / peak) * 100 : 0;
-    // 90d change only when there's ≥90d of history AND a non-trivial baseline (guards new-chain blowups)
-    let change90 = null;
-    if (spanDays >= CHANGE_90D_MIN_SPAN_DAYS && baselineOk(ago90, peak)) change90 = ((cur - ago90) / ago90) * 100;
+    const { peak, peakDate, launched, spanDays, drawdown, change90 } = summarizeMetricHistory(series, cur);
     return {
       chain: c.name, symbol: c.tokenSymbol || null, tvl: cur, spanDays: Math.round(spanDays),
       peak_tvl: peak, peak_date: peakDate ? toISO(peakDate) : null, current_tvl: cur,
@@ -1586,6 +1597,255 @@ async function getTiers() {
   }
   return tiersCache.data;
 }
+
+// ---------------------------------------------------------------------------
+// Dead & Stuck-Mid exchanges (DEX + CEX) — the same curated-dossier pattern as
+// /api/dead and /api/mid above, sharing one pair of tables via `kind` (see
+// migrations/0011_exchange_analysis.sql) rather than duplicating a table and a
+// route per kind. Trend aggregation logic is intentionally a near-copy of the
+// chain routes above: it is the same computation over a different table, and
+// the two already drift in shape (peak/current/drawdown vs a flat metric) in
+// ways that would make a shared helper fight both call sites more than it saves.
+app.get('/api/dead-exchanges', wrap(async (req, res) => {
+  const kind = req.query.kind === 'cex' ? 'cex' : 'dex';
+  try {
+    const rows = await dbQuery(
+      `SELECT slug, kind, venue_type, name, launched, metric_label, metric_type, metric_unit, peak_metric, current_metric, drawdown_pct, peak_date, collapse_date, why, outlook, verdict, sources, profile, updated_at
+       FROM dead_exchanges WHERE kind = ? AND venue_type = 'exchange'
+       ORDER BY CASE WHEN kind = 'cex' THEN metric_type ELSE '' END, CASE WHEN kind = 'cex' THEN metric_unit ELSE '' END, COALESCE(peak_metric, current_metric) DESC, name ASC`, [kind]);
+    const exchanges = rows.map((r) => { let p = null; try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {} return { ...r, profile: p }; });
+
+    const tagCounts = {}; let fraud = 0; const verdictCounts = {}; const metricGroupMap = {};
+    for (const c of exchanges) {
+      const tags = (c.profile && c.profile.cause_tags) || [];
+      canonTags(tags).forEach((t) => { tagCounts[t] = (tagCounts[t] || 0) + 1; });
+      if (isFraudy(tags)) fraud++;
+      const metricType = c.metric_type || 'unknown';
+      const metricUnit = c.metric_unit || 'unknown';
+      const metricKey = `${metricType}:${metricUnit}`;
+      const group = metricGroupMap[metricKey] || {
+        metricType, metricUnit, count: 0, drawdownCount: 0, drawdownSum: 0,
+      };
+      group.count++;
+      if (c.drawdown_pct != null) {
+        group.drawdownCount++;
+        group.drawdownSum += c.drawdown_pct;
+      }
+      metricGroupMap[metricKey] = group;
+      const v = (c.verdict || 'unknown').toLowerCase();
+      verdictCounts[v] = (verdictCounts[v] || 0) + 1;
+    }
+    const topTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1])
+      .map(([k, n]) => ({ tag: k, label: TAG_LABELS[k] || k, count: n }));
+
+    let narrative = null;
+    try { const m = await dbQuery(`SELECT v, updated_at FROM graveyard_meta WHERE k = ?`, [`${kind}_trends`]); if (m[0]) narrative = { text: m[0].v, updated_at: m[0].updated_at }; } catch (e) {}
+
+    const metricGroups = Object.values(metricGroupMap).map(({ drawdownSum, ...group }) => ({
+      ...group,
+      avgDrawdown: group.drawdownCount ? +(drawdownSum / group.drawdownCount).toFixed(1) : null,
+    }));
+
+    res.json({
+      kind, exchanges, count: exchanges.length,
+      trends: {
+        topTags, verdictCounts, causeVocab: causeVocab(),
+        fraudCount: fraud, metricGroups,
+        narrative,
+      },
+    });
+  } catch (e) {
+    res.json({ kind, exchanges: [], count: 0, error: e.message });
+  }
+}));
+
+app.get('/api/mid-exchanges', wrap(async (req, res) => {
+  const kind = req.query.kind === 'cex' ? 'cex' : 'dex';
+  try {
+    const rows = await dbQuery(
+      `SELECT slug, kind, venue_type, name, launched, metric_label, metric_type, metric_unit, metric, verdict, why_stuck, outlook, profile, sources, updated_at
+       FROM mid_exchanges WHERE kind = ? AND venue_type = 'exchange'
+       ORDER BY CASE WHEN kind = 'cex' THEN metric_type ELSE '' END, CASE WHEN kind = 'cex' THEN metric_unit ELSE '' END, metric DESC, name ASC`, [kind]);
+    const exchanges = rows.map((r) => { let p = null; try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {} return { ...r, profile: p }; });
+    const verdictCounts = {};
+    const tagCounts = {};
+    for (const c of exchanges) {
+      const v = (c.verdict || 'unknown').toLowerCase(); verdictCounts[v] = (verdictCounts[v] || 0) + 1;
+      // DEX mid rows tag gaps as success_factors_missing; CEX mid rows are
+      // seeded with cause_tags instead (see migrations/0012_exchange_seed.sql).
+      const tags = (c.profile && (c.profile.success_factors_missing || c.profile.cause_tags)) || [];
+      canonTags(tags).forEach((t) => { tagCounts[t] = (tagCounts[t] || 0) + 1; });
+    }
+    const topGaps = Object.entries(tagCounts).sort((a, b) => b[1] - a[1])
+      .map(([k, n]) => ({ tag: k, label: TAG_LABELS[k] || k.replace(/_/g, ' '), count: n }));
+    res.json({ kind, exchanges, count: exchanges.length, verdictCounts, topGaps, causeVocab: causeVocab() });
+  } catch (e) {
+    res.json({ kind, exchanges: [], count: 0, error: e.message });
+  }
+}));
+
+// ---------------------------------------------------------------------------
+// Dynamic DEX tier classifier — classifyChains' pattern applied to DefiLlama's
+// per-protocol DEX volume instead of per-chain TVL. There is no CEX equivalent:
+// a CEX's death is usually a discrete event (a bank run, a fraud disclosure),
+// not a gradual drawdown a curve can fit, so forcing this same model onto CEXs
+// would produce a number that is computed but not honest. dead_exchanges /
+// mid_exchanges (kind='cex') stay 100% desk-curated instead — see the routes
+// above.
+// ---------------------------------------------------------------------------
+const DEX_BOARD_SIZE = 25;
+let dexTiersCache = { ts: 0, data: null };
+let dexTiersBuilding = false;
+
+// Flatten a previous classifyDexTiers() result into a { dexKey: metric } map, so
+// a later cycle can recover a DEX's known peak/drawdown when this cycle's own
+// summary/dexs history fetch fails for it — the DEX analog of
+// priorMetricsByChain above, guarding the exact bug fixed in commits
+// 1f04f66/3d6ec31 (a fetch failure must never report 0% drawdown).
+export function priorMetricsByDex(tierData) {
+  return flattenTierMetrics(tierData);
+}
+
+export async function classifyDexTiers(priorMetrics = {}) {
+  const overview = await fetchJson(DEXS_URL);
+  const rolled = rollupDexProtocols(overview, { categories: DEX_CATEGORIES });
+  if (!rolled.length) throw new Error('dexs feed unavailable');
+  const ranked = [...rolled].sort((a, b) => b.total24h - a.total24h);
+  const onBoardKeys = new Set(ranked.slice(0, DEX_BOARD_SIZE).map((r) => r.key));
+  const universe = ranked.slice(0, 100);
+
+  const metrics = await pool(universe, async (r) => {
+    let hist = null;
+    try { hist = await fetchJson(`https://api.llama.fi/summary/dexs/${encodeURIComponent(r.key)}?dataType=dailyVolume`, 12000); }
+    catch (e) { console.error('[classifyDexTiers] summary/dexs fetch failed for', r.key, ':', e.message); }
+    // totalDataChart is [timestamp, value] TUPLES (verified live 2026-07-27) —
+    // NOT {date, tvl} objects like historicalChainTvl. A different shape from
+    // the chain-TVL endpoint this classifier is otherwise modeled on.
+    const chart = hist && Array.isArray(hist.totalDataChart) ? hist.totalDataChart : [];
+    const series = chart.filter((p) => Array.isArray(p) && p.length === 2).map(([d, v]) => ({ d: Number(d), v: Number(v) || 0 }));
+    const cur = Number(r.total24h) || 0;
+    // Same guard classifyChains needed: an empty series must never overwrite a
+    // known peak with "no decline" just because today's history fetch failed.
+    const prior = priorMetrics[r.key];
+    if (!series.length && prior && prior.peak_metric > 0) {
+      const drawdown = ((prior.peak_metric - cur) / prior.peak_metric) * 100;
+      return {
+        chain: r.key, name: r.name, chains: r.chains, volume24h: cur, spanDays: prior.spanDays,
+        peak_metric: prior.peak_metric, peak_date: prior.peak_date, current_metric: cur,
+        drawdown_pct: +drawdown.toFixed(1), change_90d: prior.change_90d, launched: prior.launched,
+        stale: true,
+      };
+    }
+    const { peak, peakDate, launched, spanDays, drawdown, change90 } = summarizeMetricHistory(series, cur);
+    return {
+      chain: r.key, name: r.name, chains: r.chains, volume24h: cur, spanDays: Math.round(spanDays),
+      peak_metric: peak, peak_date: peakDate ? toISO(peakDate) : null, current_metric: cur,
+      drawdown_pct: +drawdown.toFixed(1), change_90d: change90 != null ? +change90.toFixed(1) : null,
+      launched: launched ? toISO(launched).slice(0, 7) : null,
+    };
+  }, 6);
+
+  const b = Object.fromEntries(TIERS.map((t) => [t, []]));
+  const onBoard = (key) => onBoardKeys.has(key);
+  const identity = (s) => s; // DEX slugs need no chain-alias/L1-L2 normalization
+  for (const m of metrics) b[classifyTier(m, onBoard, identity)].push(m);
+  b.mid.sort((x, y) => y.volume24h - x.volume24h);
+  b.dying.sort((x, y) => (x.change_90d ?? 0) - (y.change_90d ?? 0));
+  b.dead.sort((x, y) => y.peak_metric - x.peak_metric);
+  return b;
+}
+
+async function getDexTiers() {
+  const now = Date.now();
+  if (!dexTiersCache.data) dexTiersCache = { ts: now, data: await classifyDexTiers(priorMetricsByDex(dexTiersCache.data)) };
+  else if (now - dexTiersCache.ts > TIERS_TTL && !dexTiersBuilding) {
+    dexTiersBuilding = true;
+    classifyDexTiers(priorMetricsByDex(dexTiersCache.data)).then((d) => { dexTiersCache = { ts: Date.now(), data: d }; })
+      .catch((e) => console.error('[getDexTiers] refresh failed:', e.message)).finally(() => { dexTiersBuilding = false; });
+  }
+  return dexTiersCache.data;
+}
+
+app.get('/api/dex-tiers', wrap(async (req, res) => {
+  try {
+    const b = await getDexTiers();
+    // TIER_CRITERIA describes blockchain TVL/activity classification. The DEX
+    // classifier reuses its numeric thresholds over trading-volume history, so
+    // publishing the chain-specific prose here would be false. Omit criteria
+    // until a separately-authored DEX methodology is reviewed and cited.
+    res.json({ ...b, meta: { updated_at: dexTiersCache.ts } });
+  } catch (e) {
+    res.json({ error: e.message });
+  }
+}));
+
+// Live "Top 25 DEX" board. Derived from getDexTiers() rather than a second
+// independent fetch+rank pipeline: thriving+zombie together ARE the onBoard set
+// classifyDexTiers already computed, so this route reads that cache instead of
+// re-fetching DEXS_URL on every request.
+app.get('/api/dex', wrap(async (req, res) => {
+  try {
+    const b = (await getDexTiers()) || {};
+    const board = [
+      ...(b.thriving || []).map((m) => ({ ...m, tier: 'thriving' })),
+      ...(b.zombie || []).map((m) => ({ ...m, tier: 'zombie' })),
+    ]
+      .sort((a, c) => c.volume24h - a.volume24h)
+      .slice(0, DEX_BOARD_SIZE)
+      .map((m, i) => ({
+        rank: i + 1, key: m.chain, name: m.name, chains: m.chains,
+        volume24h: m.volume24h, change_90d: m.change_90d, tier: m.tier,
+      }));
+    res.json({ dexs: board, count: board.length });
+  } catch (e) {
+    res.json({ dexs: [], count: 0, error: e.message });
+  }
+}));
+
+// ---------------------------------------------------------------------------
+// Live "Top 10 CEX" board — CoinGecko's Trust Score ranking, cron-cached (see
+// refreshCex in handleScheduled) rather than fetched per-request: CoinGecko's
+// unauthenticated rate limit returned 429 after 2 calls within 20 seconds when
+// this was verified live, and this project's COINGECKO_API_KEY (CLAUDE.md §3.3)
+// already serves price/NFT lookups on the same quota.
+// ---------------------------------------------------------------------------
+const CG_EXCHANGES_URL = 'https://api.coingecko.com/api/v3/exchanges?per_page=10&page=1';
+const CEX_BOARD_SIZE = 10;
+const cexRow = (r) => ({
+  id: r.id, name: r.name, trust_score: r.trust_score ?? null, trust_score_rank: r.trust_score_rank ?? null,
+  trade_volume_24h_btc: r.trade_volume_24h_btc ?? null, year_established: r.year_established ?? null,
+  country: r.country ?? null, url: r.url ?? null, image: r.image ?? null,
+});
+
+async function refreshCex(env) {
+  if (!env || !env.DB) return;
+  try {
+    const rows = await fetchJson(cgUrl(CG_EXCHANGES_URL), 15000);
+    const cex = (Array.isArray(rows) ? rows : []).filter((r) => r && r.id).slice(0, CEX_BOARD_SIZE).map(cexRow);
+    if (!cex.length) return; // never overwrite a good cache with an empty pull
+    await env.DB.prepare(
+      `INSERT INTO snapshot_cache (key, data, updated_at) VALUES ('cex', ?, ?)
+       ON CONFLICT(key) DO UPDATE SET data=excluded.data, updated_at=excluded.updated_at`
+    ).bind(JSON.stringify(cex), Date.now()).run();
+  } catch (e) { console.error('[refreshCex] failed:', e.message); }
+}
+
+app.get('/api/cex', wrap(async (req, res) => {
+  try {
+    let row = null;
+    if (ENV.DB) { try { row = await ENV.DB.prepare(`SELECT data, updated_at FROM snapshot_cache WHERE key='cex'`).first(); } catch (e) {} }
+    if (row && row.data) {
+      const exchanges = JSON.parse(row.data);
+      return res.json({ exchanges, count: exchanges.length, updated_at: row.updated_at, source: 'CoinGecko Trust Score (cron-cached)' });
+    }
+    // Cold cache (first deploy, or D1 unavailable): fetch live rather than serve nothing.
+    const rows = await fetchJson(cgUrl(CG_EXCHANGES_URL), 15000);
+    const exchanges = (Array.isArray(rows) ? rows : []).slice(0, CEX_BOARD_SIZE).map(cexRow);
+    res.json({ exchanges, count: exchanges.length, source: 'CoinGecko Trust Score (live)' });
+  } catch (e) {
+    res.json({ exchanges: [], count: 0, error: e.message });
+  }
+}));
 
 // updated_at is a COLUMN (not a key inside the profile JSON) — carry it through so
 // the dying-watch detail can render the same "Data verified …" stamp as a grave card.
@@ -2843,6 +3103,9 @@ async function handleScheduled(event, env, ctx) {
     if (tick % 48 === 0) await pruneOldSnapshots(env, ts);
     // RWA/DePIN breadth changes slowly — refresh ~hourly (1-in-12 ticks)
     if (tick % 12 === 0) await refreshRwaDepin(env);
+    // CEX trust-score ranking doesn't move hourly — ~4-hourly is plenty, and
+    // keeps this off CoinGecko's shared quota the rest of the day.
+    if (tick % 48 === 0) await refreshCex(env);
     // OFAC SDN list updates often; keep the wallet-screening set current daily (1-in-288)
     if (tick % 288 === 0) await refreshSanctioned(env);
     // NFT collection universe changes slowly — re-index ~weekly (1-in-2016)

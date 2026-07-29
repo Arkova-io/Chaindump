@@ -109,6 +109,23 @@ describe('isFraudy — tests the canonical tag', () => {
   });
 });
 
+describe('exchange-specific cause tags (dead_exchanges/mid_exchanges)', () => {
+  it('labels every new exchange cause, in both label sets', () => {
+    for (const t of ['bank_run', 'commingled_funds', 'insider_fraud', 'regulatory_shutdown', 'proof_of_reserves_failure']) {
+      expect(TAG_LABELS[t], t).toBeTruthy();
+      expect(FOLDER_LABELS[t], t).toBeTruthy();
+    }
+  });
+  it('flags insider fraud and commingled funds as fraudy', () => {
+    expect(isFraudy(['insider_fraud'])).toBe(true);
+    expect(isFraudy(['commingled_funds'])).toBe(true);
+  });
+  it('does not flag a bank run or a regulatory shutdown as fraud on their own', () => {
+    expect(isFraudy(['bank_run'])).toBe(false);
+    expect(isFraudy(['regulatory_shutdown'])).toBe(false);
+  });
+});
+
 describe('causeVocab — what the SPA receives', () => {
   it('ships canon + both label sets so the client never re-derives them', () => {
     const v = causeVocab();

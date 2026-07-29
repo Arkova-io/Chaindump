@@ -395,6 +395,10 @@
   .gvf { font-size:12px; padding:5px 12px; border-radius:20px; border:1px solid var(--border2); color:var(--muted2); cursor:pointer; }
   .gvf:hover { color:var(--text); }
   .gvf.on { background:var(--accent); color:#05070b; border-color:var(--accent); font-weight:600; }
+  .kindtoggle { display:flex; gap:7px; margin:12px 0 4px; }
+  .kindbtn { font:inherit; font-size:12px; padding:5px 12px; border-radius:20px; border:1px solid var(--border2); background:transparent; color:var(--muted2); cursor:pointer; }
+  .kindbtn:hover { color:var(--text); }
+  .kindbtn.active { background:var(--accent); color:#05070b; border-color:var(--accent); font-weight:600; }
   .watchgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:8px; }
   .watchrow { display:flex; align-items:baseline; gap:8px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:9px 11px; }
   .watchrow .wn { font-weight:600; font-size:13px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -642,7 +646,11 @@
 </div>
 
 <script>
-let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, details: {}, graveExpanded: null, graveData: null, midExpanded: null, midData: null, nftExpanded: null, nftData: null, infraExpanded: null, infraData: null, graveFilter: 'all', marketsExpanded: null, marketsData: null, stablesExpanded: null, stablesData: null, geoExpanded: null, geoData: null, rwaExpanded: null, rwaData: null, usData: null, usSelected: null, newsData: null, powerData: null, powerExpanded: null, tracesData: null, tracesExpanded: null, activeView: 'live', traceQuery: '', traceResults: null, tracesMode: 'cases', scamGraph: null, catalog: { q: '', page: 1, facets: null, total: 0, openChains: {}, searchData: null, expanded: null, detailCache: {}, loading: false }, nftCaseQuery: '' };
+let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, details: {}, graveExpanded: null, graveData: null, midExpanded: null, midData: null, nftExpanded: null, nftData: null, infraExpanded: null, infraData: null, graveFilter: 'all', marketsExpanded: null, marketsData: null, stablesExpanded: null, stablesData: null, geoExpanded: null, geoData: null, rwaExpanded: null, rwaData: null, usData: null, usSelected: null, newsData: null, powerData: null, powerExpanded: null, tracesData: null, tracesExpanded: null, activeView: 'live', traceQuery: '', traceResults: null, tracesMode: 'cases', scamGraph: null, catalog: { q: '', page: 1, facets: null, total: 0, openChains: {}, searchData: null, expanded: null, detailCache: {}, loading: false }, nftCaseQuery: '',
+  // DEX/CEX graveyard — the `kind` toggle shared by the grave + mid views (switching
+  // kind on one carries over to the other, matching how graveFilter persists).
+  xKind: 'chain', deadDexData: null, deadCexData: null, midDexData: null, midCexData: null,
+  dexBoard: null, cexBoard: null, graveExExpanded: null, graveExOpenGroups: null, midExExpanded: null, midExOpenGroups: null };
 
 const fmtUsd = (n) => n == null ? '—' : (n < 0 ? '-' : '') + '$' + Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 2 }).format(Math.abs(n));
 const fmtNum = (n) => n == null ? '—' : Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(n);
@@ -664,6 +672,17 @@ const safeUrl = (u) => { const s = String(u == null ? '' : u).trim(); return /^(
 // ---------------------------------------------------------------------------
 function pageHead(title, sub){
   return `<div class="pagehead"><div class="pagetitle">${esc(title)}</div><div class="gvintro">${sub}</div></div>`;
+}
+// ---------------------------------------------------------------------------
+// The kind toggle shared by the Dead & Dying / Stuck-Mid views — Chains (the
+// original, untouched render path) vs. the new DEX/CEX graveyard. `state.xKind`
+// persists across both views, so switching kind on one carries over to the other.
+// ---------------------------------------------------------------------------
+function kindLabel(kind){ return kind === 'dex' ? 'DEX' : kind === 'cex' ? 'CEX' : 'chain'; }
+function kindToggle(kind){
+  const k = kind === 'dex' || kind === 'cex' ? kind : 'chain';
+  const btn = (val, label) => `<button type="button" class="kindbtn${k===val?' active':''}" data-kind="${val}">${label}</button>`;
+  return `<div class="kindtoggle">${btn('chain','Chains')}${btn('dex','DEXs')}${btn('cex','CEXs')}</div>`;
 }
 // Robust source renderer — handles both plain URL strings ["https://…"] and
 // {title,url} objects, dedups, and derives a clean domain label when no title.
@@ -1494,8 +1513,8 @@ function switchView(view, push){
   if (view === 'news' && !newsLoaded) loadNews();
   if (view === 'power' && !powerLoaded) loadPower();
   if (view === 'traces') { state.scamGraph = null; loadTraces(); }
-  if (view === 'grave' && !graveLoaded) loadGraveyard();
-  if (view === 'mid' && !midLoaded) loadMid();
+  if (view === 'grave') ensureGraveKind(state.xKind);
+  if (view === 'mid') ensureMidKind(state.xKind);
   if (view === 'nft' && !nftLoaded) loadNft();
   if (view === 'infra' && !infraLoaded) loadInfra();
   if (view === 'markets' && !marketsLoaded) loadMarkets();
@@ -1560,12 +1579,22 @@ document.addEventListener('click', (e) => {
 });
 
 const MID_VERDICT = { stalling:'dead', drifting:'declining', pivoting:'spec', quietly_building:'recover' };
-const MID_HEAD = pageHead('Stuck / Mid', 'Alive but adrift — chains with real tech or history that lack a killer app, a live narrative, or a token that captures value.');
+const MID_SUB = {
+  chain: 'Alive but adrift — chains with real tech or history that lack a killer app, a live narrative, or a token that captures value.',
+  dex: 'Alive but adrift — DEXs with real volume history that lack a durable edge, a killer narrative, or defensible liquidity.',
+  cex: 'Alive but adrift — CEXs with a real user base that lack growth, trust momentum, or a moat against larger rivals.',
+};
+const MID_TITLE = { chain: 'Stuck / Mid', dex: 'Stuck / Mid DEXs', cex: 'Stuck / Mid CEXs' };
+// kind defaults to 'chain' — renderMid (the untouched chain path) always calls this with 'chain'.
+function MID_HEAD(kind){
+  const k = kind === 'dex' || kind === 'cex' ? kind : 'chain';
+  return pageHead(MID_TITLE[k], MID_SUB[k]) + kindToggle(k);
+}
 function renderMid(data){
   const el = document.getElementById('midview');
   state.midData = data;
-  if (data.error && !data.chains.length) { el.innerHTML = `${MID_HEAD}<div class="skel">Couldn't load: ${esc(data.error)}</div>`; return; }
-  if (!data.chains.length) { el.innerHTML = `${MID_HEAD}<div class="skel">No mid-chain profiles are published yet.</div>`; return; }
+  if (data.error && !data.chains.length) { el.innerHTML = `${MID_HEAD('chain')}<div class="skel">Couldn't load: ${esc(data.error)}</div>`; return; }
+  if (!data.chains.length) { el.innerHTML = `${MID_HEAD('chain')}<div class="skel">No mid-chain profiles are published yet.</div>`; return; }
   const fw = data.framework;
   const gaps = (data.topGaps||[]).slice(0,6);
   const maxG = Math.max(...gaps.map(x=>x.count),1);
@@ -1627,7 +1656,7 @@ function renderMid(data){
     ${gstat(gaps.length || '—', 'recurring gaps identified')}
     ${gstat(topGroup ? mgroups[topGroup].length : '—', topGroup ? esc(String(MID_LABEL[topGroup] || topGroup).split(' — ')[0].toLowerCase()) : 'largest cohort')}
   </div>`;
-  el.innerHTML = `${MID_HEAD}${stats}${panel}<div class="dsec" style="margin:20px 0 10px">Grouped by where they stand — ${data.chains.length} chains</div>${cards}`;
+  el.innerHTML = `${MID_HEAD('chain')}${stats}${panel}<div class="dsec" style="margin:20px 0 10px">Grouped by where they stand — ${data.chains.length} chains</div>${cards}`;
 }
 async function loadMid(){
   midLoaded = true;
@@ -1635,8 +1664,129 @@ async function loadMid(){
   try { renderMid(await fetch('api/mid').then(r=>r.json())); }
   catch (e) { midLoaded = false; document.getElementById('midview').innerHTML = `<div class="skel">Couldn't load: ${esc(e.message)}</div>`; }
 }
+
+// ---------------------------------------------------------------------------
+// Stuck/Mid — DEX & CEX kinds. Parallel structure to renderMid/loadMid above,
+// reading the /api/mid-exchanges shape (metric_label/metric instead of tvl,
+// slug instead of chain) rather than touching renderMid itself. Grouped by
+// verdict, same component as the chain version (.chainfolders/.gcard/.gexp).
+// ---------------------------------------------------------------------------
+function renderExchangeMid(kind, data){
+  const el = document.getElementById('midview');
+  const head = MID_HEAD(kind);
+  if (data.error && !data.exchanges.length) { el.innerHTML = `${head}<div class="skel">Couldn't load: ${esc(data.error)}</div>`; return; }
+  if (!data.exchanges.length) { el.innerHTML = `${head}<div class="skel">No ${kindLabel(kind)} postmortems are published yet.</div>`; return; }
+  const gaps = (data.topGaps||[]).slice(0,6);
+  const maxG = Math.max(...gaps.map(x=>x.count),1);
+  const gapBars = gaps.map(x=>`<div class="tagrow"><span class="tagn">${esc(x.label)}</span><span class="tagbarwrap"><span class="tagbar" style="width:${(x.count/maxG)*100}%;background:linear-gradient(90deg,var(--yellow),#f59e0b)"></span></span><span class="tagc">${x.count}</span></div>`).join('');
+  const panel = `<div class="gpanel"><div class="dsec">What they're missing — common gaps</div><div class="taglist">${gapBars||'<span class="muted">—</span>'}</div></div>`;
+  const folderLabel = (k) => String(k||'other').replace(/_/g,' ').replace(/\b\w/g, m=>m.toUpperCase());
+  const exMidCard = (c) => {
+    const p = c.profile || {};
+    const open = state.midExExpanded === c.slug;
+    const td = tokenDrop(p);
+    const tags = (p.success_factors_missing||p.cause_tags||[]).map(t=>`<span class="ctag">${esc(String(t).replace(/_/g,' '))}</span>`).join('');
+    const sources = srcHtml(c.sources);
+    const tokenLine = p.token_symbol ? `${esc(p.token_symbol)} — ATH $${fmtTok(p.token_ath)}${p.token_ath_date?` (${esc(p.token_ath_date)})`:''} → $${fmtTok(p.token_current)}${td!=null?` <span class="tdrop">-${td}%</span>`:''}` : 'No token';
+    const body = open ? `<div class="gexp">
+      ${(p.founded||p.founders)?`<div class="gfield"><span class="gfl">Founded</span> ${esc(p.founded||'—')}${p.founders?` · ${esc(p.founders)}`:''}</div>`:''}
+      ${p.raised?`<div class="gfield"><span class="gfl">Raised</span> ${esc(p.raised)}</div>`:''}
+      <div class="gfield"><span class="gfl">Token</span> ${tokenLine}</div>
+      <div class="gfield"><span class="gfl">${esc(c.metric_label||'Metric')}</span> ${fmtUsd(c.metric)}</div>
+      ${p.purpose?`<div class="gsec">Purpose</div><div class="gbody">${esc(p.purpose)}</div>`:''}
+      ${p.situation?`<div class="gsec">What's happening now (the pivot)</div>${proseBox(p.situation)}`:''}
+      ${p.whats_working?`<div class="gsec">What's working</div>${proseBox(p.whats_working)}`:''}
+      ${(p.whats_not||c.why_stuck)?`<div class="gsec">Why it's stuck</div>${proseBox(p.whats_not||c.why_stuck)}`:''}
+      ${p.non_economic?`<div class="gsec">Social · media · community · dev</div>${proseBox(p.non_economic)}`:''}
+      ${(p.outlook||c.outlook)?`<div class="gsec">Outlook — bull / base / bear</div>${proseBox(p.outlook||c.outlook)}`:''}
+      ${tags?`<div class="ctags">${tags}</div>`:''}
+      ${sources}${stamp(c.updated_at)}
+    </div>` : `${tags?`<div class="ctags">${tags}</div>`:''}`;
+    return `<div class="gcard ${open?'open':''}" data-exslug="${esc(c.slug)}">
+      <div class="ghead">
+        <div class="gname">${esc(c.name)} <span class="gverdict ${verdictClass(c.verdict)}">${esc((c.verdict||'').replace(/_/g,' '))}</span></div>
+        <div class="gdd" style="color:var(--muted2);font-size:14px">${fmtUsd(c.metric)}<span class="gddl">${esc(c.metric_label||'metric')}</span></div>
+      </div>
+      <div class="gmeta">${p.token_symbol&&td!=null?`${esc(p.token_symbol)} -${td}% from ATH`:''}</div>
+      ${body}
+      <div class="gexpand">${open?'Hide details ▲':'Full profile ▾'}</div>
+    </div>`;
+  };
+  const mgroups = {};
+  data.exchanges.forEach(c => { const k=(c.verdict||'other').toLowerCase(); (mgroups[k]=mgroups[k]||[]).push(c); });
+  const mkeys = Object.keys(mgroups).sort((a,b)=>mgroups[b].length-mgroups[a].length);
+  if (!state.midExOpenGroups) state.midExOpenGroups = mkeys.length ? { [mkeys[0]]: true } : {};
+  const cards = `<div class="chainfolders">` + mkeys.map(k => {
+    const open = (state.midExOpenGroups||{})[k];
+    const chs = mgroups[k].sort((a,b)=>(b.metric||0)-(a.metric||0));
+    const inner = open ? `<div class="folderbody"><div class="gwrap">${chs.map(exMidCard).join('')}</div></div>` : '';
+    return `<div class="chainfolder ${open?'open':''}"><div class="folderhead" data-exmidgroup="${esc(k)}"><span class="foldercaret">${open?'▾':'▸'}</span><span class="foldername">${esc(folderLabel(k))}</span><span class="foldercount">${chs.length}</span></div>${inner}</div>`;
+  }).join('') + `</div>`;
+  // metric_label varies per row for CEX (daily volume, quarterly volume,
+  // quarterly futures volume, AUM — different units and time windows), so
+  // summing `metric` across rows with different labels produces a number with
+  // no real-world meaning. Only show a combined total when every row shares
+  // the same metric_label; otherwise report the count of comparable metrics
+  // instead of a fabricated sum (CLAUDE.md §1.5 — no fabricated figures).
+  const metricLabels = new Set(data.exchanges.map(c => c.metric_label).filter(Boolean));
+  const totalMetric = data.exchanges.reduce((a, c) => a + (c.metric || 0), 0);
+  const volumeMidStat = metricLabels.size === 1
+    ? gstat(fmtUsd(totalMetric), [...metricLabels][0])
+    : gstat(metricLabels.size || '—', 'different metrics in play (not comparable)');
+  const topGroup = mkeys.length ? mkeys[0] : null;
+  const stats = `<div class="gstats">
+    ${gstat(data.exchanges.length, kindLabel(kind)+'s profiled')}
+    ${volumeMidStat}
+    ${gstat(gaps.length || '—', 'recurring gaps identified')}
+    ${gstat(topGroup ? mgroups[topGroup].length : '—', topGroup ? esc(folderLabel(topGroup).toLowerCase()) : 'largest cohort')}
+  </div>`;
+  el.innerHTML = `${head}${stats}${panel}<div class="dsec" style="margin:20px 0 10px">Grouped by where they stand — ${data.exchanges.length} ${kindLabel(kind).toLowerCase()}s</div>${cards}`;
+}
+async function loadMidExchanges(kind){
+  document.getElementById('midview').innerHTML = `${MID_HEAD(kind)}<div class="skel">Loading…</div>`;
+  try {
+    const d = await fetch(`api/mid-exchanges?kind=${kind}`).then(r=>r.json());
+    if (kind === 'dex') state.midDexData = d; else state.midCexData = d;
+    // Toggling kinds fast can let an older in-flight request resolve after a
+    // newer one; only paint the DOM if this response's kind is still selected.
+    if (state.xKind === kind) renderExchangeMid(kind, d);
+  } catch (e) {
+    if (state.xKind === kind) document.getElementById('midview').innerHTML = `${MID_HEAD(kind)}<div class="skel">Couldn't load: ${esc(e.message)}</div>`;
+  }
+}
+// Called on every view-entry (switchView). Renders from cache when the current
+// kind's data was already fetched (the DOM may be showing a different kind's
+// markup from before this view was left), otherwise fetches it fresh.
+function ensureMidKind(kind){
+  if (kind === 'chain') { if (state.midData) renderMid(state.midData); else loadMid(); return; }
+  const dataKey = kind === 'dex' ? 'midDexData' : 'midCexData';
+  if (state[dataKey]) renderExchangeMid(kind, state[dataKey]);
+  else loadMidExchanges(kind);
+}
+// Called from the kind-toggle click — always (re)renders, from cache when possible.
+function switchMidKind(kind){
+  if (state.xKind === kind) return;
+  state.xKind = kind;
+  if (kind === 'chain') { if (state.midData) renderMid(state.midData); else loadMid(); return; }
+  const dataKey = kind === 'dex' ? 'midDexData' : 'midCexData';
+  if (state[dataKey]) renderExchangeMid(kind, state[dataKey]);
+  else loadMidExchanges(kind);
+}
+function exMidRerender(){
+  const kind = state.xKind;
+  renderExchangeMid(kind, kind === 'dex' ? state.midDexData : state.midCexData);
+}
+
 document.getElementById('midview').addEventListener('click', (e) => {
   if (e.target.closest('a') || e.target.closest('.prosetoggle') || e.target.closest('.acchead')) return;
+  const kb = e.target.closest('.kindbtn');
+  if (kb) { switchMidKind(kb.dataset.kind); return; }
+  // Exchange-kind targets first — .folderhead/.gcard are shared CSS classes with
+  // the chain path below, disambiguated by their data-ex* attributes.
+  const exfh = e.target.closest('.folderhead[data-exmidgroup]');
+  if (exfh) { const k=exfh.dataset.exmidgroup; state.midExOpenGroups = state.midExOpenGroups||{}; if (state.midExOpenGroups[k]) delete state.midExOpenGroups[k]; else state.midExOpenGroups[k]=true; exMidRerender(); return; }
+  const excard = e.target.closest('.gcard[data-exslug]');
+  if (excard) { const n = excard.dataset.exslug; const y = window.scrollY; state.midExExpanded = state.midExExpanded === n ? null : n; exMidRerender(); window.scrollTo(0, y); return; }
   const fh = e.target.closest('.folderhead');
   if (fh && state.midData) { const k=fh.dataset.midgroup; state.midOpenGroups = state.midOpenGroups||{}; if (state.midOpenGroups[k]) delete state.midOpenGroups[k]; else state.midOpenGroups[k]=true; renderMid(state.midData); return; }
   const card = e.target.closest('.gcard');
@@ -2568,6 +2718,41 @@ function proseBox(text){
   const id = 'pb'+(pbSeq++);
   return `<div class="prosebox" id="${id}"><div class="proseclamp">${fmtProse(t)}</div><button class="prosetoggle" data-pb="${id}">Show full ▾</button></div>`;
 }
+// Shared detail-panel field/section builders, used by both the chain graveyard
+// (renderGraveyard) and the exchange graveyard (renderExchangeGrave) — same
+// dossier layout over different data shapes.
+const gField = (label, val) => (val ? `<div class="gfield"><span class="gfl">${label}</span> ${val}</div>` : '');
+const gSec = (title, body) => (body ? `<div class="gsec">${title}</div>${body}` : '');
+const gProse = (title, val) => gSec(title, val ? proseBox(val) : '');
+const foundedLine = (p) => {
+  if (!p.founded && !p.founders) return '';
+  const who = p.founders ? ` · ${esc(p.founders)}` : '';
+  return `${esc(p.founded || '—')}${who}`;
+};
+const tokenLineOf = (p) => {
+  if (!p.token_symbol) return 'No live token';
+  if (p.token_ath == null) return esc(p.token_symbol);
+  const td = tokenDrop(p);
+  const when = p.token_ath_date ? ` (${esc(p.token_ath_date)})` : '';
+  const drop = td != null ? ` <span class="tdrop">-${td}%</span>` : '';
+  return `${esc(p.token_symbol)} — ATH $${fmtTok(p.token_ath)}${when} → $${fmtTok(p.token_current)}${drop}`;
+};
+const graveDossierBody = ({ p, metricLabel, metricValue, postmortem, outlook, chips, extra = '', sources, updatedAt }) => `<div class="gexp">
+  ${gField('Founded', foundedLine(p))}
+  ${gField('Raised', p.raised ? esc(p.raised) : '')}
+  ${gField('Token', tokenLineOf(p))}
+  ${gField(metricLabel, metricValue)}
+  ${gSec('Purpose', p.purpose ? `<div class="gbody">${esc(p.purpose)}</div>` : '')}
+  ${gProse("What's working", p.whats_working)}
+  ${gProse("What's not", p.whats_not)}
+  ${gProse('What happened', p.situation)}
+  ${gProse('Postmortem', postmortem)}
+  ${gProse('Social · media · community signals', p.non_economic)}
+  ${gProse('Lessons learned', p.lessons_learned)}
+  ${gProse("What they could've done differently — and why", p.could_differ)}
+  ${gProse('Outlook', outlook)}
+  ${chips}${extra}${srcHtml(sources)}${stamp(updatedAt)}
+</div>`;
 // Renders an outlook that may be either a {bull,base,bear} object or a prose string.
 function outlookHtml(v){
   if (v && typeof v === 'object' && !Array.isArray(v)) {
@@ -2606,13 +2791,23 @@ function tagLabel(data, tg){
 }
 
 // NB: `title` goes through esc() — pass it raw ("&", not "&amp;"). `sub` does not.
-const GRAVE_HEAD = pageHead('Dead & Dying', 'Dead &amp; dying chains — a live decliner watch plus researched postmortems (founding, funding, token, what went wrong) and an aggregator that extracts the patterns.');
+const GRAVE_SUB = {
+  chain: 'Dead &amp; dying chains — a live decliner watch plus researched postmortems (founding, funding, token, what went wrong) and an aggregator that extracts the patterns.',
+  dex: 'Dead &amp; dying decentralized exchanges — researched postmortems on protocols that lost their volume, liquidity, or relevance, plus the live top-25 DEX board.',
+  cex: 'Dead &amp; dying centralized exchanges — collapses, bank runs, and shutdowns, researched with sources, plus the live top-10 CEX board.',
+};
+const GRAVE_TITLE = { chain: 'Dead & Dying', dex: 'Dead & Dying DEXs', cex: 'Dead & Dying CEXs' };
+// kind defaults to 'chain' — renderGraveyard (the untouched chain path) always calls this with 'chain'.
+function GRAVE_HEAD(kind){
+  const k = kind === 'dex' || kind === 'cex' ? kind : 'chain';
+  return pageHead(GRAVE_TITLE[k], GRAVE_SUB[k]) + kindToggle(k);
+}
 function renderGraveyard(data){
   const el = document.getElementById('graveview');
   state.graveData = data;
-  if (data.error && !data.chains.length) { el.innerHTML = `${GRAVE_HEAD}<div class="skel">Couldn't load graveyard: ${esc(data.error)}</div>`; return; }
+  if (data.error && !data.chains.length) { el.innerHTML = `${GRAVE_HEAD('chain')}<div class="skel">Couldn't load graveyard: ${esc(data.error)}</div>`; return; }
   if (!data.chains.length) {
-    el.innerHTML = `${GRAVE_HEAD}<div class="skel">No postmortems are published yet.</div>`;
+    el.innerHTML = `${GRAVE_HEAD('chain')}<div class="skel">No postmortems are published yet.</div>`;
     return;
   }
   const t = data.trends || {};
@@ -2656,24 +2851,9 @@ function renderGraveyard(data){
   // Shared expanded-profile markup, reused by the grave cards AND the dying-watch
   // click-to-open detail. Handles both the dead-chain profile shape (postmortem /
   // lessons / could_differ) and the mid-chain shape (whats_working / whats_not).
-  // Small builders keep graveDetailBody flat: each returns '' when it has nothing,
-  // so the renderer is a list of sections rather than a wall of inline ternaries.
-  const gField = (label, val) => (val ? `<div class="gfield"><span class="gfl">${label}</span> ${val}</div>` : '');
-  const gSec = (title, body) => (body ? `<div class="gsec">${title}</div>${body}` : '');
-  const gProse = (title, val) => gSec(title, val ? proseBox(val) : '');
-  const foundedLine = (p) => {
-    if (!p.founded && !p.founders) return '';
-    const who = p.founders ? ` · ${esc(p.founders)}` : '';
-    return `${esc(p.founded || '—')}${who}`;
-  };
-  const tokenLineOf = (p) => {
-    if (!p.token_symbol) return 'No live token';
-    if (p.token_ath == null) return esc(p.token_symbol);
-    const td = tokenDrop(p);
-    const when = p.token_ath_date ? ` (${esc(p.token_ath_date)})` : '';
-    const drop = td != null ? ` <span class="tdrop">-${td}%</span>` : '';
-    return `${esc(p.token_symbol)} — ATH $${fmtTok(p.token_ath)}${when} → $${fmtTok(p.token_current)}${drop}`;
-  };
+  // gField/gSec/gProse/foundedLine/tokenLineOf are the shared top-level builders
+  // (also used by renderExchangeGrave) — each returns '' when it has nothing, so
+  // the renderer below is a list of sections rather than a wall of inline ternaries.
   const tvlLineOf = (c) => {
     const dd = c.drawdown_pct != null ? `-${Math.abs(c.drawdown_pct).toFixed(0)}%` : '—';
     const when = c.peak_date ? ` (${esc(c.peak_date)})` : '';
@@ -2695,24 +2875,11 @@ function renderGraveyard(data){
     const p = c.profile || {};
     // mid profiles carry no postmortem; fall back to `why` only for dead shapes
     const postmortem = p.postmortem || (p.whats_working ? '' : c.why);
-    return `<div class="gexp">
-      ${gField('Founded', foundedLine(p))}
-      ${gField('Raised', p.raised ? esc(p.raised) : '')}
-      ${gField('Token', tokenLineOf(p))}
-      ${gField('TVL', tvlLineOf(c))}
-      ${gSec('Purpose', p.purpose ? `<div class="gbody">${esc(p.purpose)}</div>` : '')}
-      ${gProse("What's working", p.whats_working)}
-      ${gProse("What's not", p.whats_not)}
-      ${gProse('What happened', p.situation)}
-      ${gProse('Postmortem', postmortem)}
-      ${gProse('Social · media · community signals', p.non_economic)}
-      ${gProse('Lessons learned', p.lessons_learned)}
-      ${gProse("What they could've done differently — and why", p.could_differ)}
-      ${gProse('Outlook', p.outlook || c.outlook)}
-      ${causeChips(p)}
-      ${peerSection(c)}
-      ${srcHtml(c.sources)}${stamp(c.updated_at)}
-    </div>`;
+    return graveDossierBody({
+      p, metricLabel: 'TVL', metricValue: tvlLineOf(c), postmortem,
+      outlook: p.outlook || c.outlook, chips: causeChips(p), extra: peerSection(c),
+      sources: c.sources, updatedAt: c.updated_at,
+    });
   };
   const graveCard = (c) => {
     const p = c.profile || {};
@@ -2748,7 +2915,7 @@ function renderGraveyard(data){
   const we = dq.find(x=>x.chain===state.watchExpanded && x.research);
   const watchDetail = we ? (()=>{ const c={chain:we.chain, verdict:we.research.verdict, why:we.research.why, outlook:we.research.outlook, sources:we.research.sources, profile:we.research.profile, peak_tvl:we.peak_tvl, current_tvl:we.current_tvl, drawdown_pct:we.drawdown_pct, peak_date:we.peak_date, updated_at:(we.research.profile&&we.research.profile.updated_at)||null}; return `<div class="watchdetail"><div class="ghead"><div class="gname">${esc(we.chain)} <span class="gverdict ${verdictClass(c.verdict)}">${esc(c.verdict||'')}</span></div><div class="gdd">-${Math.abs(we.drawdown_pct||0).toFixed(0)}%<span class="gddl">from peak</span></div></div>${graveDetailBody(c)}<div class="gexpand" data-watchclose="1">Hide details ▲</div></div>`; })() : '';
   const watch = dq.length ? `<div class="gpanel"><div class="dsec">🩸 Live dying watch — steepest 90-day decliners, auto-updating from live TVL (${dq.length})</div><div class="watchgrid">${dq.map(w=>`<div class="watchrow${w.research?' wclick':''}${w.research&&state.watchExpanded===w.chain?' on':''}"${w.research?` data-watch="${esc(w.chain)}"`:''}><span class="wn">${esc(w.chain)}</span><span class="w90">${w.change_90d}%<span class="wl">90d</span></span><span class="wdd">-${Math.abs(w.drawdown_pct||0).toFixed(0)}%<span class="wl">peak</span></span>${w.research?'<span class="wtag">profiled ↓</span>':''}</div>`).join('')}</div>${watchDetail}<div class="gnar muted" style="margin-top:8px">Live from the classifier — chains bleeding out now, before they hit the graveyard. ${dq.some(x=>x.research)?'Click a “profiled ↓” chain to open its postmortem. ':''}Refreshes automatically.</div></div>` : '';
-  el.innerHTML = `${GRAVE_HEAD}${graveStats}${chips}${watch}${trendsPanel}<div class="dsec" style="margin:14px 0 10px">${gf==='all'?'Researched postmortems':gf==='dying'?'Dying / declining':'Dead'} — ${filtered.length} chains, grouped by cause of death</div>${filtered.length?cards:'<div class="skel">None in this filter.</div>'}`;
+  el.innerHTML = `${GRAVE_HEAD('chain')}${graveStats}${chips}${watch}${trendsPanel}<div class="dsec" style="margin:14px 0 10px">${gf==='all'?'Researched postmortems':gf==='dying'?'Dying / declining':'Dead'} — ${filtered.length} chains, grouped by cause of death</div>${filtered.length?cards:'<div class="skel">None in this filter.</div>'}`;
 }
 
 async function loadGraveyard(){
@@ -2771,6 +2938,179 @@ async function loadGraveyard(){
 function graveRerender(keepScroll) {
   const y = window.scrollY;
   renderGraveyard(state.graveData);
+  if (keepScroll) window.scrollTo(0, y);
+}
+
+// ---------------------------------------------------------------------------
+// Dead & Dying — DEX & CEX kinds. Parallel structure to renderGraveyard/
+// loadGraveyard above, reading the /api/dead-exchanges shape (slug not chain,
+// metric_label/peak_metric/current_metric not tvl) rather than touching
+// renderGraveyard itself. Grouped by primary cause, same as the chain version
+// (.chainfolders/.gcard/.gexp), plus the live top-25 DEX / top-10 CEX board —
+// the RWA view's .rllist/.rlrow ranking component — above the postmortem cards.
+// ---------------------------------------------------------------------------
+async function ensureDexBoard(){
+  if (state.dexBoard) return state.dexBoard;
+  try { const r = await fetch('api/dex').then(x=>x.json()); state.dexBoard = r.dexs || []; }
+  catch (e) { state.dexBoard = []; }
+  return state.dexBoard;
+}
+async function ensureCexBoard(){
+  if (state.cexBoard) return state.cexBoard;
+  try { const r = await fetch('api/cex').then(x=>x.json()); state.cexBoard = r.exchanges || []; }
+  catch (e) { state.cexBoard = []; }
+  return state.cexBoard;
+}
+function renderExchangeBoard(kind, board){
+  if (!board || !board.length) return '';
+  if (kind === 'dex') {
+    const rows = board.map(r => `<div class="rlrow">
+      <span class="rlrank">${r.rank}</span>
+      <span class="rlname">${esc(r.name)}</span>
+      <span class="rlchains">${(r.chains||[]).slice(0,4).map(c=>`<span class="rlchain">${esc(c)}</span>`).join('')}${(r.chains||[]).length>4?`<span class="rlchain">+${r.chains.length-4}</span>`:''}</span>
+      <span class="rltvl">${fmtUsd(r.volume24h)}</span>
+      <span class="rlchg ${r.change_90d>=0?'up':'down'}">${r.change_90d!=null?(r.change_90d>=0?'▲':'▼')+' '+Math.abs(r.change_90d).toFixed(1)+'%':'—'}</span>
+    </div>`).join('');
+    return `<div class="dsec" style="margin:20px 0 4px">Live top-25 DEX board</div>
+      <div class="gnar muted" style="margin-bottom:10px">Ranked by 24h volume across ${board.length} DEXs (DefiLlama, live).</div>
+      <div class="rllist">${rows}</div>`;
+  }
+  const rows = board.map((r,i) => `<div class="rlrow">
+    ${r.image?`<img class="rllogo" src="${esc(safeUrl(r.image))}" alt="" onerror="this.style.visibility='hidden'"/>`:'<span class="rllogo"></span>'}
+    <span class="rlrank">${i+1}</span>
+    <span class="rlname">${r.url?`<a href="${esc(safeUrl(r.url))}" target="_blank" rel="noopener noreferrer">${esc(r.name)}</a>`:esc(r.name)}</span>
+    ${r.country?`<span class="rlchain">${esc(r.country)}</span>`:''}
+    <span class="rltvl">${r.trust_score!=null?r.trust_score+'/10':'—'}</span>
+    <span class="rlprice">${r.trade_volume_24h_btc!=null?fmtNum(r.trade_volume_24h_btc)+' BTC':'—'}</span>
+  </div>`).join('');
+  return `<div class="dsec" style="margin:20px 0 4px">Live top-10 CEX board</div>
+    <div class="gnar muted" style="margin-bottom:10px">Ranked by CoinGecko Trust Score across ${board.length} exchanges (CoinGecko Trust Score, live).</div>
+    <div class="rllist">${rows}</div>`;
+}
+function renderExchangeGrave(kind, data, board){
+  const el = document.getElementById('graveview');
+  const head = GRAVE_HEAD(kind);
+  const boardHtml = renderExchangeBoard(kind, board);
+  if (data.error && !data.exchanges.length) { el.innerHTML = `${head}${boardHtml}<div class="skel">Couldn't load: ${esc(data.error)}</div>`; return; }
+  if (!data.exchanges.length) { el.innerHTML = `${head}${boardHtml}<div class="skel">No ${kindLabel(kind)} postmortems are published yet.</div>`; return; }
+  const t = data.trends || {};
+  const maxTag = Math.max(...(t.topTags||[]).map(x=>x.count), 1);
+  const tagBars = (t.topTags||[]).map(x=>`<div class="tagrow"><span class="tagn">${esc(x.label)}</span><span class="tagbarwrap"><span class="tagbar" style="width:${(x.count/maxTag)*100}%"></span></span><span class="tagc">${x.count}</span></div>`).join('');
+  // Never add unlike measures. TVL, trading volume, token price, losses and
+  // liabilities are different observations even when all happen to be USD.
+  // The API groups drawdowns only within a metric type/unit cohort; this view
+  // reports cohort coverage, not a fabricated cross-metric dollar total.
+  const metricGroups = t.metricGroups || [];
+  const drawdownGroups = metricGroups.filter((group) => group.drawdownCount > 0);
+  const drawdownObservations = drawdownGroups.reduce((sum, group) => sum + group.drawdownCount, 0);
+  const exStats = `<div class="gstats">
+    ${gstat(data.exchanges.length, kindLabel(kind)+'s in the graveyard')}
+    ${gstat(metricGroups.length || '—', 'comparable metric cohorts')}
+    ${gstat(drawdownObservations || '—', 'drawdown observations (cohort-only)')}
+    ${gstat(t.fraudCount!=null?t.fraudCount:'—', 'suspected fraud / collapse')}
+  </div>`;
+  const trendsPanel = `<div class="gpanel"><div class="gcols">
+    <div><div class="dsec">Why they died — dominant causes</div><div class="taglist">${tagBars||'<span class="muted">—</span>'}</div></div>
+    <div>${t.narrative?accordion('Trend analysis', t.narrative.text, true):'<div class="gnar muted">Trend analysis compiling…</div>'}</div>
+  </div></div>`;
+  const causeTagsOf = (x) => (x.profile && x.profile.cause_tags) || [];
+  const primaryCause = (x) => canonCause(data, causeTagsOf(x)[0] || 'other');
+  const causeFolderLabel = (k) => { const fl = causeVocab(data).folderLabels || {}; return Object.hasOwn(fl,k) ? fl[k] : String(k).replaceAll('_',' ').replace(/\b\w/g, m=>m.toUpperCase()); };
+  // gField/gSec/gProse/foundedLine/tokenLineOf are the shared top-level builders
+  // (also used by renderGraveyard).
+  const metricLineOf = (c) => {
+    if (c.peak_metric == null) return `${esc(c.metric_label||'metric')}: ${fmtUsd(c.current_metric)}`;
+    const dd = c.drawdown_pct != null ? `-${Math.abs(c.drawdown_pct).toFixed(0)}%` : '—';
+    const when = c.peak_date ? ` (${esc(c.peak_date)})` : '';
+    return `${esc(c.metric_label||'metric')}: peak ${fmtUsd(c.peak_metric)}${when} → now ${fmtUsd(c.current_metric)} <span class="tdrop">${dd}</span>`;
+  };
+  const causeChips = (p) => { const tags=(p.cause_tags||[]).map(tg=>`<span class="ctag">${esc(tagLabel(data,tg))}</span>`).join(''); return tags?`<div class="ctags">${tags}</div>`:''; };
+  const exDetailBody = (c) => {
+    const p = c.profile || {};
+    const postmortem = p.postmortem || (p.whats_working ? '' : c.why);
+    return graveDossierBody({
+      p, metricLabel: kindLabel(kind), metricValue: metricLineOf(c), postmortem,
+      outlook: p.outlook || c.outlook, chips: causeChips(p),
+      sources: c.sources, updatedAt: c.updated_at,
+    });
+  };
+  const exCard = (c) => {
+    const p = c.profile || {};
+    const open = state.graveExExpanded === c.slug;
+    const dd = c.drawdown_pct != null ? `-${Math.abs(c.drawdown_pct).toFixed(0)}%` : '—';
+    const td = tokenDrop(p);
+    const tags = (p.cause_tags||[]).map(tg=>`<span class="ctag">${esc(tagLabel(data,tg))}</span>`).join('');
+    const body = open ? exDetailBody(c) : `${tags?`<div class="ctags">${tags}</div>`:''}`;
+    return `<div class="gcard ${open?'open':''}" data-exslug="${esc(c.slug)}">
+      <div class="ghead">
+        <div class="gname">${esc(c.name)} <span class="gverdict ${verdictClass(c.verdict)}">${esc(c.verdict||'')}</span></div>
+        <div class="gdd">${dd}<span class="gddl">from peak</span></div>
+      </div>
+      <div class="gmeta">${p.founded?`Founded ${esc(p.founded)} · `:''}${c.peak_metric!=null?`Peak ${fmtUsd(c.peak_metric)} → ${fmtUsd(c.current_metric)}`:`${esc(c.metric_label||'metric')} ${fmtUsd(c.current_metric)}`}${p.token_symbol&&td!=null?` · ${esc(p.token_symbol)} -${td}%`:''}</div>
+      ${body}
+      <div class="gexpand">${open?'Hide details ▲':'Full postmortem ▾'}</div>
+    </div>`;
+  };
+  const groups = {};
+  data.exchanges.forEach(c => { const k=primaryCause(c); (groups[k]=groups[k]||[]).push(c); });
+  const groupKeys = Object.keys(groups).sort((a,b)=>groups[b].length-groups[a].length);
+  if (!state.graveExOpenGroups) state.graveExOpenGroups = groupKeys.length ? { [groupKeys[0]]: true } : {};
+  const cards = `<div class="chainfolders">` + groupKeys.map(k => {
+    const open = (state.graveExOpenGroups||{})[k];
+    const chs = groups[k].sort((a,b)=>(b.peak_metric||0)-(a.peak_metric||0));
+    const inner = open ? `<div class="folderbody"><div class="gwrap">${chs.map(exCard).join('')}</div></div>` : '';
+    return `<div class="chainfolder ${open?'open':''}"><div class="folderhead" data-exgravegroup="${esc(k)}"><span class="foldercaret">${open?'▾':'▸'}</span><span class="foldername">${esc(causeFolderLabel(k))}</span><span class="foldercount">${chs.length}</span></div>${inner}</div>`;
+  }).join('') + `</div>`;
+  el.innerHTML = `${head}${boardHtml}${exStats}${trendsPanel}<div class="dsec" style="margin:14px 0 10px">Researched postmortems — ${data.exchanges.length} ${kindLabel(kind).toLowerCase()}s, grouped by cause of death</div>${cards}`;
+}
+async function loadDeadExchanges(kind){
+  document.getElementById('graveview').innerHTML = `${GRAVE_HEAD(kind)}<div class="skel">Loading…</div>`;
+  try {
+    const [d, board] = await Promise.all([
+      fetch(`api/dead-exchanges?kind=${kind}`).then(r=>r.json()),
+      kind === 'dex' ? ensureDexBoard() : ensureCexBoard(),
+    ]);
+    if (kind === 'dex') state.deadDexData = d; else state.deadCexData = d;
+    // Toggling kinds fast can let an older in-flight request resolve after a
+    // newer one; only paint the DOM if this response's kind is still selected.
+    if (state.xKind === kind) renderExchangeGrave(kind, d, board);
+  } catch (e) {
+    if (state.xKind === kind) document.getElementById('graveview').innerHTML = `${GRAVE_HEAD(kind)}<div class="skel">Couldn't load: ${esc(e.message)}</div>`;
+  }
+}
+// Called on every view-entry (switchView). Renders from cache when the current
+// kind's data was already fetched (the DOM may be showing a different kind's
+// markup from before this view was left), otherwise fetches it fresh.
+function ensureGraveKind(kind){
+  if (kind === 'chain') { if (state.graveData) renderGraveyard(state.graveData); else loadGraveyard(); return; }
+  const dataKey = kind === 'dex' ? 'deadDexData' : 'deadCexData';
+  const boardKey = kind === 'dex' ? 'dexBoard' : 'cexBoard';
+  if (state[dataKey]) renderExchangeGrave(kind, state[dataKey], state[boardKey]);
+  else loadDeadExchanges(kind);
+}
+// Called from the kind-toggle click — always (re)renders, from cache when possible.
+function switchGraveKind(kind){
+  if (state.xKind === kind) return;
+  state.xKind = kind;
+  if (kind === 'chain') { if (state.graveData) renderGraveyard(state.graveData); else loadGraveyard(); return; }
+  const dataKey = kind === 'dex' ? 'deadDexData' : 'deadCexData';
+  const boardKey = kind === 'dex' ? 'dexBoard' : 'cexBoard';
+  if (state[dataKey]) {
+    renderExchangeGrave(kind, state[dataKey], state[boardKey]);
+    if (!state[boardKey]) {
+      const ensure = kind === 'dex' ? ensureDexBoard : ensureCexBoard;
+      ensure().then((b) => { if (state.xKind === kind) renderExchangeGrave(kind, state[dataKey], b); });
+    }
+  } else {
+    loadDeadExchanges(kind);
+  }
+}
+function exGraveRerender(keepScroll){
+  const y = window.scrollY;
+  const kind = state.xKind;
+  const data = kind === 'dex' ? state.deadDexData : state.deadCexData;
+  const board = kind === 'dex' ? state.dexBoard : state.cexBoard;
+  renderExchangeGrave(kind, data, board);
   if (keepScroll) window.scrollTo(0, y);
 }
 function graveToggleFolder(k) {
@@ -2803,6 +3143,12 @@ function graveOpenPeer(name) {
 // targets (peer chips, watch rows) must precede the .gcard catch-all.
 const GRAVE_ACTIONS = [
   ['.gvf', (el) => { state.graveFilter = el.dataset.gf; graveRerender(false); }],
+  ['.kindbtn', (el) => switchGraveKind(el.dataset.kind)],
+  // Exchange-kind targets next — .folderhead/.gcard are shared CSS classes with
+  // the chain path below, disambiguated by their data-ex* attributes, so these
+  // more-specific selectors must precede the chain catch-alls.
+  ['.folderhead[data-exgravegroup]', (el) => { const g = state.graveExOpenGroups = state.graveExOpenGroups || {}; const k = el.dataset.exgravegroup; if (g[k]) delete g[k]; else g[k] = true; exGraveRerender(false); }],
+  ['.gcard[data-exslug]', (el) => { const n = el.dataset.exslug; state.graveExExpanded = state.graveExExpanded === n ? null : n; exGraveRerender(true); }],
   ['.folderhead', (el) => { graveToggleFolder(el.dataset.gravegroup); graveRerender(false); }],
   ['[data-watchclose]', () => { state.watchExpanded = null; graveRerender(true); }],
   ['.watchrow[data-watch]', (el) => { const n = el.dataset.watch; state.watchExpanded = state.watchExpanded === n ? null : n; graveRerender(true); }],
@@ -2811,7 +3157,10 @@ const GRAVE_ACTIONS = [
 ];
 document.getElementById('graveview').addEventListener('click', (e) => {
   if (e.target.closest('a') || e.target.closest('.prosetoggle') || e.target.closest('.acchead')) return;
-  if (!state.graveData) return;
+  // The chain-data guard only applies while viewing chains — the kind toggle
+  // (and exchange cards/folders) must stay clickable before graveData exists,
+  // e.g. when the view was first entered on the dex/cex kind.
+  if (!state.graveData && state.xKind === 'chain') return;
   for (const [sel, run] of GRAVE_ACTIONS) {
     const el = e.target.closest(sel);
     if (el) { run(el); return; }

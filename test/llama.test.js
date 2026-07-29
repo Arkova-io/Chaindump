@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { DEX_CATEGORIES, aggregateBreakdown, feedIsDegenerate, selectCandidates, dedupeChains } from '../src/lib/llama.js';
+import { DEX_CATEGORIES, aggregateBreakdown, feedIsDegenerate, selectCandidates, dedupeChains, rollupDexProtocols } from '../src/lib/llama.js';
 
 const norm = (s) => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
 
@@ -163,5 +163,78 @@ describe('dedupeChains', () => {
   it('passes a clean universe through untouched', () => {
     const rows = [BSC, OP, { name: 'Solana', chainId: null, tvl: 9e9 }];
     expect(dedupeChains(rows)).toHaveLength(3);
+  });
+});
+
+// A top-25 DEX board ranks BRANDS, not raw protocol rows. DefiLlama splits a
+// versioned DEX into separate protocol entries sharing one parentProtocol —
+// verified live 2026-07-27: "Uniswap V4" ($839M/24h) and "Uniswap V3" ($738M/24h)
+// are two of the top 3 raw rows, and ranking them unmerged would badge one brand
+// across three of the top 25 leaderboard slots while burying everything below it.
+describe('rollupDexProtocols', () => {
+  const UNISWAP_FEED = {
+    protocols: [
+      { name: 'uniswap-v4', displayName: 'Uniswap V4', category: 'Dexs', parentProtocol: 'parent#uniswap', total24h: 839e6, chains: ['Ethereum', 'Base'] },
+      { name: 'uniswap-v3', displayName: 'Uniswap V3', category: 'Dexs', parentProtocol: 'parent#uniswap', total24h: 738e6, chains: ['Ethereum', 'Arbitrum'] },
+      { name: 'uniswap-v2', displayName: 'Uniswap V2', category: 'Dexs', parentProtocol: 'parent#uniswap', total24h: 45e6, chains: ['Ethereum'] },
+      { name: 'pancakeswap-amm', displayName: 'PancakeSwap AMM', category: 'Dexs', parentProtocol: 'parent#pancakeswap', total24h: 384e6, chains: ['BSC'] },
+      // An independent DEX with no parentProtocol groups on its own slug/name.
+      { name: 'meteora', displayName: 'Meteora', category: 'Dexs', slug: 'meteora', total24h: 98e6, chains: ['Solana'] },
+      // Non-DEX categories in the same feed (the Injective 16x bug, at protocol scale).
+      { name: 'kalshi', displayName: 'Kalshi', category: 'Prediction Market', parentProtocol: 'parent#kalshi', total24h: 367e6, chains: ['Ethereum'] },
+    ],
+  };
+
+  it('merges a versioned DEX into one brand-level row, summing volume across versions', () => {
+    const out = rollupDexProtocols(UNISWAP_FEED, { categories: DEX_CATEGORIES });
+    const uniswap = out.find((r) => r.key === 'uniswap');
+    expect(uniswap).toBeTruthy();
+    expect(uniswap.total24h).toBe(839e6 + 738e6 + 45e6);
+    expect(uniswap.name).toBe('Uniswap V4'); // the highest-VOLUME version's display name
+    // Merged from 3 rows across 3 distinct chains — union, not concatenation.
+    expect(new Set(uniswap.chains)).toEqual(new Set(['Ethereum', 'Base', 'Arbitrum']));
+  });
+
+  // Live-verified regression (2026-07-27): the board's #1 slot read "Uniswap V1"
+  // instead of "Uniswap" — a naive rollup took whichever child row the feed
+  // listed FIRST, not the one carrying the most volume. UNISWAP_FEED above lists
+  // V4 (the dominant version) first, so a first-seen implementation passes the
+  // test above by accident. This fixture deliberately lists the SMALLEST version
+  // first to catch that.
+  it('names the brand after its highest-volume version, not whichever row the feed lists first', () => {
+    const feed = { protocols: [
+      { name: 'uniswap-v1', displayName: 'Uniswap V1', category: 'Dexs', parentProtocol: 'parent#uniswap', total24h: 2e6, chains: ['Ethereum'] },
+      { name: 'uniswap-v4', displayName: 'Uniswap V4', category: 'Dexs', parentProtocol: 'parent#uniswap', total24h: 839e6, chains: ['Ethereum'] },
+    ] };
+    const out = rollupDexProtocols(feed, { categories: DEX_CATEGORIES });
+    expect(out.find((r) => r.key === 'uniswap').name).toBe('Uniswap V4');
+  });
+
+  it('never lists a brand twice — one row per parentProtocol', () => {
+    const out = rollupDexProtocols(UNISWAP_FEED, { categories: DEX_CATEGORIES });
+    expect(out.filter((r) => r.key === 'uniswap')).toHaveLength(1);
+  });
+
+  it('groups an independent DEX with no parentProtocol by its own slug', () => {
+    const out = rollupDexProtocols(UNISWAP_FEED, { categories: DEX_CATEGORIES });
+    const meteora = out.find((r) => r.key === 'meteora');
+    expect(meteora).toBeTruthy();
+    expect(meteora.total24h).toBe(98e6);
+  });
+
+  it('excludes non-DEX categories — Kalshi does not enter the DEX universe', () => {
+    const out = rollupDexProtocols(UNISWAP_FEED, { categories: DEX_CATEGORIES });
+    expect(out.find((r) => r.key === 'kalshi')).toBeUndefined();
+  });
+
+  it('keeps brands distinct — PancakeSwap does not merge into Uniswap', () => {
+    const out = rollupDexProtocols(UNISWAP_FEED, { categories: DEX_CATEGORIES });
+    expect(out.find((r) => r.key === 'pancakeswap').total24h).toBe(384e6);
+  });
+
+  it('tolerates a missing/empty payload without throwing', () => {
+    expect(rollupDexProtocols(null)).toEqual([]);
+    expect(rollupDexProtocols({})).toEqual([]);
+    expect(rollupDexProtocols({ protocols: [] })).toEqual([]);
   });
 });
