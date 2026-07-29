@@ -15,19 +15,27 @@ const releaseSurface = deployWorkflow + smokeScript;
 const ctx = () => ({ waitUntil() {}, passThroughOnException() {} });
 
 describe('production deployment readiness', () => {
-  it('cancels a stale approval-gated run when a newer main revision arrives', () => {
+  it('skips a stale approval-gated run without reporting a deploy failure', () => {
     expect(deployWorkflow).toMatch(
       /group:\s*deploy-production[\s\S]*cancel-in-progress:\s*true/,
     );
-    const currentMainChecks = deployWorkflow.match(
-      /test "\$GITHUB_SHA" = "\$current_main_sha"/g,
-    );
-    expect(currentMainChecks).toHaveLength(2);
-    expect(deployWorkflow).toMatch(
-      /Reject a superseded main revision before migration[\s\S]*Apply D1 migrations/,
+    expect(deployWorkflow).not.toContain(
+      'test "$GITHUB_SHA" = "$current_main_sha"',
     );
     expect(deployWorkflow).toMatch(
-      /Apply D1 migrations[\s\S]*Re-check the main revision before Worker deploy[\s\S]*Deploy Worker/,
+      /id:\s*current-main-before-migration[\s\S]*proceed=false[\s\S]*GITHUB_OUTPUT/,
+    );
+    expect(deployWorkflow).toMatch(
+      /Apply D1 migrations \(remote\)[\s\S]*if:\s*steps\.current-main-before-migration\.outputs\.proceed == 'true'/,
+    );
+    expect(deployWorkflow).toMatch(
+      /id:\s*current-main-before-worker[\s\S]*proceed=false[\s\S]*GITHUB_OUTPUT/,
+    );
+    expect(deployWorkflow).toMatch(
+      /Deploy Worker[\s\S]*if:\s*steps\.current-main-before-worker\.outputs\.proceed == 'true'/,
+    );
+    expect(deployWorkflow).toMatch(
+      /Post-deploy smoke check[\s\S]*if:\s*steps\.current-main-before-worker\.outputs\.proceed == 'true'/,
     );
   });
 
