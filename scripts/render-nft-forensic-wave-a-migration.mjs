@@ -1255,7 +1255,7 @@ export function renderNftForensicWaveAMigration(document) {
 -- Patches normalized causal analysis without replacing existing NFT dossier content.
 
 DROP TABLE IF EXISTS nft_forensic_wave_a_0057;
-CREATE TEMP TABLE nft_forensic_wave_a_0057 (
+CREATE TABLE nft_forensic_wave_a_0057 (
   slug TEXT PRIMARY KEY,
   forensic_analysis TEXT NOT NULL CHECK (json_valid(forensic_analysis))
 );
