@@ -203,6 +203,14 @@ describe('summarizeExchangeCases', () => {
       expect.objectContaining({ key: 'Base', sampleSize: 2, successRate: 0.5 }),
       expect.objectContaining({ key: 'Ethereum', sampleSize: 2, successRate: 0.5 }),
     ]));
+    expect(summary.outcomeAssociations.productCohort).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        key: 'spot_amm',
+        sampleSize: 4,
+        successful: 2,
+        successRate: 0.5,
+      }),
+    ]));
     expect(summary.outcomeAssociations.method).toContain('association');
     expect(summary.outcomeAssociations.method).toContain('Wilson');
   });
