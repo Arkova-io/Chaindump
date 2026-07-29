@@ -22,8 +22,9 @@ export async function checkProduction({
   expectedRevision,
   fetchImpl = fetch,
 }) {
-  const base = String(baseUrl || '').replace(/\/+$/, '');
+  let base = String(baseUrl || '');
   if (!base) throw new Error('baseUrl is required');
+  while (base.endsWith('/')) base = base.slice(0, -1);
   if (!expectedRevision) throw new Error('expectedRevision is required');
 
   const health = await jsonAt(fetchImpl, `${base}/api/health`);
@@ -83,15 +84,15 @@ async function run() {
 
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
-      const result = await checkProduction({
+      await checkProduction({
         baseUrl: args.base,
         expectedRevision: args.revision,
       });
-      console.log(`Production smoke passed on attempt ${attempt}: ${JSON.stringify(result)}`);
+      console.log(`Production smoke passed on attempt ${attempt}.`);
       return;
-    } catch (error) {
-      lastError = error;
-      console.error(`Production smoke attempt ${attempt}/${attempts} failed: ${error.message}`);
+    } catch {
+      lastError = new Error('Production surface did not become ready');
+      console.error(`Production smoke attempt ${attempt}/${attempts} failed.`);
       if (attempt < attempts) await new Promise((resolve) => setTimeout(resolve, delayMs));
     }
   }
@@ -99,8 +100,10 @@ async function run() {
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  run().catch((error) => {
-    console.error(`Production smoke failed: ${error.message}`);
+  try {
+    await run();
+  } catch {
+    console.error('Production smoke failed after all attempts.');
     process.exitCode = 1;
-  });
+  }
 }
