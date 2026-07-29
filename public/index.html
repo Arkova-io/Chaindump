@@ -673,7 +673,7 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   exchangeAnalysisDir: 1, exchangeAnalysisExpanded: null,
   casinoAnalysisData: null, casinoCoverage: null, casinoAnalysisError: '', casinoAnalysisQuery: '', casinoAnalysisSort: 'reviewed',
   casinoAnalysisStatus: 'all', casinoAnalysisKind: 'all', casinoAnalysisSubtype: 'all', casinoAnalysisToken: 'all', casinoAnalysisExpanded: null, casinoAnalysisDetails: {},
-  nftCaseSort: 'name', nftCaseStatus: 'all', nftCaseChain: 'all' };
+  nftCaseSort: 'name', nftCaseStatus: 'all', nftCaseChain: 'all', forensicsRefresh: null };
 
 const fmtUsd = (n) => n == null ? '—' : (n < 0 ? '-' : '') + '$' + Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 2 }).format(Math.abs(n));
 const fmtNum = (n) => n == null ? '—' : Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(n);
@@ -693,8 +693,29 @@ const safeUrl = (u) => { const s = String(u == null ? '' : u).trim(); return /^(
 //   .gwrap > .gcard  |  .chainfolders > .chainfolder  |  .rllist > .rlrow
 // `sub` is trusted authored copy (it may carry &amp; / <b>); `title` is escaped.
 // ---------------------------------------------------------------------------
+function forensicsRefreshText() {
+  const refresh = state.forensicsRefresh;
+  if (!refresh) return 'Six-hour review scan: loading evidence-governance status…';
+  const due = Number(refresh.due_nft || 0) + Number(refresh.due_exchange || 0) + Number(refresh.due_casino || 0) + Number(refresh.due_chain || 0);
+  return `Six-hour review scan: ${esc(refresh.completed_at || 'completed')} · ${esc(due)} dossier(s) due · human promotion required`;
+}
+function renderForensicsRefreshStatus() {
+  document.querySelectorAll('[data-forensics-refresh]').forEach((node) => {
+    node.innerHTML = `${forensicsRefreshText()} <a href="/api/forensics-refresh-status" target="_blank" rel="noopener noreferrer">Open review status →</a>`;
+  });
+}
+async function loadForensicsRefreshStatus() {
+  try {
+    const response = await fetch('/api/forensics-refresh-status');
+    const payload = response.ok ? await response.json() : {};
+    state.forensicsRefresh = payload.refresh || null;
+  } catch {
+    state.forensicsRefresh = null;
+  }
+  renderForensicsRefreshStatus();
+}
 function pageHead(title, sub){
-  return `<div class="pagehead"><div class="pagetitle">${esc(title)}</div><div class="gvintro">${sub}</div></div>`;
+  return `<div class="pagehead"><div class="pagetitle">${esc(title)}</div><div class="gvintro">${sub}</div><div class="muted" data-forensics-refresh>${forensicsRefreshText()} <a href="/api/forensics-refresh-status" target="_blank" rel="noopener noreferrer">Open review status →</a></div></div>`;
 }
 // ---------------------------------------------------------------------------
 // The kind toggle shared by the Dead & Dying / Stuck-Mid views — Chains (the
@@ -806,26 +827,29 @@ function normalizeBlockchainAnalysis(live, mid, dead) {
       expectedDimensionCount: Number(dossier.expectedDimensionCount || 8),
       dataCompletenessPct: dossier.dataCompletenessPct,
       citationCount: Number(dossier.citationCount || sources.length),
+      freshness: dossier.freshness || null,
     });
   });
   (mid.chains || []).forEach((row) => {
     const p = parsedObject(row.profile);
     byName.set(String(row.chain).toLowerCase(), {
-      name: row.chain, lifecycle: 'mid', coverage: 'Research dossier',
+      name: row.chain, lifecycle: 'mid', coverage: 'Legacy postmortem',
       metric: row.tvl, metricLabel: 'TVL', summary: row.why_stuck || p.situation || '',
       sources: sourceArray(row.sources), updatedAt: row.updated_at,
       dimensionCount: 0, expectedDimensionCount: 8,
       dataCompletenessPct: null, citationCount: sourceArray(row.sources).length,
+      freshness: null,
     });
   });
   (dead.chains || []).forEach((row) => {
     const p = parsedObject(row.profile);
     byName.set(String(row.chain).toLowerCase(), {
-      name: row.chain, lifecycle: 'dead', coverage: 'Research dossier',
+      name: row.chain, lifecycle: 'dead', coverage: 'Legacy postmortem',
       metric: row.current_tvl, metricLabel: 'Current TVL', summary: row.why || p.postmortem || '',
       sources: sourceArray(row.sources), updatedAt: row.updated_at,
       dimensionCount: 0, expectedDimensionCount: 8,
       dataCompletenessPct: null, citationCount: sourceArray(row.sources).length,
+      freshness: null,
     });
   });
   return [...byName.values()];
@@ -853,23 +877,28 @@ function renderBlockchainAnalysis() {
   filtered.sort((a, b) => {
     if (state.blockchainAnalysisSort === 'lifecycle') return (order[a.lifecycle] - order[b.lifecycle]) || a.name.localeCompare(b.name);
     if (state.blockchainAnalysisSort === 'citations') return (b.citationCount - a.citationCount) || a.name.localeCompare(b.name);
+    if (state.blockchainAnalysisSort === 'review') {
+      const reviewOrder = { review_due: 0, unknown: 1, current: 2 };
+      return (reviewOrder[a.freshness?.status || 'unknown'] - reviewOrder[b.freshness?.status || 'unknown']) || a.name.localeCompare(b.name);
+    }
     if (state.blockchainAnalysisSort === 'dossier') return (b.dimensionCount - a.dimensionCount)
       || ((b.dataCompletenessPct || 0) - (a.dataCompletenessPct || 0))
       || a.name.localeCompare(b.name);
     return a.name.localeCompare(b.name);
   });
   const researched = rows.filter((row) => row.coverage === 'Research dossier').length;
+  const legacy = rows.filter((row) => row.coverage === 'Legacy postmortem').length;
   const cards = filtered.map((row) => `<div class="gcard">
     <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${blockchainLifecycleClass(row.lifecycle)}">${esc(row.lifecycle)}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${row.metric == null ? '—' : fmtUsd(row.metric)}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
-    <div class="gmeta">${esc(row.coverage)} · ${row.dimensionCount ? `${row.dimensionCount}/${row.expectedDimensionCount} dimensions · ` : ''}${row.dataCompletenessPct != null ? `${row.dataCompletenessPct}% field coverage · ` : ''}${row.citationCount} cited source${row.citationCount === 1 ? '' : 's'}</div>
+    <div class="gmeta">${esc(row.coverage)} · ${row.dimensionCount ? `${row.dimensionCount}/${row.expectedDimensionCount} dimensions · ` : ''}${row.dataCompletenessPct != null ? `${row.dataCompletenessPct}% field coverage · ` : ''}${row.citationCount} cited source${row.citationCount === 1 ? '' : 's'}${row.freshness ? ` · review ${esc(row.freshness.status)}${row.freshness.nextReviewAt ? ` by ${esc(row.freshness.nextReviewAt)}` : ''}${row.freshness.derived ? ' (90d policy)' : ''}` : ''}</div>
     ${blockchainSummary(row)}
     ${srcHtml(row.sources.slice(0, 3), 'Cited sources: ')}
     <div class="gexpand"><a href="/chain/${encodeURIComponent(row.name)}">Open chain dossier →</a></div>
   </div>`).join('');
   el.innerHTML = `${head}
-    <div class="analysis-note">This index deliberately distinguishes live coverage from researched coverage. A chain appearing in the live top 50 is not automatically counted as analyzed.</div>
-    <div class="gstats">${gstat(rows.length, 'chains indexed')}${gstat(researched, 'research dossiers')}${gstat(rows.filter(r=>r.lifecycle==='mid').length, 'stuck / mid')}${gstat(rows.filter(r=>r.lifecycle==='dead').length, 'dead / dying')}</div>
+    <div class="analysis-note">This index distinguishes structural research dossiers, legacy postmortems, and live-only coverage. A chain appearing in the top 50 is not automatically counted as analyzed.</div>
+    <div class="gstats">${gstat(rows.length, 'chains indexed')}${gstat(researched, 'structural dossiers')}${gstat(legacy, 'legacy postmortems')}${gstat(rows.filter(r=>r.lifecycle==='dead').length, 'dead / dying')}</div>
     <div class="toolbar"><div class="analysis-controls">
       <input id="blockchainAnalysisSearch" class="search" placeholder="Search chains or lifecycle…" value="${esc(state.blockchainAnalysisQuery)}" />
       <span class="analysis-spacer"></span>
@@ -879,6 +908,7 @@ function renderBlockchainAnalysis() {
         <option value="lifecycle"${state.blockchainAnalysisSort==='lifecycle'?' selected':''}>Lifecycle</option>
         <option value="dossier"${state.blockchainAnalysisSort==='dossier'?' selected':''}>Dossier coverage</option>
         <option value="citations"${state.blockchainAnalysisSort==='citations'?' selected':''}>Citation count</option>
+        <option value="review"${state.blockchainAnalysisSort==='review'?' selected':''}>Review freshness</option>
       </select>
     </div></div>
     <div class="analysis-actions">${analysisButton('live','Live top 50')}${analysisButton('mid','Stuck / mid dossiers')}${analysisButton('grave','Dead & dying dossiers')}</div>
@@ -1023,6 +1053,15 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
   if (risks) sections.push(`<div class="gsec">Risks</div>${proseBox(analysisText(risks))}`);
   if (profile.synthesis) sections.push(`<div class="gsec">Research synthesis</div>${proseBox(analysisText(profile.synthesis))}`);
   if (row.outlook) sections.push(`<div class="gsec">Outlook</div>${proseBox(row.outlook)}`);
+  sections.push(forensicAnalysisHtml(row.analysis.forensic_analysis || profile.forensic_analysis, (ref) => {
+    const value = typeof ref === 'string' ? ref : ref?.value;
+    if (!value) return null;
+    return row.sources.find((source) => {
+      const url = typeof source === 'string' ? source : source?.url;
+      const id = typeof source === 'string' ? null : source?.id;
+      return url === value || id === value;
+    }) || (String(value).startsWith('https://') ? { url: value, title: 'source' } : null);
+  }));
   const qualityIssueText = row.qualityIssues.length
     ? row.qualityIssues.map(exchangeLabel).join(' · ')
     : 'No recorded feature gaps';
@@ -1239,6 +1278,12 @@ function casinoDetailBody(item, detail) {
     <div class="gfield"><span class="gfl">Known gaps</span>${esc((item.unsourced_fields || []).map(casinoLabel).join(' · ') || 'none published')}</div>
     ${sections}<div class="gsec">Documented metrics &amp; comparability limits</div>${observations}
     <div class="gsec">Lifecycle timeline</div>${events}
+    ${forensicAnalysisHtml(synthesis.forensic_analysis, (ref) => {
+      const value = typeof ref === 'string' ? ref : (ref?.url || ref?.value);
+      if (!value) return null;
+      const claim = (detail.claims || []).find((claim) => claim.claim_id === value || claim.url === value);
+      return claim ? { url: claim.url, title: claim.title } : (String(value).startsWith('https://') ? { url: value, title: 'source' } : null);
+    }, 'This casino dossier retains its cited lifecycle and operating analysis; a normalized causal contract is pending review.')}
     <div class="gsec">Licence observations</div>${licences}
     <div class="gsec">Field evidence</div>${claimRows}
     ${srcHtml(detail.sources, 'Cited sources: ')}<div class="muted" style="margin-top:8px">Last manually reviewed ${esc(item.last_reviewed || '—')}</div>
@@ -1853,10 +1898,88 @@ function evidenceHtml(ev, sources){
   return li ? `<ul class="evlist">${li}</ul>` : '';
 }
 
+// Every published forensic conclusion uses this contract. Category schemas keep
+// their own factual fields, but causal analysis always distinguishes observation
+// from inference, names the decision being assessed, and says what would change
+// the conclusion. Legacy rows remain visible below; they are never silently
+// upgraded into a causal claim just because they contain prose.
+function forensicRefHtml(ref, resolveRef) {
+  const resolved = (ref && typeof ref === 'object' && ref.url)
+    ? ref
+    : (resolveRef && resolveRef(ref));
+  if (!resolved || !resolved.url) return '';
+  return ` <a class="ecite" href="${esc(safeUrl(resolved.url))}" target="_blank" rel="noopener noreferrer">${esc(resolved.title || 'source')} ↗</a>`;
+}
+function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is indexed, but its structured causal analysis has not passed the publication gate yet.') {
+  const a = parsedObject(contract);
+  if (!a || (a.schema !== 'forensic-analysis-v1' && a.version !== 'forensic-analysis-v1')) {
+    return `<div class="dsec">Forensic analysis</div><div class="analysis-note">${esc(pendingText)}</div>`;
+  }
+  const outcome = parsedObject(a.outcome);
+  const citedList = (items, mapper) => Array.isArray(items) && items.length
+    ? `<ul class="evlist">${items.map(mapper).filter(Boolean).join('')}</ul>` : '';
+  const whyItems = Array.isArray(a.why) ? a.why : (a.why ? [a.why] : []);
+  const why = citedList(whyItems, (factor) => {
+    if (!factor) return '';
+    const claim = factor.claim || factor.summary;
+    if (!claim) return '';
+    const refs = (factor.evidence_refs || factor.source_refs || []).map((ref) => forensicRefHtml(ref, resolveRef)).join('');
+    const basis = factor.basis ? ` · ${factor.basis}` : '';
+    const confidence = factor.confidence ? ` · ${factor.confidence} confidence` : '';
+    const alternatives = Array.isArray(factor.alternatives) && factor.alternatives.length
+      ? `<div class="muted">Alternative: ${esc(factor.alternatives.join(' · '))}</div>` : '';
+    return `<li><b>${esc(exchangeLabel(factor.factor || 'other'))}:</b> ${esc(claim)}${refs}<span class="muted">${esc(basis + confidence)}</span>${alternatives}</li>`;
+  });
+  const choices = citedList(a.strategic_choices, (choice) => {
+    const choiceText = choice?.choice || choice?.decision;
+    if (!choice || !choiceText) return '';
+    const refs = (choice.evidence_refs || choice.source_refs || []).map((ref) => forensicRefHtml(ref, resolveRef)).join('');
+    const mechanism = choice.intended_mechanism ? `<div class="muted">Intended mechanism: ${esc(choice.intended_mechanism)}</div>` : '';
+    const result = choice.observed_result || choice.consequence;
+    const resultText = result ? `<div class="muted">Observed result: ${esc(result)}</div>` : '';
+    return `<li><b>${esc(choiceText)}</b>${refs}${mechanism}${resultText}</li>`;
+  });
+  const counter = parsedObject(a.counterfactual);
+  const counterText = counter?.intervention ? `${counter.intervention}${counter.mechanism ? ` — ${counter.mechanism}` : ''}` : counter?.summary;
+  const counterfactual = counterText
+    ? `${proseBox(counterText)}${counter.limits ? `<div class="muted">Limit: ${esc(counter.limits)}</div>` : ''}`
+    : '';
+  const watch = citedList(a.watch, (item) => {
+    if (!item?.signal) return '';
+    const refs = (item.evidence_refs || item.source_refs || []).map((ref) => forensicRefHtml(ref, resolveRef)).join('');
+    return `<li>${esc(item.signal)}${item.implication ? `<div class="muted">${esc(item.implication)}</div>` : ''}${refs}</li>`;
+  });
+  const unknowns = citedList(a.unknowns, (item) => {
+    const text = typeof item === 'string' ? item : item?.question;
+    if (!text) return '';
+    return `<li>${esc(text)}${item?.resolution_trigger ? `<div class="muted">Review trigger: ${esc(item.resolution_trigger)}</div>` : ''}</li>`;
+  });
+  const review = parsedObject(a.review);
+  const outcomeText = outcome.label ? `${exchangeLabel(outcome.label)}${outcome.scope ? ` · ${outcome.scope}` : ''}${outcome.summary ? ` · ${outcome.summary}` : ''}` : 'outcome withheld';
+  const sections = [
+    `<div class="gfield"><span class="gfl">Scoped outcome</span>${esc(outcomeText)}${(outcome.source_refs || outcome.evidence_refs || []).map((ref) => forensicRefHtml(ref, resolveRef)).join('')}</div>`,
+    why ? `<div class="gsec">Why this outcome</div>${why}` : '',
+    choices ? `<div class="gsec">Strategic choices</div>${choices}` : '',
+    counterfactual ? `<div class="gsec">What could have been different</div>${counterfactual}` : '',
+    watch ? `<div class="gsec">What would change our mind</div>${watch}` : '',
+    unknowns ? `<div class="gsec">Material unknowns</div>${unknowns}` : '',
+    (review?.freshness || review?.status) ? `<div class="gfield"><span class="gfl">Analysis freshness</span>${esc(review.freshness || review.status)} · verified ${esc(review.last_verified_at || review.last_reviewed_at || 'unknown')} · review ${esc(review.next_review_at || 'unknown')}</div>` : '',
+  ].filter(Boolean).join('');
+  return `<div class="dsec">Forensic analysis</div><div class="anbox">${sections}</div>`;
+}
+
 function synthesisHtml(f){
   if (!f || !f.data) return '';
   const d = f.data, when = f.updatedAt || d.as_of;
   const rows = [];
+  // Wave dossiers already store these fuller analytical fields. Rendering only
+  // thesis/bear/bull hid the actual postmortem from readers.
+  if (d.situation) rows.push(`<div class="dsub">Current situation</div><div class="gbody">${esc(d.situation)}</div>`);
+  if (d.postmortem) rows.push(`<div class="dsub">Why this outcome</div><div class="gbody">${esc(d.postmortem)}</div>`);
+  if (d.success_mechanism) rows.push(`<div class="dsub">Success mechanism</div><div class="gbody">${esc(d.success_mechanism)}</div>`);
+  if (Array.isArray(d.lessons_learned) && d.lessons_learned.length) rows.push(`<div class="dsub">Lessons</div><ul class="evlist">${d.lessons_learned.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`);
+  if (d.could_differ) rows.push(`<div class="dsub">What could change the read</div><div class="gbody">${esc(d.could_differ)}</div>`);
+  if (d.outlook) rows.push(`<div class="dsub">Outlook</div><div class="gbody">${esc(d.outlook)}</div>`);
   if (d.thesis) rows.push(`<div class="gbody">${esc(d.thesis)}</div>`);
   const ev = evidenceHtml(d.evidence, f.sources);
   if (ev) rows.push(`<div class="dsub">Evidence</div>${ev}`);
@@ -1873,7 +1996,12 @@ function synthesisHtml(f){
   }
   if (!rows.length) return '';
   const stamp = when ? `<span class="anwhen">as of ${esc(String(when))}</span>` : '';
-  return `<div class="dsec">Desk view ${stamp}</div><div class="anbox">${rows.join('')}${srcHtml(f.sources)}</div>`;
+  const structured = forensicAnalysisHtml(d.forensic_analysis, (ref) => {
+    const value = typeof ref === 'string' ? ref : ref?.value;
+    if (!value) return null;
+    return (Array.isArray(f.sources) ? f.sources : []).find((source) => source?.url === value || source?.id === value) || (String(value).startsWith('https://') ? { url: value, title: 'source' } : null);
+  }, 'This chain has a cited dossier, but its cross-category causal contract is pending review.');
+  return `<div class="dsec">Desk view ${stamp}</div><div class="anbox">${rows.join('')}${srcHtml(f.sources)}</div>${structured}`;
 }
 
 // The remaining research dimensions, rendered generically: the desk keeps adding
@@ -2606,6 +2734,10 @@ document.getElementById('midview').addEventListener('keydown', (e) => {
 function mktUrl(c){
   const p = c.profile || {};
   if (p.marketplace_url) return p.marketplace_url;
+  // Platform dossiers are not individual collection slugs. A generated
+  // marketplace route would be invented research, so expose only an explicitly
+  // cited URL for them.
+  if (String(c.category || '').includes('platform')) return null;
   const chain = (c.chain||'').toLowerCase();
   if (chain === 'ethereum') return `https://opensea.io/collection/${encodeURIComponent(c.slug)}`;
   if (chain === 'solana') return `https://magiceden.io/marketplace/${encodeURIComponent(c.slug)}`;
@@ -2625,6 +2757,12 @@ function nftLifecycleMetricLabel(profile) {
   if (profile.secondary_volume_usd != null) return '2nd vol';
   if (profile.mint_raise_usd != null) return 'mint raise';
   return 'metric';
+}
+function nftSupplyText(supply) {
+  if (supply == null || supply === '') return '';
+  return typeof supply === 'number' && Number.isFinite(supply)
+    ? `${Intl.NumberFormat('en').format(supply)} supply`
+    : String(supply);
 }
 function renderNft(data){
   const el = document.getElementById('nftview');
@@ -2680,7 +2818,7 @@ function renderNft(data){
     const body = open ? `<div class="gexp">
       ${c.risk?riskBanner(c.risk):''}
       ${mkt?`<div class="gfield"><span class="gfl">Collection</span> <a href="${esc(safeUrl(mkt))}" target="_blank" rel="noopener noreferrer">View on marketplace ↗</a></div>`:''}
-      <div class="gfield"><span class="gfl">Minted</span> ${esc(p.launched||'—')}${p.supply?` · ${Intl.NumberFormat('en').format(p.supply)} supply`:''}</div>
+      <div class="gfield"><span class="gfl">Minted</span> ${esc(p.launched||'—')}${nftSupplyText(p.supply) ? ` · ${esc(nftSupplyText(p.supply))}` : ''}</div>
       <div class="gfield"><span class="gfl">Mint→2nd</span> raised ${p.mint_raise_usd?fmtUsd(p.mint_raise_usd):'—'} → secondary ${p.secondary_volume_usd?fmtUsd(p.secondary_volume_usd):'—'}</div>
       <div class="gfield"><span class="gfl">Floor</span> now ${p.floor_current!=null?p.floor_current+' ':'—'}${p.floor_ath?`(ATH ${p.floor_ath})`:''}</div>
       <div class="gfield"><span class="gfl">Royalties</span> ${esc(p.royalties_enforced||'—')}${p.royalties_earned_usd?` · earned ${fmtUsd(p.royalties_earned_usd)}`:''}</div>
@@ -4051,7 +4189,8 @@ function applyRoute(){
     state.tracesExpanded = decodeURIComponent(rest); // renderTraces opens it
     switchView('traces', false);
   } else if (seg === 'collection' && rest) {
-    switchView('nft-analysis', false); // lands on NFT analysis; server OG describes the collection
+    state.nftExpanded = decodeURIComponent(rest);
+    switchView('nft-analysis', false);
   } else if (KNOWN_VIEWS.includes(seg)) {
     switchView(seg, false);
   } else {
@@ -4064,7 +4203,9 @@ function pushEntity(kind, id){ const path = `/${kind}/${encodeURIComponent(id)}`
 
 load();
 applyRoute();
+loadForensicsRefreshStatus();
 setInterval(load, 30000);
+setInterval(loadForensicsRefreshStatus, 6 * 60 * 60 * 1000);
 // real-time refresh of whichever live-data tab is open (research tabs are static, skip them)
 const LIVE_REFRESH = { stables: loadStables, 'nft-analysis': loadNft, news: loadNews, markets: loadMarkets, power: loadPower };
 setInterval(() => {

@@ -41,6 +41,8 @@ describe('Forensics analysis navigation', () => {
     expect(html).toContain('value="dossier"');
     expect(html).toContain('Dossier coverage');
     expect(html).toContain('Open chain dossier →');
+    expect(html).toContain("coverage: 'Legacy postmortem'");
+    expect(html).toContain('structural dossiers');
   });
 });
 
@@ -73,6 +75,15 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('lifecycle evidence');
     expect(html).toContain('next review');
     expect(html).toContain("String(row.metricUnit || '').toLowerCase()");
+  });
+
+  it('uses a visible evidence-gated causal-analysis contract instead of treating summary prose as proof', () => {
+    expect(html).toContain('function forensicAnalysisHtml(contract, resolveRef');
+    expect(html).toContain('Why this outcome');
+    expect(html).toContain('Strategic choices');
+    expect(html).toContain('What could have been different');
+    expect(html).toContain('Material unknowns');
+    expect(html).toContain('structured causal analysis has not passed the publication gate yet');
   });
 });
 
@@ -128,6 +139,22 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('Cohort evidence map');
     expect(html).toContain('metric scope, gaps, and review date');
   });
+
+  it('renders the stored casino causal fields rather than hiding them behind the API', () => {
+    expect(html).toContain("['Success / failure hypotheses', synthesis.success_failure_hypotheses]");
+    expect(html).toContain("['Counterfactual', synthesis.counterfactual]");
+    expect(html).toContain("['Chain dependence', synthesis.chain_dependence]");
+  });
+});
+
+describe('six-hour forensic review surface', () => {
+  it('shows the review cadence and links the visible status to the public API', () => {
+    expect(html).toContain('function loadForensicsRefreshStatus()');
+    expect(html).toContain("fetch('/api/forensics-refresh-status')");
+    expect(html).toContain('Six-hour review scan:');
+    expect(html).toContain('human promotion required');
+    expect(html).toContain('Open review status →');
+  });
 });
 
 describe('NFT and Ordinals Analysis data surface', () => {
@@ -143,8 +170,20 @@ describe('NFT and Ordinals Analysis data surface', () => {
 
   it('shows collapsed citation and coverage metadata before expansion', () => {
     expect(html).toContain('field-cited');
+    expect(html).toContain('Review freshness');
+    expect(html).toContain('90d policy');
     expect(html).toContain('legacy/collection-cited');
     expect(html).toContain("srcHtml(sourceArray(c.sources).slice(0, 3), 'Cited sources: ')");
     expect(html).toContain('lifecycle case stud');
+  });
+
+  it('does not invent a marketplace route or coerce descriptive platform supply into NaN', () => {
+    expect(html).toContain("String(c.category || '').includes('platform')");
+    expect(html).toContain('function nftSupplyText(supply)');
+  });
+
+  it('opens a curated NFT dossier when a collection deep link is visited', () => {
+    expect(html).toContain("state.nftExpanded = decodeURIComponent(rest);");
+    expect(html).toContain("switchView('nft-analysis', false);");
   });
 });

@@ -781,8 +781,28 @@ function factJson(value, fallback) {
   try { return JSON.parse(value); } catch (e) { return fallback; }
 }
 
+function reviewDateAfter(date, days) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date || '')) return null;
+  const result = new Date(`${date}T00:00:00.000Z`);
+  result.setUTCDate(result.getUTCDate() + days);
+  return result.toISOString().slice(0, 10);
+}
+
+function chainDossierFreshness(meta, referenceDate = new Date().toISOString().slice(0, 10)) {
+  const lastReviewed = /^\d{4}-\d{2}-\d{2}$/.test(meta?.last_reviewed || '') ? meta.last_reviewed : null;
+  const explicitNextReview = /^\d{4}-\d{2}-\d{2}$/.test(meta?.next_review_at || '') ? meta.next_review_at : null;
+  const nextReviewAt = explicitNextReview || reviewDateAfter(lastReviewed, 90);
+  if (!lastReviewed || !nextReviewAt) return { status: 'unknown', lastReviewedAt: lastReviewed, nextReviewAt: null, derived: false };
+  return {
+    status: referenceDate > nextReviewAt ? 'review_due' : 'current',
+    lastReviewedAt: lastReviewed,
+    nextReviewAt,
+    derived: !explicitNextReview,
+  };
+}
+
 function newDossierCoverage() {
-  return { dimensions: new Set(), sources: new Map(), dataCompletenessPct: null };
+  return { dimensions: new Set(), sources: new Map(), dataCompletenessPct: null, freshness: null };
 }
 
 function addFactCoverage(coverage, row) {
@@ -791,6 +811,7 @@ function addFactCoverage(coverage, row) {
     if (Number.isFinite(meta.data_completeness_pct)) {
       coverage.dataCompletenessPct = meta.data_completeness_pct;
     }
+    coverage.freshness = chainDossierFreshness(meta);
     return;
   }
   if (!CHAIN_DOSSIER_DIMENSIONS.includes(row.dimension)) return;
@@ -807,6 +828,7 @@ function publicDossierCoverage(coverage) {
     dataCompletenessPct: coverage.dataCompletenessPct,
     citationCount: coverage.sources.size,
     sources: [...coverage.sources.values()].slice(0, 3),
+    freshness: coverage.freshness,
   };
 }
 
@@ -1404,6 +1426,42 @@ app.get('/api/chain/:name', wrap(async (req, res) => {
     // said "Rank #4" — two indexed URLs, contradictory claims, same chain.
     let row = cache.data.chains.find((c) => norm(c.name) === norm(target));
     if (!row) { row = await resolveTailChain(target); } // beyond the top-50 → lite index
+    // Curated dead/mid studies are a real part of Blockchain Analysis even when
+    // they have no live-board or lite-index row. Without this fallback their
+    // "Open chain dossier" link returned 404 and hid the existing postmortem.
+    let curatedLifecycle = null;
+    let curatedAnalysis = null;
+    if (!row) {
+      try {
+        const curated = await dbQuery(
+          `SELECT chain, launched, current_tvl AS tvl, why AS take, outlook, profile, sources, updated_at, 'dead' AS lifecycle
+             FROM dead_chains WHERE lower(chain) = ?
+           UNION ALL
+           SELECT chain, launched, tvl, why_stuck AS take, outlook, profile, sources, updated_at, 'mid' AS lifecycle
+             FROM mid_chains WHERE lower(chain) = ?
+           LIMIT 1`,
+          [target, target],
+        );
+        if (curated[0]) {
+          const legacy = curated[0];
+          curatedLifecycle = legacy.lifecycle;
+          row = {
+            name: legacy.chain, tvl: legacy.tvl ?? 0, launched: legacy.launched || null,
+            volume24h: null, fees24h: null, stables: null, rank: null,
+          };
+          let profile = null;
+          try { profile = legacy.profile ? JSON.parse(legacy.profile) : null; } catch (e) { /* malformed legacy profile stays withheld */ }
+          curatedAnalysis = {
+            take: legacy.take || null,
+            sentiment: legacy.lifecycle,
+            trend: legacy.lifecycle === 'dead' ? 'Curated postmortem; not a live-board rank.' : 'Curated mid-chain analysis; not a live-board rank.',
+            sources: legacy.sources || null,
+            profile,
+            updated_at: legacy.updated_at || null,
+          };
+        }
+      } catch (e) { /* legacy tables may not yet exist during a partial migration */ }
+    }
     if (!row) return res.status(404).json({ error: 'unknown chain' });
 
     // Board membership decides several things below; compute it once.
@@ -1440,6 +1498,7 @@ app.get('/api/chain/:name', wrap(async (req, res) => {
       const rows = await dbQuery(`SELECT take, sentiment, trend, sources, profile, updated_at FROM chain_analysis WHERE chain = ? LIMIT 1`, [row.name]);
       if (rows[0]) { analysis = rows[0]; try { analysis.profile = rows[0].profile ? JSON.parse(rows[0].profile) : null; } catch (e) { analysis.profile = null; } }
     } catch (e) { /* analysis is best-effort */ }
+    if (!analysis && curatedAnalysis) analysis = curatedAnalysis;
 
     const nkey = norm(row.name);
     const topNfts = CHAIN_NFTS[nkey] || null;
@@ -1455,7 +1514,7 @@ app.get('/api/chain/:name', wrap(async (req, res) => {
 
     const tags = resolveTags(row, facts, onBoard);
 
-    res.json({ chain: row, scoreMeta: SCORE_META, description: DESCRIPTIONS[nkey] || null, dataQuality, topProjects, topNfts, topTokens, analysis, risk, facts, tags, tagVocab: tagVocab() });
+    res.json({ chain: row, curatedLifecycle, scoreMeta: SCORE_META, description: DESCRIPTIONS[nkey] || null, dataQuality, topProjects, topNfts, topTokens, analysis, risk, facts, tags, tagVocab: tagVocab() });
   } catch (e) {
     res.status(502).json({ error: e.message });
   }
@@ -2324,6 +2383,24 @@ app.get('/api/casino/:case_id', wrap(async (req, res) => {
     });
   } catch {
     res.status(502).json({ error: 'casino dossier unavailable' });
+  }
+}));
+
+// Public evidence-governance status. This is intentionally separate from the
+// live-market snapshot: a successful cron run only identifies dossiers due for
+// review. It never promotes, rewrites, or "freshens" an analyst conclusion.
+app.get('/api/forensics-refresh-status', wrap(async (req, res) => {
+  try {
+    const rows = await dbQuery(
+      `SELECT run_id, scheduled_at, completed_at, status,
+              scanned_nft, due_nft, scanned_exchange, due_exchange,
+              scanned_casino, due_casino, scanned_chain, due_chain, notes
+         FROM forensic_refresh_runs
+        ORDER BY run_id DESC LIMIT 1`,
+    );
+    res.json({ refresh: rows[0] || null, cadence: 'six_hours', promotion_policy: 'human_review_required' });
+  } catch {
+    res.json({ refresh: null, cadence: 'six_hours', promotion_policy: 'human_review_required', error: 'forensic refresh status unavailable' });
   }
 }));
 
@@ -3379,6 +3456,46 @@ async function pruneOldSnapshots(env, now) {
   } catch (e) { console.error('[pruneOldSnapshots] failed:', e.message); }
 }
 
+async function forensicReviewCounts(env, today) {
+  const count = async (sql, bind = []) => {
+    const statement = bind.length ? env.DB.prepare(sql).bind(...bind) : env.DB.prepare(sql);
+    const { results } = await statement.all();
+    return Number(results?.[0]?.count || 0);
+  };
+  const [scannedNft, dueNft, scannedExchange, dueExchange, scannedCasino, dueCasino, scannedChain, dueChain] = await Promise.all([
+    count(`SELECT COUNT(*) AS count FROM nft_collections WHERE json_extract(profile, '$.citation_schema') = 'field-v1'`),
+    count(`SELECT COUNT(*) AS count FROM nft_collections WHERE json_extract(profile, '$.citation_schema') = 'field-v1' AND json_extract(profile, '$.evidence_policy.next_review_at') <= ?`, [today]),
+    count(`SELECT COUNT(*) AS count FROM exchange_case_features`),
+    count(`SELECT COUNT(*) AS count FROM exchange_case_features WHERE next_review_at <= ?`, [today]),
+    count(`SELECT COUNT(*) AS count FROM casino_cases WHERE quality_passed = 1`),
+    count(`SELECT COUNT(*) AS count FROM casino_cases WHERE quality_passed = 1 AND last_reviewed <= date(?, '-90 days')`, [today]),
+    count(`SELECT COUNT(*) AS count FROM chain_facts WHERE dimension = '_meta'`),
+    count(`SELECT COUNT(*) AS count FROM chain_facts WHERE dimension = '_meta' AND json_extract(data, '$.last_reviewed') <= date(?, '-90 days')`, [today]),
+  ]);
+  return { scannedNft, dueNft, scannedExchange, dueExchange, scannedCasino, dueCasino, scannedChain, dueChain };
+}
+
+async function recordForensicReviewHeartbeat(env, now) {
+  if (!env.DB) return;
+  const scheduledAt = new Date(now).toISOString();
+  const today = scheduledAt.slice(0, 10);
+  try {
+    const counts = await forensicReviewCounts(env, today);
+    await env.DB.prepare(
+      `INSERT INTO forensic_refresh_runs
+        (scheduled_at, completed_at, status, scanned_nft, due_nft, scanned_exchange, due_exchange, scanned_casino, due_casino, scanned_chain, due_chain, notes)
+       VALUES (?, ?, 'completed', ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ).bind(
+      scheduledAt, new Date().toISOString(), counts.scannedNft, counts.dueNft,
+      counts.scannedExchange, counts.dueExchange, counts.scannedCasino, counts.dueCasino,
+      counts.scannedChain, counts.dueChain,
+      'Automated six-hour review-debt scan. Lifecycle, legal, narrative, and causal changes require human promotion.',
+    ).run();
+  } catch (error) {
+    console.error('[forensics-review] heartbeat failed:', error?.message || error);
+  }
+}
+
 async function handleScheduled(event, env, ctx) {
   if (!ENV.__init) { Object.assign(ENV, env || {}); ENV.__init = true; }
   // Read the prior blob BEFORE overwriting it, so peer hysteresis has last tick's
@@ -3430,6 +3547,9 @@ async function handleScheduled(event, env, ctx) {
     if (tick % 288 === 0) await refreshSanctioned(env);
     // NFT collection universe changes slowly — re-index ~weekly (1-in-2016)
     if (tick % 2016 === 0) await refreshNftCatalog(env);
+    // Research freshness is different from live market data: record every six
+    // hours what requires human review, never mutate a forensic verdict here.
+    if (tick % 72 === 0) await recordForensicReviewHeartbeat(env, ts);
   }
 
   // No board this tick: leave the cache and D1 holding the last good one.
