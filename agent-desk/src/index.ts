@@ -108,6 +108,24 @@ const SYSTEM_PROMPT = buildResearchSystemPrompt(CHAINDUMP_BASE);
 
 // ---- one desk run -----------------------------------------------------------
 
+type DeskMessage = Awaited<ReturnType<typeof query>> extends AsyncIterable<infer T>
+  ? T
+  : never;
+
+function queuedProposalCount(message: DeskMessage): number {
+  if (message.type !== "assistant") return 0;
+  return message.message.content.filter((block) => (
+    block.type === "tool_use" && block.name === "mcp__desk__queue_proposal"
+  )).length;
+}
+
+function logDeskResult(message: DeskMessage, proposals: number): void {
+  if (message.type !== "result") return;
+  const cost = "total_cost_usd" in message ? message.total_cost_usd : undefined;
+  const costText = cost == null ? "" : ` — $${cost.toFixed(4)}`;
+  console.error(`[desk] run finished: ${proposals} proposal(s) queued to ${QUEUE_DIR}${costText}`);
+}
+
 async function runDesk(task: string): Promise<number> {
   let proposals = 0;
   const run = query({
@@ -141,14 +159,10 @@ async function runDesk(task: string): Promise<number> {
 
   for await (const message of run) {
     if (message.type === "result") {
-      const cost = "total_cost_usd" in message ? message.total_cost_usd : undefined;
-      console.error(`[desk] run finished: ${proposals} proposal(s) queued to ${QUEUE_DIR}` + (cost != null ? ` — $${cost.toFixed(4)}` : ""));
+      logDeskResult(message, proposals);
       continue;
     }
-    if (message.type !== "assistant") continue;
-    for (const block of message.message.content) {
-      if (block.type === "tool_use" && block.name === "mcp__desk__queue_proposal") proposals += 1;
-    }
+    proposals += queuedProposalCount(message);
   }
   if (proposalPersistenceFailures > 0) {
     throw new Error(`${proposalPersistenceFailures} proposal queue write(s) failed; no ephemeral fallback was accepted`);

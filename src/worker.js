@@ -1288,6 +1288,14 @@ app.post('/api/desk/propose', wrap(async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 }));
 
+function researchRunStateMatches(existing, status, effectiveProposals) {
+  if (!existing || existing.status !== status) return false;
+  if (Number(existing.proposals_queued) !== effectiveProposals) return false;
+  return status === 'running'
+    ? existing.completed_at == null
+    : Boolean(existing.completed_at);
+}
+
 // Proposal-agent execution status uses the proposal credential because it
 // conveys no review or publication authority. The server owns timestamps and
 // permits only one running -> terminal transition, so retries cannot rewrite
@@ -1331,13 +1339,9 @@ app.post('/api/desk/run-status', wrap(async (req, res) => {
         `SELECT status, completed_at, proposals_queued
            FROM research_desk_runs WHERE run_id = ?`,
       ).bind(runId).first();
-      const sameTerminalState = status === 'running'
-        ? existing?.completed_at == null
-        : Boolean(existing?.completed_at);
-      const isIdempotent = existing?.status === status
-        && Number(existing?.proposals_queued) === effectiveProposals
-        && sameTerminalState;
-      if (!isIdempotent) return res.status(409).json({ error: 'invalid run transition' });
+      if (!researchRunStateMatches(existing, status, effectiveProposals)) {
+        return res.status(409).json({ error: 'invalid run transition' });
+      }
     } else if (changes !== 1) {
       return res.status(409).json({ error: 'invalid run transition' });
     }
