@@ -141,8 +141,8 @@ describe('Web3 Casino Analysis data surface', () => {
   });
 
   it('renders the stored casino causal fields rather than hiding them behind the API', () => {
-    expect(html).toContain("['Why this outcome', synthesis.success_failure_hypotheses]");
-    expect(html).toContain("['What could have been different', synthesis.counterfactual]");
+    expect(html).toContain("['Success / failure hypotheses', synthesis.success_failure_hypotheses]");
+    expect(html).toContain("['Counterfactual', synthesis.counterfactual]");
     expect(html).toContain("['Chain dependence', synthesis.chain_dependence]");
   });
 });
