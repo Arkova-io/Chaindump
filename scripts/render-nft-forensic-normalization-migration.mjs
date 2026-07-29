@@ -54,7 +54,7 @@ function sourceResolver(dossier) {
   return Object.fromEntries(dossier.sources.map((source) => [source.id, source]));
 }
 
-function validateDocument(document) {
+function validateDocumentHeader(document) {
   if (document?.schema !== 'chaindump-nft-field-v1') {
     throw new Error('Unexpected NFT forensic normalization schema');
   }
@@ -73,71 +73,92 @@ function validateDocument(document) {
   if (JSON.stringify(slugs) !== JSON.stringify(EXPECTED_SLUGS)) {
     throw new Error(`Unexpected NFT forensic cohort: ${slugs.join(', ')}`);
   }
+}
 
-  for (const dossier of document.dossiers) {
-    const sourceIds = new Set();
-    for (const source of dossier.sources || []) {
-      if (!source?.id || sourceIds.has(source.id)) {
-        throw new Error(`${dossier.slug}: missing or duplicate source id ${source?.id || '(missing)'}`);
-      }
-      sourceIds.add(source.id);
-      if (!source.title || !source.url?.startsWith('https://')) {
-        throw new Error(`${dossier.slug}: source ${source.id} needs title and HTTPS URL`);
-      }
-      if (!ISO_DAY.test(source.checked_at || '')) {
-        throw new Error(`${dossier.slug}: source ${source.id} needs checked_at`);
-      }
-      if (source.access_state && !LIMITED_ACCESS_STATES.has(source.access_state)) {
-        throw new Error(`${dossier.slug}: source ${source.id} has unknown access_state`);
-      }
-      if (source.access_state && !source.verification_note) {
-        throw new Error(`${dossier.slug}: source ${source.id} needs a verification_note`);
-      }
-    }
+function validateSource(source, dossierSlug, sourceIds) {
+  if (!source?.id || sourceIds.has(source.id)) {
+    throw new Error(`${dossierSlug}: missing or duplicate source id ${source?.id || '(missing)'}`);
+  }
+  if (!source.title || !source.url?.startsWith('https://')) {
+    throw new Error(`${dossierSlug}: source ${source.id} needs title and HTTPS URL`);
+  }
+  if (!ISO_DAY.test(source.checked_at || '')) {
+    throw new Error(`${dossierSlug}: source ${source.id} needs checked_at`);
+  }
+  if (source.access_state && !LIMITED_ACCESS_STATES.has(source.access_state)) {
+    throw new Error(`${dossierSlug}: source ${source.id} has unknown access_state`);
+  }
+  if (source.access_state && !source.verification_note) {
+    throw new Error(`${dossierSlug}: source ${source.id} needs a verification_note`);
+  }
+}
 
-    const profile = dossier.profile || {};
-    for (const key of ['token_model', 'chain_dependence', 'forensic_analysis']) {
-      if (!profile[key]) throw new Error(`${dossier.slug}: missing ${key}`);
-    }
-    for (const id of collectSourceIds(profile)) {
-      if (!sourceIds.has(typeof id === 'string' ? id : id?.id)) {
-        throw new Error(`${dossier.slug}: unresolved source reference ${JSON.stringify(id)}`);
-      }
-    }
+function validateSourceRegistry(dossier) {
+  const sourceIds = new Set();
+  for (const source of dossier.sources || []) {
+    validateSource(source, dossier.slug, sourceIds);
+    sourceIds.add(source.id);
+  }
+  return sourceIds;
+}
 
-    const analysis = profile.forensic_analysis;
-    if (!analysis.outcome?.scope) throw new Error(`${dossier.slug}: outcome scope is required`);
-    if (!analysis.why?.summary?.includes('Observed:') || !analysis.why.summary.includes('Inference')) {
-      throw new Error(`${dossier.slug}: why must separate observed facts from inference`);
-    }
-    if (!analysis.why.basis) throw new Error(`${dossier.slug}: why basis is required`);
-    if ((analysis.strategic_choices || []).length < 3) {
-      throw new Error(`${dossier.slug}: needs at least three strategic choices`);
-    }
-    if (!analysis.strategic_choices.every((choice) => (
-      choice.decision && choice.intended_mechanism && choice.consequence
-    ))) {
-      throw new Error(`${dossier.slug}: every choice needs decision, mechanism, and consequence`);
-    }
-    if (!analysis.counterfactual?.limits) {
-      throw new Error(`${dossier.slug}: counterfactual limits are required`);
-    }
-    if ((analysis.watch || []).length < 2) {
-      throw new Error(`${dossier.slug}: needs at least two watch conditions`);
-    }
-    if ((analysis.unknowns || []).length < 3) {
-      throw new Error(`${dossier.slug}: needs at least three explicit unknowns`);
-    }
-
-    const forensic = validateForensicAnalysis(analysis, { resolver: sourceResolver(dossier) });
-    if (forensic.errors.length || forensic.warnings.length || forensic.withheld_sections.length) {
-      throw new Error(`${dossier.slug} forensic analysis: ${[
-        ...forensic.errors,
-        ...forensic.warnings,
-        ...forensic.withheld_sections,
-      ].join('; ')}`);
+function validateProfileShape(dossier, sourceIds) {
+  const profile = dossier.profile || {};
+  for (const key of ['token_model', 'chain_dependence', 'forensic_analysis']) {
+    if (!profile[key]) throw new Error(`${dossier.slug}: missing ${key}`);
+  }
+  for (const id of collectSourceIds(profile)) {
+    if (!sourceIds.has(typeof id === 'string' ? id : id?.id)) {
+      throw new Error(`${dossier.slug}: unresolved source reference ${JSON.stringify(id)}`);
     }
   }
+  return profile;
+}
+
+function validateAnalysisDepth(dossier, analysis) {
+  if (!analysis.outcome?.scope) throw new Error(`${dossier.slug}: outcome scope is required`);
+  if (!analysis.why?.summary?.includes('Observed:') || !analysis.why.summary.includes('Inference')) {
+    throw new Error(`${dossier.slug}: why must separate observed facts from inference`);
+  }
+  if (!analysis.why.basis) throw new Error(`${dossier.slug}: why basis is required`);
+  if ((analysis.strategic_choices || []).length < 3) {
+    throw new Error(`${dossier.slug}: needs at least three strategic choices`);
+  }
+  const completeChoices = analysis.strategic_choices.every((choice) => (
+    choice.decision && choice.intended_mechanism && choice.consequence
+  ));
+  if (!completeChoices) {
+    throw new Error(`${dossier.slug}: every choice needs decision, mechanism, and consequence`);
+  }
+  if (!analysis.counterfactual?.limits) {
+    throw new Error(`${dossier.slug}: counterfactual limits are required`);
+  }
+  if ((analysis.watch || []).length < 2) {
+    throw new Error(`${dossier.slug}: needs at least two watch conditions`);
+  }
+  if ((analysis.unknowns || []).length < 3) {
+    throw new Error(`${dossier.slug}: needs at least three explicit unknowns`);
+  }
+}
+
+function validateDossier(dossier) {
+  const sourceIds = validateSourceRegistry(dossier);
+  const profile = validateProfileShape(dossier, sourceIds);
+  const analysis = profile.forensic_analysis;
+  validateAnalysisDepth(dossier, analysis);
+  const forensic = validateForensicAnalysis(analysis, { resolver: sourceResolver(dossier) });
+  if (forensic.errors.length || forensic.warnings.length || forensic.withheld_sections.length) {
+    throw new Error(`${dossier.slug} forensic analysis: ${[
+      ...forensic.errors,
+      ...forensic.warnings,
+      ...forensic.withheld_sections,
+    ].join('; ')}`);
+  }
+}
+
+function validateDocument(document) {
+  validateDocumentHeader(document);
+  for (const dossier of document.dossiers) validateDossier(dossier);
 }
 
 export function renderNftForensicNormalizationMigration(document) {
