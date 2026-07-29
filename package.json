@@ -14,7 +14,8 @@
     "check:publication-depth": "node scripts/check-publication-depth.mjs",
     "check:migrations": "node scripts/check-migrations.mjs",
     "check:worker": "node --input-type=module --check < src/worker.js",
-    "check:nft-dossiers": "node scripts/check-nft-dossiers.mjs"
+    "check:nft-dossiers": "node scripts/check-nft-dossiers.mjs",
+    "check:casino-evidence-depth-wave-b": "node scripts/check-casino-evidence-depth-wave-b.mjs"
   },
   "dependencies": {
     "express": "^5.2.1",
