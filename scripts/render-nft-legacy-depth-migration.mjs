@@ -16,6 +16,36 @@ function sourceResolver(dossier) {
   return Object.fromEntries(dossier.sources.map((source) => [source.id, source]));
 }
 
+function validateDossier(dossier) {
+  const fieldCitations = validateFieldCitedNft(dossier.profile_patch, dossier.sources);
+  if (!fieldCitations.valid) {
+    throw new Error(`${dossier.slug} citations: ${fieldCitations.errors.join('; ')}`);
+  }
+  const freshness = validateForensicFreshness({
+    status: dossier.status,
+    profile: dossier.profile_patch,
+    sources: dossier.sources,
+  });
+  if (!freshness.valid) {
+    throw new Error(`${dossier.slug} freshness: ${freshness.errors.join('; ')}`);
+  }
+  for (const source of dossier.sources) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(source.checked_at || '')) {
+      throw new Error(`${dossier.slug} source ${source.id} needs checked_at`);
+    }
+  }
+  const forensic = validateForensicAnalysis(dossier.profile_patch.forensic_analysis, {
+    resolver: sourceResolver(dossier),
+  });
+  if (forensic.errors.length || forensic.warnings.length || forensic.withheld_sections.length) {
+    throw new Error(`${dossier.slug} forensic analysis: ${[
+      ...forensic.errors,
+      ...forensic.warnings,
+      ...forensic.withheld_sections,
+    ].join('; ')}`);
+  }
+}
+
 function validateDocument(document) {
   if (document?.schema !== 'chaindump-nft-patch-v1') {
     throw new Error('Unexpected NFT patch schema');
@@ -29,33 +59,7 @@ function validateDocument(document) {
       throw new Error(`Missing or duplicate dossier slug: ${dossier.slug || '(missing)'}`);
     }
     slugs.add(dossier.slug);
-    const fieldCitations = validateFieldCitedNft(dossier.profile_patch, dossier.sources);
-    if (!fieldCitations.valid) {
-      throw new Error(`${dossier.slug} citations: ${fieldCitations.errors.join('; ')}`);
-    }
-    const freshness = validateForensicFreshness({
-      status: dossier.status,
-      profile: dossier.profile_patch,
-      sources: dossier.sources,
-    });
-    if (!freshness.valid) {
-      throw new Error(`${dossier.slug} freshness: ${freshness.errors.join('; ')}`);
-    }
-    for (const source of dossier.sources) {
-      if (!/^\d{4}-\d{2}-\d{2}$/.test(source.checked_at || '')) {
-        throw new Error(`${dossier.slug} source ${source.id} needs checked_at`);
-      }
-    }
-    const forensic = validateForensicAnalysis(dossier.profile_patch.forensic_analysis, {
-      resolver: sourceResolver(dossier),
-    });
-    if (forensic.errors.length || forensic.warnings.length || forensic.withheld_sections.length) {
-      throw new Error(`${dossier.slug} forensic analysis: ${[
-        ...forensic.errors,
-        ...forensic.warnings,
-        ...forensic.withheld_sections,
-      ].join('; ')}`);
-    }
+    validateDossier(dossier);
   }
 }
 
