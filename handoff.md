@@ -8,6 +8,9 @@
 - Root worktree before this handoff edit had only unrelated untracked files: `.claude/` and `archer-agent-config.md`.
 - Production health endpoint currently reports revision `5f7748b6e1f295d72626c9286c9e3ab20ebd79a9`, which is the merged/deployed casino cohort from PR #45.
 - Goal remains active: deliver Chaindump as a production-verified, citation-backed forensic research product across blockchain, DEX/CEX, Web3 casino, NFT/Ordinals, and future Web3 verticals.
+- Current UI parity PR: `https://github.com/carson-see/Chaindump/pull/48` from branch `codex/forensics-ui-uniformity`.
+- PR #48 adds a visible `Live mid watch` panel to Stuck/Mid chains so the page uses the same live chip/sparkline pattern as Dead & Dying, matches profiled Stuck/Mid chains to the live board, and lets users click or keyboard-open the matching dossier.
+- PR #48 validation: local `npm test`, `npm run lint`, `npm run check:worker`, and `npm run check:migrations` passed; browser verification confirmed the Stuck/Mid live panel renders and watch-chip click opens the dossier; GitHub CI, SonarCloud, and CodeRabbit statuses are green. GitHub reports `mergeable: MERGEABLE`, `mergeStateStatus: CLEAN`, and `isDraft: false`.
 
 ## Original user objective
 
