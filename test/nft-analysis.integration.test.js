@@ -44,6 +44,11 @@ describe('NFT / Ordinals citation-ready surface', () => {
     expect(body.citationCoverage).toEqual({ fieldCitedCount: 1, legacyCount: 0 });
     expect(body.collections[0].citation).toEqual({ fieldCited: true, errors: [] });
     expect(body.collections[0].profile.evidence[0].source_ids).toEqual(['operator']);
+    expect(body.analysis).toMatchObject({
+      schema: 'nft-lifecycle-cohort-v1',
+      cohort: { total: 1 },
+      coverage: { field_cited: 1 },
+    });
   });
 
   it('has a visible field-level evidence renderer and an honest legacy coverage caveat', () => {
@@ -60,5 +65,8 @@ describe('NFT / Ordinals citation-ready surface', () => {
     expect(html).toContain('Field-level evidence');
     expect(html).toContain('Evidence coverage:');
     expect(html).toContain('legacy dossier');
+    expect(html).toContain('function nftAggregateAnalysisHtml');
+    expect(html).toContain('Aggregate evidence:');
+    expect(html).not.toContain('Across 16 notable collections');
   });
 });
