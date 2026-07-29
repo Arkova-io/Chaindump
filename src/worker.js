@@ -10,6 +10,7 @@ import { annotateDataQuality, assessChainDataQuality } from './lib/data-quality.
 import {
   promotionPlan,
   proposalNeedsHumanReview,
+  REVIEW_REQUIRED_PROPOSAL_DATASETS,
   validateResearchCandidateProposal,
 } from './lib/desk-promote.js';
 import {
@@ -1270,6 +1271,15 @@ function deskAuth(req, res, scope) {
   return true;
 }
 
+const DESK_PROPOSAL_UPSERT_SQL = `INSERT INTO desk_proposals
+  (dataset, slug, title, summary, payload, sources, names_individuals, confidence, needs_human_review, status, queued_at)
+ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', datetime('now'))
+ ON CONFLICT(dataset, slug) DO UPDATE SET title=excluded.title, summary=excluded.summary, payload=excluded.payload,
+   sources=excluded.sources, names_individuals=excluded.names_individuals, confidence=excluded.confidence,
+   needs_human_review=excluded.needs_human_review, status='pending', queued_at=datetime('now')`;
+const DESK_PROPOSAL_LOCKED_UPSERT_SQL = `${DESK_PROPOSAL_UPSERT_SQL}
+ WHERE desk_proposals.status = 'pending'`;
+
 app.post('/api/desk/propose', wrap(async (req, res) => {
   if (!deskAuth(req, res, 'proposal')) return;
   if (!ENV.DB) return res.status(503).json({ error: 'no DB' });
@@ -1292,15 +1302,16 @@ app.post('/api/desk/propose', wrap(async (req, res) => {
   // confidence, and every complex forensic evidence-candidate dataset. The
   // latter is enforced here even if a stale/compromised client stamps false.
   const needsReview = proposalNeedsHumanReview(dataset, namesIndividuals, confidence) ? 1 : 0;
+  // Dated analysis-candidate keys are immutable after human review so an agent
+  // cannot erase that decision. Legacy row datasets intentionally reuse stable
+  // entity slugs for later corrections and therefore retain their prior upsert
+  // behavior across review cycles.
+  const proposalUpsertSql = REVIEW_REQUIRED_PROPOSAL_DATASETS.includes(dataset)
+    ? DESK_PROPOSAL_LOCKED_UPSERT_SQL
+    : DESK_PROPOSAL_UPSERT_SQL;
   try {
-    const result = await ENV.DB.prepare(
-      `INSERT INTO desk_proposals (dataset, slug, title, summary, payload, sources, names_individuals, confidence, needs_human_review, status, queued_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', datetime('now'))
-       ON CONFLICT(dataset, slug) DO UPDATE SET title=excluded.title, summary=excluded.summary, payload=excluded.payload,
-         sources=excluded.sources, names_individuals=excluded.names_individuals, confidence=excluded.confidence,
-         needs_human_review=excluded.needs_human_review, status='pending', queued_at=datetime('now')
-       WHERE desk_proposals.status = 'pending'`
-    ).bind(dataset, slug, b.title || null, b.summary || null, JSON.stringify(b.payload || {}), JSON.stringify(b.sources || []),
+    const result = await ENV.DB.prepare(proposalUpsertSql)
+      .bind(dataset, slug, b.title || null, b.summary || null, JSON.stringify(b.payload || {}), JSON.stringify(b.sources || []),
       namesIndividuals, Number.isFinite(confidence) ? confidence : null, needsReview).run();
     const changes = Number(result?.meta?.changes ?? result?.changes ?? 0);
     if (changes !== 1) {

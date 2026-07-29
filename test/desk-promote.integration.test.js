@@ -52,6 +52,7 @@ function makeDeskDB({ proposal, chainRow } = {}) {
             changes = 0;
           } else {
             proposals.set(key, {
+              ...(existing || {}),
               dataset, slug, title, summary, payload, sources,
               names_individuals: namesIndividuals,
               confidence,
@@ -320,6 +321,39 @@ describe('/api/desk/promote', () => {
     expect(db.proposals.get(`nft_lifecycle_candidate:${slug}`)).toMatchObject({
       status: 'promoted',
       reviewer_note: 'Reconciled by an analyst.',
+    });
+  });
+
+  it('allows a later legacy proposal to reuse a reviewed stable entity slug', async () => {
+    const db = makeDeskDB({
+      proposal: {
+        dataset: 'scam_intel',
+        slug: 'stable-entity',
+        title: 'Earlier reviewed claim',
+        status: 'promoted',
+        reviewer_note: 'Earlier review remains auditable.',
+      },
+    });
+    const worker = await freshWorker();
+    const response = await worker.fetch(new Request('http://localhost/api/desk/propose', {
+      method: 'POST',
+      headers: { authorization: 'Bearer proposal-secret', 'content-type': 'application/json' },
+      body: JSON.stringify({
+        dataset: 'scam_intel',
+        slug: 'stable-entity',
+        title: 'Later evidence for the same entity',
+        summary: 'A stable entity slug must remain reusable for a later review cycle.',
+        confidence: 0.9,
+        payload: { status: 'updated-candidate' },
+        sources: [{ title: 'Later source', url: 'https://example.com/later' }],
+      }),
+    }), { DB: db, DESK_PROPOSAL_TOKEN: 'proposal-secret' }, ctx());
+
+    expect(response.status).toBe(200);
+    expect(db.proposals.get('scam_intel:stable-entity')).toMatchObject({
+      status: 'pending',
+      title: 'Later evidence for the same entity',
+      reviewer_note: 'Earlier review remains auditable.',
     });
   });
 });
