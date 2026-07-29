@@ -1276,7 +1276,8 @@ const DESK_PROPOSAL_UPSERT_SQL = `INSERT INTO desk_proposals
  VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', datetime('now'))
  ON CONFLICT(dataset, slug) DO UPDATE SET title=excluded.title, summary=excluded.summary, payload=excluded.payload,
    sources=excluded.sources, names_individuals=excluded.names_individuals, confidence=excluded.confidence,
-   needs_human_review=excluded.needs_human_review, status='pending', queued_at=datetime('now')`;
+   needs_human_review=excluded.needs_human_review, status='pending', queued_at=datetime('now'),
+   reviewer_note=NULL, reviewed_at=NULL`;
 const DESK_PROPOSAL_LOCKED_UPSERT_SQL = `${DESK_PROPOSAL_UPSERT_SQL}
  WHERE desk_proposals.status = 'pending'`;
 

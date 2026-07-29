@@ -58,6 +58,9 @@ function makeDeskDB({ proposal, chainRow } = {}) {
               confidence,
               needs_human_review: needsHumanReview,
               status: 'pending',
+              ...(this.sql.includes('reviewer_note=NULL')
+                ? { reviewer_note: null, reviewed_at: null }
+                : {}),
             });
           }
         } else if (/INTO dead_chains/.test(this.sql)) {
@@ -288,6 +291,7 @@ describe('/api/desk/promote', () => {
         slug,
         status: 'promoted',
         reviewer_note: 'Reconciled by an analyst.',
+        reviewed_at: '2026-07-29T17:00:00.000Z',
       },
     });
     const worker = await freshWorker();
@@ -321,6 +325,7 @@ describe('/api/desk/promote', () => {
     expect(db.proposals.get(`nft_lifecycle_candidate:${slug}`)).toMatchObject({
       status: 'promoted',
       reviewer_note: 'Reconciled by an analyst.',
+      reviewed_at: '2026-07-29T17:00:00.000Z',
     });
   });
 
@@ -332,6 +337,7 @@ describe('/api/desk/promote', () => {
         title: 'Earlier reviewed claim',
         status: 'promoted',
         reviewer_note: 'Earlier review remains auditable.',
+        reviewed_at: '2026-07-29T18:00:00.000Z',
       },
     });
     const worker = await freshWorker();
@@ -353,7 +359,8 @@ describe('/api/desk/promote', () => {
     expect(db.proposals.get('scam_intel:stable-entity')).toMatchObject({
       status: 'pending',
       title: 'Later evidence for the same entity',
-      reviewer_note: 'Earlier review remains auditable.',
+      reviewer_note: null,
+      reviewed_at: null,
     });
   });
 });
