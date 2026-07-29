@@ -13,6 +13,13 @@ function normalizedMigrationName() {
   return matches[0];
 }
 
+function cexSuccessWaveMigrationName() {
+  const names = readdirSync(new URL('../migrations/', import.meta.url));
+  const matches = names.filter((name) => name.endsWith('_exchange_success_cex_wave1.sql'));
+  if (matches.length !== 1) throw new Error(`expected one CEX success-wave migration, found ${matches.length}`);
+  return matches[0];
+}
+
 function migratedDb() {
   const db = new DatabaseSync(':memory:');
   db.exec('CREATE TABLE graveyard_meta (k TEXT PRIMARY KEY, v TEXT, updated_at TEXT)');
@@ -20,11 +27,12 @@ function migratedDb() {
   db.exec(sql('0012_exchange_seed.sql'));
   db.exec(sql('0013_exchange_success_seed.sql'));
   db.exec(sql(normalizedMigrationName()));
+  db.exec(sql(cexSuccessWaveMigrationName()));
   return db;
 }
 
 describe('exchange_case_features migration', () => {
-  it('normalizes all 29 DEX and all 18 CEX lifecycle cases without overwriting them', () => {
+  it('normalizes all DEX and CEX lifecycle cases, including five successful CEX controls', () => {
     const db = migratedDb();
     const normalized = db.prepare(
       `SELECT kind, lifecycle, COUNT(*) AS count
@@ -35,13 +43,14 @@ describe('exchange_case_features migration', () => {
     expect(normalized).toEqual([
       { kind: 'cex', lifecycle: 'dead', count: 14 },
       { kind: 'cex', lifecycle: 'mid', count: 4 },
+      { kind: 'cex', lifecycle: 'successful', count: 5 },
       { kind: 'dex', lifecycle: 'dead', count: 13 },
       { kind: 'dex', lifecycle: 'mid', count: 6 },
       { kind: 'dex', lifecycle: 'successful', count: 10 },
     ]);
     expect(db.prepare(`SELECT COUNT(*) AS count FROM dead_exchanges`).get().count).toBe(34);
     expect(db.prepare(`SELECT COUNT(*) AS count FROM mid_exchanges`).get().count).toBe(10);
-    expect(db.prepare(`SELECT COUNT(*) AS count FROM successful_exchanges`).get().count).toBe(10);
+    expect(db.prepare(`SELECT COUNT(*) AS count FROM successful_exchanges`).get().count).toBe(15);
     db.close();
   });
 
@@ -171,17 +180,48 @@ describe('exchange_case_features migration', () => {
     const uncited = db.prepare(
       `SELECT COUNT(*) AS count
        FROM exchange_case_features
-       WHERE token_status = 'launched' AND token_source_url IS NULL`,
+       WHERE kind = 'dex' AND token_status = 'launched' AND token_source_url IS NULL`,
     ).get().count;
     const wronglyVerified = db.prepare(
       `SELECT COUNT(*) AS count
        FROM exchange_case_features
-       WHERE quality_label = 'verified'
-          OR freshness_status != 'unknown'
-          OR lifecycle_evidence_date IS NOT NULL`,
+       WHERE kind = 'dex'
+         AND (quality_label = 'verified'
+         OR freshness_status != 'unknown'
+         OR lifecycle_evidence_date IS NOT NULL)`,
     ).get().count;
     expect(uncited).toBeGreaterThan(0);
     expect(wronglyVerified).toBe(0);
+    db.close();
+  });
+
+  it('keeps successful CEX controls field-cited and refuses cross-metric pooling', () => {
+    const db = migratedDb();
+    const rows = db.prepare(
+      `SELECT c.slug, c.metric_type, c.metric, c.sources, f.evidence, f.token_status, f.quality_label,
+              f.freshness_status, f.quality_issues
+       FROM successful_exchanges c
+       JOIN exchange_case_features f ON f.kind = c.type AND f.slug = c.slug AND f.lifecycle = 'successful'
+       WHERE c.type = 'cex'
+       ORDER BY c.slug`,
+    ).all();
+    expect(rows.map((row) => row.slug)).toEqual(['binance', 'bitstamp', 'bybit', 'coinbase', 'kraken']);
+    expect(new Set(rows.map((row) => row.metric_type)).size).toBe(5);
+    for (const row of rows) {
+      const sources = JSON.parse(row.sources);
+      const metricIndexes = JSON.parse(row.evidence).metric_source_indexes;
+      expect(metricIndexes).toHaveLength(1);
+      expect(sources[metricIndexes[0]].url).toMatch(/^https:\/\//);
+      expect(['verified', 'partial']).toContain(row.quality_label);
+    }
+    expect(rows.find((row) => row.slug === 'binance').token_status).toBe('launched');
+    expect(rows.find((row) => row.slug === 'binance').quality_label).toBe('verified');
+    expect(rows.filter((row) => row.slug !== 'binance').every((row) => row.token_status === 'not_identified')).toBe(true);
+    for (const slug of ['bybit', 'bitstamp']) {
+      const row = rows.find((candidate) => candidate.slug === slug);
+      expect(row.freshness_status).toBe('review_due');
+      expect(JSON.parse(row.quality_issues)).toContain('historical_lifecycle_evidence');
+    }
     db.close();
   });
 });
