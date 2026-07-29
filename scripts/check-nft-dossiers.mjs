@@ -12,12 +12,14 @@ const relation = relative(rootDir, file);
 if (relation === '..' || relation.startsWith(`..${sep}`)) throw new Error('Dossier input must stay within the repository');
 const document = JSON.parse(readFileSync(file, 'utf8'));
 const errors = [];
-if (document.schema !== 'chaindump-nft-field-v1') errors.push('Unexpected dossier schema');
+const supportedSchemas = new Set(['chaindump-nft-field-v1', 'chaindump-nft-patch-v1']);
+if (!supportedSchemas.has(document.schema)) errors.push('Unexpected dossier schema');
 if (!Array.isArray(document.dossiers) || !document.dossiers.length) errors.push('No dossiers');
 for (const dossier of document.dossiers || []) {
-  const result = validateFieldCitedNft(dossier.profile, dossier.sources);
+  const profile = dossier.profile || dossier.profile_patch;
+  const result = validateFieldCitedNft(profile, dossier.sources);
   if (!result.valid) errors.push(`${dossier.slug}: ${result.errors.join('; ')}`);
-  const freshness = validateForensicFreshness(dossier);
+  const freshness = validateForensicFreshness({ ...dossier, profile });
   if (!freshness.valid) errors.push(`${dossier.slug} freshness: ${freshness.errors.join('; ')}`);
   for (const source of dossier.sources || []) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(source.checked_at || '')) errors.push(`${dossier.slug}: source ${source.id} needs checked_at`);
