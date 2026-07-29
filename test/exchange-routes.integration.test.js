@@ -46,10 +46,14 @@ function makeDB({ dead = [], mid = [], cexCache = null } = {}) {
           if (sql.includes('FROM dead_exchanges')) {
             const kind = this.binds[0];
             const rows = dead.filter((r) => r.kind === kind && (!sql.includes(`venue_type = 'exchange'`) || r.venue_type === 'exchange'));
-            // Mirror the route's real ORDER BY peak_metric DESC so a dropped
-            // ORDER BY clause actually fails the "sorts descending" test below
-            // (D1 sorts server-side; this stub has to do it explicitly).
-            if (sql.includes('ORDER BY peak_metric DESC')) rows.sort((a, b) => (b.peak_metric || 0) - (a.peak_metric || 0));
+            // Mirror the route's real ORDER BY so a dropped ORDER BY clause
+            // actually fails the "sorts descending" test below (D1 sorts
+            // server-side; this stub has to do it explicitly). CEX rows have
+            // no peak_metric (only a loss/exposure current_metric), so the
+            // route falls back to COALESCE(peak_metric, current_metric).
+            if (sql.includes('ORDER BY COALESCE(peak_metric, current_metric) DESC')) {
+              rows.sort((a, b) => (b.peak_metric ?? b.current_metric ?? 0) - (a.peak_metric ?? a.current_metric ?? 0));
+            }
             return { results: rows };
           }
           if (sql.includes('FROM mid_exchanges')) {
