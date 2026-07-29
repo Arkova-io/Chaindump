@@ -11,7 +11,7 @@
       "forensic_analysis": {
         "version": "forensic-analysis-v1",
         "outcome": {
-          "label": "declining",
+          "label": "successful",
           "summary": "Curve remains an operating, multichain exchange specialized in stable and correlated assets, but the research snapshot records about 2.03 billion dollars of 30-day DEX volume against a much higher historical peak. This classification distinguishes continued product relevance from Curve's reduced activity relative to its own history.",
           "confidence": "high",
           "as_of": "2026-07-29",

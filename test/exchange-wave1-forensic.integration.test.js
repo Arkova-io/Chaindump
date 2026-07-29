@@ -70,7 +70,7 @@ describe('exchange forensic Wave-1', () => {
     expect(document.cases.map(({ forensic_analysis: analysis }) => (
       analysis.outcome.label
     ))).toEqual([
-      'declining',
+      'successful',
       'successful',
       'dead',
       'dead',
