@@ -17,7 +17,13 @@ describe('SonarCloud Automatic Analysis bootstrap', () => {
   });
 
   it('keeps copy/paste exclusions separate from issue analysis', () => {
-    expect(config).toMatch(/^sonar\.cpd\.exclusions=/m);
+    const cpdExclusions = config.match(/^sonar\.cpd\.exclusions=(.+)$/m)?.[1];
+
+    expect(cpdExclusions).toBeTruthy();
+    expect(cpdExclusions?.split(',')).toContain(
+      'scripts/render-chain-causal-completion-migration.mjs',
+    );
+    expect(cpdExclusions).not.toContain('*');
     expect(config).not.toContain(
       'sonar.exclusions=migrations/0062_chain_causal_completion.sql,',
     );
