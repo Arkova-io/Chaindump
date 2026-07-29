@@ -854,7 +854,12 @@ async function loadBlockchainAnalysis() {
       fetch('/api/chains').then((r) => { if (!r.ok) throw new Error('live chains'); return r.json(); }),
       fetch('/api/mid').then((r) => { if (!r.ok) throw new Error('mid chains'); return r.json(); }),
       fetch('/api/dead').then((r) => { if (!r.ok) throw new Error('dead chains'); return r.json(); }),
-      fetch('/api/chain-research-coverage').then((r) => { if (!r.ok) throw new Error('research coverage'); return r.json(); }),
+      fetch('/api/chain-research-coverage').then((r) => {
+        if (!r.ok) {
+          throw new Error('research coverage');
+        }
+        return r.json();
+      }),
     ]);
     state.blockchainAnalysisData = normalizeBlockchainAnalysis(live, mid, dead, coverage.chains || {});
     renderBlockchainAnalysis();

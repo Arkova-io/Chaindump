@@ -1286,7 +1286,7 @@ function researchCitationUrls(raw) {
   }
   if (!Array.isArray(sources)) return [];
   return sources
-    .map((source) => typeof source === 'string' ? source : source && source.url)
+    .map((source) => typeof source === 'string' ? source : source?.url)
     .filter((url) => typeof url === 'string' && /^https?:\/\//i.test(url));
 }
 
@@ -1309,15 +1309,17 @@ app.get('/api/chain-research-coverage', wrap(async (req, res) => {
       coverage[key] = entry;
     }
   } catch (e) {
-    // The index still works without D1 research data; it will label rows as
-    // unstructured rather than inventing dossier coverage.
+    // The index still works without D1 research data; publish an explicit empty
+    // contract rather than pretending this was a successful coverage read.
+    res.json({ dimensions: CHAIN_DOSSIER_DIMENSIONS, chains: {}, unavailable: true });
+    return;
   }
   const chains = {};
   for (const entry of Object.values(coverage)) {
     const summary = {
       dimensions: entry.dimensions.size,
       citations: entry.citations.size,
-      citationUrls: [...entry.citations].sort(),
+      citationUrls: [...entry.citations].sort((a, b) => a.localeCompare(b)),
     };
     // Include both the canonical key and the desk spelling. The SPA can use a
     // cheap punctuation-insensitive lookup without reimplementing chainkit's
