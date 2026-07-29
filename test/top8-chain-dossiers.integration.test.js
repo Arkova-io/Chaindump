@@ -21,7 +21,7 @@ let rows;
 let migration;
 
 beforeAll(() => {
-  migration = readFileSync(new URL('../migrations/0014_top8_chain_dossiers.sql', import.meta.url), 'utf8');
+  migration = readFileSync(new URL('../migrations/0015_top8_chain_dossiers.sql', import.meta.url), 'utf8');
   const db = new DatabaseSync(':memory:');
   db.exec(`
     CREATE TABLE chain_facts (

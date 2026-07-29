@@ -1,4 +1,4 @@
--- 0014_top8_chain_dossiers.sql
+-- 0015_top8_chain_dossiers.sql
 -- Comparable schema-v1 facts for the eight highest-ranked incomplete chains in
 -- the Chaindump activity-board snapshot dated 2026-07-29. The _meta rows keep
 -- structural dimension coverage separate from field-level data completeness.
