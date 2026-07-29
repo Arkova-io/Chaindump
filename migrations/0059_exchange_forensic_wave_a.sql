@@ -187,8 +187,9 @@ VALUES (
 -- batched-payload-end
 
 -- SpiritSwap was rescued before its planned 2023 closure. Move it to the mid
--- lifecycle before applying the shared profile/source patch.
-INSERT OR REPLACE INTO mid_exchanges
+-- lifecycle before applying the shared profile/source patch. The anti-join
+-- makes replay preserve identity fields on an existing mid-lifecycle row.
+INSERT INTO mid_exchanges
   (slug, kind, venue_type, name, launched, metric_label, metric_type, metric_unit,
    metric, verdict, why_stuck, outlook, profile, sources, updated_at)
 SELECT
@@ -210,7 +211,14 @@ SELECT
 FROM exchange_forensic_wave_a_0059 AS patch
 LEFT JOIN dead_exchanges AS prior
   ON prior.kind = patch.kind AND prior.slug = patch.slug
-WHERE patch.slug = 'spiritswap' AND patch.kind = 'dex';
+WHERE patch.slug = 'spiritswap'
+  AND patch.kind = 'dex'
+  AND NOT EXISTS (
+    SELECT 1
+    FROM mid_exchanges AS existing
+    WHERE existing.kind = patch.kind
+      AND existing.slug = patch.slug
+  );
 
 DELETE FROM dead_exchanges WHERE kind = 'dex' AND slug = 'spiritswap';
 UPDATE exchange_case_features

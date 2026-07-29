@@ -161,7 +161,7 @@ describe('exchange forensic wave A migration 0059', () => {
     `).get()).toEqual(untouchedBefore);
     expect(database.prepare(`
       SELECT COUNT(*) AS count
-      FROM sqlite_temp_master
+      FROM sqlite_master
       WHERE type = 'table' AND name = 'exchange_forensic_wave_a_0059'
     `).get().count).toBe(0);
   });
@@ -175,10 +175,15 @@ describe('exchange forensic wave A migration 0059', () => {
       WHERE kind = 'dex' AND slug = 'spiritswap'
     `).get().count).toBe(0);
     const spirit = database.prepare(`
-      SELECT verdict, why_stuck, profile
+      SELECT venue_type, name, launched, verdict, why_stuck, profile
       FROM mid_exchanges
       WHERE kind = 'dex' AND slug = 'spiritswap'
     `).get();
+    expect(spirit).toMatchObject({
+      venue_type: 'exchange',
+      name: 'SpiritSwap',
+      launched: '2021-04',
+    });
     expect(spirit.verdict).toBe('declining');
     expect(spirit.why_stuck).toContain('rescue');
     expect(JSON.parse(spirit.profile)).toMatchObject({
@@ -203,6 +208,44 @@ describe('exchange forensic wave A migration 0059', () => {
       forensic_analysis: { outcome: { label: 'failed' } },
     });
     expect(JSON.parse(deus.profile).scope).toContain('not every current DEUS-branded');
+  });
+
+  it('preserves SpiritSwap identity fields when migration 0059 is replayed', () => {
+    database = new DatabaseSync(':memory:');
+    applyMigrations(database, 58);
+    database.prepare(`
+      UPDATE dead_exchanges
+      SET venue_type = ?, name = ?, launched = ?
+      WHERE kind = 'dex' AND slug = 'spiritswap'
+    `).run('forensic-amm', 'SpiritSwap canonical', '2021-04-20');
+
+    database.exec(migration);
+    expect(database.prepare(`
+      SELECT venue_type, name, launched
+      FROM mid_exchanges
+      WHERE kind = 'dex' AND slug = 'spiritswap'
+    `).get()).toEqual({
+      venue_type: 'forensic-amm',
+      name: 'SpiritSwap canonical',
+      launched: '2021-04-20',
+    });
+
+    database.prepare(`
+      UPDATE mid_exchanges
+      SET venue_type = ?, name = ?, launched = ?
+      WHERE kind = 'dex' AND slug = 'spiritswap'
+    `).run('corrected-amm', 'SpiritSwap corrected', '2021-04-30');
+    database.exec(migration);
+
+    expect(database.prepare(`
+      SELECT venue_type, name, launched
+      FROM mid_exchanges
+      WHERE kind = 'dex' AND slug = 'spiritswap'
+    `).get()).toEqual({
+      venue_type: 'corrected-amm',
+      name: 'SpiritSwap corrected',
+      launched: '2021-04-30',
+    });
   });
 
   it('keeps BitMEX and BitMart as announced wind-downs and removes unsupported causes', () => {

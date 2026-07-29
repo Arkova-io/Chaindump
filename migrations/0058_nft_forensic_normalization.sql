@@ -189,20 +189,43 @@ SET status = (
       ))
     ),
     sources = COALESCE((
-      SELECT json_group_array(json(json_patch(
-        json_set(existing_source.value, '$.checked_at', '2026-07-29'),
-        COALESCE((
-          SELECT manifest_source.value
-          FROM nft_forensic_normalization_0058 AS source_patch,
-               json_each(source_patch.sources) AS manifest_source
-          WHERE source_patch.slug = nft_collections.slug
-            AND json_extract(manifest_source.value, '$.id')
-              = json_extract(existing_source.value, '$.id')
-        ), '{}')
-      )))
-      FROM json_each(
-        COALESCE(NULLIF(nft_collections.sources, ''), '[]')
-      ) AS existing_source
+      SELECT json_group_array(json(merged_source.value))
+      FROM (
+        SELECT
+          json_patch(
+            existing_source.value,
+            COALESCE((
+              SELECT manifest_source.value
+              FROM nft_forensic_normalization_0058 AS source_patch,
+                   json_each(source_patch.sources) AS manifest_source
+              WHERE source_patch.slug = nft_collections.slug
+                AND json_extract(manifest_source.value, '$.id')
+                  = json_extract(existing_source.value, '$.id')
+            ), '{}')
+          ) AS value,
+          CAST(existing_source.key AS INTEGER) AS source_order
+        FROM json_each(
+          COALESCE(NULLIF(nft_collections.sources, ''), '[]')
+        ) AS existing_source
+
+        UNION ALL
+
+        SELECT
+          manifest_source.value AS value,
+          1000000 + CAST(manifest_source.key AS INTEGER) AS source_order
+        FROM nft_forensic_normalization_0058 AS source_patch,
+             json_each(source_patch.sources) AS manifest_source
+        WHERE source_patch.slug = nft_collections.slug
+          AND NOT EXISTS (
+            SELECT 1
+            FROM json_each(
+              COALESCE(NULLIF(nft_collections.sources, ''), '[]')
+            ) AS existing_source
+            WHERE json_extract(existing_source.value, '$.id')
+              = json_extract(manifest_source.value, '$.id')
+          )
+        ORDER BY source_order
+      ) AS merged_source
     ), '[]'),
     updated_at = '2026-07-29'
 WHERE EXISTS (

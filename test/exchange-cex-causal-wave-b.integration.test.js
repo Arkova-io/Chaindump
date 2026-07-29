@@ -189,7 +189,7 @@ describe('exchange CEX causal Wave B migration 0060', () => {
       .not.toContain('ainvest.com');
     expect(database.prepare(`
       SELECT COUNT(*) AS count
-      FROM sqlite_temp_master
+      FROM sqlite_master
       WHERE type = 'table' AND name = 'exchange_cex_causal_wave_b_0060'
     `).get().count).toBe(0);
   });
