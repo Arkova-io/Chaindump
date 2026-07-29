@@ -1,0 +1,166 @@
+{
+  "schema_version": "1.0",
+  "audited_at": "2026-07-29T15:41:32Z",
+  "universe": {
+    "name": "Chaindump live top-50 activity board",
+    "snapshot_updated_at": "2026-07-29T15:35:40.123Z",
+    "source_url": "https://chaindump.xyz/api/chains",
+    "methodology_url": "https://github.com/carson-see/Chaindump/blob/main/docs/ranking-methodology.md",
+    "ranking_formula": "50% 24h spot DEX volume + 30% TVL + 20% 24h fees; inputs are log-scaled, normalized, and the composite is min-max rescaled to 1-100 across the board",
+    "ranking_caveat": "The activity index measures relative current activity, not chain health, quality, decentralization, or investment merit. Board membership is point-in-time and can change.",
+    "feed_quality": {
+      "rows": 50,
+      "volume_source_per_chain": 50,
+      "fees_source_per_chain": 50,
+      "spot_volume_excludes": [
+        "derivatives",
+        "prediction markets",
+        "NFT marketplaces",
+        "aggregators"
+      ]
+    }
+  },
+  "coverage_contract": {
+    "schema_url": "https://github.com/carson-see/Chaindump/blob/main/docs/chain-dossier-schema.md",
+    "required_dimensions": [
+      "identity",
+      "token",
+      "capital",
+      "onchain",
+      "team",
+      "narrative",
+      "risk",
+      "synthesis"
+    ],
+    "levels": {
+      "comparable": "All eight required chain_facts dimensions are present. This is a structural coverage check, not a claim that every field or source is correct.",
+      "partial": "Some production research exists, but one or more required dimensions are missing.",
+      "absent": "No required chain_facts dimension, legacy chain_analysis row, or slim dead/mid profile was visible in production at audit time."
+    },
+    "not_counted_as_dimensions": [
+      "links",
+      "legacy chain_analysis prose",
+      "dead_chains/mid_chains slim profile"
+    ]
+  },
+  "summary": {
+    "chains": 50,
+    "comparable": 1,
+    "partial": 47,
+    "absent": 2,
+    "legacy_chain_analysis": 43,
+    "slim_curated_profiles": 14,
+    "facts_synthesis_present": 35,
+    "any_production_research": 48,
+    "dimension_count_distribution": {
+      "8": 1,
+      "7": 2,
+      "4": 1,
+      "3": 9,
+      "2": 23,
+      "1": 12,
+      "0": 2
+    },
+    "plain_language": "Forty-eight chains have at least some production research, but only Osmosis has all eight comparable dossier dimensions. XDC and Fluent have no production research under this audit definition."
+  },
+  "first_batch": {
+    "selection": "Ranks 1-8, to complete the highest-activity chains first while preserving Robinhood Chain as a near-complete new-launch edge case.",
+    "chains": [
+      "Ethereum",
+      "Solana",
+      "BSC",
+      "Base",
+      "Robinhood Chain",
+      "Hyperliquid L1",
+      "Polygon",
+      "Arbitrum"
+    ],
+    "missing_dimension_blocks": 41,
+    "primary_source_starting_points": {
+      "Ethereum": [
+        "https://blog.ethereum.org/2015/07/30/ethereum-launches",
+        "https://ethereum.org/en/roadmap/"
+      ],
+      "Solana": [
+        "https://solana.com/en/news/june-newsletter",
+        "https://solana.com/news/solana-foundation-transparency-reports"
+      ],
+      "BSC": [
+        "https://www.bnbchain.org/en/blog/binance-smart-chain-mainnet-launch",
+        "https://www.bnbchain.org/en/blog/bsc-is-now-bnb-chain-the-infrastructure-for-the-metafi-universe"
+      ],
+      "Base": [
+        "https://blog.base.org/its-onchain-summer-%F0%9F%9F%A1-and-base-is-open-for-bridging",
+        "https://blog.base.org/base-mainnet-is-open-for-builders"
+      ],
+      "Robinhood Chain": [
+        "https://robinhood.com/us/en/newsroom/robinhood-accelerates-global-expansion-robinhood-chain-mainnet-stock-tokens-agentic-trading/",
+        "https://robinhood.com/us/en/support/articles/robinhood-chain-mainnet/"
+      ],
+      "Hyperliquid L1": [
+        "https://hyperliquid.gitbook.io/hyperliquid-docs",
+        "https://hyperliquid.gitbook.io/hyperliquid-docs/hyperliquid-improvement-proposals-hips/hip-1-native-token-standard"
+      ],
+      "Polygon": [
+        "https://polygon.technology/blog/save-the-date-matic-pol-migration-coming-september-4th-everything-you-need-to-know",
+        "https://polygon.technology/blog/polygon-2-0-milestone-pol-contracts-are-live-on-ethereum-mainnet"
+      ],
+      "Arbitrum": [
+        "https://offchain.medium.com/mainnet-for-everyone-27ce0f67c85e",
+        "https://blog.arbitrum.foundation/arbitrum-the-next-phase-of-decentralization/"
+      ]
+    }
+  },
+  "chains": [
+    {"rank":1,"chain":"Ethereum","activity_index":100,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Ethereum"},
+    {"rank":2,"chain":"Solana","activity_index":96,"present":["identity","capital","synthesis"],"missing":["token","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Solana"},
+    {"rank":3,"chain":"BSC","activity_index":89,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/BSC"},
+    {"rank":4,"chain":"Base","activity_index":87,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Base"},
+    {"rank":5,"chain":"Robinhood Chain","activity_index":77,"present":["identity","token","capital","onchain","narrative","risk","synthesis"],"missing":["team"],"legacy_analysis":false,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Robinhood%20Chain"},
+    {"rank":6,"chain":"Hyperliquid L1","activity_index":77,"present":["identity","capital","synthesis"],"missing":["token","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Hyperliquid%20L1"},
+    {"rank":7,"chain":"Polygon","activity_index":73,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Polygon"},
+    {"rank":8,"chain":"Arbitrum","activity_index":71,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Arbitrum"},
+    {"rank":9,"chain":"Tron","activity_index":65,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Tron"},
+    {"rank":10,"chain":"Monad","activity_index":57,"present":["identity","capital","synthesis"],"missing":["token","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Monad"},
+    {"rank":11,"chain":"Avalanche","activity_index":57,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Avalanche"},
+    {"rank":12,"chain":"Near","activity_index":53,"present":["identity","capital","synthesis"],"missing":["token","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":true,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Near"},
+    {"rank":13,"chain":"OP Mainnet","activity_index":52,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/OP%20Mainnet"},
+    {"rank":14,"chain":"Sui","activity_index":50,"present":["identity","capital","synthesis"],"missing":["token","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":true,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Sui"},
+    {"rank":15,"chain":"Mantle","activity_index":42,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Mantle"},
+    {"rank":16,"chain":"Plasma","activity_index":42,"present":["identity","capital","synthesis"],"missing":["token","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Plasma"},
+    {"rank":17,"chain":"TON","activity_index":42,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/TON"},
+    {"rank":18,"chain":"Aptos","activity_index":40,"present":["identity","capital","synthesis"],"missing":["token","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":true,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Aptos"},
+    {"rank":19,"chain":"Starknet","activity_index":38,"present":["identity","capital","synthesis"],"missing":["token","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":true,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Starknet"},
+    {"rank":20,"chain":"Ink","activity_index":36,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Ink"},
+    {"rank":21,"chain":"Chainflip","activity_index":35,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Chainflip"},
+    {"rank":22,"chain":"Sei","activity_index":34,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":true,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Sei"},
+    {"rank":23,"chain":"Unichain","activity_index":33,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Unichain"},
+    {"rank":24,"chain":"X Layer","activity_index":32,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/X%20Layer"},
+    {"rank":25,"chain":"Gnosis","activity_index":31,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Gnosis"},
+    {"rank":26,"chain":"Stellar","activity_index":28,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Stellar"},
+    {"rank":27,"chain":"Flare","activity_index":28,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Flare"},
+    {"rank":28,"chain":"Bitcoin","activity_index":26,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Bitcoin"},
+    {"rank":29,"chain":"Cronos","activity_index":24,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Cronos"},
+    {"rank":30,"chain":"Provenance","activity_index":24,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Provenance"},
+    {"rank":31,"chain":"Cardano","activity_index":23,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":true,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Cardano"},
+    {"rank":32,"chain":"Stacks","activity_index":22,"present":["identity"],"missing":["token","capital","onchain","team","narrative","risk","synthesis"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Stacks"},
+    {"rank":33,"chain":"Linea","activity_index":22,"present":["identity"],"missing":["token","capital","onchain","team","narrative","risk","synthesis"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Linea"},
+    {"rank":34,"chain":"Dexalot","activity_index":22,"present":["identity"],"missing":["token","capital","onchain","team","narrative","risk","synthesis"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Dexalot"},
+    {"rank":35,"chain":"Thorchain","activity_index":21,"present":["identity","synthesis"],"missing":["token","capital","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Thorchain"},
+    {"rank":36,"chain":"Katana","activity_index":21,"present":["identity"],"missing":["token","capital","onchain","team","narrative","risk","synthesis"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Katana"},
+    {"rank":37,"chain":"Abstract","activity_index":21,"present":["identity"],"missing":["token","capital","onchain","team","narrative","risk","synthesis"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Abstract"},
+    {"rank":38,"chain":"MegaETH","activity_index":20,"present":["identity","token","capital","synthesis"],"missing":["onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/MegaETH"},
+    {"rank":39,"chain":"Rootstock","activity_index":18,"present":["identity"],"missing":["token","capital","onchain","team","narrative","risk","synthesis"],"legacy_analysis":false,"slim_profile":true,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Rootstock"},
+    {"rank":40,"chain":"Berachain","activity_index":14,"present":["identity","capital","synthesis"],"missing":["token","onchain","team","narrative","risk"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Berachain"},
+    {"rank":41,"chain":"Osmosis","activity_index":12,"present":["identity","token","capital","onchain","team","narrative","risk","synthesis"],"missing":[],"legacy_analysis":false,"slim_profile":true,"level":"comparable","detail_url":"https://chaindump.xyz/api/chain/Osmosis"},
+    {"rank":42,"chain":"Celo","activity_index":11,"present":["identity"],"missing":["token","capital","onchain","team","narrative","risk","synthesis"],"legacy_analysis":true,"slim_profile":true,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Celo"},
+    {"rank":43,"chain":"Hedera","activity_index":11,"present":["identity"],"missing":["token","capital","onchain","team","narrative","risk","synthesis"],"legacy_analysis":true,"slim_profile":true,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Hedera"},
+    {"rank":44,"chain":"Sonic","activity_index":10,"present":["identity"],"missing":["token","capital","onchain","team","narrative","risk","synthesis"],"legacy_analysis":true,"slim_profile":true,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Sonic"},
+    {"rank":45,"chain":"Gala","activity_index":9,"present":["identity"],"missing":["token","capital","onchain","team","narrative","risk","synthesis"],"legacy_analysis":true,"slim_profile":false,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Gala"},
+    {"rank":46,"chain":"XDC","activity_index":6,"present":[],"missing":["identity","token","capital","onchain","team","narrative","risk","synthesis"],"legacy_analysis":false,"slim_profile":false,"level":"absent","detail_url":"https://chaindump.xyz/api/chain/XDC"},
+    {"rank":47,"chain":"Fluent","activity_index":5,"present":[],"missing":["identity","token","capital","onchain","team","narrative","risk","synthesis"],"legacy_analysis":false,"slim_profile":false,"level":"absent","detail_url":"https://chaindump.xyz/api/chain/Fluent"},
+    {"rank":48,"chain":"Algorand","activity_index":5,"present":["identity"],"missing":["token","capital","onchain","team","narrative","risk","synthesis"],"legacy_analysis":false,"slim_profile":true,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Algorand"},
+    {"rank":49,"chain":"ICP","activity_index":2,"present":["identity"],"missing":["token","capital","onchain","team","narrative","risk","synthesis"],"legacy_analysis":true,"slim_profile":true,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/ICP"},
+    {"rank":50,"chain":"Soneium","activity_index":1,"present":["identity","token","capital","onchain","team","narrative","risk"],"missing":["synthesis"],"legacy_analysis":false,"slim_profile":true,"level":"partial","detail_url":"https://chaindump.xyz/api/chain/Soneium"}
+  ]
+}
