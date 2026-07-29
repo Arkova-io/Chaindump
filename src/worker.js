@@ -1611,7 +1611,8 @@ app.get('/api/dead-exchanges', wrap(async (req, res) => {
   try {
     const rows = await dbQuery(
       `SELECT slug, kind, venue_type, name, launched, metric_label, metric_type, metric_unit, peak_metric, current_metric, drawdown_pct, peak_date, collapse_date, why, outlook, verdict, sources, profile, updated_at
-       FROM dead_exchanges WHERE kind = ? AND venue_type = 'exchange' ORDER BY COALESCE(peak_metric, current_metric) DESC`, [kind]);
+       FROM dead_exchanges WHERE kind = ? AND venue_type = 'exchange'
+       ORDER BY CASE WHEN kind = 'cex' THEN metric_type ELSE '' END, CASE WHEN kind = 'cex' THEN metric_unit ELSE '' END, COALESCE(peak_metric, current_metric) DESC, name ASC`, [kind]);
     const exchanges = rows.map((r) => { let p = null; try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {} return { ...r, profile: p }; });
 
     const tagCounts = {}; let fraud = 0; const verdictCounts = {}; const metricGroupMap = {};
@@ -1663,7 +1664,8 @@ app.get('/api/mid-exchanges', wrap(async (req, res) => {
   try {
     const rows = await dbQuery(
       `SELECT slug, kind, venue_type, name, launched, metric_label, metric_type, metric_unit, metric, verdict, why_stuck, outlook, profile, sources, updated_at
-       FROM mid_exchanges WHERE kind = ? AND venue_type = 'exchange' ORDER BY name ASC`, [kind]);
+       FROM mid_exchanges WHERE kind = ? AND venue_type = 'exchange'
+       ORDER BY CASE WHEN kind = 'cex' THEN metric_type ELSE '' END, CASE WHEN kind = 'cex' THEN metric_unit ELSE '' END, metric DESC, name ASC`, [kind]);
     const exchanges = rows.map((r) => { let p = null; try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {} return { ...r, profile: p }; });
     const verdictCounts = {};
     const tagCounts = {};

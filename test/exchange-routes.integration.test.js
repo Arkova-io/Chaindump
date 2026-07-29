@@ -46,19 +46,31 @@ function makeDB({ dead = [], mid = [], cexCache = null } = {}) {
           if (sql.includes('FROM dead_exchanges')) {
             const kind = this.binds[0];
             const rows = dead.filter((r) => r.kind === kind && (!sql.includes(`venue_type = 'exchange'`) || r.venue_type === 'exchange'));
-            // Mirror the route's real ORDER BY so a dropped ORDER BY clause
-            // actually fails the "sorts descending" test below (D1 sorts
-            // server-side; this stub has to do it explicitly). CEX rows have
-            // no peak_metric (only a loss/exposure current_metric), so the
-            // route falls back to COALESCE(peak_metric, current_metric).
-            if (sql.includes('ORDER BY COALESCE(peak_metric, current_metric) DESC')) {
-              rows.sort((a, b) => (b.peak_metric ?? b.current_metric ?? 0) - (a.peak_metric ?? a.current_metric ?? 0));
+            // Mirror the route's real ORDER BY so a dropped or incompatible
+            // ordering clause actually fails the route-level sort tests below
+            // (D1 sorts server-side; this stub has to do it explicitly).
+            if (sql.includes('ORDER BY')) {
+              rows.sort((a, b) => (
+                (a.kind === 'cex' ? `${a.metric_type}:${a.metric_unit}` : '')
+                  .localeCompare(b.kind === 'cex' ? `${b.metric_type}:${b.metric_unit}` : '')
+                || ((b.peak_metric || b.current_metric || 0) - (a.peak_metric || a.current_metric || 0))
+                || a.name.localeCompare(b.name)
+              ));
             }
             return { results: rows };
           }
           if (sql.includes('FROM mid_exchanges')) {
             const kind = this.binds[0];
-            return { results: mid.filter((r) => r.kind === kind && (!sql.includes(`venue_type = 'exchange'`) || r.venue_type === 'exchange')) };
+            const rows = mid.filter((r) => r.kind === kind && (!sql.includes(`venue_type = 'exchange'`) || r.venue_type === 'exchange'));
+            if (sql.includes('ORDER BY')) {
+              rows.sort((a, b) => (
+                (a.kind === 'cex' ? `${a.metric_type}:${a.metric_unit}` : '')
+                  .localeCompare(b.kind === 'cex' ? `${b.metric_type}:${b.metric_unit}` : '')
+                || ((b.metric || 0) - (a.metric || 0))
+                || a.name.localeCompare(b.name)
+              ));
+            }
+            return { results: rows };
           }
           if (sql.includes('FROM graveyard_meta')) return { results: [] };
           return { results: [] };
@@ -163,6 +175,41 @@ describe('GET /api/dead-exchanges', () => {
     const res = await worker.fetch(new Request('http://localhost/api/dead-exchanges'), { DB: makeDB({ dead: [small, big] }) }, ctx());
     const body = await res.json();
     expect(body.exchanges.map((e) => e.slug)).toEqual(['big-dex', 'small-dex']);
+  });
+
+  it('keeps CEX rows grouped by comparable metric before sorting by value', async () => {
+    stubFeed();
+    const worker = await freshWorker();
+    const loss = {
+      ...DEAD_CEX,
+      slug: 'loss-cex',
+      name: 'Loss CEX',
+      peak_metric: null,
+      current_metric: 8e9,
+      metric_type: 'documented_loss',
+      metric_unit: 'usd',
+    };
+    const exposure = {
+      ...DEAD_CEX,
+      slug: 'exposure-cex',
+      name: 'Exposure CEX',
+      peak_metric: null,
+      current_metric: 2e9,
+      metric_type: 'customer_exposure',
+      metric_unit: 'usd',
+    };
+    const biggerExposure = {
+      ...DEAD_CEX,
+      slug: 'bigger-exposure-cex',
+      name: 'Bigger Exposure CEX',
+      peak_metric: null,
+      current_metric: 6e9,
+      metric_type: 'customer_exposure',
+      metric_unit: 'usd',
+    };
+    const res = await worker.fetch(new Request('http://localhost/api/dead-exchanges?kind=cex'), { DB: makeDB({ dead: [loss, exposure, biggerExposure] }) }, ctx());
+    const body = await res.json();
+    expect(body.exchanges.map((e) => e.slug)).toEqual(['bigger-exposure-cex', 'exposure-cex', 'loss-cex']);
   });
 });
 
