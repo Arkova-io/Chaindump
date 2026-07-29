@@ -1,6 +1,6 @@
 # NFT/Ordinals source-access remediation manifest — 2026-07-29
 
-Scope: the 198 NFT/Ordinals source records whose `access_state` was absent at audit start (49 dossiers). This is a remediation manifest, not a migration and not claim verification.
+Scope: the 198 NFT/Ordinals source records whose `access_state` was absent at audit start (49 dossiers). This is a remediation manifest, not a migration and not claim verification. Seven replacement/supplement sources were separately inspected and carry explicit reviewer, review-date, access, role, tier, and origin metadata; issuer-authored filings hosted by the SEC remain primary sources rather than regulator findings.
 
 Automated pass window: 2026-07-29T21:58:42Z–2026-07-29T21:59:03Z. The six dead/unverified critical rows were retried once with a 45-second timeout; classifications were unchanged.
 

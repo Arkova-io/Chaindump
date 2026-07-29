@@ -96,6 +96,13 @@ describe('NFT source-access remediation wave', () => {
     expect(document.repair_sources.every(({ source: repairSource }) => (
       repairSource.access_checked_at === '2026-07-29'
       && repairSource.last_verified_at === '2026-07-29'
+      && repairSource.resolving === true
+      && repairSource.evidence_reviewed === true
+      && repairSource.evidence_reviewer === 'codex-research-agent'
+      && repairSource.evidence_reviewed_at === '2026-07-29'
+      && repairSource.source_role === 'primary'
+      && repairSource.source_tier === 'B'
+      && Boolean(repairSource.independence_group)
       && repairSource.verification_note.includes('HTTP 200')
     ))).toBe(true);
   });
@@ -134,6 +141,12 @@ describe('NFT source-access remediation wave', () => {
         access_state: 'accessible',
         access_checked_at: '2026-07-29',
         last_verified_at: '2026-07-29',
+        resolving: true,
+        evidence_reviewed: true,
+        evidence_reviewer: 'codex-research-agent',
+        evidence_reviewed_at: '2026-07-29',
+        source_role: 'primary',
+        source_tier: 'B',
       });
       const references = collectReferences(profile(after, slug));
       expect(references, `${slug} must not publish ${oldId}`).not.toContain(oldId);

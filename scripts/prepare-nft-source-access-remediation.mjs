@@ -28,11 +28,24 @@ function workspacePath(requestedPath, label) {
   return candidate;
 }
 
+function reviewedPrimarySource(independenceGroup, source) {
+  return {
+    source_tier: 'B',
+    source_role: 'primary',
+    independence_group: independenceGroup,
+    resolving: true,
+    evidence_reviewed: true,
+    evidence_reviewer: 'codex-research-agent',
+    evidence_reviewed_at: '2026-07-29',
+    ...source,
+  };
+}
+
 const REPAIR_SOURCES = [
   {
     dossier_slug: 'bored-ape-yacht-club',
     replaces_source_id: 'bayc-origin',
-    source: {
+    source: reviewedPrimarySource('yuga_labs', {
       id: 'bayc-founding-current',
       title: 'The Birth of the Bored Ape Yacht Club',
       url: 'https://boredapeyachtclub.com/activations/bayc-founding',
@@ -46,12 +59,12 @@ const REPAIR_SOURCES = [
       last_verified_at: '2026-07-29',
       access_http_status: 200,
       verification_note: 'HTTP 200 and the current official page states that 10,000 Bored Apes were released on April 23, 2021.',
-    },
+    }),
   },
   {
     dossier_slug: 'bored-ape-yacht-club',
     supplements_source_id: 'bayc-origin',
-    source: {
+    source: reviewedPrimarySource('yuga_labs', {
       id: 'bayc-license-current',
       title: 'BAYC License',
       url: 'https://boredapeyachtclub.com/bayc-license',
@@ -65,12 +78,12 @@ const REPAIR_SOURCES = [
       last_verified_at: '2026-07-29',
       access_http_status: 200,
       verification_note: 'HTTP 200; current official ownership and commercial-use terms inspected.',
-    },
+    }),
   },
   {
     dossier_slug: 'decentraland-land',
     replaces_source_id: 'dcl-marketplace',
-    source: {
+    source: reviewedPrimarySource('decentraland_operator', {
       id: 'dcl-marketplace-current',
       title: 'LAND Manager',
       url: 'https://docs.decentraland.org/marketplace/land-manager',
@@ -86,12 +99,12 @@ const REPAIR_SOURCES = [
       last_verified_at: '2026-07-29',
       access_http_status: 200,
       verification_note: 'HTTP 200; current official LAND and Estate management documentation inspected.',
-    },
+    }),
   },
   {
     dossier_slug: 'funko-digital-pop',
     replaces_source_id: 'funko-faq',
-    source: {
+    source: reviewedPrimarySource('funko_operator', {
       id: 'funko-digital-current',
       title: 'Funko Digital Pop — program mechanics and sunset notice',
       url: 'https://funko.com/digital-pop.html',
@@ -105,12 +118,12 @@ const REPAIR_SOURCES = [
       last_verified_at: '2026-07-29',
       access_http_status: 200,
       verification_note: 'HTTP 200; current official page describes packs, redemption tokens, physical figures, marketplace use, and the sunset.',
-    },
+    }),
   },
   {
     dossier_slug: 'nifty-gateway',
     replaces_source_id: 'nifty-s1',
-    source: {
+    source: reviewedPrimarySource('gemini_issuer', {
       id: 'nifty-s1-sec',
       title: 'Gemini Space Station S-1/A — Nifty Gateway Studio description',
       url: 'https://www.sec.gov/Archives/edgar/data/2055592/000110465925085963/tm255912-15_s1a.htm',
@@ -124,12 +137,12 @@ const REPAIR_SOURCES = [
       last_verified_at: '2026-07-29',
       access_http_status: 200,
       verification_note: 'HTTP 200; SEC-hosted filing identifies Nifty Gateway Studio and Gemini product rails.',
-    },
+    }),
   },
   {
     dossier_slug: 'nifty-gateway',
     replaces_source_id: 'nifty-risk',
-    source: {
+    source: reviewedPrimarySource('gemini_issuer', {
       id: 'nifty-risk-sec',
       title: 'Gemini Q3 2025 Form 10-Q — Nifty Gateway demand and commercial-viability risk',
       url: 'https://www.sec.gov/Archives/edgar/data/2055592/000205559225000009/gemi-20250930.htm',
@@ -143,12 +156,12 @@ const REPAIR_SOURCES = [
       last_verified_at: '2026-07-29',
       access_http_status: 200,
       verification_note: 'HTTP 200; SEC-hosted filing explicitly discusses unpredictable NFT demand and potential Nifty Gateway discontinuation if not commercially viable.',
-    },
+    }),
   },
   {
     dossier_slug: 'nifty-gateway',
     replaces_source_id: 'nifty-8k',
-    source: {
+    source: reviewedPrimarySource('gemini_issuer', {
       id: 'nifty-winddown-sec',
       title: 'Gemini Q4 2025 shareholder letter — Nifty Gateway wound down',
       url: 'https://www.sec.gov/Archives/edgar/data/2055592/000205559226000023/gemiq425shareholderlette.htm',
@@ -162,7 +175,7 @@ const REPAIR_SOURCES = [
       last_verified_at: '2026-07-29',
       access_http_status: 200,
       verification_note: 'HTTP 200; SEC-hosted shareholder letter states that Gemini wound down Nifty Gateway.',
-    },
+    }),
   },
 ];
 

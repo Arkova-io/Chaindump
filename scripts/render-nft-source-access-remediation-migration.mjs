@@ -168,8 +168,19 @@ function validateDocument(document) {
   const replacements = (document.repair_sources || []).filter(({ replaces_source_id: id }) => id);
   if (replacements.length !== 6) throw new Error('Exactly six critical sources must be replaced');
   if (document.repair_sources.length !== 7) throw new Error('Expected six replacements and one BAYC license supplement');
-  if (document.repair_sources.some(({ source }) => !ISO_DAY.test(source.last_verified_at || ''))) {
-    throw new Error('Every claim-bearing repair source requires an explicit evidence-review date');
+  if (document.repair_sources.some(({ source }) => (
+    !ISO_DAY.test(source.last_verified_at || '')
+    || source.resolving !== true
+    || source.evidence_reviewed !== true
+    || !source.evidence_reviewer
+    || !ISO_DAY.test(source.evidence_reviewed_at || '')
+    || source.source_role !== 'primary'
+    || source.source_tier !== 'B'
+    || !source.independence_group
+  ))) {
+    throw new Error(
+      'Every claim-bearing repair source requires explicit access, role, tier, independence, and evidence-review metadata',
+    );
   }
 }
 
