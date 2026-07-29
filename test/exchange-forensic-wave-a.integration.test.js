@@ -29,7 +29,7 @@ const expectedSlugs = [
 
 function migrationDocument() {
   const match = migration.match(
-    /-- canonical-payload-start[\s\S]*?VALUES \('([\s\S]*?)'\)\n\)\nINSERT OR REPLACE/,
+    /-- canonical-payload-start[\s\S]*?VALUES \('([\s\S]*?)'\) -- NOSONAR:[^\n]*\n\)\nINSERT OR REPLACE/,
   );
   if (!match) throw new Error('0059 canonical payload not found');
   return JSON.parse(match[1].replaceAll("''", "'"));

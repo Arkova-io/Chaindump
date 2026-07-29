@@ -105,6 +105,18 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain("'forensic dossiers'");
   });
 
+  it('renders association rates, uncertainty, and falsifiers instead of causal-sounding trend prose', () => {
+    expect(html).toContain('function exchangeAssociationPanel(summary, label)');
+    expect(html).toContain('Did a documented token launch correlate with success?');
+    expect(html).toContain('Primary-chain context');
+    expect(html).toContain('95% CI');
+    expect(html).toContain('small sample');
+    expect(html).toContain('Predeclared hypotheses and what would falsify them');
+    expect(html).toContain('single cases are withheld from the chart');
+    expect(html).toContain("exchangeAssociationPanel(state.exchangeAnalysisSummaries.dex, 'DEX')");
+    expect(html).toContain("exchangeAssociationPanel(state.exchangeAnalysisSummaries.cex, 'CEX')");
+  });
+
   it('opens exchange dossiers through a public UI route instead of requiring API inspection', () => {
     expect(html).toContain('const dossierLink = `/exchange/${encodeURIComponent(row.kind)}/${encodeURIComponent(row.lifecycle)}/${encodeURIComponent(row.slug)}`;');
     expect(html).toContain("} else if (seg === 'exchange' && rest && third && fourth) {");

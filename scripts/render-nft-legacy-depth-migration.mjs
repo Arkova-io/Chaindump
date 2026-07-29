@@ -71,7 +71,7 @@ export function renderNftLegacyDepthMigration(document) {
 -- Applies field-cited patches so the existing long-form legacy narratives are retained.
 
 DROP TABLE IF EXISTS nft_legacy_depth_0054;
-CREATE TEMP TABLE nft_legacy_depth_0054 (
+CREATE TABLE nft_legacy_depth_0054 (
   slug TEXT PRIMARY KEY,
   status TEXT NOT NULL,
   profile_patch TEXT NOT NULL,

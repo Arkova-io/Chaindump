@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync } from 'node:fs';
+import { writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { validateForensicAnalysis } from '../src/lib/forensic-analysis.js';
@@ -1066,7 +1066,7 @@ CREATE TABLE exchange_forensic_wave_a_0059 (
 
 -- canonical-payload-start
 WITH forensic_payload(document) AS (
-  VALUES (${quoteSql(JSON.stringify(document))})
+  VALUES (${quoteSql(JSON.stringify(document))}) -- NOSONAR: deterministic cited research payload
 )
 INSERT OR REPLACE INTO exchange_forensic_wave_a_0059
   (table_name, kind, lifecycle, slug, forensic_analysis, sources, replace_profile, row_patch)

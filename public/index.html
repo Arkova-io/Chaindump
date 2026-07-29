@@ -1402,6 +1402,49 @@ function exchangeTrendSummary(summary, label) {
   }
   return `<div class="analysis-note"><b>${esc(label)} cohort:</b> ${summary.count || 0} cases · ${lifecycle.successful || 0} successful · ${lifecycle.mid || 0} mid · ${lifecycle.dead || 0} dead · ${quality.verified || 0} verified / ${quality.partial || 0} partial / ${quality.limited || 0} limited. ${summary.comparisonGroups?.length || 0} strict metric groups. Token evidence by outcome: ${esc(tokenParts.join(', ') || 'none')}.<br/><b>Largest product cohorts:</b> ${esc(productParts.join(' · ') || 'none')}.${chainContext}</div>`;
 }
+function exchangeAssociationRows(rows, labels = {}) {
+  return (rows || []).map((row) => {
+    const rate = Math.max(0, Math.min(1, Number(row.successRate || 0)));
+    const interval = row.ci95 || {};
+    const sample = `${row.successful || 0}/${row.sampleSize || 0} successful`;
+    const uncertainty = `95% CI ${Math.round(Number(interval.low || 0) * 100)}–${Math.round(Number(interval.high || 0) * 100)}%`;
+    const rowLabel = labels[row.key] || exchangeLabel(row.key);
+    const ariaLabel = `${rowLabel}: ${sample}; ${uncertainty}`;
+    let tone = 'muted';
+    if (rate >= .5) tone = 'good';
+    else if (rate >= .25) tone = 'warn';
+    return `<div class="tagrow" aria-label="${esc(ariaLabel)}">
+      <span class="tagn">${esc(rowLabel)}</span>
+      <span class="tagbarwrap"><span class="tagbar ${tone}" style="width:${(rate * 100).toFixed(1)}%"></span></span>
+      <span class="tagc">${Math.round(rate * 100)}%</span>
+      <span class="muted"> · n=${esc(row.sampleSize || 0)} · ${esc(uncertainty)}${row.smallSample ? ' · small sample' : ''}</span>
+    </div>`;
+  }).join('');
+}
+function exchangeAssociationPanel(summary, label) {
+  if (!summary?.outcomeAssociations) return '';
+  const association = summary.outcomeAssociations;
+  const readiness = summary.trendReadiness || {};
+  const tokenLabels = {
+    documented_launched: 'documented token launch',
+    launched_unverified: 'unverified token launch',
+    not_identified: 'no documented token',
+  };
+  const hypotheses = (summary.hypotheses || []).map((item) =>
+    `<li><b>${esc(item.variable.replaceAll('_', ' '))}:</b> ${esc(item.hypothesis)}<div class="muted">Falsifier: ${esc(item.falsifier)}</div></li>`
+  ).join('');
+  return `<div class="gpanel exchange-association">
+    <div class="gsec">${esc(label)} outcome associations · uncertainty shown</div>
+    <div class="gcols">
+      <div><div class="dsub">Did a documented token launch correlate with success?</div>${exchangeAssociationRows(association.tokenLaunch, tokenLabels) || '<div class="muted">No token cohorts.</div>'}</div>
+      <div><div class="dsub">Primary-chain context</div>${exchangeAssociationRows((association.primaryChain || []).filter((row) => row.sampleSize >= 2).slice(0, 8)) || '<div class="muted">No repeated chain cohort; single cases are withheld from the chart.</div>'}</div>
+    </div>
+    <div class="dsub" style="margin-top:14px">Product-model cohorts</div>
+    ${exchangeAssociationRows((association.productCohort || []).filter((row) => row.sampleSize >= 2).slice(0, 10)) || '<div class="muted">No repeated product cohort.</div>'}
+    <div class="analysis-note"><b>Dataset readiness:</b> ${esc(readiness.causalDossiers || 0)}/${esc(readiness.totalCases || 0)} cited causal dossiers · ${esc(readiness.documentedTokenCases || 0)} documented token records · ${esc(readiness.currentEvidenceCases || 0)} current non-limited evidence records · ${esc(readiness.comparableMetricGroups || 0)} strict metric groups with at least two cases.<br/>${esc(association.method)}</div>
+    ${hypotheses ? `<div class="dsub">Predeclared hypotheses and what would falsify them</div><ul class="evlist">${hypotheses}</ul>` : ''}
+  </div>`;
+}
 function renderExchangeAnalysis() {
   const el = document.getElementById('exchangeanalysisview');
   const head = pageHead('DEX/CEX Analysis', 'Cited lifecycle research across successful, middling and failed decentralized and centralized exchanges.');
@@ -1448,6 +1491,8 @@ function renderExchangeAnalysis() {
     ${cohortPanel}
     ${exchangeTrendSummary(state.exchangeAnalysisSummaries.dex, 'DEX')}
     ${exchangeTrendSummary(state.exchangeAnalysisSummaries.cex, 'CEX')}
+    ${exchangeAssociationPanel(state.exchangeAnalysisSummaries.dex, 'DEX')}
+    ${exchangeAssociationPanel(state.exchangeAnalysisSummaries.cex, 'CEX')}
     <div class="toolbar"><div class="analysis-controls">
       <input id="exchangeAnalysisSearch" class="search" placeholder="Search exchanges, chains or findings…" value="${esc(state.exchangeAnalysisQuery)}" />
       <div class="kindtoggle">

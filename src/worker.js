@@ -1817,6 +1817,8 @@ app.get('/api/exchange-analysis', wrap(async (req, res) => {
     ? req.query.quality : null;
   const filters = { lifecycle, slug, productCohort, quality };
   try {
+    // The outer bound kind keeps DEX rows exchange-only; the CEX branch
+    // intentionally retains every centralized venue type as a control cohort.
     const rows = await dbQuery(
       `WITH lifecycle_cases AS (
          SELECT slug, kind, 'dead' AS lifecycle, venue_type, name, launched, NULL AS primary_chain,
@@ -1901,6 +1903,8 @@ app.get('/api/exchange-analysis', wrap(async (req, res) => {
 app.get('/api/dead-exchanges', wrap(async (req, res) => {
   const kind = req.query.kind === 'cex' ? 'cex' : 'dex';
   try {
+    // The bound kind keeps DEX rows exchange-only; the OR intentionally
+    // includes every centralized CEX venue type.
     const rows = await dbQuery(
       `SELECT slug, kind, venue_type, name, launched, metric_label, metric_type, metric_unit, peak_metric, current_metric, drawdown_pct, peak_date, collapse_date, why, outlook, verdict, sources, profile, updated_at
        FROM dead_exchanges WHERE kind = ? AND (venue_type = 'exchange' OR kind = 'cex')
@@ -1954,6 +1958,8 @@ app.get('/api/dead-exchanges', wrap(async (req, res) => {
 app.get('/api/mid-exchanges', wrap(async (req, res) => {
   const kind = req.query.kind === 'cex' ? 'cex' : 'dex';
   try {
+    // The bound kind keeps DEX rows exchange-only; the OR intentionally
+    // includes every centralized CEX venue type.
     const rows = await dbQuery(
       `SELECT slug, kind, venue_type, name, launched, metric_label, metric_type, metric_unit, metric, verdict, why_stuck, outlook, profile, sources, updated_at
        FROM mid_exchanges WHERE kind = ? AND (venue_type = 'exchange' OR kind = 'cex')
@@ -1987,6 +1993,8 @@ app.get('/api/successful-exchanges', wrap(async (req, res) => {
   const metricType = typeof req.query.metric_type === 'string' && req.query.metric_type.trim() ? req.query.metric_type.trim() : null;
   const filters = { chain, metricType };
   try {
+    // The bound type keeps DEX rows exchange-only; the OR intentionally
+    // includes every centralized CEX venue type.
     const where = ['type = ?', "(venue_type = 'exchange' OR type = 'cex')"];
     const binds = [kind];
     if (chain) { where.push('primary_chain = ?'); binds.push(chain); }
@@ -3261,6 +3269,8 @@ function publicSourceUrls(value) {
 }
 async function exchangePageRow(kind, lifecycle, slug) {
   if (!['dex', 'cex'].includes(kind) || !['successful', 'mid', 'dead'].includes(lifecycle)) return null;
+  // Each bound kind/type keeps DEX rows exchange-only; the OR intentionally
+  // includes every centralized CEX venue type in canonical dossier routes.
   if (lifecycle === 'successful') {
     return (await dbQuery(
       `SELECT slug, name, why_successful AS summary, outlook, sources, updated_at
@@ -3581,6 +3591,8 @@ app.get('/sitemap.xml', async (c) => {
   } catch (e) { console.error('[sitemap] case/collection deep-links skipped:', e instanceof Error ? e.message : e); }
   try {
     const [exchanges, casinos, lifecycleNfts] = await Promise.all([
+      // Sitemap coverage keeps DEX rows exchange-only while intentionally
+      // including every centralized CEX venue type.
       dbQuery(
         `SELECT type AS kind, 'successful' AS lifecycle, slug FROM successful_exchanges WHERE venue_type = 'exchange' OR type = 'cex'
          UNION ALL SELECT kind, 'mid', slug FROM mid_exchanges WHERE venue_type = 'exchange' OR kind = 'cex'
