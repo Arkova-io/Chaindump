@@ -201,6 +201,45 @@ function normalizeCase(entry) {
   };
 }
 
+function validateReviewedSource(source) {
+  const id = sourceId(source);
+  if (!id || !sourceUrl(source)?.startsWith('https://')) {
+    throw new Error(`Invalid source ${JSON.stringify(source)}`);
+  }
+  if (!source.source_tier || !source.source_role || !source.evidence_scope) {
+    throw new Error(`Source classification incomplete: ${id}`);
+  }
+  if (
+    source.evidence_reviewed !== true
+    || source.evidence_reviewer !== REVIEWER
+    || source.evidence_reviewed_at !== REVIEW_DAY
+    || !source.evidence_locator
+  ) {
+    throw new Error(`Source review provenance incomplete: ${id}`);
+  }
+  const normalized = normalizePublicationSource(source);
+  if (
+    normalized.tier === 'T3'
+    && normalized.role === 'independent'
+    && !normalized.independence_group
+  ) {
+    throw new Error(`T3 source requires an explicit evidence-origin group: ${id}`);
+  }
+}
+
+function validateReviewedSources(sources) {
+  if (sources.length !== 14) {
+    throw new Error(`Expected 14 reviewed source additions, received ${sources.length}`);
+  }
+  const uniqueUrls = new Set(sources.map(sourceUrl));
+  if (uniqueUrls.size !== sources.length) throw new Error('Duplicate remediation source URL');
+  sources.forEach(validateReviewedSource);
+  const accessCounts = Object.groupBy(sources, ({ access_state: state }) => state);
+  if (accessCounts.accessible?.length !== 10 || accessCounts.bot_blocked_raw_fetch?.length !== 4) {
+    throw new Error('Unexpected source-access audit counts');
+  }
+}
+
 export function prepareHighRiskRemediation(raw) {
   if (raw?.schema !== 'chaindump-high-risk-remediation-manifest-v1') {
     throw new Error('Unexpected high-risk remediation manifest schema');
@@ -214,46 +253,17 @@ export function prepareHighRiskRemediation(raw) {
     throw new Error(`Expected 37 honest unresolved claims, received ${unresolved.length}`);
   }
   const sources = cases.flatMap(({ source_additions: additions }) => additions);
-  if (sources.length !== 14) throw new Error(`Expected 14 reviewed source additions, received ${sources.length}`);
-  const uniqueUrls = new Set(sources.map(sourceUrl));
-  if (uniqueUrls.size !== sources.length) throw new Error('Duplicate remediation source URL');
-  for (const source of sources) {
-    if (!sourceId(source) || !sourceUrl(source)?.startsWith('https://')) {
-      throw new Error(`Invalid source ${JSON.stringify(source)}`);
-    }
-    if (!source.source_tier || !source.source_role || !source.evidence_scope) {
-      throw new Error(`Source classification incomplete: ${sourceId(source)}`);
-    }
-    if (
-      source.evidence_reviewed !== true
-      || source.evidence_reviewer !== REVIEWER
-      || source.evidence_reviewed_at !== REVIEW_DAY
-      || !source.evidence_locator
-    ) {
-      throw new Error(`Source review provenance incomplete: ${sourceId(source)}`);
-    }
-    const normalized = normalizePublicationSource(source);
-    if (
-      normalized.tier === 'T3'
-      && normalized.role === 'independent'
-      && !normalized.independence_group
-    ) {
-      throw new Error(`T3 source requires an explicit evidence-origin group: ${sourceId(source)}`);
-    }
-  }
-  const accessCounts = Object.groupBy(sources, ({ access_state: state }) => state);
-  if (accessCounts.accessible?.length !== 10 || accessCounts.bot_blocked_raw_fetch?.length !== 4) {
-    throw new Error('Unexpected source-access audit counts');
-  }
+  validateReviewedSources(sources);
   return {
     ...raw,
     schema: 'chaindump-high-risk-remediation-implementation-v1',
-    status: 'implementation-prepared-no-migration-number-assigned',
+    status: 'integrated-migration-0065-rendered',
     migration_sequence: {
-      assigned_id: null,
+      assigned_id: '0065',
       reserved_after: '0064',
-      rendered: false,
-      note: 'Assign and render only after migrations 0063 and 0064 are merged and replayed.',
+      rendered: true,
+      rendered_file: 'migrations/0065_high_risk_evidence_remediation.sql',
+      note: 'Contiguous migration 0065 was rendered after migrations 0063 and 0064 merged and replayed.',
     },
     ui_contract: {
       depends_on_migration: '0063',
@@ -264,7 +274,7 @@ export function prepareHighRiskRemediation(raw) {
         'unsupported_section_withheld',
         'source_access_and_review_status',
       ],
-      note: 'The eventual numbered migration must be integration-tested against the shared 0063 API and visible dossier/list UI before merge.',
+      note: 'Migration 0065 is integration-tested against the shared 0063 publication-depth API and the existing visible exchange/casino dossier and list UI.',
     },
     source_access_audit: {
       checked_at: REVIEW_DAY,

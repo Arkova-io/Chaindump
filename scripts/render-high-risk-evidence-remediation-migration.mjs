@@ -302,8 +302,13 @@ export function buildHighRiskEvidenceRemediation(document, database) {
   if (document.schema !== 'chaindump-high-risk-remediation-implementation-v1') {
     throw new Error('Unexpected implementation document schema');
   }
-  if (document.migration_sequence?.assigned_id != null) {
-    throw new Error('Preparation branch must remain unnumbered');
+  if (
+    document.migration_sequence?.assigned_id !== '0065'
+    || document.migration_sequence?.rendered !== true
+    || document.migration_sequence?.rendered_file
+      !== 'migrations/0065_high_risk_evidence_remediation.sql'
+  ) {
+    throw new Error('Integration document must record rendered migration 0065');
   }
   if (asArray(document.unresolved_claims).length !== 37) {
     throw new Error('Exactly 37 unresolved claims must be preserved');
@@ -587,13 +592,13 @@ function main() {
   const assignedId = document.migration_sequence?.assigned_id;
   if (!MIGRATION_ID.test(assignedId || '')) {
     throw new Error(
-      'Migration rendering refused: assign migration_sequence.assigned_id only after 0063 and 0064 merge and replay.',
+      'Migration rendering refused: document must record a confirmed four-digit assigned id.',
     );
   }
   const existingIds = readdirSync(resolve(root, 'migrations'))
     .filter((file) => /^\d{4}_.+\.sql$/.test(file))
     .map((file) => Number(file.slice(0, 4)));
-  const nextId = Math.max(...existingIds) + 1;
+  const nextId = Math.max(...existingIds.filter((id) => id !== Number(assignedId))) + 1;
   if (Number(assignedId) !== nextId) {
     throw new Error(
       `Migration rendering refused: assigned ${assignedId}, but the next contiguous id is ${String(nextId).padStart(4, '0')}.`,

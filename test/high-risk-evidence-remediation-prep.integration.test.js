@@ -7,7 +7,7 @@ import {
 } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { unstable_splitSqlQuery } from 'wrangler';
 import {
   applyRepositoryMigrations,
@@ -29,10 +29,15 @@ const rendererUrl = new URL(
   import.meta.url,
 );
 const document = JSON.parse(readFileSync(documentUrl, 'utf8'));
+const sameOriginPairs = [
+  ['dex:successful:aerodrome', 'aerodrome-coindesk-aero', 'aerodrome-theblock-aero'],
+  ['dex:dead:solidly', 'solidly-decrypt-exit', 'solidly-theblock-exit'],
+  ['cex:dead:bitmart', 'bitmart-theblock-winddown', 'bitmart-decrypt-winddown'],
+];
 
 function createCorpus() {
   const database = new DatabaseSync(':memory:');
-  applyRepositoryMigrations(database);
+  applyRepositoryMigrations(database, 65);
   return database;
 }
 
@@ -69,21 +74,45 @@ function casinoUnknowns(database, caseId) {
   return JSON.parse(row.outlook).forensic_analysis.unknowns;
 }
 
+function d1Adapter(database) {
+  return {
+    prepare(sql) {
+      let bindings = [];
+      return {
+        bind(...values) {
+          bindings = values;
+          return this;
+        },
+        async all() {
+          return { results: database.prepare(sql).all(...bindings) };
+        },
+        async first() {
+          return database.prepare(sql).get(...bindings) ?? null;
+        },
+      };
+    },
+  };
+}
+
+const ctx = () => ({ waitUntil() {}, passThroughOnException() {} });
+
 let database;
 
 afterEach(() => {
   database?.close();
   database = undefined;
+  vi.resetModules();
 });
 
-describe('unnumbered high-risk evidence remediation preparation', () => {
-  it('keeps the implementation unnumbered and preserves all thirty-seven honest gaps', () => {
+describe('high-risk evidence remediation migration 0065', () => {
+  it('records the contiguous rendered integration and preserves all thirty-seven honest gaps', () => {
     expect(document.schema).toBe('chaindump-high-risk-remediation-implementation-v1');
-    expect(document.status).toBe('implementation-prepared-no-migration-number-assigned');
+    expect(document.status).toBe('integrated-migration-0065-rendered');
     expect(document.migration_sequence).toMatchObject({
-      assigned_id: null,
+      assigned_id: '0065',
       reserved_after: '0064',
-      rendered: false,
+      rendered: true,
+      rendered_file: 'migrations/0065_high_risk_evidence_remediation.sql',
     });
     expect(document.cases).toHaveLength(10);
     expect(document.unresolved_claims).toHaveLength(37);
@@ -97,7 +126,7 @@ describe('unnumbered high-risk evidence remediation preparation', () => {
     expect(existsSync(new URL(
       '../migrations/0065_high_risk_evidence_remediation.sql',
       import.meta.url,
-    ))).toBe(false);
+    ))).toBe(true);
   });
 
   it('publishes real source review, access, role, tier, and locator provenance', () => {
@@ -129,12 +158,7 @@ describe('unnumbered high-risk evidence remediation preparation', () => {
   });
 
   it('counts evidence origins rather than publishers for every same-event pair', () => {
-    const pairs = [
-      ['dex:successful:aerodrome', 'aerodrome-coindesk-aero', 'aerodrome-theblock-aero'],
-      ['dex:dead:solidly', 'solidly-decrypt-exit', 'solidly-theblock-exit'],
-      ['cex:dead:bitmart', 'bitmart-theblock-winddown', 'bitmart-decrypt-winddown'],
-    ];
-    for (const [dossierId, leftId, rightId] of pairs) {
+    for (const [dossierId, leftId, rightId] of sameOriginPairs) {
       const entry = document.cases.find(({ dossier_id: id }) => id === dossierId);
       const sources = entry.source_additions.filter(({ id }) => (
         id === leftId || id === rightId
@@ -309,14 +333,83 @@ describe('unnumbered high-risk evidence remediation preparation', () => {
     `).get().count).toBe(1);
   });
 
-  it('refuses to create a migration before sequence assignment', () => {
+  it('publishes corrected support counts through the existing exchange and casino UI APIs', async () => {
+    database = new DatabaseSync(':memory:');
+    applyRepositoryMigrations(database);
+    const worker = (await import('../src/worker.js')).default;
+    const env = { DB: d1Adapter(database) };
+    const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
+    expect(html).toContain('function renderExchangeAnalysis()');
+    expect(html).toContain('function renderCasinoAnalysis()');
+    expect(html).toContain('publicationDepthSectionHtml(');
+    expect(html).toContain('casinoPublicationDepthBanner(depth)');
+
+    for (const entry of document.cases.filter(({ dossier_id: id }) => id.includes(':'))) {
+      const { kind, lifecycle, slug } = exchangeIdentity(entry);
+      const response = await worker.fetch(
+        new Request(
+          `http://localhost/api/exchange-analysis?kind=${kind}`
+          + `&lifecycle=${lifecycle}&slug=${slug}`,
+        ),
+        env,
+        ctx(),
+      );
+      expect(response.status, entry.dossier_id).toBe(200);
+      const payload = await response.json();
+      expect(payload.cases).toHaveLength(1);
+      expect(payload.cases[0].publication_depth).toMatchObject({
+        status: 'claim_support_pending',
+        unresolved_high_risk_claim_count: entry.support_summary.high_risk_after_projected,
+      });
+      const pair = sameOriginPairs.find(([dossierId]) => dossierId === entry.dossier_id);
+      if (pair) {
+        const runtimeSources = payload.cases[0].sources.filter(({ id }) => pair.includes(id));
+        expect(runtimeSources).toHaveLength(2);
+        expect(new Set(runtimeSources.map(
+          ({ independence_key: key }) => key,
+        )).size).toBe(1);
+        expect(runtimeSources.every((source) => (
+          source.source_tier === 'T3'
+          && source.source_role === 'independent'
+          && source.source_dependency
+          && source.independence_group
+        ))).toBe(true);
+      }
+    }
+
+    for (const entry of document.cases.filter(({ dossier_id: id }) => !id.includes(':'))) {
+      const response = await worker.fetch(
+        new Request(`http://localhost/api/casino/${entry.dossier_id}`),
+        env,
+        ctx(),
+      );
+      expect(response.status, entry.dossier_id).toBe(200);
+      const payload = await response.json();
+      expect(payload.publication_depth.unresolved_high_risk_claim_count)
+        .toBe(entry.support_summary.high_risk_after_projected);
+    }
+  });
+
+  it('regenerates the committed migration exactly from the reviewed document', () => {
+    database = createCorpus();
+    const state = buildHighRiskEvidenceRemediation(document, database);
+    const rendered = renderHighRiskEvidenceRemediationMigration(document, state, '0065');
+    const committed = readFileSync(
+      new URL('../migrations/0065_high_risk_evidence_remediation.sql', import.meta.url),
+      'utf8',
+    );
+    expect(committed).toBe(rendered);
     const run = spawnSync(
       process.execPath,
       [fileURLToPath(rendererUrl), fileURLToPath(documentUrl)],
       { encoding: 'utf8' },
     );
-    expect(run.status).not.toBe(0);
-    expect(run.stderr).toContain('Migration rendering refused');
+    expect(run.status).toBe(0);
+    expect(run.stdout).toContain('0065_high_risk_evidence_remediation.sql');
+    expect(readFileSync(
+      new URL('../migrations/0065_high_risk_evidence_remediation.sql', import.meta.url),
+      'utf8',
+    )).toBe(rendered);
   });
 
   it('cannot consume the migration ids reserved for publication depth or NFT remediation', () => {

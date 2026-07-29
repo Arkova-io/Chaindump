@@ -1,7 +1,7 @@
 {
   "schema": "chaindump-high-risk-remediation-implementation-v1",
   "as_of": "2026-07-29",
-  "status": "implementation-prepared-no-migration-number-assigned",
+  "status": "integrated-migration-0065-rendered",
   "selection": {
     "rule": "Ten high-risk unresolved dossiers balanced across DEX, CEX, and casino; successful, mid/declining, failed, and explicitly unclassified outcomes are represented.",
     "dossier_count": 10,
@@ -864,17 +864,18 @@
     "explicitly_left_unresolved": 37
   },
   "implementation_notes": [
-    "Assign a migration number only after the current migration sequence is final.",
-    "Renderer parity must compare canonical manifest, generated SQL, and replayed database state byte-for-byte.",
+    "Migration 0065 was assigned only after migrations 0063 and 0064 merged and replayed.",
+    "Renderer parity compares the canonical implementation document, generated SQL, and replayed database state byte-for-byte.",
     "Rerun publication-depth inventory before and after; fail if any projected resolution lacks the specified claim-specific source.",
     "Do not copy source metadata to unrelated claims and do not convert access timestamps into evidence review.",
     "Preserve all unknowns and confidence qualifiers in the live UI."
   ],
   "migration_sequence": {
-    "assigned_id": null,
+    "assigned_id": "0065",
     "reserved_after": "0064",
-    "rendered": false,
-    "note": "Assign and render only after migrations 0063 and 0064 are merged and replayed."
+    "rendered": true,
+    "rendered_file": "migrations/0065_high_risk_evidence_remediation.sql",
+    "note": "Contiguous migration 0065 was rendered after migrations 0063 and 0064 merged and replayed."
   },
   "ui_contract": {
     "depends_on_migration": "0063",
@@ -885,7 +886,7 @@
       "unsupported_section_withheld",
       "source_access_and_review_status"
     ],
-    "note": "The eventual numbered migration must be integration-tested against the shared 0063 API and visible dossier/list UI before merge."
+    "note": "Migration 0065 is integration-tested against the shared 0063 publication-depth API and the existing visible exchange/casino dossier and list UI."
   },
   "source_access_audit": {
     "checked_at": "2026-07-29",
