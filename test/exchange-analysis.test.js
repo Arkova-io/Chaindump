@@ -269,4 +269,76 @@ describe('summarizeExchangeCases', () => {
     expect(summarizeExchangeCases(cases, 'dex', '2026-07-29').trendReadiness.currentEvidenceCases)
       .toBe(1);
   });
+
+  it('returns zeroed associations and readiness instead of throwing when a kind has no cases', () => {
+    const summary = summarizeExchangeCases([normalizeExchangeCase(row({ kind: 'cex' }))], 'dex');
+
+    expect(summary.count).toBe(0);
+    expect(summary.outcomeAssociations.overall).toMatchObject({
+      sampleSize: 0,
+      successful: 0,
+      successRate: 0,
+      ci95: { low: 0, high: 1 },
+      smallSample: true,
+    });
+    expect(summary.outcomeAssociations.tokenLaunch).toEqual([]);
+    expect(summary.outcomeAssociations.primaryChain).toEqual([]);
+    expect(summary.outcomeAssociations.productCohort).toEqual([]);
+    expect(summary.trendReadiness).toMatchObject({
+      totalCases: 0,
+      causalDossiers: 0,
+      documentedTokenCases: 0,
+      currentEvidenceCases: 0,
+      comparableMetricGroups: 0,
+    });
+    expect(summary.hypotheses).toHaveLength(3);
+  });
+
+  it('computes riskDifferenceVsPopulation as the signed gap from the kind-wide success rate', () => {
+    const cases = [
+      normalizeExchangeCase(row({ slug: 'a', feature_primary_chain: 'Ethereum' })),
+      normalizeExchangeCase(row({ slug: 'b', feature_primary_chain: 'Ethereum' })),
+      normalizeExchangeCase(row({
+        slug: 'c', lifecycle: 'dead', feature_primary_chain: 'Solana',
+      })),
+      normalizeExchangeCase(row({
+        slug: 'd', lifecycle: 'dead', feature_primary_chain: 'Solana',
+      })),
+    ];
+    const summary = summarizeExchangeCases(cases, 'dex');
+    // Population success rate is 0.5 (2 of 4 successful).
+    const ethereum = summary.outcomeAssociations.primaryChain.find((entry) => entry.key === 'Ethereum');
+    const solana = summary.outcomeAssociations.primaryChain.find((entry) => entry.key === 'Solana');
+    expect(ethereum.successRate).toBe(1);
+    expect(ethereum.riskDifferenceVsPopulation).toBeCloseTo(0.5, 5);
+    expect(solana.successRate).toBe(0);
+    expect(solana.riskDifferenceVsPopulation).toBeCloseTo(-0.5, 5);
+  });
+
+  it('flips smallSample to false once a cohort reaches 5 cases', () => {
+    const cases = Array.from({ length: 5 }, (_, i) => normalizeExchangeCase(row({ slug: `case-${i}` })));
+    const summary = summarizeExchangeCases(cases, 'dex');
+    expect(summary.outcomeAssociations.overall.sampleSize).toBe(5);
+    expect(summary.outcomeAssociations.overall.smallSample).toBe(false);
+
+    const fewer = summarizeExchangeCases(cases.slice(0, 4), 'dex');
+    expect(fewer.outcomeAssociations.overall.smallSample).toBe(true);
+  });
+
+  it('buckets missing primary chain and product cohort under explicit fallback keys instead of dropping rows', () => {
+    const cases = [
+      normalizeExchangeCase(row({
+        feature_primary_chain: null,
+        feature_chains: '[]',
+        feature_product_cohort: null,
+      })),
+    ];
+    const summary = summarizeExchangeCases(cases, 'dex');
+    expect(summary.outcomeAssociations.primaryChain).toEqual([
+      expect.objectContaining({ key: 'unknown', sampleSize: 1 }),
+    ]);
+    expect(summary.outcomeAssociations.productCohort).toEqual([
+      expect.objectContaining({ key: 'unclassified', sampleSize: 1 }),
+    ]);
+  });
 });
