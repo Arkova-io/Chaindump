@@ -666,7 +666,9 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   blockchainAnalysisData: null, blockchainAnalysisQuery: '', blockchainAnalysisSort: 'name',
   exchangeAnalysisData: null, exchangeAnalysisErrors: [], exchangeAnalysisQuery: '',
   exchangeAnalysisKind: 'all', exchangeAnalysisLifecycle: 'all', exchangeAnalysisSort: 'name',
-  exchangeAnalysisDir: 1, exchangeAnalysisExpanded: null };
+  exchangeAnalysisDir: 1, exchangeAnalysisExpanded: null,
+  casinoAnalysisData: null, casinoCoverage: null, casinoAnalysisError: '', casinoAnalysisSort: 'reviewed',
+  casinoAnalysisExpanded: null, casinoAnalysisDetails: {} };
 
 const fmtUsd = (n) => n == null ? '—' : (n < 0 ? '-' : '') + '$' + Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 2 }).format(Math.abs(n));
 const fmtNum = (n) => n == null ? '—' : Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(n);
@@ -1029,10 +1031,104 @@ async function loadExchangeAnalysis() {
   renderExchangeAnalysis();
 }
 
+function casinoLabel(value) { return String(value || 'unknown').replaceAll('_', ' '); }
+function casinoObservationHtml(observation) {
+  const unit = observation.unit ? ` ${esc(observation.unit)}` : '';
+  const value = observation.value == null ? '—' : `${fmtNum(observation.value)}${unit}`;
+  return `<div class="gfield"><span class="gfl">${esc(casinoLabel(observation.metric_dimension))}</span>${value} · ${esc(observation.window_definition || 'snapshot')} · as of ${esc(observation.as_of || '—')}<div class="muted" style="margin:3px 0 0 68px">${esc(observation.method || '')}</div></div>`;
+}
+function casinoDetailBody(item, detail) {
+  if (detail === 'loading') return '<div class="gexp"><div class="skel">Loading cited dossier…</div></div>';
+  if (detail?.error) return `<div class="gexp"><div class="muted">Couldn't load this dossier: ${esc(detail.error)}</div></div>`;
+  if (!detail) return '';
+  const synthesis = detail.synthesis || {};
+  const sections = [
+    ['Current documented situation', synthesis.present_situation],
+    ['Operating model', synthesis.business_mechanism],
+    ['Legal scope &amp; evidence limit', synthesis.risk_legal_posture],
+  ].map(([label, text]) => text ? `<div class="gsec">${label}</div>${proseBox(text)}` : '').join('');
+  const observations = (detail.observations || []).map(casinoObservationHtml).join('') || '<div class="muted">No comparable operating metric is published in this dossier.</div>';
+  const licenceRows = (detail.licences || []).map((licence) => `<div class="gfield"><span class="gfl">Licence</span>${esc(licence.authority)} · ${esc(licence.jurisdiction)} · ${esc(licence.licence_status)} · as of ${esc(licence.as_of)}</div>`).join('');
+  const licences = licenceRows || '<div class="muted">No licence observation is published. Do not infer global legality from this dossier.</div>';
+  const claimRows = (detail.claims || []).map((claim) => `<div class="gfield"><span class="gfl">${esc(claim.field_path)}</span><a href="${esc(safeUrl(claim.url))}" target="_blank" rel="noopener noreferrer">${esc(claim.title)} ↗</a><div class="muted" style="margin:3px 0 0 68px">${esc(claim.support_direction)} · ${esc(claim.evidence_locator)}</div></div>`).join('') || '<div class="muted">No reviewed claim evidence is available.</div>';
+  const domain = safeUrl(`https://${item.primary_domain}`);
+  return `<div class="gexp">
+    <div class="gfield"><span class="gfl">Domain</span><a href="${esc(domain)}" target="_blank" rel="noopener noreferrer">${esc(item.primary_domain)} ↗</a></div>
+    <div class="gfield"><span class="gfl">Custody</span>${esc(casinoLabel(item.custody_model))}</div>
+    <div class="gfield"><span class="gfl">Token</span>${esc(item.token_status === 'documented' ? (item.token_symbol || 'Documented token') : casinoLabel(item.token_status))}</div>
+    ${sections}<div class="gsec">Documented metrics</div>${observations}
+    <div class="gsec">Licence observations</div>${licences}
+    <div class="gsec">Field evidence</div>${claimRows}
+    ${srcHtml(detail.sources, 'Cited sources: ')}<div class="muted" style="margin-top:8px">Last manually reviewed ${esc(item.last_reviewed || '—')}</div>
+  </div>`;
+}
+function casinoAnalysisCard(item) {
+  const open = state.casinoAnalysisExpanded === item.case_id;
+  const detail = state.casinoAnalysisDetails[item.case_id];
+  const chains = Array.isArray(item.chains) && item.chains.length ? item.chains.join(' · ') : 'No chain scope published';
+  const body = open ? casinoDetailBody(item, detail) : '';
+  return `<div class="gcard ${open ? 'open' : ''}" role="button" tabindex="0" data-casino-case="${esc(item.case_id)}">
+    <div class="ghead"><div class="gname">${esc(item.brand_name)} <span class="gverdict ${item.status === 'active' ? 'recover' : 'declining'}">${esc(casinoLabel(item.status))}</span></div>
+    <div class="gdd" style="color:var(--muted2);font-size:14px">${item.source_count}<span class="gddl">reviewed sources</span></div></div>
+    <div class="gmeta">${esc(casinoLabel(item.entity_kind))} · ${esc(casinoLabel(item.product_subtype))} · ${esc(chains)} · ${esc(item.completeness_pct)}% complete</div>
+    <div class="gbody">${esc(item.product_scope_note || 'Scoped research dossier.')}</div>
+    ${body}<div class="gexpand">${open ? 'Hide dossier ▲' : 'Full cited dossier ▾'}</div>
+  </div>`;
+}
 function renderCasinoAnalysis() {
-  document.getElementById('casinoanalysisview').innerHTML =
-    `${pageHead('Web3 Casino Analysis', 'A lifecycle research library for crypto-native casinos, their operating models, tokens, jurisdictions and outcomes.')}
-    <div class="analysis-empty"><b>No casino dossiers are published yet.</b><br/>The section is visible now so its research state is honest and inspectable. Cases will appear only after sources and claims pass the same verification standard as the blockchain and exchange libraries.</div>`;
+  const el = document.getElementById('casinoanalysisview');
+  const head = pageHead('Web3 Casino Analysis', 'Citation-gated research across onchain casinos, sportsbooks, betting exchanges, bankrolls, and gaming infrastructure.');
+  if (!state.casinoAnalysisData) { el.innerHTML = `${head}<div class="skel">Loading publication-gated casino dossiers…</div>`; return; }
+  const coverage = state.casinoCoverage || {};
+  const cases = state.casinoAnalysisData.cases || [];
+  const unpublished = Math.max(0, Number(coverage.target_count || 0) - cases.length);
+  if (!cases.length) {
+    const emptyCopy = coverage.target_count ? `${esc(coverage.target_count)} candidates remain research pending and are intentionally not presented as analyses.` : 'Cases appear only after sources and claims pass the publication gate.';
+    const unavailable = state.casinoAnalysisError ? '<br/><span class="muted">The public dossier service is temporarily unavailable; candidates remain withheld.</span>' : '';
+    el.innerHTML = `${head}<div class="analysis-empty"><b>No casino dossiers are published yet.</b><br/>${emptyCopy}${unavailable}</div>`;
+    return;
+  }
+  el.innerHTML = `${head}
+    <div class="analysis-note">Only records with reviewed primary evidence, explicit scope, status evidence, an as-of metric, no blockers, and a defined outcome rule appear here. No cross-case “largest casino” ranking is computed.</div>
+    <div class="gstats">${gstat(cases.length, 'published dossiers')}${gstat(unpublished, 'candidates withheld')}${gstat(cases.filter(item=>item.token_status==='documented').length, 'documented tokens')}${gstat(cases.filter(item=>item.outcome_label==='unclassified').length, 'outcomes unclassified')}</div>
+    <div class="toolbar"><div class="analysis-controls"><label class="muted" for="casinoAnalysisSort">Sort</label><select id="casinoAnalysisSort" class="analysis-select"><option value="reviewed"${state.casinoAnalysisSort==='reviewed'?' selected':''}>Last reviewed</option><option value="name"${state.casinoAnalysisSort==='name'?' selected':''}>Name</option><option value="sources"${state.casinoAnalysisSort==='sources'?' selected':''}>Reviewed source count</option></select></div></div>
+    <div class="dsec" style="margin:18px 0 10px">${cases.length} publication-gated dossier${cases.length===1?'':'s'} · cohort as of ${esc(coverage.universe_as_of || state.casinoAnalysisData.as_of || '—')}</div>
+    <div class="gwrap">${cases.map(casinoAnalysisCard).join('')}</div>`;
+}
+async function loadCasinoAnalysis() {
+  renderCasinoAnalysis();
+  try {
+    const [dossiers, coverage] = await Promise.all([
+      fetch(`/api/casinos?sort=${encodeURIComponent(state.casinoAnalysisSort)}`).then((response) => {
+        if (!response.ok) {
+          throw new Error('casino dossiers');
+        }
+        return response.json();
+      }),
+      fetch('/api/casino-coverage').then((response) => response.ok ? response.json() : { coverage: null }),
+    ]);
+    state.casinoAnalysisData = dossiers;
+    state.casinoCoverage = coverage.coverage || null;
+    state.casinoAnalysisError = dossiers.error || '';
+    renderCasinoAnalysis();
+  } catch (error) {
+    state.casinoAnalysisData = { cases: [] };
+    state.casinoAnalysisError = error.message;
+    renderCasinoAnalysis();
+  }
+}
+async function toggleCasinoAnalysisCard(caseId) {
+  const opening = state.casinoAnalysisExpanded !== caseId;
+  state.casinoAnalysisExpanded = opening ? caseId : null;
+  if (!opening || state.casinoAnalysisDetails[caseId]) { renderCasinoAnalysis(); return; }
+  state.casinoAnalysisDetails[caseId] = 'loading'; renderCasinoAnalysis();
+  try {
+    const response = await fetch(`/api/casino/${encodeURIComponent(caseId)}`);
+    state.casinoAnalysisDetails[caseId] = response.ok ? await response.json() : { error: `HTTP ${response.status}` };
+  } catch (error) {
+    state.casinoAnalysisDetails[caseId] = { error: error.message };
+  }
+  renderCasinoAnalysis();
 }
 
 document.getElementById('blockchainanalysisview').addEventListener('input', (e) => {
@@ -1082,6 +1178,26 @@ document.getElementById('exchangeanalysisview').addEventListener('keydown', (e) 
   if (!card || e.target.closest('a,button,select,input')) return;
   e.preventDefault();
   card.click();
+});
+document.getElementById('casinoanalysisview').addEventListener('change', (e) => {
+  if (e.target.id !== 'casinoAnalysisSort') return;
+  state.casinoAnalysisSort = e.target.value;
+  state.casinoAnalysisData = null;
+  state.casinoAnalysisExpanded = null;
+  loadCasinoAnalysis();
+});
+document.getElementById('casinoanalysisview').addEventListener('click', (e) => {
+  if (e.target.closest('a,button,select,input')) return;
+  const card = e.target.closest('[data-casino-case]');
+  if (!card) return;
+  toggleCasinoAnalysisCard(card.dataset.casinoCase);
+});
+document.getElementById('casinoanalysisview').addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const card = e.target.closest('[data-casino-case]');
+  if (!card || e.target.closest('a,button,select,input')) return;
+  e.preventDefault();
+  toggleCasinoAnalysisCard(card.dataset.casinoCase);
 });
 document.addEventListener('click', (e) => {
   const route = e.target.closest('[data-analysis-route]');
@@ -1873,7 +1989,7 @@ function applyViewGating(){
     h.hidden = !any;
   });
 }
-let graveLoaded = false, midLoaded = false, nftLoaded = false, infraLoaded = false, marketsLoaded = false, stablesLoaded = false, geoLoaded = false, rwaLoaded = false, usLoaded = false, newsLoaded = false, powerLoaded = false, tracesLoaded = false, blockchainAnalysisLoaded = false, exchangeAnalysisLoaded = false;
+let graveLoaded = false, midLoaded = false, nftLoaded = false, infraLoaded = false, marketsLoaded = false, stablesLoaded = false, geoLoaded = false, rwaLoaded = false, usLoaded = false, newsLoaded = false, powerLoaded = false, tracesLoaded = false, blockchainAnalysisLoaded = false, exchangeAnalysisLoaded = false, casinoAnalysisLoaded = false;
 function switchView(view, push){
   if (view === 'nft') view = 'nft-analysis'; // preserve the legacy /nft route
   // a deep-link to a disabled section falls back to the board rather than 404ing
@@ -1906,7 +2022,7 @@ function switchView(view, push){
   if (view === 'mid') ensureMidKind(state.xKind);
   if (view === 'blockchain-analysis' && !blockchainAnalysisLoaded) { blockchainAnalysisLoaded = true; loadBlockchainAnalysis(); }
   if (view === 'exchange-analysis' && !exchangeAnalysisLoaded) { exchangeAnalysisLoaded = true; loadExchangeAnalysis(); }
-  if (view === 'casino-analysis') renderCasinoAnalysis();
+  if (view === 'casino-analysis' && !casinoAnalysisLoaded) { casinoAnalysisLoaded = true; loadCasinoAnalysis(); }
   if (view === 'nft-analysis' && !nftLoaded) loadNft();
   if (view === 'infra' && !infraLoaded) loadInfra();
   if (view === 'markets' && !marketsLoaded) loadMarkets();

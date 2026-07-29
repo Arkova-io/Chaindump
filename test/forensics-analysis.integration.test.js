@@ -67,3 +67,19 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain("String(row.metricUnit || '').toLowerCase()");
   });
 });
+
+describe('Web3 Casino Analysis data surface', () => {
+  it('loads only publication-gated dossiers with coverage and lazy cited detail', () => {
+    expect(html).toContain('/api/casinos?sort=${encodeURIComponent(state.casinoAnalysisSort)}');
+    expect(html).toContain("fetch('/api/casino-coverage')");
+    expect(html).toContain('/api/casino/${encodeURIComponent(caseId)}');
+    expect(html).toContain('casinoAnalysisLoaded');
+  });
+
+  it('keeps unverified candidates visibly withheld rather than rendering them as analyses', () => {
+    expect(html).toContain('candidates withheld');
+    expect(html).toContain('intentionally not presented as analyses');
+    expect(html).toContain('No cross-case “largest casino” ranking is computed.');
+    expect(html).toContain('No licence observation is published. Do not infer global legality from this dossier.');
+  });
+});

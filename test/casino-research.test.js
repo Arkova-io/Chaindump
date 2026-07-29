@@ -83,4 +83,17 @@ describe('casino research cohort', () => {
       'stake: invalid outcome_label winner',
     );
   });
+
+  it('publishes only the reviewed initial cohort and keeps the remaining candidates withheld', () => {
+    const migration = readFileSync(
+      new URL('../migrations/0017_casino_verified_initial_cohort.sql', import.meta.url),
+      'utf8',
+    );
+
+    expect(migration).toContain("'overtime', 'Overtime'");
+    expect(migration).toContain("'decentral-games-poker-arcade', 'Decentral Games Poker Arcade'");
+    expect(migration).toContain('evidence_reviewed, evidence_reviewed_at, evidence_reviewer');
+    expect(migration).toContain("'web3-casino-initial-2026-07-29', '2026-07-29', 25, 2, 23, 0");
+    expect(migration).toContain('not_comparable_to_wager_or_revenue');
+  });
 });
