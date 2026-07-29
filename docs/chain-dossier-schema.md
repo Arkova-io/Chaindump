@@ -1,10 +1,9 @@
 # Chain Dossier Schema v1
 
-> **Status (2026-07-16): partially implemented.** The `chain_facts` table exists
-> (migration `0009`) and is **seeded for 10 chains** (74 rows) by the research
-> desk, out of band. **No worker route reads it yet** — the SPA still renders from
-> the slim `dead_chains`/`mid_chains` profile. Treat the sections below as the
-> contract the desk writes to, not as behaviour the API exposes today.
+> **Status (2026-07-29): implemented and expanding.** The `chain_facts` table
+> exists (migration `0009`), `/api/chain/:name` exposes its public dimensions,
+> and the SPA renders those facts on chain detail pages. The slim
+> `dead_chains`/`mid_chains` profiles remain the lifecycle-list render layer.
 
 > The consistent set of data points every chain in Chaindump's intelligence
 > library must carry. Produced by the **research desk** (specialist team), not a
@@ -54,8 +53,8 @@
 | `aliases` | string[] | former names, tickers, DefiLlama variants |
 | `category` | enum | `L1` \| `L2_rollup` \| `L2_validium` \| `sidechain` \| `appchain` \| `other` |
 | `vm` | enum | `EVM` \| `SVM` \| `MoveVM` \| `CosmWasm` \| `Cairo` \| `WASM` \| `other` |
-| `launched` | `YYYY-MM` | mainnet genesis (note if DefiLlama first-tracked differs) |
-| `status` | enum | `dead` \| `zombie` \| `declining` \| `stagnating` \| `pivoting` \| `recovering` \| `quietly_building` |
+| `launched` | date string | `YYYY-MM-DD` when verified; `YYYY-MM` or `YYYY` only with matching `launch_date_precision`; keep token generation and rebrands as separate lifecycle events |
+| `status` | enum | `anticipated` \| `emerging` \| `established` \| `recovering` \| `quietly_building` \| `pivoting` \| `stagnating` \| `declining` \| `zombie` \| `dead` |
 
 ### B. `token` — markets & tokenomics (CoinGecko)
 | field | type | notes |
@@ -75,7 +74,7 @@
 | `total_raised_usd` | number \| null | |
 | `rounds` | array | `{stage, date, amount_usd, lead, investors[], valuation_usd, source_url}` |
 | `treasury_usd` | number \| null | |
-| `backers_tier` | enum | `tier1` \| `tier2` \| `mixed` \| `none_unknown` (derived signal) |
+| `backers_tier` | enum | `tier1` \| `tier2` \| `mixed` \| `corporate` \| `none_unknown` (derived signal) |
 
 ### D. `onchain` — fundamentals (DefiLlama, Token Terminal)
 | field | type | notes |
@@ -95,7 +94,7 @@
 |---|---|---|
 | `founders` | array | `{name, role, prior, source_url}` |
 | `entity` | string | legal org / foundation |
-| `key_events` | array | `{date, type, description, source_url}` — type ∈ `launch` \| `fork` \| `rebrand` \| `layoff` \| `scandal` \| `exploit` \| `regulatory` \| `wind_down` |
+| `key_events` | array | `{date, type, description, source_url}` — type ∈ `formation` \| `funding` \| `launch` \| `fork` \| `rebrand` \| `governance` \| `layoff` \| `scandal` \| `exploit` \| `regulatory` \| `wind_down` |
 | `regulatory_status` | string \| null | |
 
 ### F. `narrative` — narrative & competition
