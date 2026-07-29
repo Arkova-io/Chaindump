@@ -17,13 +17,14 @@ import { query, tool, createSdkMcpServer } from "@anthropic-ai/claude-agent-sdk"
 import { z } from "zod";
 import { PROPOSAL_DATASETS, sanitizeSlug, buildRecord } from "./proposal.js";
 import { buildResearchSystemPrompt, DEFAULT_RESEARCH_TASK } from "./research.js";
+import { buildResearchRunId, postResearchRunStatus } from "./run-status.js";
 
 const MCP_URL = process.env.CHAINDUMP_MCP_URL || "https://chaindump-mcp-270018525501.us-central1.run.app/mcp";
 const QUEUE_DIR = process.env.DESK_QUEUE_DIR || "./proposals";
 const MODEL = process.env.DESK_MODEL || "claude-sonnet-5";
 const MAX_TURNS = Number(process.env.DESK_MAX_TURNS) || 20;
 const CHAINDUMP_BASE = (process.env.CHAINDUMP_BASE_URL || "https://chaindump.xyz").replace(/\/$/, "");
-const DESK_PROPOSAL_TOKEN = process.env.DESK_PROPOSAL_TOKEN || process.env.DESK_TOKEN;
+const DESK_PROPOSAL_TOKEN = process.env.DESK_PROPOSAL_TOKEN || process.env.DESK_TOKEN || "";
 let proposalPersistenceFailures = 0;
 
 // Persist a proposal to the durable, human-reviewed queue via the Worker's
@@ -106,7 +107,7 @@ const SYSTEM_PROMPT = buildResearchSystemPrompt(CHAINDUMP_BASE);
 
 // ---- one desk run -----------------------------------------------------------
 
-async function runDesk(task: string): Promise<void> {
+async function runDesk(task: string): Promise<number> {
   let proposals = 0;
   const run = query({
     prompt: task,
@@ -151,6 +152,7 @@ async function runDesk(task: string): Promise<void> {
   if (proposalPersistenceFailures > 0) {
     throw new Error(`${proposalPersistenceFailures} proposal queue write(s) failed; no ephemeral fallback was accepted`);
   }
+  return proposals;
 }
 
 // ---- entry ------------------------------------------------------------------
@@ -159,13 +161,45 @@ async function runDesk(task: string): Promise<void> {
 // pass across all four analysis surfaces, not an instruction to rewrite them.
 
 const TASK = process.env.DESK_TASK || DEFAULT_RESEARCH_TASK;
+const RESEARCH_RUN_ID = buildResearchRunId();
+let runStatusStarted = false;
 
 try {
   if (!process.env.ANTHROPIC_API_KEY) {
     throw new Error("ANTHROPIC_API_KEY is not set (in prod, load it from GCP Secret Manager `Anthropic`).");
   }
-  await runDesk(TASK);
+  if (DESK_PROPOSAL_TOKEN) {
+    await postResearchRunStatus({
+      baseUrl: CHAINDUMP_BASE,
+      token: DESK_PROPOSAL_TOKEN,
+      runId: RESEARCH_RUN_ID,
+      status: "running",
+    });
+    runStatusStarted = true;
+  }
+  const proposalsQueued = await runDesk(TASK);
+  if (runStatusStarted) {
+    await postResearchRunStatus({
+      baseUrl: CHAINDUMP_BASE,
+      token: DESK_PROPOSAL_TOKEN,
+      runId: RESEARCH_RUN_ID,
+      status: "completed",
+      proposalsQueued,
+    });
+  }
 } catch (e) {
+  if (runStatusStarted) {
+    try {
+      await postResearchRunStatus({
+        baseUrl: CHAINDUMP_BASE,
+        token: DESK_PROPOSAL_TOKEN,
+        runId: RESEARCH_RUN_ID,
+        status: "failed",
+      });
+    } catch (statusError) {
+      console.error("[desk] failed to record terminal run status:", statusError instanceof Error ? statusError.message : statusError);
+    }
+  }
   console.error("[desk] fatal:", e instanceof Error ? e.message : e);
   process.exit(1);
 }

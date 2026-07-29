@@ -19,6 +19,15 @@ function makeDB() {
               due_nft: 2, due_exchange: 3, due_casino: 1, due_chain: 4,
             }] };
           }
+          if (sql.includes('FROM research_desk_runs')) {
+            return { results: [{
+              run_id: 'github-3049-1',
+              started_at: '2026-07-29T18:05:00.000Z',
+              completed_at: '2026-07-29T18:17:00.000Z',
+              status: 'completed',
+              proposals_queued: 3,
+            }] };
+          }
           return { results: [] };
         },
       };
@@ -102,7 +111,8 @@ function freshnessFixture() {
       ('cex', 'contract-deadline', 'dead', '2026-08-05'),
       ('dex', 'feature-fallback', 'mid', '2026-07-30');
     INSERT INTO dead_exchanges VALUES
-      ('contract-deadline', 'cex', '{"forensic_analysis":{"review":{"next_review_at":"2026-07-30"}}}');
+      ('contract-deadline', 'cex', '{"forensic_analysis":{"review":{"next_review_at":"2026-07-30"}}}'),
+      ('no-feature-row', 'cex', '{"forensic_analysis":{"review":{"next_review_at":"2026-07-30"}}}');
     INSERT INTO mid_exchanges VALUES ('feature-fallback', 'dex', '{}');
 
     INSERT INTO casino_cases VALUES
@@ -128,6 +138,11 @@ describe('forensic refresh status route', () => {
     expect(await response.json()).toMatchObject({
       cadence: 'six_hours', promotion_policy: 'human_review_required',
       refresh: { due_nft: 2, due_exchange: 3, due_casino: 1, due_chain: 4 },
+      proposal_agent: {
+        run_id: 'github-3049-1',
+        status: 'completed',
+        proposals_queued: 3,
+      },
     });
   });
 
@@ -148,8 +163,8 @@ describe('forensic refresh status route', () => {
     `).get()).toEqual({
       scanned_nft: 2,
       due_nft: 1,
-      scanned_exchange: 2,
-      due_exchange: 2,
+      scanned_exchange: 3,
+      due_exchange: 3,
       scanned_casino: 2,
       due_casino: 1,
       scanned_chain: 2,
