@@ -61,7 +61,7 @@ function validateSource(source, dossierId) {
     `${prefix} has invalid source_tier`,
   );
   assert(
-    /^https:\/\//.test(source.url),
+    source.url.startsWith('https://'),
     `${prefix} must use a canonical HTTPS URL`,
   );
   assert(
@@ -223,8 +223,10 @@ function validateCase(caseStudy) {
 
   const claimTopics = Object.keys(caseStudy.claims ?? {});
   assert(
-    JSON.stringify(claimTopics.sort()) ===
-      JSON.stringify([...REQUIRED_CLAIM_TOPICS].sort()),
+    JSON.stringify(claimTopics.toSorted((left, right) => left.localeCompare(right))) ===
+      JSON.stringify([...REQUIRED_CLAIM_TOPICS].toSorted(
+        (left, right) => left.localeCompare(right),
+      )),
     `${dossierId} must map exactly the six required claim topics`,
   );
   for (const topic of REQUIRED_CLAIM_TOPICS) {
@@ -263,8 +265,12 @@ export function validateArtifact(artifact) {
     'research_as_of must explicitly match the canonical as_of date',
   );
   assert(
-    JSON.stringify([...artifact.selection.required_claim_topics].sort()) ===
-      JSON.stringify([...REQUIRED_CLAIM_TOPICS].sort()),
+    JSON.stringify([...artifact.selection.required_claim_topics].toSorted(
+      (left, right) => left.localeCompare(right),
+    )) ===
+      JSON.stringify([...REQUIRED_CLAIM_TOPICS].toSorted(
+        (left, right) => left.localeCompare(right),
+      )),
     'Selection metadata must declare the six required claim topics',
   );
   assert(
