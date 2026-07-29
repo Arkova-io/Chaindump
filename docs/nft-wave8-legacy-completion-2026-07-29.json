@@ -1,0 +1,2408 @@
+{
+  "schema": "chaindump-nft-field-v1",
+  "research_as_of": "2026-07-29",
+  "method": "Legacy narratives are retained only where a dated source supports them. Current marketplace observations establish continued activity, not floor depth, organic demand, valuation or financial success. Labels describe observable operating condition; OMB is withheld because current inventory and historical art validation do not establish a comparable lifecycle trend.",
+  "dossiers": [
+    {
+      "slug": "bitcoin-puppets",
+      "name": "Bitcoin Puppets",
+      "chain": "bitcoin-ordinals",
+      "category": "ordinals-meme",
+      "status": "middling",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {
+          "schema": "forensic-freshness-v1",
+          "status_basis": "direct_current",
+          "status_as_of": "2026-07-28",
+          "last_verified_at": "2026-07-29",
+          "next_review_at": "2026-08-29",
+          "stale": false
+        },
+        "launched": "Bitcoin Puppets launched in January 2024 as 10,001 Bitcoin Ordinals by pseudonymous artist Le Puppeteer Fou.",
+        "supply": "10,001 inscriptions. The current marketplace index displayed 5,917 unique owners, but owner count is a marketplace snapshot rather than proof of retained original minters.",
+        "mint_price": "Historical reporting describes a roughly $10 inscription cost. This was not an audited creator raise, and no aggregate primary-sale proceeds are asserted.",
+        "community_history": "The collection built an absurdist, anti-roadmap culture around 'Send them to zero' and 'world peace,' then added a Rune Pups airdrop. A current community gallery and marketplace activity show that the collection persists after its 2024 peak cycle.",
+        "founder_engagement": "Le Puppeteer Fou is pseudonymous and the project was deliberately low-roadmap. Current collection activity is community and marketplace evidence; it does not prove current founder participation.",
+        "benefits": "Meme and inscription provenance, community identity and a historical Rune Pups distribution. No contractual revenue right or durable product utility is established.",
+        "business": "No operating company or recurring creator-revenue engine is established. The strategic model relies on cultural attention and Bitcoin provenance rather than royalties or a consumer product.",
+        "analysis": "Middling is an operational classification: the gallery, 10,001-item index, 5,917-owner snapshot and current trading activity remain observable, but historical drawdown claims are not refreshed into a current valuation conclusion. The collection's survival thesis is culture without a roadmap; liquidity, holder retention and financial success remain unproven.",
+        "team": {
+          "creator": "Le Puppeteer Fou (pseudonymous)",
+          "current_boundary": "Current creator activity and control are not established by the cited current pages.",
+          "source_ids": [
+            "puppets-history",
+            "puppets-community-gallery"
+          ]
+        },
+        "chronology": [
+          {
+            "date": "2024-01",
+            "event": "10,001 Bitcoin Puppets launched as low-cost Ordinals inscriptions.",
+            "source_ids": [
+              "puppets-history"
+            ]
+          },
+          {
+            "date": "2024-04",
+            "event": "Historical reporting documented the collection's peak attention and Rune Pups distribution.",
+            "source_ids": [
+              "puppets-history"
+            ]
+          },
+          {
+            "date": "2026-07-28",
+            "event": "A community gallery indexed the full collection and OPIUM inscriptions.",
+            "source_ids": [
+              "puppets-community-gallery"
+            ]
+          },
+          {
+            "date": "2026-07-28",
+            "event": "The marketplace showed 10,001 items, 5,917 owners and current trading activity.",
+            "source_ids": [
+              "puppets-current-market"
+            ]
+          }
+        ],
+        "market_holder_boundaries": {
+          "market": "Current marketplace activity is observable, but floor depth, wash-adjusted volume and executable bids are not established.",
+          "holders": "5,917 is a marketplace unique-owner snapshot, not verified people or retained original minters.",
+          "source_ids": [
+            "puppets-current-market"
+          ]
+        },
+        "products_and_value_capture": {
+          "products": [
+            "Bitcoin inscriptions",
+            "community gallery",
+            "historical Rune Pups distribution"
+          ],
+          "capture": "No royalties, operating revenue or contractual token cash flow is established.",
+          "source_ids": [
+            "puppets-history",
+            "puppets-community-gallery"
+          ]
+        },
+        "token_model": {
+          "token": "No collection token established; Rune Pups and PUPS references are adjacent distributions or projects.",
+          "boundary": "No revenue right or issuer liability is inferred.",
+          "source_ids": [
+            "puppets-history"
+          ]
+        },
+        "chain_dependence": {
+          "current_scope": "Bitcoin Ordinals",
+          "implication": "Value depends on inscription culture, Bitcoin fee conditions, indexers and marketplace distribution.",
+          "source_ids": [
+            "puppets-current-market"
+          ]
+        },
+        "why": {
+          "finding": "The collection persists because an intentionally absurdist meme identity gives holders a reason to coordinate without waiting for product delivery. That lowers roadmap-disappointment risk but leaves no economic engine beyond attention and provenance.",
+          "source_ids": [
+            "puppets-history",
+            "puppets-community-gallery",
+            "puppets-current-market"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "choice": "Use crude meme art and anti-speculation language instead of a polished utility roadmap.",
+            "consequence": "Built a distinctive culture while making value almost entirely attention-dependent.",
+            "source_ids": [
+              "puppets-history"
+            ]
+          },
+          {
+            "choice": "Remain pseudonymous and low-product.",
+            "consequence": "Reduced conventional founder expectations but left stewardship and accountability opaque.",
+            "source_ids": [
+              "puppets-history"
+            ]
+          },
+          {
+            "choice": "Reward holders through an adjacent airdrop rather than contractual collection cash flow.",
+            "consequence": "Created a temporary benefit without proving recurring value capture.",
+            "source_ids": [
+              "puppets-history"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "finding": "A formal product roadmap could have added measurable utility, but it also could have weakened the anti-roadmap identity and created delivery liabilities. No evidence proves either path would improve durable demand.",
+          "source_ids": [
+            "puppets-history",
+            "puppets-community-gallery"
+          ]
+        },
+        "risks": [
+          {
+            "risk": "Meme attention can decay without a product or recurring revenue engine.",
+            "source_ids": [
+              "puppets-history"
+            ]
+          },
+          {
+            "risk": "Pseudonymous stewardship makes continuity and accountability difficult to verify.",
+            "source_ids": [
+              "puppets-history"
+            ]
+          },
+          {
+            "risk": "Marketplace counts do not establish liquid exit capacity.",
+            "source_ids": [
+              "puppets-current-market"
+            ]
+          }
+        ],
+        "watch": [
+          {
+            "signal": "Sustained sales and owner count across monthly reviews.",
+            "implication": "Would distinguish durable collector activity from a short observation.",
+            "source_ids": [
+              "puppets-current-market"
+            ]
+          },
+          {
+            "signal": "Verified creator return or new holder distribution.",
+            "implication": "Would change the stewardship and benefit thesis.",
+            "source_ids": [
+              "puppets-community-gallery"
+            ]
+          }
+        ],
+        "unknowns": [
+          "Current creator involvement and governance control.",
+          "Wash-adjusted volume, bid depth and repeat-buyer retention.",
+          "Current floor and valuation on a comparable venue after Magic Eden's Bitcoin shutdown.",
+          "Whether PUPS or Rune Pups create any enforceable benefit for Puppet holders."
+        ],
+        "review": {
+          "last_verified_at": "2026-07-29",
+          "next_review_at": "2026-08-29",
+          "triggers": [
+            "creator return",
+            "new distribution",
+            "marketplace shutdown",
+            "sustained activity change"
+          ]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "middling",
+            "summary": "Collection inventory, owners, gallery and current trading remained observable, while valuation and economic durability were not established.",
+            "confidence": "medium",
+            "as_of": "2026-07-28",
+            "source_refs": [
+              "puppets-community-gallery",
+              "puppets-current-market"
+            ]
+          },
+          "why": {
+            "summary": "A strong anti-roadmap meme identity sustains coordination without product delivery, but creates no independent economic engine.",
+            "confidence": "medium",
+            "source_refs": [
+              "puppets-history",
+              "puppets-community-gallery"
+            ]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Prioritize meme culture over formal utility.",
+              "consequence": "Created differentiation with high attention dependence.",
+              "confidence": "high",
+              "source_refs": [
+                "puppets-history"
+              ]
+            },
+            {
+              "decision": "Keep stewardship pseudonymous and minimal.",
+              "consequence": "Reduced roadmap expectations while obscuring accountability.",
+              "confidence": "medium",
+              "source_refs": [
+                "puppets-history"
+              ]
+            },
+            {
+              "decision": "Use an adjacent airdrop as a holder benefit.",
+              "consequence": "Added a one-time reward without recurring cash flow.",
+              "confidence": "high",
+              "source_refs": [
+                "puppets-history"
+              ]
+            }
+          ],
+          "counterfactual": {
+            "summary": "A conventional roadmap might diversify utility but could undermine the culture that differentiates the collection.",
+            "confidence": "low",
+            "source_refs": [
+              "puppets-history"
+            ]
+          },
+          "watch": [
+            {
+              "signal": "Monthly marketplace and owner continuity.",
+              "implication": "Tests durable participation.",
+              "source_refs": [
+                "puppets-current-market"
+              ]
+            }
+          ],
+          "unknowns": [
+            "Current creator involvement.",
+            "Organic versus wash activity.",
+            "Executable liquidity.",
+            "Recurring holder value."
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-08-29",
+            "reviewer": "Chaindump Research"
+          }
+        },
+        "evidence": [
+          {
+            "field": "launch",
+            "value": "January 2024 launch",
+            "as_of": "2024-01-31",
+            "basis": "editorial",
+            "source_ids": [
+              "puppets-history"
+            ]
+          },
+          {
+            "field": "supply_or_mint",
+            "value": "10,001 inscriptions; 5,917 unique-owner marketplace snapshot",
+            "as_of": "2026-07-28",
+            "basis": "marketplace",
+            "source_ids": [
+              "puppets-current-market"
+            ]
+          },
+          {
+            "field": "mint_price",
+            "value": "Roughly $10 inscription cost; aggregate creator raise not established",
+            "as_of": "2024-01-31",
+            "basis": "editorial",
+            "source_ids": [
+              "puppets-history"
+            ]
+          },
+          {
+            "field": "lifecycle_status",
+            "value": "middling — current collection, owners and activity observed; valuation and liquidity withheld",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "puppets-community-gallery",
+              "puppets-current-market"
+            ]
+          },
+          {
+            "field": "community_history",
+            "value": "Anti-roadmap meme culture and Rune Pups history; current gallery persists",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "puppets-history",
+              "puppets-community-gallery"
+            ]
+          },
+          {
+            "field": "founder_engagement",
+            "value": "Pseudonymous founder history; current founder activity unverified",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "puppets-history",
+              "puppets-community-gallery"
+            ]
+          },
+          {
+            "field": "benefits",
+            "value": "Meme provenance and historical airdrop; no contractual cash flow",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "puppets-history"
+            ]
+          },
+          {
+            "field": "business",
+            "value": "No operating company or recurring creator-revenue engine established",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "puppets-history",
+              "puppets-current-market"
+            ]
+          },
+          {
+            "field": "analysis",
+            "value": "Current continuity verified; liquidity, valuation and financial-success claims withheld",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "puppets-community-gallery",
+              "puppets-current-market"
+            ]
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "puppets-history",
+          "title": "Bitcoin Puppets Ordinals Guide",
+          "url": "https://nftnow.com/guides/bitcoin-puppets-ordinals-guide/",
+          "publisher": "nft now",
+          "source_date": null,
+          "source_date_kind": "unknown",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "historical_event",
+          "stale_after": null,
+          "stale": false
+        },
+        {
+          "id": "puppets-community-gallery",
+          "title": "Bitcoin Puppets Community Gallery",
+          "url": "https://bitcoinpuppets.community/gallery",
+          "publisher": "Bitcoin Puppets Community",
+          "source_date": "2026-07-28",
+          "source_date_kind": "observed",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "current_state",
+          "stale_after": "2026-08-29",
+          "stale": false
+        },
+        {
+          "id": "puppets-current-market",
+          "title": "Bitcoin Puppets Current Marketplace",
+          "url": "https://ord.net/collection/bitcoin-puppets",
+          "publisher": "ORD",
+          "source_date": "2026-07-28",
+          "source_date_kind": "observed",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "current_state",
+          "stale_after": "2026-08-29",
+          "stale": false
+        }
+      ]
+    },
+    {
+      "slug": "mad-lads",
+      "name": "Mad Lads",
+      "chain": "solana",
+      "category": "pfp-tech",
+      "status": "thriving",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {
+          "schema": "forensic-freshness-v1",
+          "status_basis": "direct_current",
+          "status_as_of": "2026-07-28",
+          "last_verified_at": "2026-07-29",
+          "next_review_at": "2026-08-29",
+          "stale": false
+        },
+        "launched": "Mad Lads launched April 20, 2023 as 10,000 Solana xNFTs at 6.9 SOL each.",
+        "supply": "10,000 Mad Lads on Solana. Supply is distinct from Backpack customers, BP token holders and exchange accounts.",
+        "mint_price": "6.9 SOL per NFT. Historical USD conversion and aggregate raise depend on execution and contemporaneous SOL price and are not restated as audited proceeds.",
+        "community_history": "The collection launched during Solana's post-FTX contraction and became Backpack's culture layer. The anti-bot mint, WAO identity and xNFT inventory mechanics differentiated it from a standard PFP.",
+        "founder_engagement": "Backpack co-founder Armani Ferrante is quoted describing Mad Lads as an engagement engine, while the collection remains tied to current Backpack products. Current collection-specific staffing and treasury are undisclosed.",
+        "benefits": "xNFT inventory, staking and loyalty mechanics, Backpack-linked identity and ecosystem access. Product linkage does not guarantee equity, exchange revenue rights or token cash flow.",
+        "business": "Mad Lads is strategically linked to Backpack's active wallet and exchange rather than operating as a standalone consumer brand. That creates live distribution and founder alignment, but also concentrates risk in a regulated exchange business.",
+        "analysis": "Thriving means a current collection surface and active Backpack wallet/exchange ecosystem remain directly observable, with the NFT still framed as the culture of that product network. It does not establish current floor, organic volume, retained holders, exchange profitability, or legal rights to Backpack or BP economics.",
+        "team": {
+          "founders": [
+            "Armani Ferrante",
+            "Tristan Yver"
+          ],
+          "operator_context": "Coral/Backpack",
+          "source_ids": [
+            "mad-lads-history",
+            "backpack-current"
+          ]
+        },
+        "chronology": [
+          {
+            "date": "2023-04-20",
+            "event": "10,000 Mad Lads launched at 6.9 SOL.",
+            "source_ids": [
+              "mad-lads-history"
+            ]
+          },
+          {
+            "date": "2023-12-22",
+            "event": "Mad News documented xNFT inventory, staking and the collection's Backpack culture role.",
+            "source_ids": [
+              "mad-lads-history"
+            ]
+          },
+          {
+            "date": "2026-07-28",
+            "event": "The Mad Lads collection site remained available.",
+            "source_ids": [
+              "mad-lads-current"
+            ]
+          },
+          {
+            "date": "2026-07-28",
+            "event": "Backpack's current exchange and wallet surface remained live.",
+            "source_ids": [
+              "backpack-current"
+            ]
+          }
+        ],
+        "market_holder_boundaries": {
+          "market": "No independently verified current floor, wash-adjusted volume, bid depth or market share.",
+          "holders": "NFT holders, Backpack users, exchange customers and BP holders are different cohorts.",
+          "source_ids": [
+            "mad-lads-current",
+            "backpack-current"
+          ]
+        },
+        "products_and_value_capture": {
+          "products": [
+            "Mad Lads xNFT collection",
+            "Backpack wallet",
+            "Backpack exchange",
+            "xNFT inventory and loyalty mechanics"
+          ],
+          "capture": "The NFT has product linkage but no cited equity, revenue-share or guaranteed token right.",
+          "source_ids": [
+            "mad-lads-history",
+            "backpack-current"
+          ]
+        },
+        "token_model": {
+          "token": "BP ecosystem token is adjacent to Backpack; no NFT contractual cash-flow right is established.",
+          "boundary": "Historical or future distributions must not be treated as guaranteed recurring yield.",
+          "source_ids": [
+            "backpack-current"
+          ]
+        },
+        "chain_dependence": {
+          "current_scope": "Solana NFT and xNFT infrastructure with a multichain Backpack business.",
+          "implication": "The NFT depends on Solana culture while its linked company can diversify across chains and products.",
+          "source_ids": [
+            "mad-lads-history",
+            "backpack-current"
+          ]
+        },
+        "why": {
+          "finding": "Mad Lads has remained relevant because the NFT was designed as a culture and application layer for a continuously operated wallet and exchange, giving the community a live distribution surface that pure PFP peers lack.",
+          "source_ids": [
+            "mad-lads-history",
+            "mad-lads-current",
+            "backpack-current"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "choice": "Launch during Solana's post-FTX contraction instead of waiting for a stronger NFT market.",
+            "consequence": "Captured ecosystem loyalty when competing flagship collections were leaving.",
+            "source_ids": [
+              "mad-lads-history"
+            ]
+          },
+          {
+            "choice": "Make each NFT an xNFT with inventory and loyalty mechanics.",
+            "consequence": "Connected identity to product behavior rather than relying only on image provenance.",
+            "source_ids": [
+              "mad-lads-history"
+            ]
+          },
+          {
+            "choice": "Tie the collection to Backpack's wallet and exchange.",
+            "consequence": "Created persistent distribution while concentrating lifecycle risk in Backpack execution and regulation.",
+            "source_ids": [
+              "mad-lads-history",
+              "backpack-current"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "finding": "As a standalone PFP, Mad Lads would have had less product distribution and less company alignment. The linkage improves continuity but does not prove that NFT holders capture Backpack's economic success.",
+          "source_ids": [
+            "mad-lads-history",
+            "backpack-current"
+          ]
+        },
+        "risks": [
+          {
+            "risk": "Backpack regulatory or operating failure would weaken the collection's central thesis.",
+            "source_ids": [
+              "backpack-current"
+            ]
+          },
+          {
+            "risk": "Product affiliation can be mistaken for equity or revenue rights that are not documented.",
+            "source_ids": [
+              "mad-lads-history",
+              "backpack-current"
+            ]
+          },
+          {
+            "risk": "Current NFT market depth and retention remain unverified.",
+            "source_ids": [
+              "mad-lads-current"
+            ]
+          }
+        ],
+        "watch": [
+          {
+            "signal": "Backpack product, licensing or regulatory change.",
+            "implication": "Directly tests the linked-business thesis.",
+            "source_ids": [
+              "backpack-current"
+            ]
+          },
+          {
+            "signal": "New xNFT or holder benefit with explicit terms.",
+            "implication": "Would show whether product linkage continues to accrue to the NFT.",
+            "source_ids": [
+              "mad-lads-current"
+            ]
+          }
+        ],
+        "unknowns": [
+          "Current NFT holders, floor, executable liquidity and organic volume.",
+          "Backpack revenue, profitability, reserves and regulatory exposure.",
+          "Any enforceable NFT-holder right to BP or exchange economics.",
+          "Current collection-specific team, treasury and roadmap."
+        ],
+        "review": {
+          "last_verified_at": "2026-07-29",
+          "next_review_at": "2026-08-29",
+          "triggers": [
+            "Backpack regulatory event",
+            "new holder distribution",
+            "collection shutdown",
+            "audited market disclosure"
+          ]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "thriving",
+            "summary": "The collection and its linked Backpack wallet/exchange ecosystem remained directly operational.",
+            "confidence": "high",
+            "as_of": "2026-07-28",
+            "source_refs": [
+              "mad-lads-current",
+              "backpack-current"
+            ]
+          },
+          "why": {
+            "summary": "Embedding the NFT into a live wallet and exchange created continuing distribution and founder alignment beyond PFP speculation.",
+            "confidence": "medium",
+            "source_refs": [
+              "mad-lads-history",
+              "backpack-current"
+            ]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Launch into a weak Solana cycle.",
+              "consequence": "Captured a vacant flagship role.",
+              "confidence": "medium",
+              "source_refs": [
+                "mad-lads-history"
+              ]
+            },
+            {
+              "decision": "Use xNFT inventory and loyalty mechanics.",
+              "consequence": "Linked identity to application behavior.",
+              "confidence": "high",
+              "source_refs": [
+                "mad-lads-history"
+              ]
+            },
+            {
+              "decision": "Tie the collection to Backpack.",
+              "consequence": "Added live distribution and concentrated company risk.",
+              "confidence": "high",
+              "source_refs": [
+                "mad-lads-history",
+                "backpack-current"
+              ]
+            }
+          ],
+          "counterfactual": {
+            "summary": "Without Backpack linkage the collection would have less product continuity, but the linkage still conveys no documented company cash-flow right.",
+            "confidence": "medium",
+            "source_refs": [
+              "mad-lads-history",
+              "backpack-current"
+            ]
+          },
+          "watch": [
+            {
+              "signal": "Backpack licensing, product and regulatory continuity.",
+              "implication": "Tests the core linked-business dependency.",
+              "source_refs": [
+                "backpack-current"
+              ]
+            }
+          ],
+          "unknowns": [
+            "NFT market depth.",
+            "Backpack profitability.",
+            "Holder economic rights.",
+            "Current collection staffing."
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-08-29",
+            "reviewer": "Chaindump Research"
+          }
+        },
+        "evidence": [
+          {
+            "field": "launch",
+            "value": "2023-04-20 at 6.9 SOL",
+            "as_of": "2023-04-20",
+            "basis": "operator",
+            "source_ids": [
+              "mad-lads-history"
+            ]
+          },
+          {
+            "field": "supply_or_mint",
+            "value": "10,000 Solana xNFTs",
+            "as_of": "2023-12-22",
+            "basis": "operator",
+            "source_ids": [
+              "mad-lads-history"
+            ]
+          },
+          {
+            "field": "mint_price",
+            "value": "6.9 SOL; audited aggregate proceeds not established",
+            "as_of": "2023-04-20",
+            "basis": "operator",
+            "source_ids": [
+              "mad-lads-history"
+            ]
+          },
+          {
+            "field": "lifecycle_status",
+            "value": "thriving — collection and linked Backpack products currently operational; NFT market metrics withheld",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "mad-lads-current",
+              "backpack-current"
+            ]
+          },
+          {
+            "field": "community_history",
+            "value": "WAO and xNFT culture linked to Backpack",
+            "as_of": "2026-07-28",
+            "basis": "operator",
+            "source_ids": [
+              "mad-lads-history",
+              "mad-lads-current"
+            ]
+          },
+          {
+            "field": "founder_engagement",
+            "value": "Founder-linked Backpack remains live; collection-specific staffing undisclosed",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "mad-lads-history",
+              "backpack-current"
+            ]
+          },
+          {
+            "field": "benefits",
+            "value": "xNFT inventory, loyalty and Backpack-linked identity; no equity right",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "mad-lads-history",
+              "backpack-current"
+            ]
+          },
+          {
+            "field": "business",
+            "value": "Linked to active wallet and exchange; current financial performance withheld",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "backpack-current"
+            ]
+          },
+          {
+            "field": "analysis",
+            "value": "Current product continuity verified; NFT liquidity and company economics not established",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "mad-lads-current",
+              "backpack-current"
+            ]
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "mad-lads-history",
+          "title": "What Are the Mad Lads?",
+          "url": "https://news.madlads.com/p/what-are-the-mad-lads",
+          "publisher": "Mad News",
+          "source_date": "2023-12-22",
+          "source_date_kind": "published",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "historical_event",
+          "stale_after": null,
+          "stale": false
+        },
+        {
+          "id": "mad-lads-current",
+          "title": "Mad Lads Collection",
+          "url": "https://www.madlads.com/",
+          "publisher": "Mad Lads",
+          "source_date": "2026-07-28",
+          "source_date_kind": "observed",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "current_state",
+          "stale_after": "2026-08-29",
+          "stale": false
+        },
+        {
+          "id": "backpack-current",
+          "title": "Backpack Exchange and Wallet",
+          "url": "https://backpack.exchange/",
+          "publisher": "Backpack",
+          "source_date": "2026-07-28",
+          "source_date_kind": "observed",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "current_state",
+          "stale_after": "2026-08-29",
+          "stale": false
+        }
+      ]
+    },
+    {
+      "slug": "nodemonkes",
+      "name": "NodeMonkes",
+      "chain": "bitcoin-ordinals",
+      "category": "ordinals-pfp",
+      "status": "middling",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {
+          "schema": "forensic-freshness-v1",
+          "status_basis": "direct_current",
+          "status_as_of": "2026-07-28",
+          "last_verified_at": "2026-07-29",
+          "next_review_at": "2026-08-29",
+          "stale": false
+        },
+        "launched": "NodeMonkes were inscribed in 2023 and publicly minted in December 2023 as a 10,000-piece Bitcoin Ordinals collection.",
+        "supply": "10,000 inscriptions; the current marketplace displayed 4,468 unique owners. Owner count is a wallet snapshot, not verified people or original-minter retention.",
+        "mint_price": "The public sale used a Dutch-auction structure. Historical price details are retained as context, not restated as an audited aggregate raise.",
+        "community_history": "The 'first original 10k' provenance claim, anonymous team and Send Nodes culture drove the collection's 2024 prominence. Current official links and marketplace activity show continued operation after the peak cycle.",
+        "founder_engagement": "The founders remain pseudonymous and current official surfaces are community links rather than a product roadmap. Current team size, treasury and development activity are unknown.",
+        "benefits": "Early-inscription provenance, PFP identity and current collection trading. No recurring product, royalties or contractual token cash flow is established.",
+        "business": "No operating consumer business or recurring creator-revenue engine is established. The lifecycle thesis is provenance and community coordination.",
+        "analysis": "Middling means the collection still has official community surfaces, 10,000 indexed items, 4,468 unique owners and current trading observations. It does not convert those observations into a claim about current floor depth, valuation, holder retention, market leadership or founder execution.",
+        "team": {
+          "identity": "Pseudonymous founding team",
+          "current_boundary": "Current staffing, treasury and product development are unknown.",
+          "source_ids": [
+            "nodemonkes-history",
+            "nodemonkes-official-links"
+          ]
+        },
+        "chronology": [
+          {
+            "date": "2023",
+            "event": "The 10,000 images were inscribed on Bitcoin.",
+            "source_ids": [
+              "nodemonkes-history"
+            ]
+          },
+          {
+            "date": "2023-12",
+            "event": "The collection publicly minted through a Dutch auction.",
+            "source_ids": [
+              "nodemonkes-history"
+            ]
+          },
+          {
+            "date": "2026-07-28",
+            "event": "The official link hub still directed users to community and collection surfaces.",
+            "source_ids": [
+              "nodemonkes-official-links"
+            ]
+          },
+          {
+            "date": "2026-07-28",
+            "event": "The marketplace displayed 10,000 items, 4,468 owners and current trading activity.",
+            "source_ids": [
+              "nodemonkes-current-market"
+            ]
+          }
+        ],
+        "market_holder_boundaries": {
+          "market": "Current trading exists, but floor depth, wash-adjusted volume, executable bids and market share are unverified.",
+          "holders": "4,468 marketplace owners are wallets, not people or retained original minters.",
+          "source_ids": [
+            "nodemonkes-current-market"
+          ]
+        },
+        "products_and_value_capture": {
+          "products": [
+            "Bitcoin Ordinals PFP collection",
+            "community channels",
+            "collection index"
+          ],
+          "capture": "No royalties or recurring operating revenue established.",
+          "source_ids": [
+            "nodemonkes-official-links",
+            "nodemonkes-current-market"
+          ]
+        },
+        "token_model": {
+          "token": "No collection token established by the cited current sources.",
+          "boundary": "Adjacent Runes or airdrops are not treated as guaranteed NodeMonkes cash flow.",
+          "source_ids": [
+            "nodemonkes-official-links"
+          ]
+        },
+        "chain_dependence": {
+          "current_scope": "Bitcoin Ordinals",
+          "implication": "The thesis depends on early-inscription provenance, Bitcoin fees, indexers and Ordinals collector demand.",
+          "source_ids": [
+            "nodemonkes-history",
+            "nodemonkes-current-market"
+          ]
+        },
+        "why": {
+          "finding": "NodeMonkes persists because its early 10k provenance and blue-chip identity create status value without a product roadmap. That is a durable cultural differentiator but not a revenue engine.",
+          "source_ids": [
+            "nodemonkes-history",
+            "nodemonkes-official-links",
+            "nodemonkes-current-market"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "choice": "Anchor identity in early-inscription provenance.",
+            "consequence": "Created a defensible historical narrative tied to Bitcoin rather than shipped utility.",
+            "source_ids": [
+              "nodemonkes-history"
+            ]
+          },
+          {
+            "choice": "Use a Dutch auction after earlier free-mint expectations.",
+            "consequence": "Monetized demand while creating trust and fairness controversy.",
+            "source_ids": [
+              "nodemonkes-history"
+            ]
+          },
+          {
+            "choice": "Keep the team anonymous and roadmap-light.",
+            "consequence": "Reduced product promises while leaving stewardship opaque.",
+            "source_ids": [
+              "nodemonkes-history",
+              "nodemonkes-official-links"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "finding": "A transparent team and product roadmap could improve accountability but might dilute the provenance-first thesis. No evidence shows that utility would create deeper demand than historical status.",
+          "source_ids": [
+            "nodemonkes-history",
+            "nodemonkes-official-links"
+          ]
+        },
+        "risks": [
+          {
+            "risk": "Provenance value depends on sustained Ordinals cultural relevance.",
+            "source_ids": [
+              "nodemonkes-history"
+            ]
+          },
+          {
+            "risk": "Anonymous stewardship obscures continuity and accountability.",
+            "source_ids": [
+              "nodemonkes-official-links"
+            ]
+          },
+          {
+            "risk": "Current trade observations do not prove liquid exit capacity.",
+            "source_ids": [
+              "nodemonkes-current-market"
+            ]
+          }
+        ],
+        "watch": [
+          {
+            "signal": "Monthly owner, listing and trading continuity.",
+            "implication": "Tests whether blue-chip status produces durable participation.",
+            "source_ids": [
+              "nodemonkes-current-market"
+            ]
+          },
+          {
+            "signal": "Verified team or product disclosure.",
+            "implication": "Would alter the stewardship and value-capture thesis.",
+            "source_ids": [
+              "nodemonkes-official-links"
+            ]
+          }
+        ],
+        "unknowns": [
+          "Current founder control, staffing and treasury.",
+          "Current floor, bid depth and wash-adjusted volume.",
+          "Original-minter and repeat-buyer retention.",
+          "Any recurring holder benefit or creator revenue."
+        ],
+        "review": {
+          "last_verified_at": "2026-07-29",
+          "next_review_at": "2026-08-29",
+          "triggers": [
+            "team disclosure",
+            "new utility",
+            "marketplace shutdown",
+            "sustained activity change"
+          ]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "middling",
+            "summary": "Official community surfaces and current marketplace activity persist, while liquidity and economic durability remain unverified.",
+            "confidence": "medium",
+            "as_of": "2026-07-28",
+            "source_refs": [
+              "nodemonkes-official-links",
+              "nodemonkes-current-market"
+            ]
+          },
+          "why": {
+            "summary": "Early-inscription provenance sustains status without a product roadmap, leaving the collection dependent on Ordinals culture.",
+            "confidence": "medium",
+            "source_refs": [
+              "nodemonkes-history",
+              "nodemonkes-current-market"
+            ]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Center early-inscription provenance.",
+              "consequence": "Created status value tied to Bitcoin history.",
+              "confidence": "high",
+              "source_refs": [
+                "nodemonkes-history"
+              ]
+            },
+            {
+              "decision": "Use a Dutch auction.",
+              "consequence": "Captured demand and introduced fairness controversy.",
+              "confidence": "medium",
+              "source_refs": [
+                "nodemonkes-history"
+              ]
+            },
+            {
+              "decision": "Remain anonymous and roadmap-light.",
+              "consequence": "Limited delivery liabilities and accountability.",
+              "confidence": "medium",
+              "source_refs": [
+                "nodemonkes-official-links"
+              ]
+            }
+          ],
+          "counterfactual": {
+            "summary": "A product roadmap might broaden utility but could weaken the provenance-first identity; no comparative evidence resolves the tradeoff.",
+            "confidence": "low",
+            "source_refs": [
+              "nodemonkes-history"
+            ]
+          },
+          "watch": [
+            {
+              "signal": "Monthly market and owner continuity.",
+              "implication": "Tests durable participation.",
+              "source_refs": [
+                "nodemonkes-current-market"
+              ]
+            }
+          ],
+          "unknowns": [
+            "Team control.",
+            "Executable liquidity.",
+            "Buyer retention.",
+            "Recurring value capture."
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-08-29",
+            "reviewer": "Chaindump Research"
+          }
+        },
+        "evidence": [
+          {
+            "field": "launch",
+            "value": "Inscribed in 2023; public mint December 2023",
+            "as_of": "2023-12-31",
+            "basis": "editorial",
+            "source_ids": [
+              "nodemonkes-history"
+            ]
+          },
+          {
+            "field": "supply_or_mint",
+            "value": "10,000 items; 4,468 owner snapshot",
+            "as_of": "2026-07-28",
+            "basis": "marketplace",
+            "source_ids": [
+              "nodemonkes-current-market"
+            ]
+          },
+          {
+            "field": "mint_price",
+            "value": "Dutch auction; audited aggregate proceeds not established",
+            "as_of": "2023-12-31",
+            "basis": "editorial",
+            "source_ids": [
+              "nodemonkes-history"
+            ]
+          },
+          {
+            "field": "lifecycle_status",
+            "value": "middling — current official and market surfaces observed; liquidity and valuation withheld",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "nodemonkes-official-links",
+              "nodemonkes-current-market"
+            ]
+          },
+          {
+            "field": "community_history",
+            "value": "Early-10k provenance and Send Nodes culture persist through current surfaces",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "nodemonkes-history",
+              "nodemonkes-official-links"
+            ]
+          },
+          {
+            "field": "founder_engagement",
+            "value": "Pseudonymous team; current staffing and development unknown",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "nodemonkes-official-links"
+            ]
+          },
+          {
+            "field": "benefits",
+            "value": "Provenance and community identity; no recurring cash flow established",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "nodemonkes-history",
+              "nodemonkes-current-market"
+            ]
+          },
+          {
+            "field": "business",
+            "value": "No recurring operating business or creator revenue established",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "nodemonkes-official-links",
+              "nodemonkes-current-market"
+            ]
+          },
+          {
+            "field": "analysis",
+            "value": "Current continuity verified; liquidity, valuation and founder execution not established",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "nodemonkes-official-links",
+              "nodemonkes-current-market"
+            ]
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "nodemonkes-history",
+          "title": "A Guide to NodeMonkes",
+          "url": "https://nftnow.com/guides/a-guide-to-nodemonkes-10k-pixelated-ordinals-explained/",
+          "publisher": "nft now",
+          "source_date": null,
+          "source_date_kind": "unknown",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "historical_event",
+          "stale_after": null,
+          "stale": false
+        },
+        {
+          "id": "nodemonkes-official-links",
+          "title": "NodeMonkes Official Links",
+          "url": "https://linktr.ee/nodemonkes",
+          "publisher": "NodeMonkes",
+          "source_date": "2026-07-28",
+          "source_date_kind": "observed",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "current_state",
+          "stale_after": "2026-08-29",
+          "stale": false
+        },
+        {
+          "id": "nodemonkes-current-market",
+          "title": "NodeMonkes Current Marketplace",
+          "url": "https://ord.net/collection/nodemonkes",
+          "publisher": "ORD",
+          "source_date": "2026-07-28",
+          "source_date_kind": "observed",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "current_state",
+          "stale_after": "2026-08-29",
+          "stale": false
+        }
+      ]
+    },
+    {
+      "slug": "okay-bears",
+      "name": "Okay Bears",
+      "chain": "solana",
+      "category": "pfp-brand",
+      "status": "middling",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {
+          "schema": "forensic-freshness-v1",
+          "status_basis": "direct_current",
+          "status_as_of": "2026-07-28",
+          "last_verified_at": "2026-07-29",
+          "next_review_at": "2026-10-29",
+          "stale": false
+        },
+        "launched": "Okay Bears launched in April 2022 as a 10,000-piece Solana collection.",
+        "supply": "10,000 original Solana NFTs. Store products, Bitcoin assets and brand customers are separate populations.",
+        "mint_price": "Historical reporting places the mint at 1.5 SOL. Aggregate creator proceeds and current market value are not treated as audited.",
+        "community_history": "Okay Bears converted an explosive 2022 launch into a licensing and public-impact brand. Current operator pages document Zara distribution, charity fundraising, apparel and basketball-court mural programs.",
+        "founder_engagement": "The current brand site remains operated and describes active programs, but current founder roles, staffing, ownership and treasury are not disclosed.",
+        "benefits": "Brand identity, holder commercial expression, apparel and public-impact programs. The cited current pages do not establish exclusive NFT-holder revenue rights or recurring distributions.",
+        "business": "Okay Bears pursued licensing, apparel and impact projects instead of remaining only an NFT. Current commerce and court projects prove operation, but current revenue, margins, licensing income, NFT conversion and profitability are undisclosed.",
+        "analysis": "Middling reflects a real operating brand with current commerce and public-impact projects, while the NFT's current liquidity, holder retention and economic connection to brand revenue remain unverified. The strategic brand pivot is active, but evidence does not establish that it restored NFT market success.",
+        "team": {
+          "historical_founders": [
+            "Kais",
+            "Suby"
+          ],
+          "current_boundary": "Current leadership, ownership and staffing are undisclosed on the cited operator pages.",
+          "source_ids": [
+            "okay-bears-launch",
+            "okay-bears-current"
+          ]
+        },
+        "chronology": [
+          {
+            "date": "2022-04-26",
+            "event": "Okay Bears launched at 1.5 SOL and generated high first-day secondary activity.",
+            "source_ids": [
+              "okay-bears-launch"
+            ]
+          },
+          {
+            "date": "2022-09-20",
+            "event": "The project signed a licensing agreement with IMG.",
+            "source_ids": [
+              "okay-bears-img"
+            ]
+          },
+          {
+            "date": "2023",
+            "event": "The operator reports a Zara apparel release across more than 1,100 stores in 74 countries.",
+            "source_ids": [
+              "okay-bears-current"
+            ]
+          },
+          {
+            "date": "2026-07-28",
+            "event": "Current apparel and court-transformation products remained available.",
+            "source_ids": [
+              "okay-bears-current",
+              "okay-bears-shop"
+            ]
+          }
+        ],
+        "market_holder_boundaries": {
+          "market": "No current independently verified NFT floor, organic volume, bid depth or market share.",
+          "holders": "NFT owners, apparel buyers, charitable participants and brand followers are different cohorts.",
+          "source_ids": [
+            "okay-bears-current",
+            "okay-bears-shop"
+          ]
+        },
+        "products_and_value_capture": {
+          "products": [
+            "Solana PFP collection",
+            "licensed apparel",
+            "direct-to-consumer store",
+            "public-court art and impact projects"
+          ],
+          "capture": "Commerce exists, but current revenue, margins and NFT-holder economic participation are undisclosed.",
+          "source_ids": [
+            "okay-bears-current",
+            "okay-bears-shop",
+            "okay-bears-img"
+          ]
+        },
+        "token_model": {
+          "token": "No current collection token or contractual revenue share established by cited operator pages.",
+          "boundary": "Founder coins or adjacent assets are not treated as Okay Bears holder cash flow.",
+          "source_ids": [
+            "okay-bears-current"
+          ]
+        },
+        "chain_dependence": {
+          "current_scope": "Original NFT identity is Solana; physical products and public art distribute beyond the chain.",
+          "implication": "Off-chain distribution reduces dependence on Solana attention, while NFT value capture may decouple from brand success.",
+          "source_ids": [
+            "okay-bears-launch",
+            "okay-bears-current"
+          ]
+        },
+        "why": {
+          "finding": "Okay Bears survived by converting a family-friendly PFP identity into licensing, apparel and visible public-impact projects. That creates brand continuity beyond crypto, but the missing bridge from brand commerce to NFT-holder economics limits the collection thesis.",
+          "source_ids": [
+            "okay-bears-img",
+            "okay-bears-current",
+            "okay-bears-shop"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "choice": "Pursue a global IMG licensing relationship.",
+            "consequence": "Opened mainstream distribution pathways but did not itself prove scaled revenue.",
+            "source_ids": [
+              "okay-bears-img"
+            ]
+          },
+          {
+            "choice": "Use a brand-safe, optimistic identity for apparel and partnerships.",
+            "consequence": "Made the IP suitable for Zara and charitable collaborations beyond crypto.",
+            "source_ids": [
+              "okay-bears-current"
+            ]
+          },
+          {
+            "choice": "Focus current commerce on products that fund court and playground projects.",
+            "consequence": "Created an observable mission-led operating loop while leaving NFT-holder value capture unclear.",
+            "source_ids": [
+              "okay-bears-current",
+              "okay-bears-shop"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "finding": "Remaining a Solana-only speculative PFP would have preserved a simpler holder proposition but increased cycle dependence. The brand pivot improves real-world continuity without proving that NFT holders benefit economically.",
+          "source_ids": [
+            "okay-bears-launch",
+            "okay-bears-current"
+          ]
+        },
+        "risks": [
+          {
+            "risk": "Brand revenue may not accrue to NFT holders.",
+            "source_ids": [
+              "okay-bears-current",
+              "okay-bears-shop"
+            ]
+          },
+          {
+            "risk": "Licensing announcements can overstate execution without audited sales and margins.",
+            "source_ids": [
+              "okay-bears-img",
+              "okay-bears-current"
+            ]
+          },
+          {
+            "risk": "Current NFT liquidity and community retention remain unverified.",
+            "source_ids": [
+              "okay-bears-current"
+            ]
+          }
+        ],
+        "watch": [
+          {
+            "signal": "New licensed products and audited sales or impact reporting.",
+            "implication": "Tests whether the brand engine is scaling.",
+            "source_ids": [
+              "okay-bears-current",
+              "okay-bears-shop"
+            ]
+          },
+          {
+            "signal": "Explicit NFT-holder rights or benefits tied to commerce.",
+            "implication": "Would reconnect brand success to the collection.",
+            "source_ids": [
+              "okay-bears-current"
+            ]
+          }
+        ],
+        "unknowns": [
+          "Current NFT floor, organic volume, bid depth and holder retention.",
+          "Brand revenue, margins, licensing income and profitability.",
+          "Current leadership, ownership, headcount and treasury.",
+          "Whether NFT holders receive measurable commerce-linked benefits."
+        ],
+        "review": {
+          "last_verified_at": "2026-07-29",
+          "next_review_at": "2026-10-29",
+          "triggers": [
+            "new licensing deal",
+            "commerce disclosure",
+            "NFT-holder benefit",
+            "brand shutdown"
+          ]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "middling",
+            "summary": "The brand operates current commerce and public-impact projects, while NFT market and holder economics remain unverified.",
+            "confidence": "high",
+            "as_of": "2026-07-28",
+            "source_refs": [
+              "okay-bears-current",
+              "okay-bears-shop"
+            ]
+          },
+          "why": {
+            "summary": "Licensing, apparel and public-impact distribution preserved brand operation beyond the NFT cycle, but no cited mechanism connects that success to NFT-holder cash flow.",
+            "confidence": "high",
+            "source_refs": [
+              "okay-bears-img",
+              "okay-bears-current",
+              "okay-bears-shop"
+            ]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Pursue IMG licensing.",
+              "consequence": "Opened mainstream product distribution.",
+              "confidence": "high",
+              "source_refs": [
+                "okay-bears-img"
+              ]
+            },
+            {
+              "decision": "Build a family-friendly brand.",
+              "consequence": "Enabled apparel and charitable partnerships.",
+              "confidence": "high",
+              "source_refs": [
+                "okay-bears-current"
+              ]
+            },
+            {
+              "decision": "Fund public courts through commerce.",
+              "consequence": "Created observable mission-led operations without documented NFT cash flow.",
+              "confidence": "high",
+              "source_refs": [
+                "okay-bears-current",
+                "okay-bears-shop"
+              ]
+            }
+          ],
+          "counterfactual": {
+            "summary": "A Solana-only PFP strategy would be simpler but more cycle-dependent; brand diversification improves continuity without proving NFT value capture.",
+            "confidence": "medium",
+            "source_refs": [
+              "okay-bears-launch",
+              "okay-bears-current"
+            ]
+          },
+          "watch": [
+            {
+              "signal": "Audited product sales and explicit holder benefits.",
+              "implication": "Would test brand scale and NFT value capture.",
+              "source_refs": [
+                "okay-bears-current",
+                "okay-bears-shop"
+              ]
+            }
+          ],
+          "unknowns": [
+            "NFT market quality.",
+            "Brand financials.",
+            "Current leadership.",
+            "Holder value capture."
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-10-29",
+            "reviewer": "Chaindump Research"
+          }
+        },
+        "evidence": [
+          {
+            "field": "launch",
+            "value": "2022-04-26 Solana launch",
+            "as_of": "2022-04-26",
+            "basis": "editorial",
+            "source_ids": [
+              "okay-bears-launch"
+            ]
+          },
+          {
+            "field": "supply_or_mint",
+            "value": "10,000 original Solana NFTs",
+            "as_of": "2022-04-26",
+            "basis": "editorial",
+            "source_ids": [
+              "okay-bears-launch"
+            ]
+          },
+          {
+            "field": "mint_price",
+            "value": "1.5 SOL; audited aggregate proceeds not established",
+            "as_of": "2022-04-26",
+            "basis": "editorial",
+            "source_ids": [
+              "okay-bears-launch"
+            ]
+          },
+          {
+            "field": "lifecycle_status",
+            "value": "middling — active brand commerce and impact projects; NFT market and holder economics withheld",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "okay-bears-current",
+              "okay-bears-shop"
+            ]
+          },
+          {
+            "field": "community_history",
+            "value": "Explosive NFT launch followed by licensing, apparel and public-impact expansion",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "okay-bears-launch",
+              "okay-bears-img",
+              "okay-bears-current"
+            ]
+          },
+          {
+            "field": "founder_engagement",
+            "value": "Brand remains active; current founder roles and staffing undisclosed",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "okay-bears-current"
+            ]
+          },
+          {
+            "field": "benefits",
+            "value": "Brand identity, products and impact projects; no contractual revenue right",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "okay-bears-current",
+              "okay-bears-shop"
+            ]
+          },
+          {
+            "field": "business",
+            "value": "Current apparel and impact commerce; revenue and profitability withheld",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "okay-bears-current",
+              "okay-bears-shop"
+            ]
+          },
+          {
+            "field": "analysis",
+            "value": "Brand operation verified; NFT recovery and holder value capture not established",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "okay-bears-current",
+              "okay-bears-shop"
+            ]
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "okay-bears-launch",
+          "title": "Okay Bears Top Ethereum NFT Projects in $18M Sales Day",
+          "url": "https://decrypt.co/98848/solana-okay-bears-top-ethereum-nft-projects-18m-sales",
+          "publisher": "Decrypt",
+          "source_date": "2022-04-27",
+          "source_date_kind": "published",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "historical_event",
+          "stale_after": null,
+          "stale": false
+        },
+        {
+          "id": "okay-bears-img",
+          "title": "Okay Bears Signs Licensing Deal with IMG",
+          "url": "https://www.coindesk.com/business/2022/09/20/solana-based-nft-project-okay-bears-signs-licensing-deal-with-img",
+          "publisher": "CoinDesk",
+          "source_date": "2022-09-20",
+          "source_date_kind": "published",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "historical_event",
+          "stale_after": null,
+          "stale": false
+        },
+        {
+          "id": "okay-bears-current",
+          "title": "About Okay Bears",
+          "url": "https://okaybears.com/blogs/news/about",
+          "publisher": "Okay Bears",
+          "source_date": "2026-07-28",
+          "source_date_kind": "observed",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "current_state",
+          "stale_after": "2026-10-29",
+          "stale": false
+        },
+        {
+          "id": "okay-bears-shop",
+          "title": "Okay Bears Current Products",
+          "url": "https://okaybears.com/collections/frontpage",
+          "publisher": "Okay Bears",
+          "source_date": "2026-07-28",
+          "source_date_kind": "observed",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "current_state",
+          "stale_after": "2026-10-29",
+          "stale": false
+        }
+      ]
+    },
+    {
+      "slug": "ordinal-maxi-biz",
+      "name": "Ordinal Maxi Biz (OMB)",
+      "chain": "bitcoin-ordinals",
+      "category": "ordinals-pfp",
+      "status": "unknown",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {
+          "schema": "forensic-freshness-v1",
+          "status_basis": "withheld",
+          "status_as_of": "2026-07-28",
+          "last_verified_at": "2026-07-29",
+          "next_review_at": "2026-08-29",
+          "stale": true
+        },
+        "launched": "Ordinal Maxi Biz launched in 2023 as hand-drawn Bitcoin Ordinals created by ZK Shark and Tony Tafuro with technical contributions from Nullish.",
+        "supply": "Christie's described 5,141 core one-of-one OMBs in April 2024, while the current marketplace index displays 9,000 items. The discrepancy may reflect later series or aggregation and is not silently collapsed into one supply number.",
+        "mint_price": "Low inscription costs and later primary sales varied by series. No defensible universal mint price or aggregate creator raise is established.",
+        "community_history": "OMB built a Bitcoin-maxi identity around hand-drawn art, rare-block traits and a CryptoPunk migration campaign. Christie's hosted a four-lot OMB sale in April 2024; a current marketplace still shows owners, listings and activity.",
+        "founder_engagement": "ZK Shark and Tony Tafuro are identified in Christie's materials. Their current operating roles, release plans and treasury are not established by the current marketplace snapshot.",
+        "benefits": "Art provenance, rare-block trait narratives and collector status. No product utility, token cash flow or recurring contractual benefit is established.",
+        "business": "Primary art sales and marketplace trading exist, but no recurring operating business, royalties, current revenue or profitability are established.",
+        "analysis": "Current lifecycle status is withheld rather than repeating the legacy fading label. Christie's validates historical art-market recognition and the current marketplace shows inventory and activity, but the 5,141-versus-9,000 supply mismatch and lack of comparable current liquidity evidence prevent a defensible success or decline conclusion.",
+        "team": {
+          "creator": "ZK Shark",
+          "artist": "Tony Tafuro",
+          "technical_contributor": "Nullish",
+          "current_boundary": "Current roles and operations are unverified.",
+          "source_ids": [
+            "omb-christies",
+            "omb-history"
+          ]
+        },
+        "chronology": [
+          {
+            "date": "2023",
+            "event": "OMB launched as hand-drawn Bitcoin Ordinals.",
+            "source_ids": [
+              "omb-history"
+            ]
+          },
+          {
+            "date": "2024-04-09",
+            "event": "Christie's opened its OMB online sale.",
+            "source_ids": [
+              "omb-christies"
+            ]
+          },
+          {
+            "date": "2024-04-16",
+            "event": "The four-lot sale closed with $730,800 total reported proceeds.",
+            "source_ids": [
+              "omb-christies"
+            ]
+          },
+          {
+            "date": "2026-07-28",
+            "event": "A current marketplace displayed 9,000 indexed items, 5,053 owners and current activity.",
+            "source_ids": [
+              "omb-current-market"
+            ]
+          }
+        ],
+        "market_holder_boundaries": {
+          "market": "Current listings and activity exist, but the indexed universe differs from the Christie's core collection and no comparable floor-depth series is established.",
+          "holders": "5,053 marketplace owners are wallets across the indexed set, not verified collectors or original-minter retention.",
+          "source_ids": [
+            "omb-christies",
+            "omb-current-market"
+          ]
+        },
+        "products_and_value_capture": {
+          "products": [
+            "Hand-drawn Ordinals series",
+            "primary art auction",
+            "secondary marketplace"
+          ],
+          "capture": "Historical primary sales are documented; recurring revenue and current economics are not.",
+          "source_ids": [
+            "omb-christies",
+            "omb-current-market"
+          ]
+        },
+        "token_model": {
+          "token": "No OMB token established by cited sources.",
+          "boundary": "Collection art and adjacent Bitcoin assets are not treated as contractual yield.",
+          "source_ids": [
+            "omb-christies"
+          ]
+        },
+        "chain_dependence": {
+          "current_scope": "Bitcoin Ordinals with rare-block provenance.",
+          "implication": "Cultural value depends on Bitcoin inscription narratives, indexer consistency and collector demand.",
+          "source_ids": [
+            "omb-history",
+            "omb-current-market"
+          ]
+        },
+        "why": {
+          "finding": "OMB differentiated through hand-drawn art and Bitcoin-specific provenance, earning rare traditional-auction validation. Whether that recognition translated into durable current demand cannot be established from a mismatched collection index and isolated current snapshot.",
+          "source_ids": [
+            "omb-christies",
+            "omb-history",
+            "omb-current-market"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "choice": "Use hand-drawn one-of-one art and rare-block traits.",
+            "consequence": "Created an art and provenance thesis distinct from generated PFPs.",
+            "source_ids": [
+              "omb-christies",
+              "omb-history"
+            ]
+          },
+          {
+            "choice": "Use a CryptoPunk migration campaign to connect Ethereum and Bitcoin collector histories.",
+            "consequence": "Generated cross-ecosystem cultural attention without creating recurring utility.",
+            "source_ids": [
+              "omb-history"
+            ]
+          },
+          {
+            "choice": "Place selected works through Christie's.",
+            "consequence": "Added institutional art validation while representing only a selected primary-sale cohort.",
+            "source_ids": [
+              "omb-christies"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "finding": "A fixed, consistently indexed supply and recurring product could make lifecycle comparisons easier, but might weaken the one-of-one art thesis. No evidence shows which structure would sustain demand.",
+          "source_ids": [
+            "omb-christies",
+            "omb-current-market"
+          ]
+        },
+        "risks": [
+          {
+            "risk": "Collection-scope mismatch can produce false supply, holder and retention conclusions.",
+            "source_ids": [
+              "omb-christies",
+              "omb-current-market"
+            ]
+          },
+          {
+            "risk": "Art-auction validation does not prove liquid secondary demand.",
+            "source_ids": [
+              "omb-christies"
+            ]
+          },
+          {
+            "risk": "No recurring operating or revenue engine is established.",
+            "source_ids": [
+              "omb-current-market"
+            ]
+          }
+        ],
+        "watch": [
+          {
+            "signal": "Reconciled canonical collection manifest.",
+            "implication": "Would enable valid supply, owner and retention comparisons.",
+            "source_ids": [
+              "omb-christies",
+              "omb-current-market"
+            ]
+          },
+          {
+            "signal": "Repeated sales and executable bid depth across review periods.",
+            "implication": "Would support a current lifecycle classification.",
+            "source_ids": [
+              "omb-current-market"
+            ]
+          }
+        ],
+        "unknowns": [
+          "Canonical current supply and which later series the marketplace aggregates.",
+          "Current creator roles, treasury and release plans.",
+          "Wash-adjusted volume, bid depth and repeat-buyer retention.",
+          "Recurring revenue or holder benefits."
+        ],
+        "review": {
+          "last_verified_at": "2026-07-29",
+          "next_review_at": "2026-08-29",
+          "triggers": [
+            "canonical manifest",
+            "creator update",
+            "repeated market evidence",
+            "new series"
+          ]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "unclassified",
+            "summary": "Historical auction validation and current marketplace activity exist, but collection-scope mismatch prevents a defensible lifecycle label.",
+            "confidence": "high",
+            "as_of": "2026-07-28",
+            "source_refs": [
+              "omb-christies",
+              "omb-current-market"
+            ]
+          },
+          "why": {
+            "summary": "Hand-drawn Bitcoin provenance earned institutional recognition, but current demand durability is unresolved.",
+            "confidence": "medium",
+            "source_refs": [
+              "omb-christies",
+              "omb-history",
+              "omb-current-market"
+            ]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Use hand-drawn rare-block art.",
+              "consequence": "Created a differentiated provenance thesis.",
+              "confidence": "high",
+              "source_refs": [
+                "omb-christies"
+              ]
+            },
+            {
+              "decision": "Connect to CryptoPunk history.",
+              "consequence": "Expanded cultural attention without recurring utility.",
+              "confidence": "medium",
+              "source_refs": [
+                "omb-history"
+              ]
+            },
+            {
+              "decision": "Sell selected works through Christie's.",
+              "consequence": "Added art validation without proving broad liquidity.",
+              "confidence": "high",
+              "source_refs": [
+                "omb-christies"
+              ]
+            }
+          ],
+          "counterfactual": {
+            "summary": "A fixed canonical manifest would improve lifecycle measurement, but no evidence establishes its effect on demand.",
+            "confidence": "low",
+            "source_refs": [
+              "omb-christies",
+              "omb-current-market"
+            ]
+          },
+          "watch": [
+            {
+              "signal": "Canonical supply reconciliation and repeated market depth.",
+              "implication": "Could move the case from unclassified to evidence-backed.",
+              "source_refs": [
+                "omb-current-market"
+              ]
+            }
+          ],
+          "unknowns": [
+            "Canonical supply.",
+            "Current team.",
+            "Market depth.",
+            "Recurring economics."
+          ],
+          "review": {
+            "status": "needs_review",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-08-29",
+            "reviewer": "Chaindump Research"
+          }
+        },
+        "evidence": [
+          {
+            "field": "launch",
+            "value": "Created in 2023",
+            "as_of": "2023-12-31",
+            "basis": "editorial",
+            "source_ids": [
+              "omb-history"
+            ]
+          },
+          {
+            "field": "supply_or_mint",
+            "value": "5,141 core works per Christie's versus 9,000 marketplace items; unresolved",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "omb-christies",
+              "omb-current-market"
+            ]
+          },
+          {
+            "field": "mint_price",
+            "value": "No universal mint price or audited aggregate creator raise established",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "omb-christies",
+              "omb-history"
+            ]
+          },
+          {
+            "field": "lifecycle_status",
+            "value": "unknown — current market exists but collection scope and comparable lifecycle evidence are unresolved",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "omb-christies",
+              "omb-current-market"
+            ]
+          },
+          {
+            "field": "community_history",
+            "value": "Rare-block art, CryptoPunk migration and Christie's validation",
+            "as_of": "2024-04-16",
+            "basis": "analyst",
+            "source_ids": [
+              "omb-christies",
+              "omb-history"
+            ]
+          },
+          {
+            "field": "founder_engagement",
+            "value": "Creators historically identified; current roles unverified",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "omb-christies",
+              "omb-current-market"
+            ]
+          },
+          {
+            "field": "benefits",
+            "value": "Art and provenance; no contractual recurring utility established",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "omb-christies",
+              "omb-current-market"
+            ]
+          },
+          {
+            "field": "business",
+            "value": "Primary art sales documented; recurring business and profitability withheld",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "omb-christies",
+              "omb-current-market"
+            ]
+          },
+          {
+            "field": "analysis",
+            "value": "Lifecycle label withheld until canonical scope and comparable current market evidence are resolved",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "omb-christies",
+              "omb-current-market"
+            ]
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "omb-history",
+          "title": "Guide to Ordinal Maxi Biz",
+          "url": "https://leather.io/posts/guide-to-bitcoin-ordinals-collections-what-is-ordinal-maxi-biz",
+          "publisher": "Leather",
+          "source_date": null,
+          "source_date_kind": "unknown",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "historical_event",
+          "stale_after": null,
+          "stale": false
+        },
+        {
+          "id": "omb-christies",
+          "title": "Ordinal Maxi Biz Online Auction",
+          "url": "https://onlineonly.christies.com/s/ordinal-maxi-biz-omb/overview/3717",
+          "publisher": "Christie's",
+          "source_date": "2024-04-16",
+          "source_date_kind": "event",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "historical_event",
+          "stale_after": null,
+          "stale": false
+        },
+        {
+          "id": "omb-current-market",
+          "title": "Ordinal Maxi Biz Current Marketplace",
+          "url": "https://ord.net/collection/omb",
+          "publisher": "ORD",
+          "source_date": "2026-07-28",
+          "source_date_kind": "observed",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "current_state",
+          "stale_after": "2026-08-29",
+          "stale": false
+        }
+      ]
+    },
+    {
+      "slug": "runestone",
+      "name": "Runestone",
+      "chain": "bitcoin-ordinals",
+      "category": "ordinals-airdrop",
+      "status": "middling",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {
+          "schema": "forensic-freshness-v1",
+          "status_basis": "direct_current",
+          "status_as_of": "2026-07-28",
+          "last_verified_at": "2026-07-29",
+          "next_review_at": "2026-08-29",
+          "stale": false
+        },
+        "launched": "Runestone launched in March 2024 as a free distribution to 112,383 eligible Bitcoin addresses, with 112,384 inscriptions indexed today.",
+        "supply": "112,384 inscriptions in the current marketplace. The one-item difference from historical distribution reporting is disclosed rather than harmonized silently.",
+        "mint_price": "Free fairdrop; the project used no paid public mint. Distribution costs and later trading are not creator raise.",
+        "community_history": "Leonidas framed Runestone as a no-team-allocation, volunteer fairdrop for early Ordinals participants. The current marketplace shows a large owner base and continued activity, while launch-era promises of follow-on Runes distributions became part of the holder thesis.",
+        "founder_engagement": "Leonidas is the identified organizer. Current operating structure, treasury and future distribution commitments are not established.",
+        "benefits": "Launch-era reporting documented promises of up to three follow-on token airdrops and symbolic first-year Ordinals provenance. These sources do not establish that every promised distribution occurred, and no recurring distribution is contractually guaranteed.",
+        "business": "Runestone deliberately rejected a conventional company, paid mint and roadmap. That maximized distribution legitimacy but created no recurring revenue engine.",
+        "analysis": "Middling means the 112,384-item collection, 63,210-owner snapshot and current trading remain observable. It does not establish a current valuation, floor depth, original-recipient retention or guaranteed future airdrops. The strategic success was fair distribution; the strategic weakness is dependence on future narrative and optional distributions.",
+        "team": {
+          "organizer": "Leonidas (pseudonymous)",
+          "operating_model": "Volunteer fairdrop with no formal team allocation reported at launch",
+          "current_boundary": "Current entity, treasury and commitments are unknown.",
+          "source_ids": [
+            "runestone-launch",
+            "runestone-current-market"
+          ]
+        },
+        "chronology": [
+          {
+            "date": "2024-03",
+            "event": "112,383 Runestones were distributed free to eligible early Ordinals addresses.",
+            "source_ids": [
+              "runestone-launch"
+            ]
+          },
+          {
+            "date": "2024-04",
+            "event": "Launch-era reporting documented promises of follow-on token distributions for holders.",
+            "source_ids": [
+              "runestone-overview"
+            ]
+          },
+          {
+            "date": "2026-07-28",
+            "event": "The marketplace indexed 112,384 items and 63,210 unique owners.",
+            "source_ids": [
+              "runestone-current-market"
+            ]
+          },
+          {
+            "date": "2026-07-28",
+            "event": "Current listings and trading activity remained visible.",
+            "source_ids": [
+              "runestone-current-market"
+            ]
+          }
+        ],
+        "market_holder_boundaries": {
+          "market": "Current activity exists, but floor depth, wash-adjusted volume and executable bids are not established.",
+          "holders": "63,210 owners are current marketplace wallets, not verified original eligible addresses or people.",
+          "source_ids": [
+            "runestone-current-market"
+          ]
+        },
+        "products_and_value_capture": {
+          "products": [
+            "Free Ordinals fairdrop",
+            "launch-era promised follow-on Runes distributions",
+            "secondary-market collection"
+          ],
+          "capture": "No paid mint, royalty engine or guaranteed future distribution.",
+          "source_ids": [
+            "runestone-launch",
+            "runestone-overview",
+            "runestone-current-market"
+          ]
+        },
+        "token_model": {
+          "token": "Runestone is an inscription collection; launch-era promised follow-on Runes are separate assets.",
+          "boundary": "A reported promise does not establish completion or a contractual stream of future token value.",
+          "source_ids": [
+            "runestone-overview"
+          ]
+        },
+        "chain_dependence": {
+          "current_scope": "Bitcoin Ordinals and Runes culture",
+          "implication": "The thesis depends on Bitcoin metaprotocol attention, indexers, fees and organizer-led optional distributions.",
+          "source_ids": [
+            "runestone-launch",
+            "runestone-current-market"
+          ]
+        },
+        "why": {
+          "finding": "Runestone achieved unusually broad distribution by eliminating mint price, team allocation and a conventional roadmap. That created legitimacy and a large holder base, but without revenue or guaranteed utility the collection depends on provenance and promised or optional follow-on distributions.",
+          "source_ids": [
+            "runestone-launch",
+            "runestone-overview",
+            "runestone-current-market"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "choice": "Use a free eligibility-based fairdrop.",
+            "consequence": "Maximized broad distribution and reduced paid-mint extraction.",
+            "source_ids": [
+              "runestone-launch"
+            ]
+          },
+          {
+            "choice": "Use no team allocation, formal utility or roadmap.",
+            "consequence": "Improved fairness credibility while eliminating a recurring product and revenue engine.",
+            "source_ids": [
+              "runestone-launch"
+            ]
+          },
+          {
+          "choice": "Promise follow-on token distributions as a holder benefit.",
+            "consequence": "Extended attention without establishing completion or enforceable future obligations.",
+            "source_ids": [
+              "runestone-overview"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "finding": "A paid mint and formal team could fund durable operations but would compromise the fairdrop thesis. The cited evidence does not show that a funded roadmap would preserve broader trust or demand.",
+          "source_ids": [
+            "runestone-launch",
+            "runestone-current-market"
+          ]
+        },
+        "risks": [
+          {
+            "risk": "No recurring revenue or product engine supports continued attention.",
+            "source_ids": [
+              "runestone-launch"
+            ]
+          },
+          {
+            "risk": "Promised future distributions may be incomplete or non-contractual.",
+            "source_ids": [
+              "runestone-overview"
+            ]
+          },
+          {
+            "risk": "Large owner counts do not prove liquid exits or retained original recipients.",
+            "source_ids": [
+              "runestone-current-market"
+            ]
+          }
+        ],
+        "watch": [
+          {
+            "signal": "Monthly owner, listing and trading continuity.",
+            "implication": "Tests whether fairdrop provenance sustains collectors.",
+            "source_ids": [
+              "runestone-current-market"
+            ]
+          },
+          {
+            "signal": "Organizer commitment or new distribution with explicit terms.",
+            "implication": "Would update the benefit and stewardship thesis.",
+            "source_ids": [
+              "runestone-launch"
+            ]
+          }
+        ],
+        "unknowns": [
+          "Current organizer involvement, treasury and governance.",
+          "Current floor, bid depth and wash-adjusted volume.",
+          "Original-recipient retention versus transfers among wallets.",
+          "Whether any future Runes distribution is planned or guaranteed."
+        ],
+        "review": {
+          "last_verified_at": "2026-07-29",
+          "next_review_at": "2026-08-29",
+          "triggers": [
+            "new distribution",
+            "organizer update",
+            "marketplace shutdown",
+            "sustained activity change"
+          ]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "middling",
+            "summary": "A large owner base and current activity persist, while valuation, liquidity and future benefits remain unverified.",
+            "confidence": "medium",
+            "as_of": "2026-07-28",
+            "source_refs": [
+              "runestone-current-market"
+            ]
+          },
+          "why": {
+            "summary": "Free broad distribution created legitimacy and scale without a recurring operating or revenue engine.",
+            "confidence": "high",
+            "source_refs": [
+              "runestone-launch",
+              "runestone-current-market"
+            ]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Use a free fairdrop.",
+              "consequence": "Maximized distribution and minimized extraction.",
+              "confidence": "high",
+              "source_refs": [
+                "runestone-launch"
+              ]
+            },
+            {
+              "decision": "Reject team allocation and roadmap.",
+              "consequence": "Strengthened fairness and removed operating economics.",
+              "confidence": "high",
+              "source_refs": [
+                "runestone-launch"
+              ]
+            },
+            {
+              "decision": "Promise follow-on token distributions.",
+              "consequence": "Extended attention without proving completion or contractual future value.",
+              "confidence": "medium",
+              "source_refs": [
+                "runestone-overview"
+              ]
+            }
+          ],
+          "counterfactual": {
+            "summary": "A funded team might create durable products but would weaken the fairdrop thesis; evidence does not resolve the tradeoff.",
+            "confidence": "low",
+            "source_refs": [
+              "runestone-launch"
+            ]
+          },
+          "watch": [
+            {
+              "signal": "Monthly market continuity and any new distribution.",
+              "implication": "Tests durable participation and benefit renewal.",
+              "source_refs": [
+                "runestone-current-market"
+              ]
+            }
+          ],
+          "unknowns": [
+            "Organizer involvement.",
+            "Executable liquidity.",
+            "Original-recipient retention.",
+            "Future distributions."
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-08-29",
+            "reviewer": "Chaindump Research"
+          }
+        },
+        "evidence": [
+          {
+            "field": "launch",
+            "value": "March 2024 free fairdrop",
+            "as_of": "2024-03-31",
+            "basis": "editorial",
+            "source_ids": [
+              "runestone-launch"
+            ]
+          },
+          {
+            "field": "supply_or_mint",
+            "value": "112,384 current inscriptions; historical distribution reported 112,383",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "runestone-launch",
+              "runestone-current-market"
+            ]
+          },
+          {
+            "field": "mint_price",
+            "value": "Free fairdrop; no paid public mint",
+            "as_of": "2024-03-31",
+            "basis": "editorial",
+            "source_ids": [
+              "runestone-launch"
+            ]
+          },
+          {
+            "field": "lifecycle_status",
+            "value": "middling — large current owner base and activity; valuation, retention and future benefits withheld",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "runestone-current-market"
+            ]
+          },
+          {
+            "field": "community_history",
+            "value": "Volunteer fairdrop and promised follow-on Runes thesis with current market continuity",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "runestone-launch",
+              "runestone-current-market"
+            ]
+          },
+          {
+            "field": "founder_engagement",
+            "value": "Leonidas organized launch; current commitments unverified",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "runestone-launch",
+              "runestone-current-market"
+            ]
+          },
+          {
+            "field": "benefits",
+            "value": "Launch-era follow-on token promises; completion and future distributions not guaranteed",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "runestone-overview"
+            ]
+          },
+          {
+            "field": "business",
+            "value": "No paid mint, team allocation or recurring revenue engine established",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "runestone-launch"
+            ]
+          },
+          {
+            "field": "analysis",
+            "value": "Fair-distribution continuity verified; liquidity and future-benefit claims withheld",
+            "as_of": "2026-07-28",
+            "basis": "analyst",
+            "source_ids": [
+              "runestone-launch",
+              "runestone-current-market"
+            ]
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "runestone-launch",
+          "title": "Bitcoin Ordinals Runestone Airdrop",
+          "url": "https://decrypt.co/219113/bitcoin-ordinals-runestone-airdrop-leonidas-casey-rodarmor-runes",
+          "publisher": "Decrypt",
+          "source_date": "2024-02-27",
+          "source_date_kind": "published",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "historical_event",
+          "stale_after": null,
+          "stale": false
+        },
+        {
+          "id": "runestone-overview",
+          "title": "Bitcoin Ordinals and Runes Projects Ahead of the Halving",
+          "url": "https://decrypt.co/225282/bitcoin-ordinals-runes-projects-you-should-know-halving",
+          "publisher": "Decrypt",
+          "source_date": "2024-04-22",
+          "source_date_kind": "updated",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "historical_event",
+          "stale_after": null,
+          "stale": false
+        },
+        {
+          "id": "runestone-current-market",
+          "title": "Runestone Current Marketplace",
+          "url": "https://ord.net/collection/runestone",
+          "publisher": "ORD",
+          "source_date": "2026-07-28",
+          "source_date_kind": "observed",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "current_state",
+          "stale_after": "2026-08-29",
+          "stale": false
+        }
+      ]
+    }
+  ]
+}
