@@ -63,6 +63,8 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain("filterButton('data-exchange-lifecycle','successful'");
     expect(html).toContain('id="exchangeAnalysisCohort"');
     expect(html).toContain('id="exchangeAnalysisQuality"');
+    expect(html).toContain('id="exchangeAnalysisForensic"');
+    expect(html).toContain('Cited causal maps');
     expect(html).toContain('id="exchangeAnalysisSort"');
     expect(html).toContain('Cited sources');
   });

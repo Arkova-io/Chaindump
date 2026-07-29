@@ -669,7 +669,7 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   blockchainAnalysisData: null, blockchainAnalysisQuery: '', blockchainAnalysisSort: 'name',
   exchangeAnalysisData: null, exchangeAnalysisSummaries: {}, exchangeAnalysisErrors: [], exchangeAnalysisQuery: '',
   exchangeAnalysisKind: 'all', exchangeAnalysisLifecycle: 'all', exchangeAnalysisSort: 'name',
-  exchangeAnalysisCohort: 'all', exchangeAnalysisQuality: 'all',
+  exchangeAnalysisCohort: 'all', exchangeAnalysisQuality: 'all', exchangeAnalysisForensic: 'all',
   exchangeAnalysisDir: 1, exchangeAnalysisExpanded: null,
   casinoAnalysisData: null, casinoCoverage: null, casinoAnalysisError: '', casinoAnalysisQuery: '', casinoAnalysisSort: 'reviewed',
   casinoAnalysisStatus: 'all', casinoAnalysisKind: 'all', casinoAnalysisSubtype: 'all', casinoAnalysisToken: 'all', casinoAnalysisExpanded: null, casinoAnalysisDetails: {},
@@ -1171,6 +1171,7 @@ function renderExchangeAnalysis() {
     (state.exchangeAnalysisLifecycle === 'all' || row.lifecycle === state.exchangeAnalysisLifecycle) &&
     (state.exchangeAnalysisCohort === 'all' || row.productCohort === state.exchangeAnalysisCohort) &&
     (state.exchangeAnalysisQuality === 'all' || row.qualityLabel === state.exchangeAnalysisQuality) &&
+    (state.exchangeAnalysisForensic === 'all' || row.forensicStatus === state.exchangeAnalysisForensic) &&
     (!q || `${row.name} ${row.kind} ${row.lifecycle} ${row.primaryChain} ${row.productCohort} ${row.operatingModel} ${row.summary}`.toLowerCase().includes(q))
   );
   const lifecycleOrder = { successful: 0, mid: 1, dead: 2 };
@@ -1221,6 +1222,12 @@ function renderExchangeAnalysis() {
           const label = quality === 'all' ? 'All quality labels' : quality;
           return exchangeOption(quality, label, state.exchangeAnalysisQuality === quality);
         }).join('')}
+      </select>
+      <label class="muted" for="exchangeAnalysisForensic">Causal map</label>
+      <select id="exchangeAnalysisForensic" class="analysis-select">
+        <option value="all">All research states</option>
+        <option value="published"${state.exchangeAnalysisForensic==='published'?' selected':''}>Cited causal maps</option>
+        <option value="pending"${state.exchangeAnalysisForensic==='pending'?' selected':''}>Pending causal review</option>
       </select>
       <span class="analysis-spacer"></span>
       <label class="muted" for="exchangeAnalysisSort">Sort</label>
@@ -1466,6 +1473,7 @@ document.getElementById('exchangeanalysisview').addEventListener('change', (e) =
   if (e.target.id === 'exchangeAnalysisSort') state.exchangeAnalysisSort = e.target.value;
   else if (e.target.id === 'exchangeAnalysisCohort') state.exchangeAnalysisCohort = e.target.value;
   else if (e.target.id === 'exchangeAnalysisQuality') state.exchangeAnalysisQuality = e.target.value;
+  else if (e.target.id === 'exchangeAnalysisForensic') state.exchangeAnalysisForensic = e.target.value;
   else return;
   renderExchangeAnalysis();
 });
