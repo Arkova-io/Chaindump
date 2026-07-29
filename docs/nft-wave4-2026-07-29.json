@@ -1,0 +1,308 @@
+{
+  "schema": "chaindump-nft-field-v1",
+  "research_as_of": "2026-07-29",
+  "method": "Wave-4 applies a primary-source lifecycle standard across onchain art, PFP/IP, Ordinals, virtual land, and a centralized marketplace. Current operation is not treated as proof of market health. Collection supply is not converted into holder count; platform inventory is not treated as collection supply; mint proceeds are not estimated when distributions differ; conflicting operator counts remain unresolved; and terminal status requires an explicit operator shutdown source.",
+  "dossiers": [
+    {
+      "slug": "autoglyphs",
+      "name": "Autoglyphs",
+      "chain": "ethereum",
+      "category": "fully-onchain-generative-art",
+      "status": "thriving",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {"schema": "forensic-freshness-v1", "status_basis": "direct_current", "status_as_of": "2026-07-28", "last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "stale": false},
+        "launched": "2019-04-08 — Larva Labs launched Autoglyphs as a fully onchain generative-art system; all 512 outputs were created within roughly four hours.",
+        "supply": "512 Autoglyphs. The generator permanently stopped after the cap was reached, so the fixed output count is distinct from current owners or secondary listings.",
+        "mint_price": "0.2 ETH creation fee for fee-bearing creations, directed to 350.org rather than retained by Larva Labs. The post-launch report records 76.8 ETH donated; this dossier does not multiply 512 by the fee because the reviewed primary pages do not reconcile fee-bearing and creator/reserved outputs.",
+        "community_history": "Larva Labs documented an owner community and owner tools after launch; the current official presentation also records museum acquisitions and owner rendering access. Historical owner snapshots are not used as current holder counts.",
+        "founder_engagement": "Matt Hall and John Watkinson of Larva Labs created the project. Larva Labs states it no longer controls generation or ownership code after deployment but continues to maintain official presentation and owner-rendering resources.",
+        "benefits": "Ownership provides provenance over one of 512 self-contained onchain works and access to official owner rendering tools, including plotter-oriented SVG generation. No roadmap, yield, price support, or guaranteed exhibition access is asserted.",
+        "business": "Autoglyphs deliberately separated creation economics from creator revenue: stated creation fees went to 350.org, while post-creation value exists through ownership and secondary transfer. Current Larva Labs stewardship is cultural/technical, not represented as a disclosed revenue business.",
+        "analysis": "Thriving means the immutable work, official collection/owner interfaces, rendering utilities, and institutional presentation remained live at review. It does not establish floor, liquidity, recent volume, unique-holder retention, royalties, creator revenue, or museum-driven price effects.",
+        "team": {"creators": ["Matt Hall", "John Watkinson"], "studio": "Larva Labs", "control_boundary": "Creators maintain presentation and tools but state they do not control deployed generation or ownership code.", "source_ids": ["autoglyph-current", "autoglyph-origin"]},
+        "chronology": [
+          {"date": "2019-04-08", "event": "Autoglyphs launched and all 512 outputs were created within about four hours.", "source_ids": ["autoglyph-report", "autoglyph-current"]},
+          {"date": "2019-04-10", "event": "Larva Labs reported 76.8 ETH donated to 350.org and the generator closed.", "source_ids": ["autoglyph-report"]},
+          {"date": "2023-2024", "event": "Official project history records acquisitions by Centre Pompidou and the Whitney Museum.", "source_ids": ["autoglyph-current"]},
+          {"date": "2026-07-28", "event": "Official collection, ownership, SVG/plotter, font and music utilities remained available.", "source_ids": ["autoglyph-origin", "autoglyph-owners"]}
+        ],
+        "market_holder_boundaries": {"market": "No current floor, volume, bid depth, liquidity, royalties or realized-return series.", "holders": "The official ownership table is a current operator interface, but this dossier does not derive a unique-holder count or retention rate from it.", "available_evidence": "Fixed supply, ownership addresses and transferable tokens are verifiable; market quality is not inferred.", "source_ids": ["autoglyph-origin", "autoglyph-owners"]},
+        "products_and_value_capture": {"products": ["onchain generator and ERC-721 ownership", "official collection/owner explorer", "SVG and CNC plotter rendering", "custom font and owner music utility"], "capture": "Creation fees were donated; no creator royalty, secondary-fee or current studio revenue total is asserted.", "source_ids": ["autoglyph-origin", "autoglyph-current"]},
+        "why": {"finding": "Durability is plausibly supported by permanently capped onchain generation, transparent provenance, creator relinquishment of contract control, and institutional recognition. The evidence does not isolate the effect of any factor on price.", "source_ids": ["autoglyph-origin", "autoglyph-current"]},
+        "strategic_choices": [
+          {"choice": "Put both generative mechanism and art output inside Ethereum rather than storing media offchain.", "source_ids": ["autoglyph-origin"]},
+          {"choice": "Cap creation at 512 and permanently stop the generator.", "source_ids": ["autoglyph-origin", "autoglyph-report"]},
+          {"choice": "Direct creation fees to 350.org and continue owner-facing physical rendering tools.", "source_ids": ["autoglyph-origin", "autoglyph-report"]}
+        ],
+        "counterfactual": {"finding": "If media or generation depended on a mutable centralized service, the collection's preservation case would be weaker. The official interfaces still improve usability, but the art and ownership mechanism are designed to survive their loss.", "source_ids": ["autoglyph-origin"]},
+        "risks": [
+          {"risk": "A 512-item collection can be culturally durable while remaining thinly traded or concentrated.", "source_ids": ["autoglyph-origin", "autoglyph-owners"]},
+          {"risk": "Official rendering interfaces are centralized conveniences even though the underlying art is onchain.", "source_ids": ["autoglyph-origin"]},
+          {"risk": "Museum recognition does not guarantee liquidity or price stability.", "source_ids": ["autoglyph-current"]}
+        ],
+        "unknowns": ["Current unique holders, concentration, floor, volume and bid depth.", "Why the 76.8 ETH donation total differs from a naïve 512-times-0.2 calculation; no unsupported reconciliation is made.", "Current Larva Labs collection-specific costs or secondary revenue.", "Usage of owner SVG, plotting, font and music tools."],
+        "review": {"last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "triggers": ["official interface change", "ownership-code issue", "new stewardship statement", "new primary market or holder disclosure"]},
+        "evidence": [
+          {"field": "launch", "value": "2019-04-08 launch; all 512 outputs created in about four hours", "as_of": "2019-04-08", "basis": "operator", "source_ids": ["autoglyph-report", "autoglyph-current"]},
+          {"field": "supply_or_mint", "value": "512 fixed outputs; generator permanently stopped", "as_of": "2019-04-08", "basis": "onchain", "source_ids": ["autoglyph-origin"]},
+          {"field": "mint_price", "value": "0.2 ETH creation fee for fee-bearing outputs; operator reports 76.8 ETH donated to 350.org; no creator raise", "as_of": "2019-04-10", "basis": "operator", "source_ids": ["autoglyph-origin", "autoglyph-report"]},
+          {"field": "lifecycle_status", "value": "thriving — immutable work plus current official owner, rendering and institutional surfaces; not market performance", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["autoglyph-current", "autoglyph-owners"]},
+          {"field": "community_history", "value": "Owner community and institutional history documented; current retention withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["autoglyph-report", "autoglyph-current"]},
+          {"field": "founder_engagement", "value": "Larva Labs creators maintain official resources while deployed code remains outside their control", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["autoglyph-origin", "autoglyph-current"]},
+          {"field": "benefits", "value": "Onchain provenance and owner rendering tools without economic promises", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["autoglyph-origin"]},
+          {"field": "business", "value": "Creation fees donated; current creator revenue and secondary economics withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["autoglyph-report", "autoglyph-origin"]},
+          {"field": "analysis", "value": "Technical and cultural continuity verified; market, holder and financial conclusions withheld", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["autoglyph-current", "autoglyph-owners"]}
+        ]
+      },
+      "sources": [
+        {"id": "autoglyph-origin", "title": "Autoglyphs — original project page", "url": "https://www.larvalabs.com/autoglyphs/index", "publisher": "Larva Labs", "source_date": "2019-04-08", "source_date_kind": "event", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "autoglyph-report", "title": "Autoglyphs Post Launch Report", "url": "https://www.larvalabs.com/blog/2019-4-10-15-1/autoglyphs-post-launch-report", "publisher": "Larva Labs", "source_date": "2019-04-10", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "historical_event", "stale_after": null, "stale": false},
+        {"id": "autoglyph-current", "title": "Larva Labs — Autoglyphs current presentation and legacy", "url": "https://www.larvalabs.com/autoglyphs?section=home", "publisher": "Larva Labs", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "autoglyph-owners", "title": "Autoglyph Ownership Details", "url": "https://www.larvalabs.com/autoglyphs/details", "publisher": "Larva Labs", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false}
+      ]
+    },
+    {
+      "slug": "meebits",
+      "name": "Meebits",
+      "chain": "ethereum",
+      "category": "voxel-avatar-ip",
+      "status": "thriving",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {"schema": "forensic-freshness-v1", "status_basis": "direct_current", "status_as_of": "2026-07-28", "last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "stale": false},
+        "launched": "2021-05-03 — Larva Labs launched Meebits as 20,000 generative 3D voxel characters with owner asset packs and an integrated no-fee marketplace.",
+        "supply": "20,000 Meebits. The count covers the original Ethereum ERC-721 collection, not merchandise, prints or derivative media.",
+        "mint_price": "Mixed distribution: each CryptoPunk or Autoglyph could redeem one Meebit free except gas during a seven-day community grant; remaining inventory used a declining-price public sale. The reviewed launch post does not state the initial public-sale price or audited aggregate proceeds, so both are withheld.",
+        "community_history": "The launch rewarded CryptoPunks and Autoglyphs holders and centered like-kind trading and reusable 3D files. Stewardship moved from Larva Labs to Yuga Labs in 2022 and to the Meebit Company in 2025, which says it is led by long-standing community members.",
+        "founder_engagement": "Matt Hall and John Watkinson created Meebits at Larva Labs. Larva Labs transferred IP operations to Yuga Labs in 2022; MeebCo acquired the project in 2025 and is the current IP steward.",
+        "benefits": "Owners receive collection ownership and downloadable 3D asset packs usable in modeling, animation, game engines and virtual worlds, plus holder commercial rights under MeebCo's current license. Merchandise or event access is not represented as perpetual.",
+        "business": "The strategy combines IP stewardship, owner licensing, 3D/physical production, public art and merchandise. The embedded marketplace was designed with no trading fee, while current collection-specific merchandise revenue, licensing revenue and costs are undisclosed.",
+        "analysis": "Thriving means current MeebCo stewardship, a live collection interface and license, and a live 2026 merchandise program. It does not establish floor, sales volume, liquidity, unique holders, royalty receipts, merchandise profitability or metaverse usage.",
+        "team": {"original_creators": ["Matt Hall", "John Watkinson"], "stewardship": ["Larva Labs (2021-2022)", "Yuga Labs (2022-2025)", "Meebit Company / MeebCo (2025-current)"], "current_leadership_boundary": "MeebCo says it is led by community members but the reviewed primary pages do not name its individual executives.", "source_ids": ["meebits-launch", "meebits-about", "meebits-transfer"]},
+        "chronology": [
+          {"date": "2021-05-03", "event": "20,000 Meebits launched with free community grants, declining-price public sale and embedded marketplace.", "source_ids": ["meebits-launch"]},
+          {"date": "2022-03-11", "event": "Yuga Labs acquired the Meebits IP and announced holder commercial rights.", "source_ids": ["meebits-transfer"]},
+          {"date": "2025", "event": "MeebCo acquired the project and established current stewardship.", "source_ids": ["meebits-about", "meebits-license"]},
+          {"date": "2026-07-28", "event": "Current collection, license and 2026 merchandise shop were live.", "source_ids": ["meebits-current", "meebits-shop", "meebits-license"]}
+        ],
+        "market_holder_boundaries": {"market": "No current floor, volume, bid depth, liquidity, royalties or realized returns.", "holders": "No current unique-holder count, concentration, asset-pack use or retention.", "available_evidence": "A live collection surface and stewardship products establish continuity, not market health.", "source_ids": ["meebits-current", "meebits-shop"]},
+        "products_and_value_capture": {"products": ["20,000 voxel avatars", "owner 3D asset packs", "commercial-use license", "physical goods and 3D prints", "public art and interactive merchandise"], "capture": "Potential licensing and merchandise channels are visible, but collection-level revenue, margin and royalty data are not disclosed.", "source_ids": ["meebits-about", "meebits-license", "meebits-shop"]},
+        "why": {"finding": "Reusable 3D files, early Larva Labs provenance, holder licensing and transfer to a community-oriented specialist steward plausibly support continuity. The available evidence does not prove broad avatar adoption or financial success.", "source_ids": ["meebits-launch", "meebits-about", "meebits-license"]},
+        "strategic_choices": [
+          {"choice": "Reward CryptoPunks and Autoglyphs holders with free claims while selling remaining inventory through a declining-price mechanism.", "source_ids": ["meebits-launch"]},
+          {"choice": "Ship each token with reusable 3D assets and an embedded like-kind marketplace.", "source_ids": ["meebits-launch"]},
+          {"choice": "Move IP operations from an artist studio to Yuga and then to a dedicated community-led steward.", "source_ids": ["meebits-transfer", "meebits-about"]}
+        ],
+        "counterfactual": {"finding": "Without transferable 3D files and continuing IP stewardship, the voxel-avatar thesis could become only historical provenance. Current MeebCo products reduce that risk but do not prove widespread use or profitable demand.", "source_ids": ["meebits-launch", "meebits-about", "meebits-shop"]},
+        "risks": [
+          {"risk": "Three stewardship eras create license, expectation and execution-transition risk.", "source_ids": ["meebits-transfer", "meebits-about", "meebits-license"]},
+          {"risk": "The original embedded marketplace was reportedly used less than larger venues, demonstrating network-effect risk.", "source_ids": ["meebits-larva-current"]},
+          {"risk": "Visible merchandise does not establish revenue scale, margin or NFT-holder value capture.", "source_ids": ["meebits-shop"]}
+        ],
+        "unknowns": ["Initial declining-sale price and aggregate original sale proceeds.", "Current MeebCo executives, ownership and collection-specific finances.", "Current holders, concentration, floor, volume, royalties and asset-pack usage.", "How merchandise or licensing economics accrue, if at all, to NFT owners."],
+        "review": {"last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "triggers": ["license change", "stewardship transfer", "collection interface shutdown", "new product or financial disclosure"]},
+        "evidence": [
+          {"field": "launch", "value": "2021-05-03 launch by Larva Labs", "as_of": "2021-05-03", "basis": "operator", "source_ids": ["meebits-launch"]},
+          {"field": "supply_or_mint", "value": "20,000 original Ethereum tokens; merchandise and derivative media excluded", "as_of": "2021-05-03", "basis": "operator", "source_ids": ["meebits-launch", "meebits-current"]},
+          {"field": "mint_price", "value": "Free Punk/Glyph claims plus declining-price public sale; initial sale price and aggregate proceeds withheld", "as_of": "2021-05-03", "basis": "operator", "source_ids": ["meebits-launch"]},
+          {"field": "lifecycle_status", "value": "thriving — current specialist stewardship, collection/license interfaces and 2026 merchandise; not market performance", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["meebits-about", "meebits-shop", "meebits-license"]},
+          {"field": "community_history", "value": "Early-community claim and two stewardship transitions documented; retention withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["meebits-launch", "meebits-transfer", "meebits-about"]},
+          {"field": "founder_engagement", "value": "Larva Labs creators transferred operations; MeebCo is current steward; individual current executives withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["meebits-transfer", "meebits-about"]},
+          {"field": "benefits", "value": "3D asset packs and holder commercial-use license without perpetual product promises", "as_of": "2025-12-03", "basis": "operator", "source_ids": ["meebits-launch", "meebits-license"]},
+          {"field": "business", "value": "IP, physical/digital products and merchandise; current collection economics withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["meebits-about", "meebits-shop"]},
+          {"field": "analysis", "value": "Current stewardship and products verified; market, holder, usage and profitability conclusions withheld", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["meebits-current", "meebits-shop"]}
+        ]
+      },
+      "sources": [
+        {"id": "meebits-launch", "title": "Introducing the Meebits", "url": "https://www.larvalabs.com/blog/2021-5-3-1-1/introducing-the-meebits", "publisher": "Larva Labs", "source_date": "2021-05-03", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "historical_event", "stale_after": null, "stale": false},
+        {"id": "meebits-transfer", "title": "Yuga Labs Acquires CryptoPunks and Meebits", "url": "https://larvalabs.com/blog/2022-3-11-18-0/yuga-labs-acquires-cryptopunks-and-meebits", "publisher": "Larva Labs", "source_date": "2022-03-11", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "historical_event", "stale_after": null, "stale": false},
+        {"id": "meebits-about", "title": "Meebits — About", "url": "https://meebits.com/about", "publisher": "The Meebit Company", "source_date": "2025-12-31", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "meebits-license", "title": "Meebits NFT License", "url": "https://meebits.com/legal/license", "publisher": "The Meebit Company", "source_date": "2025-12-03", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "meebits-current", "title": "Meebits Collection", "url": "https://meebits.com/", "publisher": "The Meebit Company", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "meebits-shop", "title": "MeebCo Shop — 2026 Futbol Collection", "url": "https://shop.meebits.com/", "publisher": "The Meebit Company", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "meebits-larva-current", "title": "Larva Labs — Meebits project history", "url": "https://larvalabs.com/meebits", "publisher": "Larva Labs", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false}
+      ]
+    },
+    {
+      "slug": "taproot-wizards",
+      "name": "Taproot Wizards",
+      "chain": "bitcoin-ordinals",
+      "category": "ordinals-cultural-pfp",
+      "status": "thriving",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {"schema": "forensic-freshness-v1", "status_basis": "direct_current", "status_as_of": "2026-07-05", "last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "stale": false},
+        "launched": "2023 — the official history ties initial Wizard distribution to quests around the 4 MB Bitcoin block. The reviewed primary pages do not state one definitive public launch date, so day-level precision is withheld.",
+        "supply": "Unresolved operator discrepancy: the main official site states 2,108 unique Taproot Wizards, while the current Wizard Portal describes 2,111. This dossier publishes both boundaries and does not choose an unsupported canonical total.",
+        "mint_price": "No uniform public mint price is established by the reviewed first-party pages. The official FAQ describes quest/community distribution for at least some Wizards; aggregate primary proceeds are unknown.",
+        "community_history": "The manifesto frames the project around reviving Bitcoin's 2013 Magic Internet Money culture, community quests, technical advocacy and a Wizard Village. The current operator portal also hosts Taproot Wizards, Quantum Cats and a guest recursive-art collection.",
+        "founder_engagement": "The reviewed first-party collection, manifesto and portal pages do not identify the legal operator or individual founders, so names reported by secondary media are not imported. Current product operation is attributed only to the Taproot Wizards project.",
+        "benefits": "The verified collection offers Bitcoin-inscribed cultural identity, official collection verification, community quests and access to current project surfaces including Spellverse and the Wizard Portal. No perpetual utility, token yield or price promise is asserted.",
+        "business": "Current project surfaces combine Ordinals collection stewardship, community programs, an interactive Spellverse experience and a multi-collection portal. Fees, royalties, company ownership and collection-level revenue are not disclosed in the reviewed primary pages.",
+        "analysis": "Thriving means active official collection, portal and Spellverse surfaces, including portal activity dated 2026-07-05. It does not establish canonical supply reconciliation, floor, volume, liquidity, holders, royalties, product revenue or community sentiment.",
+        "team": {"operator": "Taproot Wizards project; legal entity not identified in reviewed primary pages", "founders": "Withheld because official pages reviewed do not name individuals", "governance_boundary": "Community language and quests do not establish token-holder governance.", "source_ids": ["wizards-home", "wizards-manifesto", "wizards-portal"]},
+        "chronology": [
+          {"date": "2023", "event": "Initial Wizards were distributed through Bitcoin-block-linked and community quests; exact primary launch date withheld.", "source_ids": ["wizards-home", "wizards-collection"]},
+          {"date": "2023-2025", "event": "Project expanded its cultural/technical thesis through the manifesto and linked Spellverse surface.", "source_ids": ["wizards-manifesto", "wizards-home"]},
+          {"date": "2026-07-05", "event": "Current Wizard Portal displayed live multi-collection activity.", "source_ids": ["wizards-portal"]},
+          {"date": "2026-07-28", "event": "Official main collection and Spellverse entry surfaces remained live.", "source_ids": ["wizards-home", "wizards-spellverse"]}
+        ],
+        "market_holder_boundaries": {"market": "No floor, aggregate volume, bid depth, royalty or realized-return claim is imported from the portal.", "holders": "No unique-holder count, concentration or retention is asserted.", "available_evidence": "Dated portal activity proves interface operation only; it is not generalized into collection market health.", "source_ids": ["wizards-portal"]},
+        "products_and_value_capture": {"products": ["Bitcoin-inscribed Wizard collection", "official verification list", "community quests", "Wizard Portal", "Spellverse"], "capture": "Possible marketplace or IP economics are not disclosed; no revenue or fee total is asserted.", "source_ids": ["wizards-home", "wizards-portal", "wizards-spellverse"]},
+        "why": {"finding": "The project differentiates through explicit Bitcoin cultural memory, inscription provenance, community quests and technical advocacy. These features support identity and ongoing operation but do not prove investment performance.", "source_ids": ["wizards-manifesto", "wizards-home"]},
+        "strategic_choices": [
+          {"choice": "Use Ordinals inscriptions and a deliberately nostalgic Magic Internet Money identity.", "source_ids": ["wizards-manifesto", "wizards-home"]},
+          {"choice": "Distribute at least some Wizards through quests rather than documenting one uniform public mint.", "source_ids": ["wizards-home"]},
+          {"choice": "Extend the collection into an operator portal and Spellverse experience.", "source_ids": ["wizards-portal", "wizards-spellverse"]}
+        ],
+        "counterfactual": {"finding": "Without verifiable official inscription lists and continuing community/product surfaces, the meme could persist while collection authenticity and coordination fragmented. Current interfaces reduce that risk but add operator dependence.", "source_ids": ["wizards-collection", "wizards-portal"]},
+        "risks": [
+          {"risk": "The 2,108-versus-2,111 operator discrepancy can confuse canonical supply and collection verification.", "source_ids": ["wizards-home", "wizards-portal"]},
+          {"risk": "Unpublished legal-entity, team and economic details limit accountability analysis.", "source_ids": ["wizards-home", "wizards-manifesto"]},
+          {"risk": "A live portal and cultural activity do not demonstrate market liquidity or holder retention.", "source_ids": ["wizards-portal"]}
+        ],
+        "unknowns": ["Canonical explanation for the 2,108 versus 2,111 supply discrepancy.", "Exact launch date, distribution counts, uniform mint price if any, and aggregate proceeds.", "Legal operator, complete founder/team roster and governance structure from first-party evidence.", "Current holders, concentration, floor, volume, fees and revenue."],
+        "review": {"last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "triggers": ["supply reconciliation", "portal or Spellverse shutdown", "team/legal disclosure", "distribution or financial disclosure"]},
+        "evidence": [
+          {"field": "launch", "value": "2023 community/Bitcoin-block-linked distribution; exact public launch date withheld", "as_of": "2023-12-31", "basis": "operator", "source_ids": ["wizards-home"]},
+          {"field": "supply_or_mint", "value": "Official discrepancy: 2,108 main-site count versus 2,111 portal count", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["wizards-home", "wizards-portal"]},
+          {"field": "mint_price", "value": "No uniform public mint price or aggregate proceeds established; some quest distribution documented", "as_of": "2023-12-31", "basis": "analyst", "source_ids": ["wizards-home"]},
+          {"field": "lifecycle_status", "value": "thriving — current official collection, portal and Spellverse operation; not market performance", "as_of": "2026-07-05", "basis": "analyst", "source_ids": ["wizards-portal", "wizards-spellverse"]},
+          {"field": "community_history", "value": "Magic Internet Money culture, quests and technical/community mission documented; sentiment withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["wizards-manifesto", "wizards-home"]},
+          {"field": "founder_engagement", "value": "Current project surfaces active; individual founders and legal operator withheld from absent first-party identification", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["wizards-home", "wizards-portal"]},
+          {"field": "benefits", "value": "Inscribed identity, verification, community quests and project experiences without economic promises", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["wizards-home", "wizards-spellverse"]},
+          {"field": "business", "value": "Collection, portal and interactive experience; fees, ownership and revenue withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["wizards-portal", "wizards-spellverse"]},
+          {"field": "analysis", "value": "Operating continuity verified; supply, team, market, holder and financial conclusions bounded", "as_of": "2026-07-05", "basis": "analyst", "source_ids": ["wizards-home", "wizards-portal"]}
+        ]
+      },
+      "sources": [
+        {"id": "wizards-home", "title": "Taproot Wizards — official site and FAQ", "url": "https://taprootwizards.com/", "publisher": "Taproot Wizards", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "wizards-collection", "title": "Taproot Wizards — Official Collection", "url": "https://taprootwizards.com/collection", "publisher": "Taproot Wizards", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "wizards-manifesto", "title": "The Wizard Manifesto", "url": "https://taprootwizards.com/manifesto", "publisher": "Taproot Wizards", "source_date": null, "source_date_kind": "unknown", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "wizards-portal", "title": "Wizard Portal", "url": "https://portal.taprootwizards.com/", "publisher": "Taproot Wizards", "source_date": "2026-07-05", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "wizards-spellverse", "title": "Spellverse", "url": "https://spellverse.taprootwizards.com/", "publisher": "Taproot Wizards", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false}
+      ]
+    },
+    {
+      "slug": "decentraland-land",
+      "name": "Decentraland LAND",
+      "chain": "ethereum",
+      "category": "virtual-land-nft",
+      "status": "middling",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {"schema": "forensic-freshness-v1", "status_basis": "direct_current", "status_as_of": "2026-05-20", "last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "stale": false},
+        "launched": "LAND's original Terraform allocation occurred in 2017; Decentraland's public virtual world launched on 2020-02-20. These are separate lifecycle milestones.",
+        "supply": "90,601 coordinate-linked LAND parcels in Genesis City. Estates combine adjacent parcels and do not create new underlying LAND; Worlds, NAMEs, Wearables and Emotes are separate assets.",
+        "mint_price": "The 2017 protocol design specified 1,000 MANA to claim an unclaimed LAND parcel. This is not represented as the realized average for every parcel or as an aggregate LAND raise; auction/allocation outcomes and secondary prices are separate.",
+        "community_history": "LAND moved from a 2017 allocation into a publicly launched, community-built virtual world with DAO participation for LAND, MANA and NAME holders. Current documentation supports buying, renting, building, governance and events but not active-owner retention.",
+        "founder_engagement": "The original whitepaper is attributed to Esteban Ordano, Ariel Meilich, Yemel Jardi and Manuel Araoz. Current responsibilities are divided between the Decentraland Foundation and DAO, with the Foundation's role planned to phase toward DAO control by 2030.",
+        "benefits": "LAND owners can control and publish scenes on coordinate-linked parcels, combine parcels into Estates, rent or transfer them, and receive governance voting power. Benefits depend on current protocol and DAO rules; no yield or appreciation guarantee is asserted.",
+        "business": "LAND anchors creator publishing, rentals and marketplace exchange in MANA. Current protocol documentation says creators retain 97.5% of earnings and 2.5% is reinvested through the DAO, but this is ecosystem-wide and not a LAND-owner revenue guarantee.",
+        "analysis": "Middling means the world, LAND tooling, marketplace and governance are operational, while current primary evidence does not establish strong LAND demand or owner activity. A 2026 Estate fingerprint vulnerability was patched with no observed exploitation, demonstrating both continuing maintenance and smart-contract risk. No floor, volume, holders, rentals, occupancy, revenue or return claim is made.",
+        "team": {"original_whitepaper_authors": ["Esteban Ordano", "Ariel Meilich", "Yemel Jardi", "Manuel Araoz"], "current_stewards": ["Decentraland DAO", "Decentraland Foundation"], "transition": "Foundation responsibilities are planned to transition fully to the DAO by 2030.", "source_ids": ["dcl-whitepapers", "dcl-about"]},
+        "chronology": [
+          {"date": "2017", "event": "Original whitepaper and Terraform LAND allocation established coordinate-linked NFT land.", "source_ids": ["dcl-whitepaper", "dcl-whitepapers"]},
+          {"date": "2020-02-20", "event": "Decentraland publicly launched and established the DAO and Foundation model.", "source_ids": ["dcl-whitepaper2"]},
+          {"date": "2024", "event": "Whitepaper 2.0 documented 90,601 Genesis City parcels and the long-term DAO transition.", "source_ids": ["dcl-whitepaper2"]},
+          {"date": "2026-05-20", "event": "Estate fingerprint vulnerability patched; first-party integrations updated and no exploitation observed.", "source_ids": ["dcl-security-2026"]}
+        ],
+        "market_holder_boundaries": {"market": "No current LAND floor, volume, bid depth, rental income, occupancy, liquidity or realized return.", "holders": "No unique LAND-owner, concentration, active-builder or retention series.", "available_evidence": "Marketplace and tooling operation prove functionality; operator download or ecosystem metrics are not LAND market measures.", "source_ids": ["dcl-marketplace", "dcl-overview", "dcl-security-2026"]},
+        "products_and_value_capture": {"products": ["coordinate-linked LAND", "Estates", "scene publishing", "marketplace purchase/sale/rental", "DAO voting power", "Genesis City experiences"], "capture": "Creators may monetize content and rentals, while marketplace/DAO economics exist at ecosystem level; no standardized LAND cash flow is promised.", "source_ids": ["dcl-whitepaper", "dcl-marketplace", "dcl-about"]},
+        "why": {"finding": "LAND supplies persistent location, adjacency, publishing control and governance in a traversable world. That provides functional differentiation, but current evidence does not show whether scarce location translates into durable financial demand.", "source_ids": ["dcl-whitepaper", "dcl-overview", "dcl-about"]},
+        "strategic_choices": [
+          {"choice": "Map each NFT one-to-one to coordinates in a contiguous Genesis City.", "source_ids": ["dcl-whitepaper", "dcl-whitepaper2"]},
+          {"choice": "Use MANA for initial LAND claims and marketplace exchange while enabling owner-controlled content.", "source_ids": ["dcl-whitepaper"]},
+          {"choice": "Split stewardship between Foundation and DAO, with a planned transition to DAO control by 2030.", "source_ids": ["dcl-about", "dcl-whitepaper2"]}
+        ],
+        "counterfactual": {"finding": "Without usable publishing, marketplace and governance infrastructure, LAND would retain tokenized coordinates but lose much of its functional reason to hold. Current maintenance avoids that outcome, while demand and profitability remain unproven.", "source_ids": ["dcl-overview", "dcl-marketplace", "dcl-security-2026"]},
+        "risks": [
+          {"risk": "The 2026 Estate fingerprint incident shows upgrade and marketplace-order risk even when no exploitation is observed.", "source_ids": ["dcl-security-2026"]},
+          {"risk": "LAND scarcity does not ensure active content, visitors, rental demand or liquidity.", "source_ids": ["dcl-whitepaper2", "dcl-overview"]},
+          {"risk": "DAO/Foundation transition may change operational responsibility and execution capacity.", "source_ids": ["dcl-about", "dcl-whitepaper2"]}
+        ],
+        "unknowns": ["Aggregate LAND allocation proceeds and realized average initial price.", "Current unique owners, concentration, active scenes, rental occupancy and owner retention.", "Current floor, volume, liquidity, rental revenue and creator earnings attributable specifically to LAND.", "Long-term operational details of the Foundation-to-DAO transition."],
+        "review": {"last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "triggers": ["fingerprint migration cutoff", "LAND contract upgrade", "marketplace or client shutdown", "DAO/Foundation responsibility change"]},
+        "evidence": [
+          {"field": "launch", "value": "2017 LAND allocation; public world launch 2020-02-20", "as_of": "2020-02-20", "basis": "operator", "source_ids": ["dcl-whitepapers", "dcl-whitepaper2"]},
+          {"field": "supply_or_mint", "value": "90,601 Genesis City parcels; Estates and other asset classes excluded", "as_of": "2024-10-01", "basis": "operator", "source_ids": ["dcl-whitepaper2"]},
+          {"field": "mint_price", "value": "Protocol specified 1,000 MANA per unclaimed LAND; realized aggregate proceeds withheld", "as_of": "2017-06-30", "basis": "operator", "source_ids": ["dcl-whitepaper"]},
+          {"field": "lifecycle_status", "value": "middling — current operation and maintenance verified, strong market or usage demand not established", "as_of": "2026-05-20", "basis": "analyst", "source_ids": ["dcl-security-2026", "dcl-marketplace", "dcl-overview"]},
+          {"field": "community_history", "value": "Community-built world and DAO participation documented; active-owner retention withheld", "as_of": "2026-05-20", "basis": "operator", "source_ids": ["dcl-about", "dcl-overview"]},
+          {"field": "founder_engagement", "value": "Four original authors identified; current Foundation/DAO stewardship and 2030 transition documented", "as_of": "2026-05-20", "basis": "operator", "source_ids": ["dcl-whitepapers", "dcl-about"]},
+          {"field": "benefits", "value": "Publishing, transfer, rental, marketplace and governance functions without promised yield", "as_of": "2026-05-20", "basis": "operator", "source_ids": ["dcl-marketplace", "dcl-overview", "dcl-about"]},
+          {"field": "business", "value": "Creator, rental and marketplace ecosystem; standardized LAND revenue and owner cash flow withheld", "as_of": "2026-05-20", "basis": "operator", "source_ids": ["dcl-about", "dcl-marketplace"]},
+          {"field": "analysis", "value": "Operation and security response verified; market, holder, occupancy and financial conclusions withheld", "as_of": "2026-05-20", "basis": "analyst", "source_ids": ["dcl-security-2026", "dcl-overview"]}
+        ]
+      },
+      "sources": [
+        {"id": "dcl-whitepaper", "title": "Decentraland Original Whitepaper", "url": "https://decentraland.org/whitepaper.pdf", "publisher": "Decentraland", "source_date": "2017-06-30", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "historical_event", "stale_after": null, "stale": false},
+        {"id": "dcl-whitepapers", "title": "Decentraland Docs — Whitepapers and original authors", "url": "https://docs.decentraland.org/introduction/whitepaper", "publisher": "Decentraland", "source_date": "2026-04-29", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "dcl-whitepaper2", "title": "Decentraland Whitepaper 2.0", "url": "https://decentraland.org/whitepaper2.pdf", "publisher": "Decentraland", "source_date": "2024-10-01", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "dcl-about", "title": "About Decentraland", "url": "https://docs.decentraland.org/introduction/about-decentraland", "publisher": "Decentraland", "source_date": "2026-02-28", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "dcl-overview", "title": "Genesis City versus Worlds — Decentraland Docs", "url": "https://docs.decentraland.org/in-world/overview", "publisher": "Decentraland", "source_date": "2026-03-31", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "dcl-marketplace", "title": "Decentraland Marketplace Documentation", "url": "https://docs.decentraland.org/docs/land-manager", "publisher": "Decentraland", "source_date": "2025-07-29", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "dcl-security-2026", "title": "May 2026 Estate Fingerprint Collision Vulnerability Post-Mortem", "url": "https://forum.decentraland.org/t/may-2026-estate-fingerprint-collision-vulnerability-post-mortem/25272", "publisher": "Decentraland Foundation / Decentraland Forum", "source_date": "2026-05-20", "source_date_kind": "event", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false}
+      ]
+    },
+    {
+      "slug": "kraken-nft-marketplace",
+      "name": "Kraken NFT Marketplace",
+      "chain": "multi-chain",
+      "category": "centralized-nft-marketplace",
+      "status": "dead",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {"schema": "forensic-freshness-v1", "status_basis": "terminal_event", "status_as_of": "2025-02-27", "last_verified_at": "2026-07-29", "next_review_at": "2027-01-29", "stale": false},
+        "launched": "2022-12-22 — Kraken opened its NFT marketplace public beta after a private beta in November 2022.",
+        "supply": "Not applicable at platform level. The launch offered more than 110 third-party collections; that catalog count is neither token supply nor current inventory.",
+        "mint_price": "Not applicable at platform level. Kraken NFT facilitated trading of third-party collections and did not have one uniform collection mint or defensible aggregate creator raise.",
+        "community_history": "Kraken targeted existing exchange clients and NFT collectors with curated collections, fiat/crypto bidding, rarity data and custodial trading. The reviewed operator pages do not disclose unique users, creators, retention or community sentiment.",
+        "founder_engagement": "Kraken co-founder and then-CEO Jesse Powell is quoted in the launch announcement. The marketplace was a Kraken corporate product; the reviewed operator pages do not name a standalone product founder or post-closure team.",
+        "benefits": "The marketplace offered curated collection trading, zero network gas fees for trades while assets were held on Kraken, multi-currency bids, rarity ranking and creator earnings for eligible collections. All listing, buying, bidding and selling stopped in withdrawal-only mode.",
+        "business": "Kraken internalized custodial trades to offer zero network gas fees and supported creator earnings, using the marketplace as part of its broader client platform. Revenue, marketplace fees, volume, users and operating costs were not disclosed in reviewed first-party sources.",
+        "analysis": "Dead is established by Kraken's closure FAQ: trading stopped on 2024-11-27, withdrawals remained for three months, and the marketplace fully shut on 2025-02-27 so resources could move to other products. The evidence does not establish market share, losses, usage, or whether any one product feature caused closure.",
+        "team": {"operator": "Kraken", "launch_executive": "Jesse Powell, Kraken co-founder and CEO quoted at launch", "product_team": "Not identified in reviewed operator sources", "source_ids": ["kraken-launch", "kraken-close"]},
+        "chronology": [
+          {"date": "2022-05-03", "event": "Kraken opened the NFT marketplace waitlist and described zero-gas custodial trading and creator earnings.", "source_ids": ["kraken-waitlist"]},
+          {"date": "2022-12-22", "event": "Public beta launched with more than 110 curated collections.", "source_ids": ["kraken-launch"]},
+          {"date": "2024-11-27", "event": "Marketplace entered withdrawal-only mode; listing, buying, bidding and selling ended.", "source_ids": ["kraken-close"]},
+          {"date": "2025-02-27", "event": "Withdrawal deadline passed and Kraken stated the marketplace would be fully shut down.", "source_ids": ["kraken-close"]}
+        ],
+        "market_holder_boundaries": {"market": "No lifetime volume, fees, market share, listing depth or creator payments.", "holders": "A marketplace is not a collection; no platform holder count is meaningful, and user/custody counts are undisclosed.", "available_evidence": "Launch catalog size and terminal dates are operator facts, not adoption or performance measures.", "source_ids": ["kraken-launch", "kraken-close"]},
+        "products_and_value_capture": {"products": ["custodial NFT marketplace", "curated collections", "zero-network-fee internal trading", "multi-currency bidding", "rarity ranking", "eligible creator earnings"], "capture": "Marketplace economics were not disclosed; zero network gas did not necessarily mean zero platform spread or cost, and no profitability claim is made.", "source_ids": ["kraken-launch", "kraken-waitlist"]},
+        "why": {"finding": "Kraken's only explicit reason is resource reallocation to new products and services. Adoption, competition, revenue or regulatory explanations remain hypotheses and are not promoted to causes.", "source_ids": ["kraken-close"]},
+        "strategic_choices": [
+          {"choice": "Embed NFT custody and trading inside an established centralized exchange account.", "source_ids": ["kraken-launch"]},
+          {"choice": "Use internal custody transfers to advertise zero network gas fees and support many funding currencies.", "source_ids": ["kraken-launch", "kraken-waitlist"]},
+          {"choice": "End trading first, preserve a three-month withdrawal window, then fully close.", "source_ids": ["kraken-close"]}
+        ],
+        "counterfactual": {"finding": "A marketplace producing sufficient strategic value could have justified continued resource allocation; Kraken instead explicitly redirected resources. Without product-level economics, the threshold and missing performance cannot be quantified.", "source_ids": ["kraken-close"]},
+        "risks": [
+          {"risk": "Custodial marketplace closure required users to withdraw to self-custody before a deadline.", "source_ids": ["kraken-close"]},
+          {"risk": "Assets left after the deadline became inaccessible through Kraken, showing platform-dependence risk even though underlying NFTs may persist.", "source_ids": ["kraken-close"]},
+          {"risk": "Catalog size and feature breadth did not ensure continued operation.", "source_ids": ["kraken-launch", "kraken-close"]}
+        ],
+        "unknowns": ["Lifetime users, creators, volume, fees, creator payments and market share.", "Marketplace-specific revenue, costs, losses and headcount.", "Ranked internal reasons for resource reallocation beyond Kraken's published statement.", "Number and disposition of NFTs not withdrawn by the deadline."],
+        "review": {"last_verified_at": "2026-07-29", "next_review_at": "2027-01-29", "triggers": ["Kraken announces relaunch", "withdrawal-access change", "new product-level financial disclosure", "corrected closure dates"]},
+        "evidence": [
+          {"field": "launch", "value": "Public beta launched 2022-12-22 after private beta", "as_of": "2022-12-22", "basis": "operator", "source_ids": ["kraken-launch"]},
+          {"field": "supply_or_mint", "value": "Not applicable to a marketplace; 110-plus launch collections are catalog scope, not supply", "as_of": "2022-12-22", "basis": "analyst", "source_ids": ["kraken-launch"]},
+          {"field": "mint_price", "value": "Not applicable; third-party marketplace with no uniform primary mint or aggregate raise", "as_of": "2022-12-22", "basis": "analyst", "source_ids": ["kraken-launch"]},
+          {"field": "lifecycle_status", "value": "dead — full shutdown after 2025-02-27 withdrawal deadline", "as_of": "2025-02-27", "basis": "operator", "source_ids": ["kraken-close"]},
+          {"field": "community_history", "value": "Collector product features documented; user, creator and retention series withheld", "as_of": "2025-02-27", "basis": "analyst", "source_ids": ["kraken-launch", "kraken-close"]},
+          {"field": "founder_engagement", "value": "Kraken corporate product with Jesse Powell quoted at launch; standalone product founder/team withheld", "as_of": "2025-02-27", "basis": "operator", "source_ids": ["kraken-launch", "kraken-close"]},
+          {"field": "benefits", "value": "Curated trading, zero-network-fee internal trades, multi-currency bids, rarity and eligible creator earnings ended with closure", "as_of": "2025-02-27", "basis": "operator", "source_ids": ["kraken-launch", "kraken-close"]},
+          {"field": "business", "value": "Custodial marketplace strategy documented; revenue, fees, volume and profitability withheld", "as_of": "2025-02-27", "basis": "operator", "source_ids": ["kraken-launch", "kraken-close"]},
+          {"field": "analysis", "value": "Terminal closure and resource-reallocation rationale verified; adoption and causal economics withheld", "as_of": "2025-02-27", "basis": "analyst", "source_ids": ["kraken-close"]}
+        ]
+      },
+      "sources": [
+        {"id": "kraken-waitlist", "title": "Kraken NFT is Coming: Join the Waitlist", "url": "https://blog.kraken.com/product/nft/kraken-nft-is-coming-join-the-waitlist", "publisher": "Kraken", "source_date": "2022-05-03", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "historical_event", "stale_after": null, "stale": false},
+        {"id": "kraken-launch", "title": "Kraken Opens NFT Marketplace Beta to the Public", "url": "https://blog.kraken.com/product/nft/kraken-opens-nft-marketplace-beta-to-the-public", "publisher": "Kraken", "source_date": "2022-12-22", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "historical_event", "stale_after": null, "stale": false},
+        {"id": "kraken-close", "title": "NFT Marketplace Closure: FAQ", "url": "https://support.kraken.com/ro-ro/articles/nft-marketplace-closure-faq", "publisher": "Kraken", "source_date": "2025-03-31", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "terminal_outcome", "stale_after": null, "stale": false}
+      ]
+    }
+  ]
+}
