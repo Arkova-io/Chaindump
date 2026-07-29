@@ -197,6 +197,12 @@ describe('six-hour forensic review surface', () => {
     expect(html).toContain('Six-hour review scan:');
     expect(html).toContain('Proposal research agent:');
     expect(html).toContain('no run recorded (opt-in workflow)');
+    expect(html).toContain('refresh_freshness');
+    expect(html).toContain('proposal_agent_freshness');
+    expect(html).toContain('proposal_agent_last_completed');
+    expect(html).toContain('last successful completion');
+    expect(html).toContain('STALE');
+    expect(html).toContain('next due');
     expect(html).toContain('proposal-only; human promotion required');
     expect(html).toContain("forensicsRefreshStatus = response.ok ? 'loaded' : 'unavailable'");
     expect(html).toContain('human promotion required');

@@ -32,7 +32,11 @@ describe("cross-vertical research contract", () => {
     expect(prompt).toContain("never publish");
     expect(prompt).toContain("cannot be directly promoted");
     expect(prompt).toContain("alternative explanations");
-    expect(DEFAULT_RESEARCH_TASK).toContain("at most one");
+    expect(prompt).toContain("entity_id");
+    expect(prompt).toContain("field_path");
+    expect(prompt).toContain("source_refs");
+    expect(prompt).toContain("verified_at");
+    expect(DEFAULT_RESEARCH_TASK).toContain("DEX, CEX");
     expect(DEFAULT_RESEARCH_TASK).toContain("It is valid to queue nothing");
   });
 });

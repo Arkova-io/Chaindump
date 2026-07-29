@@ -7,7 +7,16 @@ import { prefersMarkdown } from './lib/negotiate.js';
 import { renderEntityMarkdown } from './lib/entity-markdown.js';
 import { norm, resolveCategory, categoryLabel, coverageTier, relatedBlock, deriveCategory } from './lib/chainkit.js';
 import { annotateDataQuality, assessChainDataQuality } from './lib/data-quality.js';
-import { promotionPlan, proposalNeedsHumanReview } from './lib/desk-promote.js';
+import {
+  promotionPlan,
+  proposalNeedsHumanReview,
+  REVIEW_REQUIRED_PROPOSAL_DATASETS,
+  validateResearchCandidateProposal,
+} from './lib/desk-promote.js';
+import {
+  forensicRefreshFreshness,
+  proposalAgentFreshness,
+} from './lib/research-desk-status.js';
 import { USDC_DP, monthKeyFromDate, isLiveMode, decodePaymentHeader, paymentRequirements, structuralCheck, pruneStaleQuota } from './lib/x402.js';
 import { TAG_LABELS, canonTags, isFraudy, causeVocab } from './lib/causes.js';
 // Aliased deliberately: causes.js above exports TAG_LABELS/canonTags into this
@@ -1262,6 +1271,16 @@ function deskAuth(req, res, scope) {
   return true;
 }
 
+const DESK_PROPOSAL_UPSERT_SQL = `INSERT INTO desk_proposals
+  (dataset, slug, title, summary, payload, sources, names_individuals, confidence, needs_human_review, status, queued_at)
+ VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', datetime('now'))
+ ON CONFLICT(dataset, slug) DO UPDATE SET title=excluded.title, summary=excluded.summary, payload=excluded.payload,
+   sources=excluded.sources, names_individuals=excluded.names_individuals, confidence=excluded.confidence,
+   needs_human_review=excluded.needs_human_review, status='pending', queued_at=datetime('now'),
+   reviewer_note=NULL, reviewed_at=NULL`;
+const DESK_PROPOSAL_LOCKED_UPSERT_SQL = `${DESK_PROPOSAL_UPSERT_SQL}
+ WHERE desk_proposals.status = 'pending'`;
+
 app.post('/api/desk/propose', wrap(async (req, res) => {
   if (!deskAuth(req, res, 'proposal')) return;
   if (!ENV.DB) return res.status(503).json({ error: 'no DB' });
@@ -1270,21 +1289,39 @@ app.post('/api/desk/propose', wrap(async (req, res) => {
   const dataset = String(b.dataset || '').trim();
   const slug = String(b.slug || '').trim();
   if (!dataset || !slug) return res.status(400).json({ error: 'dataset and slug are required' });
+  const candidateValidation = validateResearchCandidateProposal(dataset, slug, b.payload, b.sources);
+  if (!candidateValidation.ok) {
+    return res.status(400).json({
+      error: 'invalid research candidate',
+      details: candidateValidation.errors,
+      canonical_slug: candidateValidation.canonicalSlug || null,
+    });
+  }
   const namesIndividuals = b.names_individuals ? 1 : 0;
   const confidence = Number(b.confidence);
   // Force human review for individual-naming/fraud claims, low/invalid
   // confidence, and every complex forensic evidence-candidate dataset. The
   // latter is enforced here even if a stale/compromised client stamps false.
   const needsReview = proposalNeedsHumanReview(dataset, namesIndividuals, confidence) ? 1 : 0;
+  // Dated analysis-candidate keys are immutable after human review so an agent
+  // cannot erase that decision. Legacy row datasets intentionally reuse stable
+  // entity slugs for later corrections and therefore retain their prior upsert
+  // behavior across review cycles.
+  const proposalUpsertSql = REVIEW_REQUIRED_PROPOSAL_DATASETS.includes(dataset)
+    ? DESK_PROPOSAL_LOCKED_UPSERT_SQL
+    : DESK_PROPOSAL_UPSERT_SQL;
   try {
-    await ENV.DB.prepare(
-      `INSERT INTO desk_proposals (dataset, slug, title, summary, payload, sources, names_individuals, confidence, needs_human_review, status, queued_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', datetime('now'))
-       ON CONFLICT(dataset, slug) DO UPDATE SET title=excluded.title, summary=excluded.summary, payload=excluded.payload,
-         sources=excluded.sources, names_individuals=excluded.names_individuals, confidence=excluded.confidence,
-         needs_human_review=excluded.needs_human_review, status='pending', queued_at=datetime('now')`
-    ).bind(dataset, slug, b.title || null, b.summary || null, JSON.stringify(b.payload || {}), JSON.stringify(b.sources || []),
+    const result = await ENV.DB.prepare(proposalUpsertSql)
+      .bind(dataset, slug, b.title || null, b.summary || null, JSON.stringify(b.payload || {}), JSON.stringify(b.sources || []),
       namesIndividuals, Number.isFinite(confidence) ? confidence : null, needsReview).run();
+    const changes = Number(result?.meta?.changes ?? result?.changes ?? 0);
+    if (changes !== 1) {
+      return res.status(409).json({
+        error: 'proposal key already reviewed',
+        dataset,
+        slug,
+      });
+    }
     res.json({ ok: true, dataset, slug, needs_human_review: !!needsReview });
   } catch (e) { res.status(500).json({ error: e.message }); }
 }));
@@ -2527,6 +2564,7 @@ app.get('/api/forensics-refresh-status', wrap(async (req, res) => {
   let refresh = null;
   let refreshError = null;
   let proposalAgent = null;
+  let proposalAgentLastCompleted = null;
   let proposalAgentError = null;
   try {
     const rows = await dbQuery(
@@ -2547,12 +2585,23 @@ app.get('/api/forensics-refresh-status', wrap(async (req, res) => {
         ORDER BY started_at DESC, run_id DESC LIMIT 1`,
     );
     proposalAgent = rows[0] || null;
+    const completedRows = await dbQuery(
+      `SELECT run_id, started_at, completed_at, status, proposals_queued
+         FROM research_desk_runs
+        WHERE status = 'completed'
+        ORDER BY completed_at DESC, run_id DESC LIMIT 1`,
+    );
+    proposalAgentLastCompleted = completedRows[0] || null;
   } catch {
     proposalAgentError = 'proposal research status unavailable';
   }
   res.json({
     refresh,
     proposal_agent: proposalAgent,
+    proposal_agent_last_completed: proposalAgentLastCompleted,
+    refresh_freshness: forensicRefreshFreshness(refresh),
+    proposal_agent_freshness: proposalAgentFreshness(proposalAgent),
+    server_time: new Date().toISOString(),
     cadence: 'six_hours',
     promotion_policy: 'human_review_required',
     ...(refreshError ? { error: refreshError } : {}),

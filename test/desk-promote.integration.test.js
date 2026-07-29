@@ -40,18 +40,29 @@ function makeDeskDB({ proposal, chainRow } = {}) {
         return null;
       },
       async run() {
+        let changes = 1;
         if (/INTO desk_proposals/.test(this.sql)) {
           const [
             dataset, slug, title, summary, payload, sources,
             namesIndividuals, confidence, needsHumanReview,
           ] = this.binds;
-          proposals.set(`${dataset}:${slug}`, {
-            dataset, slug, title, summary, payload, sources,
-            names_individuals: namesIndividuals,
-            confidence,
-            needs_human_review: needsHumanReview,
-            status: 'pending',
-          });
+          const key = `${dataset}:${slug}`;
+          const existing = proposals.get(key);
+          if (this.sql.includes("WHERE desk_proposals.status = 'pending'") && existing && existing.status !== 'pending') {
+            changes = 0;
+          } else {
+            proposals.set(key, {
+              ...(existing || {}),
+              dataset, slug, title, summary, payload, sources,
+              names_individuals: namesIndividuals,
+              confidence,
+              needs_human_review: needsHumanReview,
+              status: 'pending',
+              ...(this.sql.includes('reviewer_note=NULL')
+                ? { reviewer_note: null, reviewed_at: null }
+                : {}),
+            });
+          }
         } else if (/INTO dead_chains/.test(this.sql)) {
           const cols = this.sql.match(/\(([^)]+)\)\s+VALUES/)[1].split(',').map((s) => s.trim());
           const rec = {};
@@ -66,7 +77,7 @@ function makeDeskDB({ proposal, chainRow } = {}) {
           const key = `${dataset}:${slug}`;
           proposals.set(key, { ...(proposals.get(key) || {}), status: this.sql.includes("status='promoted'") ? 'promoted' : 'rejected', reviewer_note: reviewerNote });
         }
-        return { meta: { changes: 1 } };
+        return { meta: { changes } };
       },
     };
   }
@@ -180,7 +191,7 @@ describe('/api/desk/promote', () => {
     ];
 
     for (const dataset of datasets) {
-      const slug = `${dataset}-one`;
+      const slug = 'candidate-entity--lifecycle-status--2026-07-29';
       const response = await worker.fetch(new Request('http://localhost/api/desk/propose', {
         method: 'POST',
         headers: { authorization: 'Bearer proposal-secret', 'content-type': 'application/json' },
@@ -191,6 +202,21 @@ describe('/api/desk/promote', () => {
           names_individuals: false,
           // A stale/compromised client must not be able to lower the gate.
           needs_human_review: false,
+          payload: {
+            entity_id: 'candidate-entity',
+            field_path: 'lifecycle.status',
+            claim: 'The lifecycle status requires reviewer reconciliation.',
+            as_of: '2026-07-29',
+            source_refs: ['source-1'],
+          },
+          sources: [{
+            id: 'source-1',
+            title: 'Primary status record',
+            url: 'https://example.com/status',
+            source_type: 'primary',
+            verified_at: '2026-07-29T18:00:00.000Z',
+            verification_result: 'resolved',
+          }],
         }),
       }), env, ctx());
 
@@ -198,5 +224,143 @@ describe('/api/desk/promote', () => {
       expect((await response.json()).needs_human_review).toBe(true);
       expect(db.proposals.get(`${dataset}:${slug}`).needs_human_review).toBe(1);
     }
+  });
+
+  it('rejects analysis candidates without a claim-level citation contract', async () => {
+    const worker = await freshWorker();
+    const db = makeDeskDB();
+    const response = await worker.fetch(new Request('http://localhost/api/desk/propose', {
+      method: 'POST',
+      headers: { authorization: 'Bearer proposal-secret', 'content-type': 'application/json' },
+      body: JSON.stringify({
+        dataset: 'exchange_analysis_candidate',
+        slug: 'ascendex-status',
+        confidence: 0.9,
+        payload: { claim: 'A status changed.' },
+        sources: [{ title: 'Article', url: 'https://example.com/article' }],
+      }),
+    }), { DB: db, DESK_PROPOSAL_TOKEN: 'proposal-secret' }, ctx());
+
+    expect(response.status).toBe(400);
+    expect(await response.json()).toMatchObject({ error: 'invalid research candidate' });
+    expect(db.proposals.size).toBe(0);
+  });
+
+  it('rejects noncanonical duplicate-prone candidate keys and duplicate source URLs', async () => {
+    const worker = await freshWorker();
+    const db = makeDeskDB();
+    const response = await worker.fetch(new Request('http://localhost/api/desk/propose', {
+      method: 'POST',
+      headers: { authorization: 'Bearer proposal-secret', 'content-type': 'application/json' },
+      body: JSON.stringify({
+        dataset: 'nft_lifecycle_candidate',
+        slug: 'quantum-cats-status',
+        confidence: 0.9,
+        payload: {
+          entity_id: 'quantum-cats',
+          field_path: 'lifecycle.status',
+          claim: 'The current lifecycle state needs review.',
+          as_of: '2026-07-29',
+          source_refs: ['source-1', 'source-2'],
+        },
+        sources: [
+          {
+            id: 'source-1', title: 'Portal one', url: 'https://example.com/status',
+            source_type: 'primary', verified_at: '2026-07-29T18:00:00.000Z', verification_result: 'resolved',
+          },
+          {
+            id: 'source-2', title: 'Portal duplicate', url: 'https://example.com/status',
+            source_type: 'primary', verified_at: '2026-07-29T18:01:00.000Z', verification_result: 'resolved',
+          },
+        ],
+      }),
+    }), { DB: db, DESK_PROPOSAL_TOKEN: 'proposal-secret' }, ctx());
+
+    expect(response.status).toBe(400);
+    const body = await response.json();
+    expect(body.error).toBe('invalid research candidate');
+    expect(body.details.join(' ')).toMatch(/slug|duplicate source URL/i);
+    expect(db.proposals.size).toBe(0);
+  });
+
+  it('does not overwrite a human-reviewed proposal when the canonical claim key repeats', async () => {
+    const slug = 'quantum-cats--lifecycle-status--2026-07-29';
+    const db = makeDeskDB({
+      proposal: {
+        dataset: 'nft_lifecycle_candidate',
+        slug,
+        status: 'promoted',
+        reviewer_note: 'Reconciled by an analyst.',
+        reviewed_at: '2026-07-29T17:00:00.000Z',
+      },
+    });
+    const worker = await freshWorker();
+    const response = await worker.fetch(new Request('http://localhost/api/desk/propose', {
+      method: 'POST',
+      headers: { authorization: 'Bearer proposal-secret', 'content-type': 'application/json' },
+      body: JSON.stringify({
+        dataset: 'nft_lifecycle_candidate',
+        slug,
+        confidence: 0.9,
+        payload: {
+          entity_id: 'quantum-cats',
+          field_path: 'lifecycle.status',
+          claim: 'A repeated claim must not erase review history.',
+          as_of: '2026-07-29',
+          source_refs: ['source-1'],
+        },
+        sources: [{
+          id: 'source-1',
+          title: 'Primary portal',
+          url: 'https://example.com/status',
+          source_type: 'primary',
+          verified_at: '2026-07-29T18:00:00.000Z',
+          verification_result: 'resolved',
+        }],
+      }),
+    }), { DB: db, DESK_PROPOSAL_TOKEN: 'proposal-secret' }, ctx());
+
+    expect(response.status).toBe(409);
+    expect(await response.json()).toMatchObject({ error: 'proposal key already reviewed' });
+    expect(db.proposals.get(`nft_lifecycle_candidate:${slug}`)).toMatchObject({
+      status: 'promoted',
+      reviewer_note: 'Reconciled by an analyst.',
+      reviewed_at: '2026-07-29T17:00:00.000Z',
+    });
+  });
+
+  it('allows a later legacy proposal to reuse a reviewed stable entity slug', async () => {
+    const db = makeDeskDB({
+      proposal: {
+        dataset: 'scam_intel',
+        slug: 'stable-entity',
+        title: 'Earlier reviewed claim',
+        status: 'promoted',
+        reviewer_note: 'Earlier review remains auditable.',
+        reviewed_at: '2026-07-29T18:00:00.000Z',
+      },
+    });
+    const worker = await freshWorker();
+    const response = await worker.fetch(new Request('http://localhost/api/desk/propose', {
+      method: 'POST',
+      headers: { authorization: 'Bearer proposal-secret', 'content-type': 'application/json' },
+      body: JSON.stringify({
+        dataset: 'scam_intel',
+        slug: 'stable-entity',
+        title: 'Later evidence for the same entity',
+        summary: 'A stable entity slug must remain reusable for a later review cycle.',
+        confidence: 0.9,
+        payload: { status: 'updated-candidate' },
+        sources: [{ title: 'Later source', url: 'https://example.com/later' }],
+      }),
+    }), { DB: db, DESK_PROPOSAL_TOKEN: 'proposal-secret' }, ctx());
+
+    expect(response.status).toBe(200);
+    expect(db.proposals.get('scam_intel:stable-entity')).toMatchObject({
+      status: 'pending',
+      title: 'Later evidence for the same entity',
+      reviewer_note: null,
+      reviewed_at: null,
+    });
   });
 });
