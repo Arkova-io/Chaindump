@@ -3,11 +3,11 @@
 Audit date: **2026-07-29**
 
 > **Current migrated coverage — 2026-07-29.** Migrations `0015` and `0020`
-> promote 14 current-board chains into complete schema-v1 dossiers: Ethereum,
+> promote 15 current-board chains into complete schema-v1 dossiers: Ethereum,
 > Solana, BSC, Base, Robinhood Chain, Hyperliquid L1, Polygon, Arbitrum, Tron,
-> Monad, Avalanche, OP Mainnet, Mantle, and Bitcoin. The historical snapshot below is
+> Monad, Avalanche, OP Mainnet, Mantle, Bitcoin, and Cardano. The historical snapshot below is
 > retained as a baseline, but it is not the current completion percentage.
-> The remaining 36 current-board names still require a fresh dimension audit
+> The remaining 35 current-board names still require a fresh dimension audit
 > before they can be counted as complete.
 
 Board snapshot: **2026-07-29T15:35:40.123Z**
@@ -20,8 +20,8 @@ used for this audit.
 
 | Coverage measure | Count | Meaning |
 |---|---:|---|
-| Comparable schema-v1 dossier | 14/50 | All eight required dimensions are materialized by migrations `0015`, `0020`, or `0026` |
-| Partial or legacy research | 34/50 | A research surface exists but the chain is not in the 14-dossier completion cohort |
+| Comparable schema-v1 dossier | 15/50 | All eight required dimensions are materialized by migrations `0015`, `0020`, `0026`, or `0028` |
+| Partial or legacy research | 33/50 | A research surface exists but the chain is not in the 15-dossier completion cohort |
 | No production research in the historical audit | 2/50 | XDC and Fluent were absent from the pre-promotion snapshot |
 
 This is an implementation count, not a quality claim: every current dossier
