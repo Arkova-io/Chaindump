@@ -1098,13 +1098,14 @@ function exchangeAnalysisCard(row) {
   meta.push(`data quality: ${row.qualityLabel}`);
   const sourceLabel = row.sources.length === 1 ? 'source' : 'sources';
   meta.push(`${row.sources.length} ${sourceLabel}`);
+  const dossierLink = `/exchange/${encodeURIComponent(row.kind)}/${encodeURIComponent(row.lifecycle)}/${encodeURIComponent(row.slug)}`;
   return `<div class="gcard ${open?'open':''}" role="button" tabindex="0" data-exchange-analysis-key="${esc(`${row.kind}:${row.lifecycle}:${row.slug}`)}">
     <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${lifecycleClass(row.lifecycle)}">${esc(lifecycleLabel(row.lifecycle))}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${metricContext}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
     <div class="gmeta">${meta.map(esc).join(' · ')}</div>
     ${row.summary ? `<div class="gbody">${esc(row.summary)}</div>` : ''}
     <div class="analysis-src-preview">${sourcePreview || '<div class="asrc">No cited sources published for this row.</div>'}</div>
-    ${details}<div class="gexpand">${open?'Hide dossier ▲':'Full dossier ▾'}</div>
+    ${details}<div class="gexpand">${open?'Hide dossier ▲':'Full dossier ▾'} · <a href="${esc(dossierLink)}">Open dossier →</a></div>
   </div>`;
 }
 function exchangeTrendSummary(summary, label) {
@@ -4220,7 +4221,7 @@ const KNOWN_VIEWS = ['live','blockchain-analysis','exchange-analysis','casino-an
 function applyRoute(){
   const parts = location.pathname.split('/').filter(Boolean);
   if (!parts.length) { switchView('live', false); return; }
-  const [seg, rest] = parts;
+  const [seg, rest, third, fourth] = parts;
   if (seg === 'chain' && rest) {
     switchView('live', false);
     const name = decodeURIComponent(rest);
@@ -4234,6 +4235,9 @@ function applyRoute(){
   } else if (seg === 'casino' && rest) {
     state.casinoAnalysisExpanded = decodeURIComponent(rest);
     switchView('casino-analysis', false);
+  } else if (seg === 'exchange' && rest && third && fourth) {
+    state.exchangeAnalysisExpanded = `${decodeURIComponent(rest)}:${decodeURIComponent(third)}:${decodeURIComponent(fourth)}`;
+    switchView('exchange-analysis', false);
   } else if (KNOWN_VIEWS.includes(seg)) {
     switchView(seg, false);
   } else {

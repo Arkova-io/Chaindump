@@ -93,6 +93,12 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('Material unknowns');
     expect(html).toContain('structured causal analysis has not passed the publication gate yet');
   });
+
+  it('opens exchange dossiers through a public UI route instead of requiring API inspection', () => {
+    expect(html).toContain('const dossierLink = `/exchange/${encodeURIComponent(row.kind)}/${encodeURIComponent(row.lifecycle)}/${encodeURIComponent(row.slug)}`;');
+    expect(html).toContain("} else if (seg === 'exchange' && rest && third && fourth) {");
+    expect(html).toContain('state.exchangeAnalysisExpanded = `${decodeURIComponent(rest)}:${decodeURIComponent(third)}:${decodeURIComponent(fourth)}`;');
+  });
 });
 
 describe('Stuck/Mid UI parity', () => {
