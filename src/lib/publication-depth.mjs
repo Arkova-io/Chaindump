@@ -1,5 +1,6 @@
 const HTTPS_URL = /^https:\/\/\S+$/;
-const ISO_REVIEW_TIMESTAMP = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2}))?$/;
+const ISO_REVIEW_DATE = /^\d{4}-\d{2}-\d{2}$/;
+const ISO_REVIEW_DATETIME = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
 
 const TIER_RANK = Object.freeze({
   T1: 1,
@@ -158,7 +159,8 @@ function independenceHost(host) {
 
 export function isIsoReviewTimestamp(value) {
   const text = String(value || '').trim();
-  return ISO_REVIEW_TIMESTAMP.test(text) && !Number.isNaN(Date.parse(text));
+  const validShape = ISO_REVIEW_DATE.test(text) || ISO_REVIEW_DATETIME.test(text);
+  return validShape && !Number.isNaN(Date.parse(text));
 }
 
 function classifyByHost(source, host) {
