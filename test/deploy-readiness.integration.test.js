@@ -19,6 +19,9 @@ describe('production deployment readiness', () => {
     expect(deployWorkflow).toMatch(
       /group:\s*deploy-production[\s\S]*cancel-in-progress:\s*true/,
     );
+    expect(deployWorkflow).toMatch(
+      /Reject a superseded main revision[\s\S]*refs\/heads\/main:refs\/remotes\/origin\/main[\s\S]*test "\$GITHUB_SHA" = "\$current_main_sha"/,
+    );
   });
 
   it('deploys an identifiable revision and verifies the Worker plus research UI', () => {

@@ -64,6 +64,15 @@ jobs:
         run: npx wrangler d1 migrations apply chaindump-db --remote
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      - name: Reject a superseded main revision
+        # Environment approval can outlive the revision that requested it.
+        # Re-read main immediately before publishing so an older approved run
+        # cannot roll production back after a newer main deploy.
+        run: |
+          git fetch --no-tags origin \
+            +refs/heads/main:refs/remotes/origin/main
+          current_main_sha="$(git rev-parse refs/remotes/origin/main)"
+          test "$GITHUB_SHA" = "$current_main_sha"
       - name: Deploy Worker
         # The health route returns this revision so the smoke test can reject a
         # healthy-but-stale Worker rather than treating any historical 200 as good.
