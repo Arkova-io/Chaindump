@@ -47,11 +47,14 @@ export const REVIEW_REQUIRED_PROPOSAL_DATASETS = Object.freeze([
 
 function candidateSegment(value) {
   if (typeof value !== 'string') return '';
-  return value
+  const normalized = value
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 80);
+    .replace(/[^a-z0-9]+/g, '-');
+  let start = 0;
+  let end = normalized.length;
+  while (normalized[start] === '-') start += 1;
+  while (normalized[end - 1] === '-') end -= 1;
+  return normalized.slice(start, end).slice(0, 80);
 }
 
 function validDateOnly(value) {
@@ -61,7 +64,13 @@ function validDateOnly(value) {
 }
 
 function validVerifiedTimestamp(value) {
-  if (typeof value !== 'string' || !/T.*(?:Z|[+-]\d{2}:\d{2})$/.test(value)) return false;
+  if (typeof value !== 'string' || !value.includes('T')) return false;
+  const offset = value.slice(-6);
+  const hasNumericOffset = ['+', '-'].includes(offset[0])
+    && offset[3] === ':'
+    && Number.isInteger(Number(offset.slice(1, 3)))
+    && Number.isInteger(Number(offset.slice(4, 6)));
+  if (!value.endsWith('Z') && !hasNumericOffset) return false;
   return Number.isFinite(Date.parse(value));
 }
 

@@ -125,4 +125,23 @@ describe('research candidate evidence contract', () => {
     expect(invalid.ok).toBe(false);
     expect(invalid.errors.join(' ')).toMatch(/missing/i);
   });
+
+  it('requires a timezone-qualified verification timestamp', () => {
+    const slug = researchCandidateSlug(payload);
+    expect(validateResearchCandidateProposal(
+      'nft_lifecycle_candidate',
+      slug,
+      payload,
+      [{ ...sources[0], verified_at: '2026-07-29T18:00:00-04:00' }],
+    ).ok).toBe(true);
+
+    const invalid = validateResearchCandidateProposal(
+      'nft_lifecycle_candidate',
+      slug,
+      payload,
+      [{ ...sources[0], verified_at: '2026-07-29T18:00:00' }],
+    );
+    expect(invalid.ok).toBe(false);
+    expect(invalid.errors.join(' ')).toMatch(/timezone/i);
+  });
 });

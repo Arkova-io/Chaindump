@@ -5,7 +5,7 @@ export const PROPOSAL_RUNNING_LIMIT_MS = 45 * 60 * 1000;
 export const PROPOSAL_SCHEDULE_MINUTE_UTC = 17;
 
 function parseUtcTimestamp(value) {
-  if (typeof value !== 'string' || !value.trim()) return NaN;
+  if (typeof value !== 'string' || !value.trim()) return Number.NaN;
   const normalized = /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/.test(value)
     ? `${value.replace(' ', 'T')}Z`
     : value;
@@ -17,7 +17,7 @@ function isoOrNull(timestamp) {
 }
 
 function nextProposalSchedule(timestamp) {
-  if (!Number.isFinite(timestamp)) return NaN;
+  if (!Number.isFinite(timestamp)) return Number.NaN;
   const completed = new Date(timestamp);
   const scheduledHour = Math.floor(completed.getUTCHours() / 6) * 6;
   let candidate = Date.UTC(
@@ -49,7 +49,7 @@ function timedState(timestamp, nowMs, graceMs, nextDue = timestamp + RESEARCH_DE
 }
 
 export function forensicRefreshFreshness(refresh, nowMs = Date.now()) {
-  if (!refresh) return timedState(NaN, nowMs, FORENSIC_SCAN_GRACE_MS);
+  if (!refresh) return timedState(Number.NaN, nowMs, FORENSIC_SCAN_GRACE_MS);
   const result = timedState(
     parseUtcTimestamp(refresh.completed_at || refresh.scheduled_at),
     nowMs,
@@ -59,7 +59,7 @@ export function forensicRefreshFreshness(refresh, nowMs = Date.now()) {
 }
 
 export function proposalAgentFreshness(run, nowMs = Date.now()) {
-  if (!run) return timedState(NaN, nowMs, PROPOSAL_RUN_GRACE_MS);
+  if (!run) return timedState(Number.NaN, nowMs, PROPOSAL_RUN_GRACE_MS);
   if (run.status === 'running') {
     const startedAt = parseUtcTimestamp(run.started_at);
     if (!Number.isFinite(startedAt) || startedAt > nowMs + FORENSIC_SCAN_GRACE_MS) {

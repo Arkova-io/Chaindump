@@ -702,42 +702,49 @@ const safeUrl = (u) => { const s = String(u == null ? '' : u).trim(); return /^(
 //   .gwrap > .gcard  |  .chainfolders > .chainfolder  |  .rllist > .rlrow
 // `sub` is trusted authored copy (it may carry &amp; / <b>); `title` is escaped.
 // ---------------------------------------------------------------------------
-function forensicsRefreshText() {
+function forensicsFreshnessLabel(freshness) {
+  if (freshness?.state === 'stale') return 'STALE';
+  if (freshness?.state === 'current') return 'current';
+  return freshness?.state || 'freshness unknown';
+}
+function forensicsScanText() {
   const refresh = state.forensicsRefresh;
   const refreshFreshness = state.forensicsRefreshFreshness;
-  let scan = 'Six-hour review scan: no completed scan recorded';
-  if (state.forensicsRefreshStatus === 'loading') scan = 'Six-hour review scan: loading evidence-governance status…';
-  else if (state.forensicsRefreshStatus === 'unavailable') scan = 'Six-hour review scan: status unavailable';
-  else if (refresh) {
-    const due = Number(refresh.due_nft || 0) + Number(refresh.due_exchange || 0) + Number(refresh.due_casino || 0) + Number(refresh.due_chain || 0);
-    const freshness = refreshFreshness?.state === 'stale'
-      ? 'STALE'
-      : refreshFreshness?.state === 'current' ? 'current' : refreshFreshness?.state || 'freshness unknown';
-    const nextDue = refreshFreshness?.next_due_at ? ` · next due ${esc(refreshFreshness.next_due_at)}` : '';
-    scan = `Six-hour review scan: ${esc(freshness)} · last completed ${esc(refreshFreshness?.last_completed_at || refresh.completed_at || 'unknown')}${nextDue} · ${esc(due)} dossier(s) due`;
-  }
-
+  if (state.forensicsRefreshStatus === 'loading') return 'Six-hour review scan: loading evidence-governance status…';
+  if (state.forensicsRefreshStatus === 'unavailable') return 'Six-hour review scan: status unavailable';
+  if (!refresh) return 'Six-hour review scan: no completed scan recorded';
+  const due = Number(refresh.due_nft || 0) + Number(refresh.due_exchange || 0) + Number(refresh.due_casino || 0) + Number(refresh.due_chain || 0);
+  const freshness = forensicsFreshnessLabel(refreshFreshness);
+  const nextDue = refreshFreshness?.next_due_at ? ` · next due ${esc(refreshFreshness.next_due_at)}` : '';
+  return `Six-hour review scan: ${esc(freshness)} · last completed ${esc(refreshFreshness?.last_completed_at || refresh.completed_at || 'unknown')}${nextDue} · ${esc(due)} dossier(s) due`;
+}
+function forensicsPriorCompletionText() {
+  const completedAt = state.forensicsProposalAgentLastCompleted?.completed_at;
+  return completedAt ? ` · last successful completion ${esc(completedAt)}` : '';
+}
+function forensicsProposalAgentText() {
   const run = state.forensicsProposalAgent;
   const runFreshness = state.forensicsProposalAgentFreshness;
-  const lastCompletedRun = state.forensicsProposalAgentLastCompleted;
-  const priorCompletion = lastCompletedRun?.completed_at
-    ? ` · last successful completion ${esc(lastCompletedRun.completed_at)}`
-    : '';
-  let agent = 'Proposal research agent: no run recorded (opt-in workflow)';
-  if (state.forensicsProposalAgentStatus === 'loading') agent = 'Proposal research agent: loading run status…';
-  else if (state.forensicsProposalAgentStatus === 'unavailable') agent = 'Proposal research agent: status unavailable';
-  else if (run?.status === 'running') {
-    agent = runFreshness?.state === 'stale'
+  const priorCompletion = forensicsPriorCompletionText();
+  if (state.forensicsProposalAgentStatus === 'loading') return 'Proposal research agent: loading run status…';
+  if (state.forensicsProposalAgentStatus === 'unavailable') return 'Proposal research agent: status unavailable';
+  if (run?.status === 'running') {
+    return runFreshness?.state === 'stale'
       ? `Proposal research agent: interrupted or STALE run since ${esc(run.started_at || 'unknown')}${priorCompletion}`
       : `Proposal research agent: running since ${esc(run.started_at || 'unknown')}${priorCompletion}`;
-  } else if (run?.status === 'completed') {
-    const freshness = runFreshness?.state === 'stale' ? 'STALE' : runFreshness?.state || 'freshness unknown';
-    const nextDue = runFreshness?.next_due_at ? ` · next due ${esc(runFreshness.next_due_at)}` : '';
-    agent = `Proposal research agent: ${esc(freshness)} · completed ${esc(runFreshness?.last_completed_at || run.completed_at || run.started_at || 'unknown')}${nextDue} · ${esc(run.proposals_queued || 0)} candidate(s) queued`;
-  } else if (run?.status === 'failed') {
-    agent = `Proposal research agent: failed ${esc(run.completed_at || run.started_at || 'unknown')}${priorCompletion}`;
   }
-  return `${scan}<br>${agent} · proposal-only; human promotion required`;
+  if (run?.status === 'completed') {
+    const freshness = forensicsFreshnessLabel(runFreshness);
+    const nextDue = runFreshness?.next_due_at ? ` · next due ${esc(runFreshness.next_due_at)}` : '';
+    return `Proposal research agent: ${esc(freshness)} · completed ${esc(runFreshness?.last_completed_at || run.completed_at || run.started_at || 'unknown')}${nextDue} · ${esc(run.proposals_queued || 0)} candidate(s) queued`;
+  }
+  if (run?.status === 'failed') {
+    return `Proposal research agent: failed ${esc(run.completed_at || run.started_at || 'unknown')}${priorCompletion}`;
+  }
+  return 'Proposal research agent: no run recorded (opt-in workflow)';
+}
+function forensicsRefreshText() {
+  return `${forensicsScanText()}<br>${forensicsProposalAgentText()} · proposal-only; human promotion required`;
 }
 function renderForensicsRefreshStatus() {
   document.querySelectorAll('[data-forensics-refresh]').forEach((node) => {
