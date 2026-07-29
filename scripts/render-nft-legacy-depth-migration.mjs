@@ -41,6 +41,11 @@ function validateDocument(document) {
     if (!freshness.valid) {
       throw new Error(`${dossier.slug} freshness: ${freshness.errors.join('; ')}`);
     }
+    for (const source of dossier.sources) {
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(source.checked_at || '')) {
+        throw new Error(`${dossier.slug} source ${source.id} needs checked_at`);
+      }
+    }
     const forensic = validateForensicAnalysis(dossier.profile_patch.forensic_analysis, {
       resolver: sourceResolver(dossier),
     });
