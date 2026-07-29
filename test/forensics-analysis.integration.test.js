@@ -43,8 +43,11 @@ describe('Forensics analysis navigation', () => {
     expect(html).toContain('Open chain dossier →');
     expect(html).toContain("coverage: 'Legacy postmortem'");
     expect(html).toContain('structural dossiers');
-    expect(html).toContain('function factObjectText(value)');
-    expect(html).toContain("['classification', 'most_likely', 'base', 'bull', 'bear', 'confidence']");
+  expect(html).toContain('function factObjectText(value)');
+  expect(html).toContain("['classification', 'most_likely', 'base', 'bull', 'bear', 'confidence']");
+  expect(html).toContain("<div class=\"dsub\">Why this outcome</div><div class=\"gbody\">${esc(d.why)}</div>");
+  expect(html).toContain("<div class=\"dsub\">Strategic choices</div>");
+  expect(html).toContain("<div class=\"dsub\">Material unknowns</div>");
   });
 });
 

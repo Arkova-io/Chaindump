@@ -1980,7 +1980,9 @@ function synthesisHtml(f){
   // thesis/bear/bull hid the actual postmortem from readers.
   if (d.situation) rows.push(`<div class="dsub">Current situation</div><div class="gbody">${esc(d.situation)}</div>`);
   if (d.postmortem) rows.push(`<div class="dsub">Why this outcome</div><div class="gbody">${esc(d.postmortem)}</div>`);
+  if (d.why) rows.push(`<div class="dsub">Why this outcome</div><div class="gbody">${esc(d.why)}</div>`);
   if (d.success_mechanism) rows.push(`<div class="dsub">Success mechanism</div><div class="gbody">${esc(d.success_mechanism)}</div>`);
+  if (Array.isArray(d.strategic_choices) && d.strategic_choices.length) rows.push(`<div class="dsub">Strategic choices</div><ul class="evlist">${d.strategic_choices.map((item) => `<li>${esc(typeof item === 'string' ? item : factObjectText(item))}</li>`).join('')}</ul>`);
   if (Array.isArray(d.lessons_learned) && d.lessons_learned.length) rows.push(`<div class="dsub">Lessons</div><ul class="evlist">${d.lessons_learned.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`);
   if (d.could_differ) rows.push(`<div class="dsub">What could change the read</div><div class="gbody">${esc(d.could_differ)}</div>`);
   if (d.outlook) {
@@ -2003,6 +2005,9 @@ function synthesisHtml(f){
   }
   if (Array.isArray(d.watch) && d.watch.length) {
     rows.push(`<div class="dsub">What would change our mind</div><ul class="evlist">${d.watch.map(w=>`<li>${esc(typeof w==='string'?w:(w&&w.claim)||'')}</li>`).filter(x=>x!=='<li></li>').join('')}</ul>`);
+  }
+  if (Array.isArray(d.unknowns) && d.unknowns.length) {
+    rows.push(`<div class="dsub">Material unknowns</div><ul class="evlist">${d.unknowns.map((item) => `<li>${esc(typeof item === 'string' ? item : item?.question || factObjectText(item))}</li>`).filter((item) => item !== '<li></li>').join('')}</ul>`);
   }
   if (!rows.length) return '';
   const stamp = when ? `<span class="anwhen">as of ${esc(String(when))}</span>` : '';
