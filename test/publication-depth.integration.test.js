@@ -902,10 +902,12 @@ describe('publication-depth Wave A migration 0063', () => {
       mid: 'RAW_PENDING_MID_EXCHANGE_CAUSAL_SENTINEL',
       successful: 'RAW_PENDING_SUCCESS_EXCHANGE_CAUSAL_SENTINEL',
     };
+    const unsupportedLossMetric = 987654321;
     database.prepare(`
       UPDATE dead_exchanges
       SET why = ?,
           outlook = ?,
+          current_metric = ?,
           profile = json_set(
             profile,
             '$.risks', ?,
@@ -921,6 +923,7 @@ describe('publication-depth Wave A migration 0063', () => {
     `).run(
       exchangeSentinels.dead,
       exchangeSentinels.dead,
+      unsupportedLossMetric,
       exchangeSentinels.dead,
       exchangeSentinels.dead,
       exchangeSentinels.dead,
@@ -1047,6 +1050,15 @@ describe('publication-depth Wave A migration 0063', () => {
           outlook: 'pending_independent_support',
         },
       });
+      if (slug === 'ascendex') {
+        expect(payload.cases[0]).toMatchObject({
+          metric: null,
+          publication_support: {
+            metric: 'pending_independent_support',
+          },
+        });
+        expect(JSON.stringify(payload)).not.toContain(String(unsupportedLossMetric));
+      }
     }
     for (const [route, sentinel] of [
       ['/api/dead-exchanges?kind=cex', exchangeSentinels.dead],
@@ -1054,7 +1066,18 @@ describe('publication-depth Wave A migration 0063', () => {
       ['/api/successful-exchanges?kind=cex', exchangeSentinels.successful],
     ]) {
       const response = await worker.fetch(new Request(`http://localhost${route}`), env, ctx());
-      expect(JSON.stringify(await response.json()), route).not.toContain(sentinel);
+      const payload = await response.json();
+      expect(JSON.stringify(payload), route).not.toContain(sentinel);
+      if (route.startsWith('/api/dead-exchanges')) {
+        const ascendex = payload.exchanges.find(({ slug }) => slug === 'ascendex');
+        expect(ascendex).toMatchObject({
+          current_metric: null,
+          publication_support: {
+            metric: 'pending_independent_support',
+          },
+        });
+        expect(JSON.stringify(payload)).not.toContain(String(unsupportedLossMetric));
+      }
     }
 
     const nftResponse = await worker.fetch(

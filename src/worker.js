@@ -182,11 +182,19 @@ function publicExchangeProfile(profileValue, depth) {
   return profile;
 }
 
+function exchangeMetricSupportPending(row, depth) {
+  const metricIdentity = `${row.metric_type || ''} ${row.metric_label || ''}`
+    .toLowerCase();
+  return /(loss|exposure|shortfall|liabilit|stolen)/.test(metricIdentity)
+    && Number(depth?.unresolved_high_risk_claim_count) > 0;
+}
+
 function publicExchangeCase(row) {
   const depth = row.publication_depth;
   const outcomePending = Boolean(publicationDepthGapAt(depth, 'forensic_analysis.outcome'));
   const whyPending = Boolean(publicationDepthGapAt(depth, 'forensic_analysis.why'));
   const causalPending = hasPendingCausalConclusion(depth);
+  const metricPending = exchangeMetricSupportPending(row, depth);
   const analysis = {
     ...row.analysis,
     forensic_analysis: publicForensicAnalysis(
@@ -200,12 +208,16 @@ function publicExchangeCase(row) {
   return {
     ...row,
     status: outcomePending ? null : row.status,
+    metric: metricPending ? null : row.metric,
+    peak_metric: metricPending ? null : row.peak_metric,
+    drawdown_pct: metricPending ? null : row.drawdown_pct,
     summary: outcomePending || whyPending ? null : row.summary,
     outlook: causalPending ? null : row.outlook,
     profile: publicExchangeProfile(row.profile, depth),
     analysis,
     publication_support: {
       status: outcomePending ? PENDING_PUBLICATION_SUPPORT : null,
+      metric: metricPending ? PENDING_PUBLICATION_SUPPORT : null,
       summary: outcomePending || whyPending ? PENDING_PUBLICATION_SUPPORT : null,
       outlook: causalPending ? PENDING_PUBLICATION_SUPPORT : null,
     },
@@ -2261,6 +2273,12 @@ function publicLegacyExchangeRow(row, lifecycle, parseSources = false) {
   });
   const result = {
     ...row,
+    metric: publicCase.metric,
+    current_metric: publicCase.publication_support.metric
+      ? null
+      : row.current_metric,
+    peak_metric: publicCase.peak_metric,
+    drawdown_pct: publicCase.drawdown_pct,
     profile: publicCase.profile,
     sources: parseSources ? publicationSources : row.sources,
     outlook: publicCase.outlook,
