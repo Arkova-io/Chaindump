@@ -1,0 +1,1770 @@
+{
+  "schema": "chaindump-nft-field-v1",
+  "patch_schema": "nft-forensic-normalization-v1",
+  "research_as_of": "2026-07-29",
+  "generated_migration": "0058_nft_forensic_normalization.sql",
+  "scope_note": "This patch normalizes the final 18 field-cited NFT, Ordinals, and marketplace dossiers onto Chaindump's shared causal-analysis contract. Each outcome is scoped to an operating product or collection rather than an investment return. Observed facts are separated from analyst inference; unsupported market, revenue, holder, and legal conclusions remain explicit unknowns.",
+  "dossiers": [
+    {
+      "slug": "metroverse",
+      "status": "dead",
+      "profile": {
+        "token_model": {
+          "finding": "No separate fungible token or continuing holder revenue right is established. Genesis NFTs and their contracts persist, while the operator set royalties to 0% during shutdown.",
+          "boundary": "Contract persistence is not operating revenue, game activity, or evidence that the business survived.",
+          "source_ids": ["metroverse-home", "metroverse-closure"]
+        },
+        "chain_dependence": {
+          "finding": "Ethereum preserved the city-block NFTs after the application closed. That durability protected custody and provenance, not the engagement loop or operator runway.",
+          "source_ids": ["metroverse-home", "metroverse-closure"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "dead",
+            "scope": "Metroverse game and operator-led development; surviving Ethereum NFTs are not declared dead",
+            "summary": "The team announced the end of development after reporting an approximately 96% year-over-year engagement decline and saying Battles did not reach expected engagement. Code and NFT ownership persisted through an orderly shutdown.",
+            "confidence": "high",
+            "as_of": "2023-03-10",
+            "source_refs": ["metroverse-closure", "metroverse-home"]
+          },
+          "why": {
+            "summary": "Observed: the operator reported collapsing engagement, an underperforming Battles product, and a terminal shutdown. Inference: the land-and-game economy failed to sustain enough repeat participation to justify continued operation; the evidence does not establish fraud, treasury depletion, or a single financial cause.",
+            "basis": "operator-reported engagement and terminal event; causal synthesis is analyst inference",
+            "confidence": "high",
+            "source_refs": ["metroverse-closure", "metroverse-roadmap"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Center the product on scarce city-block NFTs and a land-based game economy.",
+              "intended_mechanism": "Make ownership productive through game participation rather than static collecting.",
+              "consequence": "The collection established a persistent ownership layer, but the business still depended on sustained application engagement.",
+              "confidence": "high",
+              "source_refs": ["metroverse-home", "metroverse-roadmap"]
+            },
+            {
+              "decision": "Add Battles as the next major engagement loop.",
+              "intended_mechanism": "Create repeat competition and renewed utility for city-block holders.",
+              "consequence": "The operator said Battles did not reach expected engagement, so the expansion did not reverse the participation decline.",
+              "confidence": "high",
+              "source_refs": ["metroverse-roadmap", "metroverse-closure"]
+            },
+            {
+              "decision": "End development, set royalties to 0%, and open-source contracts and block data.",
+              "intended_mechanism": "Reduce continuing operator obligations while preserving holder custody and technical artifacts.",
+              "consequence": "The game business ended without erasing the NFTs; community reuse became possible but unproven.",
+              "confidence": "high",
+              "source_refs": ["metroverse-closure"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "A narrower product with earlier cost reduction and one proven repeat-use loop might have extended runway, but the reviewed evidence does not show that lower costs would have overcome the approximately 96% engagement decline.",
+            "limits": "No operating-cost, treasury, cohort-retention, or product-experiment data are available to test this counterfactual.",
+            "confidence": "low",
+            "source_refs": ["metroverse-closure", "metroverse-roadmap"]
+          },
+          "watch": [
+            {
+              "signal": "A verifiable relaunch by the original team or a disclosed successor using the open-source assets.",
+              "implication": "A sustained new product could support a recovery label; community forks alone would not revive the original operator.",
+              "source_refs": ["metroverse-closure"]
+            },
+            {
+              "signal": "Continued availability of the archive, contracts, block data, and holder-controlled NFTs.",
+              "implication": "Loss of these surfaces would weaken the preservation outcome even though the terminal business classification would remain.",
+              "source_refs": ["metroverse-home", "metroverse-closure"]
+            }
+          ],
+          "unknowns": [
+            "What were Metroverse's final active-user, retention, and revenue cohorts?",
+            "How much treasury runway remained when the team chose to shut down?",
+            "Did any community fork achieve sustained usage after the code and data were released?",
+            "What share of holders retained or used their assets after application closure?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2027-03-10",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "metroverse-home", "title": "Metroverse Genesis Collection Overview", "url": "https://metroverse.com/", "checked_at": "2026-07-29"},
+        {"id": "metroverse-roadmap", "title": "Metroverse Dated Roadmap", "url": "https://metroverse.com/roadmap", "checked_at": "2026-07-29"},
+        {"id": "metroverse-closure", "title": "Metroverse Community Closure Notice", "url": "https://metroverse.com/community-notice", "checked_at": "2026-07-29"}
+      ]
+    },
+    {
+      "slug": "moonbirds",
+      "status": "middling",
+      "profile": {
+        "token_model": {
+          "finding": "No separate collection token or unconditional revenue right is established in the reviewed sources. Value remains tied to NFT ownership, legacy portal utility, IP stewardship, and whatever products Orange Cap Games ships.",
+          "boundary": "An ownership transition and preserved utility do not establish renewed liquidity or cash flow to holders.",
+          "source_ids": ["moonbirds-current", "moonbirds-ocg"]
+        },
+        "chain_dependence": {
+          "finding": "Ethereum secures the collection and nesting history, while continuing value now depends heavily on offchain IP stewardship, portal availability, and product execution by Orange Cap Games.",
+          "source_ids": ["moonbirds-proof", "moonbirds-current", "moonbirds-ocg"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "middling",
+            "scope": "Moonbirds collection and current IP stewardship, not historical floor-price performance",
+            "summary": "Moonbirds retains a live legacy portal and recognizable IP under Orange Cap Games, but current demand, holder participation, product adoption, and value transfer to NFTs remain unproven.",
+            "confidence": "high",
+            "as_of": "2026-07-27",
+            "source_refs": ["moonbirds-current", "moonbirds-ocg"]
+          },
+          "why": {
+            "summary": "Observed: the collection, nesting history, portal, and IP family survived an ownership transition. Inference: recognizable identity and preserved utility prevented a terminal outcome, while the absence of shipped replacement products or current demand evidence prevents a thriving classification.",
+            "basis": "current operator and legacy-product evidence; demand conclusion is bounded analyst inference",
+            "confidence": "medium",
+            "source_refs": ["moonbirds-proof", "moonbirds-current", "moonbirds-ocg"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Tie early community benefits to time-based nesting.",
+              "intended_mechanism": "Reward long-duration participation rather than ownership alone.",
+              "consequence": "Nesting created a differentiated loyalty mechanic, but also made legacy utility dependent on maintained operator infrastructure.",
+              "confidence": "high",
+              "source_refs": ["moonbirds-proof"]
+            },
+            {
+              "decision": "Preserve a legacy portal during the ownership transition.",
+              "intended_mechanism": "Avoid breaking existing holder access before replacement products are available.",
+              "consequence": "The portal reduces transition damage but does not prove new user acquisition or renewed collection demand.",
+              "confidence": "high",
+              "source_refs": ["moonbirds-current"]
+            },
+            {
+              "decision": "Consolidate Moonbirds, Mythics, and Oddities under Orange Cap Games.",
+              "intended_mechanism": "Place the IP family with a product-focused owner capable of coordinated development.",
+              "consequence": "Stewardship became clearer while execution risk shifted to a new owner whose future products are not yet measured here.",
+              "confidence": "high",
+              "source_refs": ["moonbirds-ocg"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "Removing the legacy portal before replacement products shipped could have accelerated utility loss and distrust. Keeping the portal buys transition time, but only shipped products and repeat participation can demonstrate that the ownership change improved the lifecycle.",
+            "limits": "No comparable transition cohort or counterfactual demand data are available.",
+            "confidence": "medium",
+            "source_refs": ["moonbirds-current", "moonbirds-ocg"]
+          },
+          "watch": [
+            {
+              "signal": "Orange Cap Games ships a Moonbirds product with measurable repeat participation.",
+              "implication": "Sustained use would support recovery or thriving; announcements alone would not.",
+              "source_refs": ["moonbirds-ocg"]
+            },
+            {
+              "signal": "The legacy portal or nesting-related access changes materially.",
+              "implication": "Loss of legacy access without replacement utility would increase transition and abandonment risk.",
+              "source_refs": ["moonbirds-current", "moonbirds-proof"]
+            },
+            {
+              "signal": "Current holder concentration, bid depth, and transfer activity become reproducibly available.",
+              "implication": "These would test whether IP continuity translates into a functioning ownership market.",
+              "source_refs": ["moonbirds-current"]
+            }
+          ],
+          "unknowns": [
+            "What products and release dates has Orange Cap Games committed to for Moonbirds?",
+            "How many holders actively use the legacy portal or nesting-linked features?",
+            "What are current holder concentration, bid depth, and realized liquidity?",
+            "Do future IP revenues or product benefits flow to NFT holders, and under what terms?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-10-29",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "moonbirds-proof", "title": "Moonbird #2026 — Moonbirds | PROOF", "url": "https://www.proof.xyz/moonbirds/2026", "checked_at": "2026-07-29"},
+        {"id": "moonbirds-current", "title": "Moonbirds — A New Chapter", "url": "https://www.moonbirds.com/", "checked_at": "2026-07-29"},
+        {"id": "moonbirds-ocg", "title": "Orange Cap Games — About Us and owned IP", "url": "https://www.orangecapgames.com/", "checked_at": "2026-07-29"}
+      ]
+    },
+    {
+      "slug": "nba-top-shot",
+      "status": "thriving",
+      "profile": {
+        "token_model": {
+          "finding": "No separate platform token or unconditional holder revenue right is established. The operating model captures value through licensed pack issuance and marketplace activity while Moments supply is edition- and season-specific.",
+          "boundary": "Pack cadence and collectible utility demonstrate operation, not card appreciation, marketplace liquidity, or Dapper Labs profitability.",
+          "source_ids": ["topshot-nba-launch", "topshot-about", "topshot-current-drop"]
+        },
+        "chain_dependence": {
+          "finding": "Flow supplies the ownership and transfer rail, while the core demand loop depends on NBA and NBPA licensing, current-season content, challenges, rewards, and Dapper Labs' consumer application.",
+          "source_ids": ["topshot-nba-launch", "topshot-about"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "thriving",
+            "scope": "current NBA Top Shot product operations, not Moment investment performance",
+            "summary": "NBA Top Shot continues to issue current-season packs and operate collecting, marketplace, challenge, and reward surfaces. The label reflects product continuity, not a claim about secondary prices or profitability.",
+            "confidence": "high",
+            "as_of": "2025-11-04",
+            "source_refs": ["topshot-current-drop", "topshot-about"]
+          },
+          "why": {
+            "summary": "Observed: official NBA licensing, edition-level scarcity, marketplace transfer, challenges, rewards, and a 2025–26 pack cadence remain present. Inference: licensed live-sports content creates a renewable seasonal loop that static collections lack, though the evidence does not isolate which feature drives retention.",
+            "basis": "official league and operator product evidence; retention mechanism is analyst synthesis",
+            "confidence": "high",
+            "source_refs": ["topshot-nba-launch", "topshot-pack-history", "topshot-about", "topshot-current-drop"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Launch with NBA and NBPA licensing on Flow.",
+              "intended_mechanism": "Combine recognizable sports IP with a consumer-oriented ownership rail.",
+              "consequence": "Top Shot gained authenticated highlight inventory and league distribution, while becoming dependent on licensing and Flow infrastructure.",
+              "confidence": "high",
+              "source_refs": ["topshot-nba-launch"]
+            },
+            {
+              "decision": "Use packs and edition-specific scarcity instead of one fixed collection cap.",
+              "intended_mechanism": "Refresh inventory by season, player, play, and rarity tier.",
+              "consequence": "The model supports recurring issuance but makes aggregate scarcity and holder dilution more complex than a fixed-supply PFP.",
+              "confidence": "high",
+              "source_refs": ["topshot-pack-history", "topshot-about"]
+            },
+            {
+              "decision": "Connect Moments to challenges and experience or collectible rewards.",
+              "intended_mechanism": "Give cards repeat utility beyond display and resale.",
+              "consequence": "Ongoing programs can renew demand, but their economics and participation are not disclosed in the reviewed sources.",
+              "confidence": "high",
+              "source_refs": ["topshot-about"]
+            },
+            {
+              "decision": "Continue issuing packs aligned with the live NBA season.",
+              "intended_mechanism": "Use new sports events as a recurring content engine.",
+              "consequence": "Current-season cadence demonstrates operation and reduces archive-only risk, while adding continuing issuance and execution obligations.",
+              "confidence": "high",
+              "source_refs": ["topshot-current-drop"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "Without current-season packs, challenges, and licensed rewards, Moments would behave more like a finite archive of past highlights. The live-sports cadence plausibly sustains relevance, but no controlled evidence proves it produces healthy liquidity or profitable retention.",
+            "limits": "User cohorts, licensing economics, marketplace depth, and product-level profitability are unavailable.",
+            "confidence": "medium",
+            "source_refs": ["topshot-about", "topshot-current-drop"]
+          },
+          "watch": [
+            {
+              "signal": "New pack, challenge, and reward cadence across the active NBA season.",
+              "implication": "Sustained delivery supports operating continuity; a prolonged pause would weaken the thriving label.",
+              "source_refs": ["topshot-current-drop", "topshot-about"]
+            },
+            {
+              "signal": "Changes to NBA or NBPA licensing, Flow support, or marketplace availability.",
+              "implication": "Any loss would directly impair provenance, content supply, or transfer utility.",
+              "source_refs": ["topshot-nba-launch", "topshot-about"]
+            },
+            {
+              "signal": "Reproducible active-user, challenge-completion, and bid-depth data.",
+              "implication": "These would distinguish operating cadence from durable collector demand.",
+              "source_refs": ["topshot-about"]
+            }
+          ],
+          "unknowns": [
+            "How many users participate repeatedly across current-season drops and challenges?",
+            "What are current marketplace liquidity, bid depth, and realized collector returns by edition?",
+            "What are the economics and renewal terms of NBA and NBPA licensing?",
+            "Is NBA Top Shot profitable after licensing, rewards, support, and platform costs?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-08-31",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "topshot-nba-launch", "title": "NBA Communications — NBA, NBPA and Dapper Labs announce blockchain collectibles game", "url": "https://pr.nba.com/nba-nbpa-dapper-labs-blockchain-game/", "checked_at": "2026-07-29"},
+        {"id": "topshot-pack-history", "title": "NBA Top Shot — The History of Packs", "url": "https://blog.nbatopshot.com/posts/history-of-packs", "checked_at": "2026-07-29"},
+        {"id": "topshot-about", "title": "NBA Top Shot — About Moments, scarcity, challenges, and marketplace", "url": "https://about.nbatopshot.com/", "checked_at": "2026-07-29"},
+        {"id": "topshot-current-drop", "title": "NBA Top Shot — The First Drop of the 2025–26 NBA Season", "url": "https://blog.nbatopshot.com/posts/the-first-drop-of-the-2025-26-nba-season-is-here", "checked_at": "2026-07-29"}
+      ]
+    },
+    {
+      "slug": "nifty-gateway",
+      "status": "dead",
+      "profile": {
+        "token_model": {
+          "finding": "No Nifty Gateway fungible token or continuing platform revenue right is established. The model captured value through curated drops, production services, and secondary trading within Gemini-linked fiat and custody rails.",
+          "boundary": "Gemini Wallet support after closure preserves asset access; it does not continue the Nifty marketplace business.",
+          "source_ids": ["nifty-acquisition", "nifty-s1", "nifty-closure"]
+        },
+        "chain_dependence": {
+          "finding": "Ethereum-based NFT ownership could move beyond the platform, but Nifty's differentiators—fiat checkout, custody, curation, studio services, and marketplace distribution—depended on Gemini-operated infrastructure.",
+          "source_ids": ["nifty-acquisition", "nifty-s1", "nifty-closure"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "dead",
+            "scope": "Nifty Gateway marketplace and studio operations; externally held NFTs and Gemini Wallet are excluded",
+            "summary": "Gemini moved Nifty Gateway to withdrawal-only mode and completed the marketplace wind-down while redirecting asset support to Gemini Wallet.",
+            "confidence": "high",
+            "as_of": "2026-02-23",
+            "source_refs": ["nifty-closure", "nifty-8k"]
+          },
+          "why": {
+            "summary": "Observed: Gemini said it closed Nifty Gateway to concentrate resources on a one-stop super app, after public filings had already identified commercial-viability risk in the NFT business. Inference: a curated marketplace became non-core inside a broader exchange strategy; the evidence does not prove weak demand or losses were the sole cause.",
+            "basis": "company closure statement and SEC filings; sole-cause attribution withheld",
+            "confidence": "high",
+            "source_refs": ["nifty-risk", "nifty-closure", "nifty-8k"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Use Gemini ownership, fiat payments, and custodial wallets to reduce NFT purchase friction.",
+              "intended_mechanism": "Reach collectors who did not want to manage crypto wallets directly.",
+              "consequence": "Nifty differentiated on access, while becoming strategically and operationally dependent on Gemini.",
+              "confidence": "high",
+              "source_refs": ["nifty-acquisition", "nifty-s1"]
+            },
+            {
+              "decision": "Pair curated drops with studio production and a secondary marketplace.",
+              "intended_mechanism": "Control creator onboarding, launch quality, and ongoing trading in one venue.",
+              "consequence": "The full-service model created a recognizable platform but also required continuing curation, production, custody, and marketplace operations.",
+              "confidence": "high",
+              "source_refs": ["nifty-s1"]
+            },
+            {
+              "decision": "Wind down rather than maintain or separate the marketplace.",
+              "intended_mechanism": "Concentrate Gemini resources on its super-app strategy.",
+              "consequence": "Marketplace and studio operations ended; withdrawal support reduced custody harm but did not preserve the business.",
+              "confidence": "high",
+              "source_refs": ["nifty-closure", "nifty-8k"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "An independent sale, spinout, or lower-cost creator platform might have preserved Nifty's brand and marketplace, but the reviewed sources do not show that Gemini pursued one or that it would have been commercially viable.",
+            "limits": "No platform-level revenue, cost, bid-depth, buyer-retention, or sale-process data are disclosed.",
+            "confidence": "low",
+            "source_refs": ["nifty-risk", "nifty-closure", "nifty-8k"]
+          },
+          "watch": [
+            {
+              "signal": "Completion of remaining withdrawals and continued Gemini Wallet support for former Nifty assets.",
+              "implication": "Orderly asset access limits customer harm but does not change the terminal marketplace classification.",
+              "source_refs": ["nifty-closure"]
+            },
+            {
+              "signal": "A disclosed acquisition or relaunch of the Nifty Gateway brand, creator tooling, or marketplace.",
+              "implication": "A functioning successor could justify a recovery case scoped to that new operator.",
+              "source_refs": ["nifty-closure", "nifty-8k"]
+            }
+          ],
+          "unknowns": [
+            "What were Nifty Gateway's final revenue, costs, active buyers, and trading liquidity?",
+            "Did Gemini solicit a sale, spinout, or licensing transaction before closure?",
+            "Were all custodial assets withdrawn or migrated successfully?",
+            "What continuing rights or obligations remain for artists whose drops were produced by Nifty Gateway?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2027-02-23",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "nifty-acquisition", "title": "Gemini Expands Into NFTs With Nifty Gateway", "url": "https://www.gemini.com/blog/gemini-expands-into-non-fungible-tokens-nfts-with-nifty-gateway-tm", "checked_at": "2026-07-29"},
+        {"id": "nifty-s1", "title": "Gemini Space Station S-1 — Nifty Gateway Studio description", "url": "https://investors.gemini.com/static-files/387885d9-75c0-4524-95b4-d550890aad3e", "checked_at": "2026-07-29"},
+        {"id": "nifty-risk", "title": "Gemini Q3 2025 Form 10-Q — NFT business risk", "url": "https://investors.gemini.com/static-files/0385bebc-c005-47c3-9704-a71ef00ec224", "checked_at": "2026-07-29"},
+        {"id": "nifty-closure", "title": "Announcing Nifty Gateway's Closure", "url": "https://www.gemini.com/es/blog/announcing-nifty-gateways-closure", "checked_at": "2026-07-29"},
+        {"id": "nifty-8k", "title": "Gemini March 2026 Form 8-K — Nifty Gateway wound down", "url": "https://investors.gemini.com/static-files/9930b4f9-4e24-4f9a-8b7b-fb5066554c86", "checked_at": "2026-07-29"},
+        {"id": "nifty-help", "title": "Nifty Gateway Support Center", "url": "https://help.niftygateway.com/hc/en-us", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; retained as prior-reviewed support evidence, not independent current-state verification."}
+      ]
+    },
+    {
+      "slug": "nouns-dao",
+      "status": "thriving",
+      "profile": {
+        "token_model": {
+          "finding": "The NFT itself is the governance instrument: one Noun is auctioned every 24 hours, auction proceeds enter the DAO treasury, and Noun owners or delegates vote on proposals. No separate fungible token is required by this model.",
+          "boundary": "Treasury funding and governance rights are observable; treasury performance, voter quality, and NFT investment returns are not inferred.",
+          "source_ids": ["nouns-token", "nouns-auction", "nouns-governance"]
+        },
+        "chain_dependence": {
+          "finding": "Ethereum contracts coordinate issuance, auctions, ownership, treasury funding, and governance. Community projects funded by the DAO can exist offchain, but the core capital-and-control loop depends on Ethereum.",
+          "source_ids": ["nouns-token", "nouns-auction", "nouns-governance"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "thriving",
+            "scope": "Nouns issuance and governance protocol, not secondary-market returns or proposal quality",
+            "summary": "Nouns continues its protocol-defined daily auction and holder-governance loop. The label reflects live issuance and governance, not price performance.",
+            "confidence": "high",
+            "as_of": "2026-07-28",
+            "source_refs": ["nouns-auction", "nouns-governance"]
+          },
+          "why": {
+            "summary": "Observed: one new Noun is auctioned every 24 hours, proceeds fund a holder-controlled treasury, and proposals are voted by holders and delegates. Inference: recurring primary issuance finances continuing coordination without relying only on royalties; open-ended supply and governance effectiveness remain tradeoffs.",
+            "basis": "onchain and operator mechanism evidence; durability interpretation is analyst synthesis",
+            "confidence": "high",
+            "source_refs": ["nouns-token", "nouns-auction", "nouns-governance"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Issue one Noun through an auction every 24 hours with no fixed terminal supply.",
+              "intended_mechanism": "Create a perpetual cadence for membership and treasury funding.",
+              "consequence": "The DAO gains recurring primary capital and onboarding, while holders accept continuing supply expansion.",
+              "confidence": "high",
+              "source_refs": ["nouns-auction"]
+            },
+            {
+              "decision": "Send auction proceeds to a treasury controlled by Noun owners.",
+              "intended_mechanism": "Convert primary sales into collectively governed capital.",
+              "consequence": "NFT ownership carries budget authority, but treasury deployment quality depends on proposal and voter governance.",
+              "confidence": "high",
+              "source_refs": ["nouns-auction", "nouns-governance"]
+            },
+            {
+              "decision": "Use the NFT as the voting unit and allow delegation.",
+              "intended_mechanism": "Align membership, capital formation, and governance in one asset.",
+              "consequence": "The model avoids a separate governance token while concentrating formal influence with Noun ownership and delegates.",
+              "confidence": "high",
+              "source_refs": ["nouns-governance"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "A fixed-supply launch could have reduced dilution and simplified scarcity, but it would have removed the protocol's recurring auction funding and continuous membership mechanism. The evidence does not establish which model would produce better governance or holder returns.",
+            "limits": "No controlled comparison of treasury efficiency, voter participation, or holder outcomes is available.",
+            "confidence": "medium",
+            "source_refs": ["nouns-auction", "nouns-governance"]
+          },
+          "watch": [
+            {
+              "signal": "Daily auctions continue to clear and fund the treasury.",
+              "implication": "Persistent issuance demand supports the core operating loop; extended auction failure would weaken it.",
+              "source_refs": ["nouns-auction"]
+            },
+            {
+              "signal": "Proposal participation, delegation concentration, and treasury deployment outcomes.",
+              "implication": "These determine whether formal governance produces useful coordination rather than only live contracts.",
+              "source_refs": ["nouns-governance"]
+            },
+            {
+              "signal": "Any change to auction cadence, voting rights, or treasury control.",
+              "implication": "A mechanism change would alter the core value-capture and governance thesis.",
+              "source_refs": ["nouns-auction", "nouns-governance"]
+            }
+          ],
+          "unknowns": [
+            "How concentrated are current voting power and delegated votes?",
+            "What share of treasury spending produces durable public goods or measurable adoption?",
+            "How many auction buyers remain active in governance after acquisition?",
+            "What are current secondary-market liquidity and realized holder outcomes?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-10-29",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "nouns-token", "title": "Etherscan Nouns DAO Nouns Token", "url": "https://etherscan.io/address/0x9c8ff314c9bc7f6e59a9d9225fb22946427edc03", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; contract evidence is retained from prior review, not treated as a fresh independent response."},
+        {"id": "nouns-auction", "title": "Nouns DAO Daily Auction", "url": "https://nouns.wtf/noun/281", "checked_at": "2026-07-29"},
+        {"id": "nouns-governance", "title": "Nouns DAO Governance Proposals", "url": "https://docs.nouns.wtf/governance/proposals", "checked_at": "2026-07-29"}
+      ]
+    },
+    {
+      "slug": "onchainmonkey-genesis",
+      "status": "thriving",
+      "profile": {
+        "token_model": {
+          "finding": "No separate fungible token or unconditional holder revenue right is established. Value is tied to Genesis NFT ownership, provenance, migration or claim mechanics, and Metagood's collection and marketplace products.",
+          "boundary": "A successful technical inscription or migration does not establish liquidity, appreciation, or business profitability.",
+          "source_ids": ["ocm-about", "ocm-bitcoin-history", "ocm-products"]
+        },
+        "chain_dependence": {
+          "finding": "Genesis began as a fully onchain Ethereum collection and later added a Bitcoin Ordinals claim or location path. This dual-chain strategy strengthens permanence claims but requires clear item-location accounting and cross-chain holder communication.",
+          "source_ids": ["ocm-about", "ocm-bitcoin-history", "ocm-gallery"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "thriving",
+            "scope": "technical continuity and operator product activity, not OCM market performance",
+            "summary": "OnChainMonkey remains operated by Metagood, with a documented Ethereum-to-Bitcoin provenance strategy, a live gallery, and Bitcoin-focused products. Market success is not inferred.",
+            "confidence": "high",
+            "as_of": "2026-07-27",
+            "source_refs": ["ocm-about", "ocm-products", "ocm-gallery"]
+          },
+          "why": {
+            "summary": "Observed: the original 10,000 items were generated fully onchain, Metagood executed a Bitcoin Ordinals strategy, and current product and gallery surfaces remain available. Inference: technical distinctiveness and active stewardship sustain the collection, while no causal market-performance claim is supportable.",
+            "basis": "operator technical and product evidence; market causality withheld",
+            "confidence": "high",
+            "source_refs": ["ocm-about", "ocm-bitcoin-history", "ocm-products", "ocm-gallery"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Generate the original 10,000-item collection fully onchain in one Ethereum transaction.",
+              "intended_mechanism": "Make art and provenance less dependent on external storage.",
+              "consequence": "The launch created a strong technical identity and compact provenance story.",
+              "confidence": "high",
+              "source_refs": ["ocm-about", "ocm-bitcoin-history"]
+            },
+            {
+              "decision": "Create a Bitcoin Ordinals migration or claim path for Genesis items.",
+              "intended_mechanism": "Align the collection with Bitcoin permanence and Ordinals culture.",
+              "consequence": "The strategy broadened the provenance thesis while introducing cross-chain location and holder-coordination complexity.",
+              "confidence": "high",
+              "source_refs": ["ocm-bitcoin-history", "ocm-gallery"]
+            },
+            {
+              "decision": "Build Bitcoin-focused marketplace and operator products alongside collection stewardship.",
+              "intended_mechanism": "Turn collection expertise into a broader operating business.",
+              "consequence": "Metagood demonstrates continued execution beyond a static collection, but product economics remain undisclosed.",
+              "confidence": "high",
+              "source_refs": ["ocm-products"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "Remaining Ethereum-only would have reduced migration complexity but weakened the Bitcoin-native thesis. Moving without explicit claim and gallery accounting could have fragmented provenance; the current location surfaces reduce that risk without proving universal holder adoption.",
+            "limits": "Migration completion, holder preference, and market response are not independently measured.",
+            "confidence": "medium",
+            "source_refs": ["ocm-bitcoin-history", "ocm-gallery"]
+          },
+          "watch": [
+            {
+              "signal": "Genesis item-location accounting and migration or claim support remain available.",
+              "implication": "Clear provenance lowers cross-chain confusion; missing support would raise asset-location risk.",
+              "source_refs": ["ocm-gallery", "ocm-bitcoin-history"]
+            },
+            {
+              "signal": "Metagood ships and maintains Bitcoin marketplace or collection products.",
+              "implication": "Continued delivery supports the operator-continuity label.",
+              "source_refs": ["ocm-products", "ocm-about"]
+            },
+            {
+              "signal": "Reproducible holder migration, concentration, and liquidity data.",
+              "implication": "These would test whether technical execution created durable collector value.",
+              "source_refs": ["ocm-gallery"]
+            }
+          ],
+          "unknowns": [
+            "What share of Genesis holders completed or rejected the Bitcoin claim path?",
+            "How are duplicate, bridged, or cross-chain ownership disputes resolved?",
+            "What are current holder concentration, bid depth, and realized liquidity on each chain?",
+            "What revenue and profitability come from Metagood's marketplace and collection products?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-10-29",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "ocm-about", "title": "Metagood — About Us", "url": "https://metagood.com/about-us", "checked_at": "2026-07-29"},
+        {"id": "ocm-bitcoin-history", "title": "OnChainMonkey becomes first 10k collection inscribed on Bitcoin by Ordinals in a single inscription", "url": "https://news.onchainmonkey.com/onchainmonkey-becomes-first-10k-nft-collection-inscribed-on-bitcoin-by-ordinals-in-a-single-inscription/", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; retained as prior-reviewed historical operator evidence."},
+        {"id": "ocm-products", "title": "Metagood — Products", "url": "https://metagood.com/products", "checked_at": "2026-07-29"},
+        {"id": "ocm-gallery", "title": "OnChainMonkey Genesis Gallery", "url": "https://onchainmonkey.com/gallery/ocm-genesis", "checked_at": "2026-07-29"},
+        {"id": "ocm-terms", "title": "OnChainMonkey Terms of Service", "url": "https://onchainmonkey.com/tos", "checked_at": "2026-07-29"}
+      ]
+    },
+    {
+      "slug": "opensea-marketplace",
+      "status": "thriving",
+      "profile": {
+        "token_model": {
+          "finding": "OpenSea's operating model captures marketplace and swap activity while OS2 adds rewards and a planned SEA token overseen by a separate foundation. The reviewed sources do not establish token timing, allocation, fee rights, or guaranteed holder value.",
+          "boundary": "XP, rewards, and a planned token are engagement mechanisms, not revenue rights or evidence of investment returns.",
+          "source_ids": ["opensea-os2", "opensea-public"]
+        },
+        "chain_dependence": {
+          "finding": "OpenSea is self-custodial and multichain; OS2 aggregates NFT listings and token liquidity across chains and supports cross-chain purchases. This reduces dependence on any one chain while increasing reliance on third-party protocols, liquidity providers, and chain integrations.",
+          "source_ids": ["opensea-about", "opensea-os2", "opensea-public", "opensea-welcome"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "thriving",
+            "scope": "current OpenSea marketplace and OS2 product operations, not NFT-sector health or company profitability",
+            "summary": "OpenSea operates a self-custodial multichain marketplace and rebuilt OS2 to combine NFTs, tokens, aggregation, rewards, and cross-chain purchasing.",
+            "confidence": "high",
+            "as_of": "2026-07-28",
+            "source_refs": ["opensea-about", "opensea-os2", "opensea-public"]
+          },
+          "why": {
+            "summary": "Observed: broad self-custodial inventory, multichain aggregation, and OS2's expanded NFT-and-token surface remain live. Inference: network breadth and reduced transaction friction sustain relevance, while broader token trading makes NFT-specific success harder to isolate.",
+            "basis": "operator product evidence; network-effect and category-mix interpretation is analyst synthesis",
+            "confidence": "high",
+            "source_refs": ["opensea-about", "opensea-os2", "opensea-public", "opensea-welcome"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Launch as an open, noncustodial marketplace rather than a single curated collection.",
+              "intended_mechanism": "Aggregate creators, collections, buyers, and sellers into a broad inventory network.",
+              "consequence": "OpenSea gained catalog breadth and self-custody differentiation while inheriting moderation, fraud, and discovery complexity.",
+              "confidence": "high",
+              "source_refs": ["opensea-about", "opensea-welcome"]
+            },
+            {
+              "decision": "Build specialized Pro and Studio products, then rebuild the core as OS2.",
+              "intended_mechanism": "Serve professional traders and creators while replacing legacy technical and product constraints.",
+              "consequence": "The rebuild modernized the product but required a costly transition and feature migration.",
+              "confidence": "high",
+              "source_refs": ["opensea-about", "opensea-os2"]
+            },
+            {
+              "decision": "Expand OS2 from NFTs into multichain token trading, aggregation, rewards, and cross-chain purchasing.",
+              "intended_mechanism": "Increase transaction frequency and make OpenSea a general onchain destination.",
+              "consequence": "Addressable activity expanded beyond NFTs, while regulatory, liquidity-provider, token-incentive, and product-scope risks increased.",
+              "confidence": "high",
+              "source_refs": ["opensea-os2", "opensea-public"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "Remaining a legacy NFT-only marketplace would have reduced scope and regulatory complexity but left OpenSea more exposed to NFT trading cycles and older product constraints. OS2 diversifies activity, yet the reviewed evidence does not prove the broader strategy improves unit economics.",
+            "limits": "No category-level revenue, retention, cost, or profitability data are disclosed.",
+            "confidence": "medium",
+            "source_refs": ["opensea-os2", "opensea-public"]
+          },
+          "watch": [
+            {
+              "signal": "OS2 continues shipping reliable NFT, token, and cross-chain functionality across supported chains.",
+              "implication": "Sustained delivery supports product breadth; integration failures would expose multichain complexity.",
+              "source_refs": ["opensea-os2", "opensea-public"]
+            },
+            {
+              "signal": "SEA token terms, allocation, utility, and any relationship to fees become final and verifiable.",
+              "implication": "Final mechanics will determine whether the token reinforces use or adds extraction and regulatory risk.",
+              "source_refs": ["opensea-os2", "opensea-public"]
+            },
+            {
+              "signal": "NFT-specific versus token-specific volume, users, take rate, and retention become reproducible.",
+              "implication": "Category-separated data would show whether NFT marketplace health is improving or merely masked by broader trading.",
+              "source_refs": ["opensea-public"]
+            }
+          ],
+          "unknowns": [
+            "What share of OS2 users and revenue comes from NFTs versus fungible-token trading?",
+            "What are current take rate, customer-acquisition cost, retention, and profitability?",
+            "What final rights, allocations, and unlocks will attach to SEA?",
+            "How much activity depends on rewards rather than organic repeat use?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-10-29",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "opensea-about", "title": "About OpenSea", "url": "https://opensea.io/about-opensea", "checked_at": "2026-07-29"},
+        {"id": "opensea-os2", "title": "Introducing OS2", "url": "https://opensea.io/blog/articles/introducing-os2", "checked_at": "2026-07-29"},
+        {"id": "opensea-public", "title": "OS2 Public Release", "url": "https://opensea.io/blog/articles/opensea-announces-os2-is-now-out-of-beta-token-trading-fully-live-across-19-chains-new-rewards-program-launches-and-community-hub-revamped", "checked_at": "2026-07-29"},
+        {"id": "opensea-welcome", "title": "Welcome to OpenSea", "url": "https://support.opensea.io/en/articles/8866942-welcome-to-opensea", "checked_at": "2026-07-29"},
+        {"id": "opensea-help-os2", "title": "What is OS2?", "url": "https://support.opensea.io/en/articles/10549920-what-is-os2-how-do-i-access-it", "checked_at": "2026-07-29", "access_state": "not_found_by_raw_fetch", "verification_note": "Automated GET returned HTTP 404 on 2026-07-29 although search indexing still exposed the article; no 0058 claim relies on this URL."},
+        {"id": "opensea-terms", "title": "OpenSea Terms of Service", "url": "https://opensea.io/tos", "checked_at": "2026-07-29"}
+      ]
+    },
+    {
+      "slug": "pizza-ninjas",
+      "status": "middling",
+      "profile": {
+        "token_model": {
+          "finding": "No separate fungible token or unconditional revenue right is established. Value is tied to 1,500 Ordinals applications, collection access, community distribution, and optional software upgrades.",
+          "boundary": "Interactive features and upgrade paths are product utility, not guaranteed market value or permanent execution.",
+          "source_ids": ["ninjas-overview", "ninjas-app", "ninjas-upgrades"]
+        },
+        "chain_dependence": {
+          "finding": "Bitcoin inscriptions preserve base artifacts, while interactive JavaScript, recursive dependencies, browser execution, and optional reinscriptions determine whether the application layer remains usable.",
+          "source_ids": ["ninjas-provenance", "ninjas-app", "ninjas-upgrades", "ninjas-snes"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "middling",
+            "scope": "Pizza Ninjas collection and interactive application layer, not floor price",
+            "summary": "Pizza Ninjas remains differentiated as a 1,500-item Ordinals application collection with documented provenance and upgrade mechanics, but repeat use, dependency durability, and market depth are not established.",
+            "confidence": "high",
+            "as_of": "2026-07-28",
+            "source_refs": ["ninjas-overview", "ninjas-app", "ninjas-upgrades"]
+          },
+          "why": {
+            "summary": "Observed: each V1 inscription is structured as an interactive JavaScript application, with documented recursive dependencies and holder-opt-in upgrades. Inference: application utility differentiates the collection from static PFPs, while the same dependency stack creates preservation and fragmentation risk.",
+            "basis": "operator technical documentation; lifecycle tradeoff is analyst synthesis",
+            "confidence": "high",
+            "source_refs": ["ninjas-provenance", "ninjas-app", "ninjas-upgrades", "ninjas-snes"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Build 1,500 JavaScript applications under a parent inscription.",
+              "intended_mechanism": "Turn each Ordinal into an interactive software object rather than static art.",
+              "consequence": "The collection gained technical differentiation while taking on browser, dependency, and maintenance risk.",
+              "confidence": "high",
+              "source_refs": ["ninjas-provenance", "ninjas-app"]
+            },
+            {
+              "decision": "Allocate some mint access through community customs and a video competition.",
+              "intended_mechanism": "Use participation and culture to seed distribution.",
+              "consequence": "The process reinforced community identity, but its effect on long-run ownership quality is unmeasured.",
+              "confidence": "high",
+              "source_refs": ["ninjas-process", "ninjas-community"]
+            },
+            {
+              "decision": "Make upgrades holder-opt-in through reinscription.",
+              "intended_mechanism": "Allow software evolution without forcing every holder onto a new version.",
+              "consequence": "Opt-in control respects ownership but can fragment functionality and provenance across versions.",
+              "confidence": "high",
+              "source_refs": ["ninjas-upgrades"]
+            },
+            {
+              "decision": "Limit emulator ROM use to works represented as public domain.",
+              "intended_mechanism": "Add playable software while reducing obvious copyright exposure.",
+              "consequence": "The feature expands utility but still depends on execution environments and accurate rights assumptions.",
+              "confidence": "medium",
+              "source_refs": ["ninjas-snes"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "A static collection would have reduced execution and dependency risk but removed Pizza Ninjas' main differentiation. A centrally forced upgrade path might reduce fragmentation while weakening holder control and inscription permanence.",
+            "limits": "No comparative retention, failure-rate, or upgrade-adoption data are available.",
+            "confidence": "medium",
+            "source_refs": ["ninjas-app", "ninjas-upgrades"]
+          },
+          "watch": [
+            {
+              "signal": "Interactive applications continue to execute across maintained browsers and Ordinals tooling.",
+              "implication": "Reliable execution supports the application thesis; breakage would leave only the base inscriptions.",
+              "source_refs": ["ninjas-app", "ninjas-snes"]
+            },
+            {
+              "signal": "Upgrade adoption, version fragmentation, and parent-dependency availability.",
+              "implication": "These reveal whether opt-in evolution preserves or fractures the user experience.",
+              "source_refs": ["ninjas-provenance", "ninjas-upgrades"]
+            },
+            {
+              "signal": "Reproducible repeat-use and holder-retention data.",
+              "implication": "Usage evidence would distinguish interactive novelty from durable product value.",
+              "source_refs": ["ninjas-overview"]
+            }
+          ],
+          "unknowns": [
+            "How many holders regularly execute the embedded applications?",
+            "What share of inscriptions adopted each optional upgrade?",
+            "Which dependencies could fail even if Bitcoin preserves the base inscription?",
+            "What are current holder concentration, liquidity, and realized royalty or product revenue?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-10-29",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "ninjas-overview", "title": "Bitcoin Ordinals Pizza Ninjas — Overview", "url": "https://ninjalerts.gitbook.io/bitcoin-ordinals-pizza-ninjas", "checked_at": "2026-07-29"},
+        {"id": "ninjas-provenance", "title": "Pizza Ninjas Provenance", "url": "https://ninjalerts.gitbook.io/bitcoin-ordinals-pizza-ninjas/provenance", "checked_at": "2026-07-29"},
+        {"id": "ninjas-process", "title": "Pizza Ninjas Generative Art Process", "url": "https://ninjalerts.gitbook.io/bitcoin-ordinals-pizza-ninjas/generative-art-process", "checked_at": "2026-07-29"},
+        {"id": "ninjas-community", "title": "Why Ninjas + Pizza", "url": "https://ninjalerts.gitbook.io/bitcoin-ordinals-pizza-ninjas/why-ninjas-%2B-pizza", "checked_at": "2026-07-29"},
+        {"id": "ninjas-app", "title": "Art as an Application", "url": "https://ninjalerts.gitbook.io/bitcoin-ordinals-pizza-ninjas/art-as-an-application-aaaa", "checked_at": "2026-07-29"},
+        {"id": "ninjas-upgrades", "title": "Pizza Ninjas Upgradability", "url": "https://ninjalerts.gitbook.io/bitcoin-ordinals-pizza-ninjas/upgradability", "checked_at": "2026-07-29"},
+        {"id": "ninjas-snes", "title": "Pizza Ninjas On-chain SNES", "url": "https://ninjalerts.gitbook.io/bitcoin-ordinals-pizza-ninjas/on-chain-snes", "checked_at": "2026-07-29"},
+        {"id": "ninjas-current", "title": "Pizza Ninjas official site", "url": "https://pizzaninjas.com/", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; current analysis relies on resolving technical documentation instead."}
+      ]
+    },
+    {
+      "slug": "pudgy-penguins",
+      "status": "thriving",
+      "profile": {
+        "token_model": {
+          "finding": "The original 8,888 Ethereum NFTs sit alongside IP licensing, physical products, games, and the separate PENGU ecosystem. The reviewed sources establish holder-linked licensing and experiences but not token fee rights, perpetual benefits, or automatic product revenue sharing.",
+          "boundary": "Brand expansion and token existence are not proof that value accrues to original NFT holders.",
+          "source_ids": ["pudgy-about", "pudgy-terms", "pudgy-world", "pudgy-may-2026"]
+        },
+        "chain_dependence": {
+          "finding": "Ethereum secures original NFT ownership, while retail goods, licensing, social distribution, and Pudgy World reduce product dependence on NFT trading. The brand therefore carries both smart-contract and conventional consumer-IP execution risk.",
+          "source_ids": ["pudgy-lore", "pudgy-about", "pudgy-world", "pudgy-may-2026"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "thriving",
+            "scope": "Pudgy Penguins operating brand and product delivery, not NFT or PENGU investment performance",
+            "summary": "The operator documents continuing licensing, retail, community, and game activity, including Pudgy World. Market, token, and company-financial conclusions remain withheld.",
+            "confidence": "high",
+            "as_of": "2026-05-31",
+            "source_refs": ["pudgy-world", "pudgy-may-2026"]
+          },
+          "why": {
+            "summary": "Observed: the brand expanded from a fixed Ethereum collection into licensing, physical products, retail, community programs, and a browser game. Inference: diversified consumer distribution reduces dependence on NFT royalties and trading cycles, while the causal link back to NFT-holder value remains unmeasured.",
+            "basis": "operator product and licensing evidence; value-accrual conclusion is explicitly withheld",
+            "confidence": "high",
+            "source_refs": ["pudgy-about", "pudgy-terms", "pudgy-world", "pudgy-may-2026"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Treat the 8,888 NFTs as characters and community identity for a broader consumer brand.",
+              "intended_mechanism": "Extend recognizable IP beyond crypto-native collecting.",
+              "consequence": "The collection became a brand foundation, while original-holder economics remained separate from general brand success.",
+              "confidence": "high",
+              "source_refs": ["pudgy-lore", "pudgy-about"]
+            },
+            {
+              "decision": "Offer holder-linked IP licensing and expand into physical retail products.",
+              "intended_mechanism": "Create distribution and commercial participation beyond secondary royalties.",
+              "consequence": "Pudgy gained real-world channels, but eligibility, revenue split, sell-through, and profitability are not generalized or disclosed.",
+              "confidence": "high",
+              "source_refs": ["pudgy-about", "pudgy-terms", "pudgy-may-2026"]
+            },
+            {
+              "decision": "Launch Pudgy World as a browser game and physical-to-digital extension.",
+              "intended_mechanism": "Convert brand awareness into repeat digital engagement.",
+              "consequence": "The game creates a measurable product loop, while operator-reported launch telemetry does not establish retention or revenue.",
+              "confidence": "high",
+              "source_refs": ["pudgy-world"]
+            },
+            {
+              "decision": "Expand the ecosystem through PENGU without asserting a direct NFT cash-flow right.",
+              "intended_mechanism": "Broaden participation and coordination beyond the original collection.",
+              "consequence": "The token adds an ecosystem layer and separate supply risk; the reviewed sources do not prove value transfer to NFT holders.",
+              "confidence": "medium",
+              "source_refs": ["pudgy-may-2026", "pudgy-terms"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "A royalty-and-mint-only strategy would have been simpler but more exposed to NFT trading cycles. Consumer products, licensing, and games diversify demand, yet they also add inventory, retail, licensing, and retention execution that may not benefit NFT holders.",
+            "limits": "Channel revenue, margins, game cohorts, token allocations, and holder-level value transfer are not disclosed in the reviewed sources.",
+            "confidence": "medium",
+            "source_refs": ["pudgy-about", "pudgy-world", "pudgy-may-2026"]
+          },
+          "watch": [
+            {
+              "signal": "Retail reorders, licensed-product sell-through, and repeat licensee activity.",
+              "implication": "Repeat demand would support consumer-brand durability beyond launch announcements.",
+              "source_refs": ["pudgy-may-2026"]
+            },
+            {
+              "signal": "Pudgy World retention, repeat sessions, and conversion from physical products.",
+              "implication": "Cohort evidence would show whether the game is a durable engagement loop.",
+              "source_refs": ["pudgy-world"]
+            },
+            {
+              "signal": "Documented economic rights or benefits connecting NFTs, PENGU, licensing, and products.",
+              "implication": "Clear terms would resolve whether operating growth reaches the original ownership layer.",
+              "source_refs": ["pudgy-about", "pudgy-terms"]
+            }
+          ],
+          "unknowns": [
+            "What are product-channel revenue, margins, sell-through, and retailer reorder rates?",
+            "How many Pudgy World users return after initial signup, and how many are NFT holders?",
+            "What current rights and economics apply to holder IP licensing?",
+            "How do PENGU incentives, products, and brand revenue affect original NFT demand?",
+            "What are current NFT holder retention, concentration, liquidity, and royalty receipts?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-08-29",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "pudgy-lore", "title": "Pudgy Penguins — The story of Pudgy Penguins", "url": "https://media.pudgypenguins.com/lore", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; retained as prior-reviewed historical operator evidence."},
+        {"id": "pudgy-about", "title": "Pudgy Penguins — Who Are Pudgy Penguins", "url": "https://media.pudgypenguins.com/education-posts/who-are-pudgy-penguins", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; retained as prior-reviewed operator evidence."},
+        {"id": "pudgy-terms", "title": "Pudgy Penguins — Terms of Use", "url": "https://claim.pudgypenguins.com/terms-of-use", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; retained as prior-reviewed terms evidence."},
+        {"id": "pudgy-world", "title": "Pudgy Penguins — Pudgy World browser-game launch", "url": "https://www.pudgypenguins.com/blogs/news/pudgy-penguins-launches-pudgy-world-browser-game", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; current-state use is bounded to the previously reviewed operator release."},
+        {"id": "pudgy-may-2026", "title": "Pudgy Media — May 2026: The Huddle Is Everywhere", "url": "https://media.pudgypenguins.com/post/may-2026", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; current-state use is bounded to the previously reviewed May 2026 operator recap."}
+      ]
+    },
+    {
+      "slug": "quantum-cats",
+      "status": "middling",
+      "profile": {
+        "token_model": {
+          "finding": "No separate Quantum Cats token or unconditional revenue right is established. The 3,333 inscriptions derive their stated utility from cultural alignment with OP_CAT advocacy and collection access, not contractual protocol governance.",
+          "boundary": "Advocacy relevance and portal activity do not establish liquidity, appreciation, or rights over any Bitcoin consensus change.",
+          "source_ids": ["quantum-cats-site", "taproot-portal"]
+        },
+        "chain_dependence": {
+          "finding": "Quantum Cats is native to Bitcoin Ordinals and its narrative is unusually dependent on the OP_CAT policy debate. Bitcoin preserves the inscriptions; protocol advocacy, operator communication, and Ordinals tooling sustain the collection's differentiating thesis.",
+          "source_ids": ["quantum-cats-site", "taproot-portal"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "middling",
+            "scope": "Quantum Cats collection continuity and protocol-cultural relevance, not market value",
+            "summary": "A first-party portal showed current collection activity and the operator continues to frame 3,333 Ordinals around OP_CAT advocacy. Sparse sale observations are not converted into a liquidity or valuation verdict.",
+            "confidence": "medium",
+            "as_of": "2026-07-28",
+            "source_refs": ["quantum-cats-site", "taproot-portal"]
+          },
+          "why": {
+            "summary": "Observed: Quantum Cats has a fixed 3,333-item Ordinals collection, a live first-party portal, and an explicit OP_CAT thesis. Inference: protocol advocacy gives the collection a distinct reason to remain culturally relevant, but also concentrates its lifecycle around an uncertain Bitcoin policy narrative rather than proven recurring utility.",
+            "basis": "operator thesis and portal evidence; market and protocol-outcome causality withheld",
+            "confidence": "medium",
+            "source_refs": ["quantum-cats-site", "taproot-portal"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Issue a fixed 3,333-item Bitcoin Ordinals collection.",
+              "intended_mechanism": "Create scarce Bitcoin-native artifacts with a clear collection boundary.",
+              "consequence": "The collection gained Bitcoin provenance and fixed supply, while accepting Ordinals-market and tooling dependence.",
+              "confidence": "high",
+              "source_refs": ["quantum-cats-site", "taproot-portal"]
+            },
+            {
+              "decision": "Make OP_CAT advocacy the collection's central thesis.",
+              "intended_mechanism": "Turn ownership into cultural participation in a live Bitcoin technical debate.",
+              "consequence": "Quantum Cats differentiates from generic PFPs, but relevance may weaken if advocacy stalls or decouples from holder participation.",
+              "confidence": "high",
+              "source_refs": ["quantum-cats-site"]
+            },
+            {
+              "decision": "Maintain a first-party collection portal with inventory and sale observations.",
+              "intended_mechanism": "Keep discovery and collection activity visible within the Taproot Wizards ecosystem.",
+              "consequence": "The portal demonstrates operator continuity, but sparse observations do not establish deep or durable liquidity.",
+              "confidence": "high",
+              "source_refs": ["taproot-portal"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "Without the OP_CAT thesis, Quantum Cats would compete mainly as another fixed-supply Ordinals collection. A concrete OP_CAT milestone could strengthen cultural relevance, but no protocol outcome guarantees utility or collection demand.",
+            "limits": "Bitcoin consensus outcomes, holder motivation, market depth, and protocol-to-collection causality cannot be inferred from the operator portal.",
+            "confidence": "medium",
+            "source_refs": ["quantum-cats-site", "taproot-portal"]
+          },
+          "watch": [
+            {
+              "signal": "Operator portal activity and collection support continue beyond isolated sale observations.",
+              "implication": "Sustained operation supports the middling label; disappearance would raise abandonment risk.",
+              "source_refs": ["taproot-portal"]
+            },
+            {
+              "signal": "Taproot Wizards documents a concrete OP_CAT proposal, test, or activation milestone.",
+              "implication": "A verifiable milestone could strengthen thesis relevance without proving market value.",
+              "source_refs": ["quantum-cats-site"]
+            },
+            {
+              "signal": "Reproducible holder concentration, bid depth, and repeat-buyer data.",
+              "implication": "These would distinguish an active cultural artifact from a thinly traded collection.",
+              "source_refs": ["taproot-portal"]
+            }
+          ],
+          "unknowns": [
+            "How many holders participate in OP_CAT advocacy rather than passively hold the inscriptions?",
+            "What current bid depth, sale frequency, and holder concentration exist?",
+            "What collection benefits, if any, are contractually linked to protocol advocacy?",
+            "Would an OP_CAT rejection, delay, or activation materially change collection use?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-08-29",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "quantum-cats-site", "title": "Quantum Cats OP_CAT Thesis", "url": "https://www.quantumcats.xyz/", "checked_at": "2026-07-29", "access_state": "tls_fetch_failed", "verification_note": "Automated GET failed TLS on 2026-07-29; retained as prior-reviewed thesis evidence and not used alone for current-state classification."},
+        {"id": "taproot-portal", "title": "Taproot Wizards Collection Portal", "url": "https://portal.taprootwizards.com/", "checked_at": "2026-07-29"}
+      ]
+    },
+    {
+      "slug": "reddit-collectible-avatars",
+      "status": "middling",
+      "profile": {
+        "token_model": {
+          "finding": "No separate program token or unconditional revenue right is established. Value was captured through limited-edition avatar sales and creator collections; surviving utility is licensed avatar display, mix-and-match gear, and Reddit profile treatment.",
+          "boundary": "Residual profile utility and off-platform import support do not mean Reddit's primary avatar marketplace remains active.",
+          "source_ids": ["reddit-launch", "reddit-current"]
+        },
+        "chain_dependence": {
+          "finding": "Polygon provides transferable ownership, while Reddit profiles, licensed display rights, and the import flow provide the consumer utility. The chain keeps assets portable after primary sales ended, but Reddit controls in-product presentation.",
+          "source_ids": ["reddit-launch", "reddit-current"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "middling",
+            "scope": "Reddit Collectible Avatars program after primary-store closure, not secondary-market performance",
+            "summary": "Reddit ended on-platform primary sales but continues to document avatar display, mix-and-match utility, and a simplified import path for off-platform transfers.",
+            "confidence": "high",
+            "as_of": "2026-02-04",
+            "source_refs": ["reddit-current"]
+          },
+          "why": {
+            "summary": "Observed: Reddit used its profile system and creator storefront to distribute blockchain-backed avatars, then discontinued primary sales while retaining in-product use and transfer support. Inference: embedded social distribution created durable residual utility, but not enough evidence exists to call the sales program thriving or the assets dead.",
+            "basis": "official launch and current support documentation; commercial rationale for closure is undisclosed",
+            "confidence": "high",
+            "source_refs": ["reddit-launch", "reddit-current"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Sell limited creator avatars inside a mainstream social platform.",
+              "intended_mechanism": "Use Reddit identity and distribution to onboard users without leading with crypto mechanics.",
+              "consequence": "The program reached social-profile users and gave creators a storefront, while depending on Reddit's product priorities.",
+              "confidence": "high",
+              "source_refs": ["reddit-launch"]
+            },
+            {
+              "decision": "Use Polygon and licensed avatar rights with mix-and-match Reddit profile utility.",
+              "intended_mechanism": "Combine portable ownership with visible social use at low transaction friction.",
+              "consequence": "Assets retained transferable ownership and in-app differentiation, while utility remained partly controlled by Reddit.",
+              "confidence": "high",
+              "source_refs": ["reddit-launch", "reddit-current"]
+            },
+            {
+              "decision": "End primary sales but preserve off-platform transfer imports and avatar display.",
+              "intended_mechanism": "Exit the store while reducing disruption for existing owners.",
+              "consequence": "The issuance business stopped, but the assets retained residual product utility and portability.",
+              "confidence": "high",
+              "source_refs": ["reddit-current"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "Keeping the primary store open might have preserved creator distribution and issuance, but the reviewed source does not disclose why Reddit ended it. Removing import and profile utility would have converted a middling residual-use case into a much more terminal product outcome.",
+            "limits": "Store economics, moderation costs, regulatory concerns, creator retention, and user cohorts are not disclosed.",
+            "confidence": "low",
+            "source_refs": ["reddit-launch", "reddit-current"]
+          },
+          "watch": [
+            {
+              "signal": "Reddit continues avatar display, mix-and-match, and off-platform import support.",
+              "implication": "Continued support preserves residual utility; feature removal would materially weaken the case.",
+              "source_refs": ["reddit-current"]
+            },
+            {
+              "signal": "Reddit relaunches primary distribution or adds new creator and holder programs.",
+              "implication": "A sustained program could support recovery.",
+              "source_refs": ["reddit-launch", "reddit-current"]
+            },
+            {
+              "signal": "Reproducible import, active-use, and ownership-concentration data.",
+              "implication": "These would show whether surviving utility is meaningfully used.",
+              "source_refs": ["reddit-current"]
+            }
+          ],
+          "unknowns": [
+            "Why did Reddit end on-platform primary avatar sales?",
+            "How many owners actively display or import Collectible Avatars?",
+            "What obligations and economics remain for participating artists?",
+            "What current secondary liquidity and ownership concentration exist across the many collections?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-08-03",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "reddit-launch", "title": "Reddit — Blockchain-Backed Collectible Avatars Coming via New Storefront", "url": "https://redditinc.com/news/blockchain-backed-collectible-avatars-coming-to-reddit-via-new-storefront", "checked_at": "2026-07-29"},
+        {"id": "reddit-current", "title": "Reddit Help — Collectible Avatars on Reddit", "url": "https://support.reddithelp.com/hc/en-us/articles/6213835889044-Collectible-Avatars-on-Reddit", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; current claims remain bounded to the previously reviewed Reddit support article."}
+      ]
+    },
+    {
+      "slug": "solana-monkey-business",
+      "status": "middling",
+      "profile": {
+        "token_model": {
+          "finding": "No separate fungible token or unconditional holder revenue right is established. The operator states that 5% of Gen2 secondary sales goes to the MonkeDAO treasury, while Gen3 creates an additional collection and distribution layer.",
+          "boundary": "A stated royalty destination and DAO treasury do not establish realized receipts, productive spending, or holder returns.",
+          "source_ids": ["smb-operator", "smb-gen3"]
+        },
+        "chain_dependence": {
+          "finding": "Gen2 and Gen3 depend on Solana ownership, marketplaces, wallets, and MonkeDAO stewardship. Low-friction issuance supports expansion, while collection proliferation and Solana-specific distribution can fragment attention.",
+          "source_ids": ["smb-operator", "smb-gen3"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "middling",
+            "scope": "Solana Monkey Business collection stewardship and Gen3 expansion, not market value",
+            "summary": "MonkeDAO continues to steward Gen2 and has launched a Gen3 expansion, while current floor, liquidity, holder retention, and royalty receipts are not established.",
+            "confidence": "medium",
+            "as_of": "2026-07-28",
+            "source_refs": ["smb-operator", "smb-gen3"]
+          },
+          "why": {
+            "summary": "Observed: the 5,000-item Gen2 collection remains under MonkeDAO stewardship, a 5% secondary-sale royalty is directed to its treasury, and Gen3 expands the ecosystem. Inference: community governance prevented abandonment, while expansion has not yet proven durable Gen2 utility or market health.",
+            "basis": "operator records; market and treasury-effectiveness claims withheld",
+            "confidence": "medium",
+            "source_refs": ["smb-operator", "smb-gen3"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Maintain a fixed 5,000-item Gen2 collection as the legacy identity layer.",
+              "intended_mechanism": "Preserve recognizable scarcity and provenance on Solana.",
+              "consequence": "Gen2 retains a clear collection boundary, but its continuing utility depends on stewardship and ecosystem activity.",
+              "confidence": "high",
+              "source_refs": ["smb-operator"]
+            },
+            {
+              "decision": "Place stewardship and a stated 5% Gen2 royalty destination with MonkeDAO.",
+              "intended_mechanism": "Fund community-led coordination from secondary activity.",
+              "consequence": "Governance and treasury continuity became community-led, while actual receipts and spending outcomes remain undisclosed.",
+              "confidence": "high",
+              "source_refs": ["smb-operator"]
+            },
+            {
+              "decision": "Launch Gen3 as an ecosystem expansion.",
+              "intended_mechanism": "Create new acquisition, participation, and product opportunities.",
+              "consequence": "Gen3 demonstrates active execution but may either reinforce Gen2 utility or dilute attention; current evidence cannot distinguish the result.",
+              "confidence": "medium",
+              "source_refs": ["smb-gen3", "smb-operator"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "Avoiding Gen3 could protect Gen2 attention and scarcity while limiting new-user acquisition and treasury activity. A tightly linked Gen3 utility model could strengthen the legacy collection, but no retention or cross-collection cohort data yet tests that mechanism.",
+            "limits": "Royalty receipts, DAO treasury outcomes, Gen3 conversion, and holder cohorts are unavailable.",
+            "confidence": "low",
+            "source_refs": ["smb-operator", "smb-gen3"]
+          },
+          "watch": [
+            {
+              "signal": "Gen3 distribution converts into repeat participation and documented Gen2 benefits.",
+              "implication": "Cross-collection retention would support recovery; launch-only activity would not.",
+              "source_refs": ["smb-gen3", "smb-operator"]
+            },
+            {
+              "signal": "MonkeDAO reports royalty receipts and treasury deployment with source-backed outcomes.",
+              "implication": "Transparent productive use would strengthen the community-stewardship thesis.",
+              "source_refs": ["smb-operator"]
+            },
+            {
+              "signal": "Current Gen2 and Gen3 holder overlap, concentration, and liquidity become reproducible.",
+              "implication": "These data would show whether expansion broadens the ecosystem or fragments it.",
+              "source_refs": ["smb-operator", "smb-gen3"]
+            }
+          ],
+          "unknowns": [
+            "How much has the stated 5% Gen2 royalty produced for MonkeDAO?",
+            "What treasury spending has delivered measurable holder or ecosystem outcomes?",
+            "How much holder overlap and migration exist between Gen2 and Gen3?",
+            "What are current bid depth, ownership concentration, and repeat-buyer activity?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-08-29",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "smb-operator", "title": "Solana Monkey Business Gen2 and Gen3 Operator Record", "url": "https://solanamonkey.business/", "checked_at": "2026-07-29"},
+        {"id": "smb-gen3", "title": "Solana Monkey Business Gen3", "url": "https://gen3.solanamonkey.business/", "checked_at": "2026-07-29"}
+      ]
+    },
+    {
+      "slug": "sorare-cards",
+      "status": "thriving",
+      "profile": {
+        "token_model": {
+          "finding": "Sorare uses licensed player-card NFTs rather than one generic platform token. Card scarcity tiers, fantasy eligibility, and competition rewards drive use; reward forms and availability vary by competition and jurisdiction.",
+          "boundary": "Competition utility and rewards do not guarantee card appreciation, fee income, or company profitability.",
+          "source_ids": ["sorare-product", "sorare-overview", "sorare-rewards", "sorare-2026"]
+        },
+        "chain_dependence": {
+          "finding": "Sorare moved NFT custody from its earlier Ethereum or StarkEx architecture to Solana and ETH settlement to Base. The product is portable across infrastructure choices, but migrations add custody, communication, and jurisdictional complexity.",
+          "source_ids": ["sorare-history", "sorare-migration", "sorare-2026"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "thriving",
+            "scope": "current Sorare fantasy-card product operations, not card investment performance",
+            "summary": "Sorare continues to operate licensed fantasy competitions and completed a migration of card NFTs to Solana with ETH settlement on Base.",
+            "confidence": "high",
+            "as_of": "2026-04-14",
+            "source_refs": ["sorare-migration", "sorare-2026"]
+          },
+          "why": {
+            "summary": "Observed: licensed player cards have seasonal scarcity tiers, remain usable in fantasy competitions, and can earn varied rewards; the operator adapted its chain stack and regulatory posture. Inference: recurring sports seasons and game utility create repeat use that static cards lack, while licensing, reward, and jurisdiction economics remain unmeasured.",
+            "basis": "operator product, rewards, migration, and regulatory documentation; profitability withheld",
+            "confidence": "high",
+            "source_refs": ["sorare-product", "sorare-overview", "sorare-rewards", "sorare-migration", "sorare-2026"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Combine licensed sports cards with recurring fantasy competitions.",
+              "intended_mechanism": "Make card ownership useful in a repeated game loop tied to live sports.",
+              "consequence": "Sorare gained seasonal engagement and reward utility, while becoming dependent on league rights, game balance, and jurisdiction rules.",
+              "confidence": "high",
+              "source_refs": ["sorare-overview", "sorare-rewards"]
+            },
+            {
+              "decision": "Issue player- and season-specific scarcity tiers instead of one fixed collection.",
+              "intended_mechanism": "Refresh game inventory while differentiating competitive scarcity.",
+              "consequence": "Annual content supports repeat play but introduces continuing supply and cross-season obsolescence questions.",
+              "confidence": "high",
+              "source_refs": ["sorare-product", "sorare-overview"]
+            },
+            {
+              "decision": "Migrate NFTs from StarkEx to Solana and ETH settlement to Base.",
+              "intended_mechanism": "Update custody and transaction infrastructure without abandoning the fantasy product.",
+              "consequence": "The migration demonstrates technical adaptation while adding user education, custody, and multi-chain dependency.",
+              "confidence": "high",
+              "source_refs": ["sorare-migration"]
+            },
+            {
+              "decision": "Operate current competitions within the JONUM regulatory framework.",
+              "intended_mechanism": "Preserve fantasy-reward operations under an explicit jurisdictional regime.",
+              "consequence": "Regulatory adaptation supports continuity while making product terms and availability jurisdiction-dependent.",
+              "confidence": "high",
+              "source_refs": ["sorare-2026"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "Static licensed collectibles without competitions would lose Sorare's repeat-use loop. Remaining on the earlier chain stack might reduce migration friction but preserve older infrastructure constraints; the evidence does not compare retention or cost before and after migration.",
+            "limits": "Licensing costs, take rate, reward economics, cohort retention, and migration attrition are undisclosed.",
+            "confidence": "medium",
+            "source_refs": ["sorare-overview", "sorare-rewards", "sorare-migration"]
+          },
+          "watch": [
+            {
+              "signal": "Competition cadence, league coverage, and reward delivery continue across seasons.",
+              "implication": "Recurring licensed play supports the thriving label; material contraction would weaken it.",
+              "source_refs": ["sorare-overview", "sorare-rewards", "sorare-2026"]
+            },
+            {
+              "signal": "Solana custody and Base settlement remain reliable after migration.",
+              "implication": "Stable infrastructure supports adaptation; asset-access or settlement failures would raise migration risk.",
+              "source_refs": ["sorare-migration"]
+            },
+            {
+              "signal": "Jurisdictional rules or JONUM terms change.",
+              "implication": "Regulatory change could alter competition access, reward design, or economics.",
+              "source_refs": ["sorare-2026"]
+            }
+          ],
+          "unknowns": [
+            "What are current active-manager retention and competition-entry cohorts?",
+            "What are league-licensing costs, take rate, reward expense, and profitability?",
+            "How many users or cards were lost or stranded during the chain migration?",
+            "How do annual issuance and utility changes affect older-card demand and liquidity?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-10-11",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "sorare-history", "title": "Sorare — Our next chapter: beta rollout history", "url": "https://medium.com/sorare/our-next-chapter-sorare-raises-a-4m-seed-round-led-by-e-ventures-b8e615bce191", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; retained as prior-reviewed historical operator evidence."},
+        {"id": "sorare-product", "title": "Sorare — Card types and annual player scarcity tiers", "url": "https://medium.com/sorare/product-updates-daily-game-progress-game-mode-card-rebranding-6915e038c851", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; retained as prior-reviewed product-mechanism evidence."},
+        {"id": "sorare-overview", "title": "Sorare Help — What is Sorare Football?", "url": "https://help.sorare.com/hc/en-us/articles/4402780460817-What-is-Sorare-Football", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; retained as prior-reviewed operator product evidence."},
+        {"id": "sorare-rewards", "title": "Sorare Help — Football rewards and prizes", "url": "https://help.sorare.com/hc/en-us/articles/4402879613969-What-rewards-or-prizes-can-I-win-in-Sorare-Football", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; retained as prior-reviewed reward-mechanism evidence."},
+        {"id": "sorare-migration", "title": "Sorare Help — StarkEx to Solana and Base migration timeline", "url": "https://help.sorare.com/hc/en-us/articles/30889042268573-Timeline-Phases", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; current use is bounded to the previously reviewed migration record."},
+        {"id": "sorare-2026", "title": "Sorare Help — JONUM regulation and current competitions", "url": "https://help.sorare.com/hc/en-us/articles/35374770201373-JONUM-Regulation", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; current use is bounded to the previously reviewed JONUM and competition record."}
+      ]
+    },
+    {
+      "slug": "taproot-wizards",
+      "status": "thriving",
+      "profile": {
+        "token_model": {
+          "finding": "No separate collection token or unconditional revenue right is established. Value is tied to Bitcoin inscriptions, quest-based distribution, operator portals, Spellverse, and a broader technical-advocacy community.",
+          "boundary": "Community activity and protocol advocacy are not guaranteed economic rights or evidence of collection returns.",
+          "source_ids": ["wizards-home", "wizards-manifesto", "wizards-portal", "wizards-spellverse"]
+        },
+        "chain_dependence": {
+          "finding": "Bitcoin Ordinals supplies inscription provenance, while official collection lists, portal infrastructure, quests, and Spellverse supply coordination and product utility. Base artifacts can survive operator loss, but authenticated discovery and community experiences may not.",
+          "source_ids": ["wizards-collection", "wizards-portal", "wizards-spellverse"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "thriving",
+            "scope": "Taproot Wizards operator and community-product activity, not collection investment performance",
+            "summary": "Taproot Wizards maintains official inscription, manifesto, portal, and Spellverse surfaces that connect a Bitcoin-native collection to quests and technical advocacy.",
+            "confidence": "high",
+            "as_of": "2026-07-05",
+            "source_refs": ["wizards-home", "wizards-collection", "wizards-portal", "wizards-spellverse"]
+          },
+          "why": {
+            "summary": "Observed: the project combines Bitcoin cultural memory, verified inscription lists, quest distribution, a current portal, and Spellverse. Inference: culture plus continuing operator experiences sustains coordination beyond static art, but no market-performance or protocol-impact causality is proven.",
+            "basis": "official collection and product surfaces; demand and protocol outcomes withheld",
+            "confidence": "high",
+            "source_refs": ["wizards-home", "wizards-manifesto", "wizards-collection", "wizards-portal", "wizards-spellverse"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Use Ordinals and a nostalgic Magic Internet Money identity.",
+              "intended_mechanism": "Anchor the collection in recognizable Bitcoin history and culture.",
+              "consequence": "The project gained a distinctive narrative while becoming dependent on continuing Ordinals relevance.",
+              "confidence": "high",
+              "source_refs": ["wizards-home", "wizards-manifesto"]
+            },
+            {
+              "decision": "Distribute at least some Wizards through quests rather than one uniform public mint.",
+              "intended_mechanism": "Reward community participation and technical-cultural alignment.",
+              "consequence": "Quest distribution can deepen participation, but makes allocation and cohort comparison less uniform.",
+              "confidence": "high",
+              "source_refs": ["wizards-home"]
+            },
+            {
+              "decision": "Maintain an official collection list and first-party portal.",
+              "intended_mechanism": "Reduce counterfeit risk and coordinate holders around verified inscriptions.",
+              "consequence": "Authentication and discovery improve, while users become partly dependent on operator interfaces.",
+              "confidence": "high",
+              "source_refs": ["wizards-collection", "wizards-portal"]
+            },
+            {
+              "decision": "Extend the collection into Spellverse.",
+              "intended_mechanism": "Create a continuing experience and community surface beyond collecting.",
+              "consequence": "The product expands utility but adds execution, retention, and offchain service dependencies.",
+              "confidence": "high",
+              "source_refs": ["wizards-spellverse"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "Without verified inscription lists and continuing product surfaces, the meme could persist while authenticity and coordination fragment. A static-art strategy would reduce operator dependence but remove much of the project's repeat-engagement thesis.",
+            "limits": "Quest retention, Spellverse use, holder cohorts, and market response are not independently measured.",
+            "confidence": "medium",
+            "source_refs": ["wizards-collection", "wizards-portal", "wizards-spellverse"]
+          },
+          "watch": [
+            {
+              "signal": "Official collection verification and portal support remain current.",
+              "implication": "Maintained authentication reduces counterfeit and coordination risk.",
+              "source_refs": ["wizards-collection", "wizards-portal"]
+            },
+            {
+              "signal": "Spellverse and quests show repeat participation rather than launch-only activity.",
+              "implication": "Sustained use would support durable community-product value.",
+              "source_refs": ["wizards-home", "wizards-spellverse"]
+            },
+            {
+              "signal": "Technical-advocacy milestones produce verifiable Bitcoin community or protocol outcomes.",
+              "implication": "Concrete outcomes could strengthen the thesis without automatically proving asset value.",
+              "source_refs": ["wizards-manifesto"]
+            }
+          ],
+          "unknowns": [
+            "How many holders and non-holders repeatedly use Spellverse or quest programs?",
+            "What share of collection demand is driven by advocacy, culture, or market speculation?",
+            "What current holder concentration and bid depth exist?",
+            "Which portal and experience functions would survive loss of the operator?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-10-29",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "wizards-home", "title": "Taproot Wizards — official site and FAQ", "url": "https://taprootwizards.com/", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; current classification is corroborated by the resolving first-party portal."},
+        {"id": "wizards-collection", "title": "Taproot Wizards — Official Collection", "url": "https://taprootwizards.com/collection", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; retained as prior-reviewed collection-verification evidence."},
+        {"id": "wizards-manifesto", "title": "The Wizard Manifesto", "url": "https://taprootwizards.com/manifesto", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; retained as prior-reviewed thesis evidence."},
+        {"id": "wizards-portal", "title": "Wizard Portal", "url": "https://portal.taprootwizards.com/", "checked_at": "2026-07-29"},
+        {"id": "wizards-spellverse", "title": "Spellverse", "url": "https://spellverse.taprootwizards.com/", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; retained as prior-reviewed product-surface evidence and not treated as independent current usage data."}
+      ]
+    },
+    {
+      "slug": "tezzardz",
+      "status": "unknown",
+      "profile": {
+        "token_model": {
+          "finding": "No separate token, contractual game utility, or holder revenue right is established. The evidenced proposition is a finite 4,200-item artist-created generative PFP collection.",
+          "boundary": "Historical sellout and ecosystem recognition do not establish current liquidity or an active operating product.",
+          "source_ids": ["tezzardz-spotlight", "tezzardz-market"]
+        },
+        "chain_dependence": {
+          "finding": "Tezzardz depends on Tezos for ownership and marketplace discovery. The art and provenance can persist without a roadmap, while present market access and community coordination depend on Tezos ecosystem surfaces.",
+          "source_ids": ["tezzardz-spotlight", "tezzardz-market"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "unclassified",
+            "scope": "current Tezzardz lifecycle; historical launch and provenance remain established",
+            "summary": "Tezzardz retains a clear artist, fixed supply, Tezos provenance, ecosystem recognition, and a marketplace page, but no fresh evidence establishes recurring operations or current market depth.",
+            "confidence": "high",
+            "as_of": "2025-04-03",
+            "source_refs": ["tezzardz-spotlight", "tezzardz-market"]
+          },
+          "why": {
+            "summary": "Observed: George Goodwin's 4,200-item generative collection remains recognized in Tezos editorial and marketplace surfaces. Inference withheld: those facts cannot determine whether the collection is thriving, middling, or effectively dormant without current participation and liquidity evidence.",
+            "basis": "historical and ecosystem evidence; current lifecycle causality deliberately withheld",
+            "confidence": "high",
+            "source_refs": ["tezzardz-spotlight", "tezzardz-market"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Launch a finite 4,200-item generative PFP collection on Tezos.",
+              "intended_mechanism": "Combine artist identity, programmatic variation, and lower-friction chain-native collecting.",
+              "consequence": "Tezzardz became a recognizable Tezos-native artifact, while tying distribution to a smaller ecosystem than Ethereum.",
+              "confidence": "high",
+              "source_refs": ["tezzardz-spotlight"]
+            },
+            {
+              "decision": "Lead with art, character identity, and finite provenance rather than a token or game roadmap.",
+              "intended_mechanism": "Let cultural and artistic value carry the collection.",
+              "consequence": "The thesis avoids unfulfilled utility promises but provides fewer observable operating milestones for lifecycle classification.",
+              "confidence": "medium",
+              "source_refs": ["tezzardz-spotlight"]
+            },
+            {
+              "decision": "Rely on Tezos ecosystem editorial and marketplace surfaces for continuing discovery.",
+              "intended_mechanism": "Preserve access after the original launch without a large standalone product stack.",
+              "consequence": "The collection remains discoverable, but operator activity and collector depth are not established.",
+              "confidence": "medium",
+              "source_refs": ["tezzardz-spotlight", "tezzardz-market"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "Recurring artist communication, exhibitions, holder programs, or independently verified market cohorts could support a current lifecycle classification. Their absence from the reviewed record is an evidence gap, not proof that the community is inactive.",
+            "limits": "The current evidence window cannot distinguish quiet collector persistence from abandonment.",
+            "confidence": "low",
+            "source_refs": ["tezzardz-spotlight", "tezzardz-market"]
+          },
+          "watch": [
+            {
+              "signal": "A dated creator or operator update documents recurring collection activity.",
+              "implication": "Fresh operating evidence could move the case out of unclassified.",
+              "source_refs": ["tezzardz-spotlight"]
+            },
+            {
+              "signal": "Reproducible transfer frequency, bid depth, and ownership concentration become available.",
+              "implication": "Market cohorts would separate a collectible archive from a functioning current market.",
+              "source_refs": ["tezzardz-market"]
+            }
+          ],
+          "unknowns": [
+            "Is George Goodwin or another steward actively maintaining a Tezzardz program?",
+            "How many owners are active, concentrated, or long-term retained?",
+            "What current bid depth and sale frequency exist?",
+            "Are there current exhibitions, licensing programs, or holder benefits?"
+          ],
+          "review": {
+            "status": "needs_review",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-08-29",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "tezzardz-spotlight", "title": "Tezos Spotlight — Celebrating PFPs on Tezos", "url": "https://spotlight.tezos.com/pfps-on-tezos/", "checked_at": "2026-07-29"},
+        {"id": "tezzardz-market", "title": "Objkt — Tezzardz collection", "url": "https://objkt.com/collections/tezzardz", "checked_at": "2026-07-29"}
+      ]
+    },
+    {
+      "slug": "the-sandbox-land",
+      "status": "thriving",
+      "profile": {
+        "token_model": {
+          "finding": "LAND is a fixed-supply parcel NFT with location and publishing utility; SAND and other ecosystem assets are separate layers. The reviewed evidence does not establish guaranteed land yield, rental income, or holder revenue.",
+          "boundary": "Scarcity and publishing rights are product mechanisms, not proof of occupancy, visitor demand, or investment returns.",
+          "source_ids": ["sandbox-whitepaper", "sandbox-value", "sandbox-open", "sandbox-sale"]
+        },
+        "chain_dependence": {
+          "finding": "LAND ownership and official sales span Ethereum-era provenance and Polygon distribution, while creator tools, hosting, KYC, and visitor experiences remain operator-dependent.",
+          "source_ids": ["sandbox-whitepaper", "sandbox-open", "sandbox-faq", "sandbox-sale"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "thriving",
+            "scope": "The Sandbox LAND operating product and creator-publishing system, not LAND investment performance",
+            "summary": "The Sandbox maintains fixed parcel supply, creator publishing, ownership documentation, and current official LAND sales. Productive use and financial returns remain unproven.",
+            "confidence": "high",
+            "as_of": "2026-07-15",
+            "source_refs": ["sandbox-value", "sandbox-open", "sandbox-sale"]
+          },
+          "why": {
+            "summary": "Observed: LAND has a fixed 166,464-parcel structure, location-based differentiation, open creator publishing, and continuing official sales. Inference: scarcity plus tools and visitor-facing experiences sustain the operating thesis, while no evidence shows how much land is productively used.",
+            "basis": "operator supply, tooling, and sale evidence; occupancy and returns withheld",
+            "confidence": "high",
+            "source_refs": ["sandbox-whitepaper", "sandbox-value", "sandbox-open", "sandbox-sale"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Fix total LAND supply at 166,464 and represent Estates as bundles of existing parcels.",
+              "intended_mechanism": "Preserve location scarcity without creating new land through aggregation.",
+              "consequence": "The map has a stable ownership boundary, while scarcity alone cannot create productive demand.",
+              "confidence": "high",
+              "source_refs": ["sandbox-value"]
+            },
+            {
+              "decision": "Open experience publishing to creators.",
+              "intended_mechanism": "Let third parties produce reasons for visitors to use LAND.",
+              "consequence": "Utility can scale beyond operator-made content, while quality, discovery, and creator retention become platform challenges.",
+              "confidence": "high",
+              "source_refs": ["sandbox-open"]
+            },
+            {
+              "decision": "Move official LAND sales to Polygon and require KYC for primary purchases.",
+              "intended_mechanism": "Reduce transaction friction and formalize primary-sale compliance.",
+              "consequence": "Sales infrastructure became more accessible and regulated, while adding migration, identity, and operator dependencies.",
+              "confidence": "high",
+              "source_refs": ["sandbox-faq", "sandbox-sale"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "Without creator publishing and visitor activity, fixed LAND would remain scarce coordinates without productive use. Unlimited land could improve access but weaken location scarcity; the reviewed evidence does not compare these designs empirically.",
+            "limits": "Occupancy, visitor retention, creator revenue, land utilization, and resale cohorts are unavailable.",
+            "confidence": "medium",
+            "source_refs": ["sandbox-value", "sandbox-open", "sandbox-sale"]
+          },
+          "watch": [
+            {
+              "signal": "Active published experiences, repeat visitors, and creator retention by LAND cohort.",
+              "implication": "Usage would validate productive scarcity; empty parcels would weaken it.",
+              "source_refs": ["sandbox-open"]
+            },
+            {
+              "signal": "Official sale cadence, unsold inventory, and changes to the fixed-supply commitment.",
+              "implication": "Supply or distribution changes could alter scarcity and demand assumptions.",
+              "source_refs": ["sandbox-value", "sandbox-sale"]
+            },
+            {
+              "signal": "Polygon, KYC, and ownership-migration support remain reliable.",
+              "implication": "Operational continuity depends on users retaining clear access across infrastructure changes.",
+              "source_refs": ["sandbox-faq", "sandbox-sale"]
+            }
+          ],
+          "unknowns": [
+            "What share of LAND hosts active experiences with repeat visitors?",
+            "What revenue do creators and landowners earn from productive use?",
+            "How concentrated is ownership and how much inventory is inactive?",
+            "What are current primary sell-through, resale liquidity, and operating profitability?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-10-29",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "sandbox-whitepaper", "title": "The Sandbox Whitepaper 2020", "url": "https://installers.sandbox.game/The_Sandbox_Whitepaper_2020.pdf", "checked_at": "2026-07-29"},
+        {"id": "sandbox-value", "title": "What Makes The Sandbox LAND Valuable?", "url": "https://www.sandbox.game/en/blog/what-makes-the-sandbox-land-valuable/3282/", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; retained as prior-reviewed supply and utility evidence."},
+        {"id": "sandbox-open", "title": "The Metaverse Is Now Open", "url": "https://www.sandbox.game/en/blog/the-metaverse-is-now-open/3384", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; retained as prior-reviewed publishing evidence."},
+        {"id": "sandbox-faq", "title": "LAND Owner FAQs", "url": "https://docs.sandbox.game/en/owners/land/faqs", "checked_at": "2026-07-29"},
+        {"id": "sandbox-sale", "title": "The Sandbox Current LAND Sale", "url": "https://www.sandbox.game/en/landsale/", "checked_at": "2026-07-29", "access_state": "bot_blocked", "verification_note": "Automated GET returned HTTP 403 on 2026-07-29; current use is bounded to the previously reviewed operator sale surface."},
+        {"id": "sandbox-team", "title": "The Sandbox Team", "url": "https://docs.sandbox.game/en/about/about-the-sandbox/the-sandbox-team", "checked_at": "2026-07-29"}
+      ]
+    },
+    {
+      "slug": "twelvefold",
+      "status": "unknown",
+      "profile": {
+        "token_model": {
+          "finding": "No separate token or continuing holder revenue right is established. TwelveFold is a 300-piece Bitcoin generative-art collection; its documented follow-on utility was a finite puzzle series with BTC prizes.",
+          "boundary": "Yuga Labs' portfolio listing and historical puzzle prizes do not establish recurring current utility or market health.",
+          "source_ids": ["twelvefold-launch", "twelvefold-auction", "twelvefold-about"]
+        },
+        "chain_dependence": {
+          "finding": "TwelveFold deliberately uses Bitcoin Ordinals rather than Yuga Labs' Ethereum collection stack. Bitcoin preserves the inscriptions, while auctions, puzzles, discovery, and holder communication depend on operator surfaces.",
+          "source_ids": ["twelvefold-launch", "twelvefold-auction", "twelvefold-about"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "unclassified",
+            "scope": "current TwelveFold lifecycle; launch, supply, auction, and creator provenance remain established",
+            "summary": "Yuga Labs still lists TwelveFold and its 300 Bitcoin inscriptions, but no fresh source establishes recurring operations, holder programs, or current market depth.",
+            "confidence": "high",
+            "as_of": "2023-02-27",
+            "source_refs": ["twelvefold-launch", "twelvefold-about"]
+          },
+          "why": {
+            "summary": "Observed: Yuga launched a scarce 300-piece Bitcoin generative collection, auctioned 288 items, reserved 12, and later ran a finite BTC-prize puzzle series. Inference withheld: institutional provenance and a portfolio listing cannot determine the current lifecycle without dated operating or market evidence.",
+            "basis": "historical operator evidence; current outcome beyond unclassified is withheld",
+            "confidence": "high",
+            "source_refs": ["twelvefold-launch", "twelvefold-auction", "twelvefold-about"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Limit the collection to 300 generative Bitcoin inscriptions.",
+              "intended_mechanism": "Create a highly scarce, institutionally stewarded Ordinals art series.",
+              "consequence": "TwelveFold gained a clear art-and-provenance thesis, while the small supply can also produce thin observable markets.",
+              "confidence": "high",
+              "source_refs": ["twelvefold-launch", "twelvefold-auction"]
+            },
+            {
+              "decision": "Use Bitcoin Ordinals instead of extending Yuga's Ethereum collection ecosystem.",
+              "intended_mechanism": "Explore Bitcoin-native generative art as a separate creative system.",
+              "consequence": "The collection differentiated technically and culturally, while foregoing direct integration with Yuga's established Ethereum utilities.",
+              "confidence": "high",
+              "source_refs": ["twelvefold-launch"]
+            },
+            {
+              "decision": "Distribute 288 works by auction and reserve 12 for contributors, donations, and philanthropy.",
+              "intended_mechanism": "Use price discovery while retaining a small institutional allocation.",
+              "consequence": "The launch produced a defined allocation, but auction success does not establish lasting collector demand.",
+              "confidence": "high",
+              "source_refs": ["twelvefold-auction"]
+            },
+            {
+              "decision": "Follow the art release with a 13-puzzle BTC-prize series.",
+              "intended_mechanism": "Add a participatory layer tied to the collection's visual system.",
+              "consequence": "The puzzles created documented engagement, but no current recurring program is evidenced.",
+              "confidence": "high",
+              "source_refs": ["twelvefold-launch"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "A recurring exhibition, puzzle cadence, or holder program could establish continuing operation; deeper integration with Yuga's existing ecosystem could improve distribution while weakening TwelveFold's standalone Bitcoin thesis.",
+            "limits": "No current participation, holder communication, market-depth, or program roadmap is available.",
+            "confidence": "low",
+            "source_refs": ["twelvefold-launch", "twelvefold-about"]
+          },
+          "watch": [
+            {
+              "signal": "Yuga publishes a dated TwelveFold exhibition, puzzle, holder program, or product update.",
+              "implication": "Fresh recurring activity could move the case out of unclassified.",
+              "source_refs": ["twelvefold-launch", "twelvefold-about"]
+            },
+            {
+              "signal": "Reproducible holder concentration, transfer frequency, and bid depth become available.",
+              "implication": "Market cohorts would distinguish scarce institutional art from an inactive archive.",
+              "source_refs": ["twelvefold-auction", "twelvefold-about"]
+            }
+          ],
+          "unknowns": [
+            "Does Yuga Labs have an active TwelveFold roadmap or assigned operating team?",
+            "How many holders participate in any current collection program?",
+            "What current sale frequency, bid depth, and ownership concentration exist?",
+            "Will puzzle, exhibition, licensing, or other utility recur?"
+          ],
+          "review": {
+            "status": "needs_review",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-08-29",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "twelvefold-launch", "title": "Yuga Labs — TwelveFold Puzzles and collection background", "url": "https://news.yuga.com/twelvefold", "checked_at": "2026-07-29", "access_state": "redirected_to_homepage", "verification_note": "Automated GET redirected to yuga.com on 2026-07-29; retained only as prior-reviewed historical evidence, not a current-state source."},
+        {"id": "twelvefold-auction", "title": "Yuga Labs — The TwelveFold Auction", "url": "https://news.yuga.com/twelvefold-auction-details", "checked_at": "2026-07-29", "access_state": "redirected_to_homepage", "verification_note": "Automated GET redirected to yuga.com on 2026-07-29; retained only as prior-reviewed historical auction evidence."},
+        {"id": "twelvefold-about", "title": "Yuga Labs — Current collections portfolio", "url": "https://yuga.com/about/", "checked_at": "2026-07-29"}
+      ]
+    },
+    {
+      "slug": "world-of-women",
+      "status": "middling",
+      "profile": {
+        "token_model": {
+          "finding": "No separate collection token or unconditional revenue right is established. Value is tied to the original 10,000 avatars, the separate 22,222-item Galaxy series, community identity, events, and Patio tooling.",
+          "boundary": "Community programs and IP recognition do not establish NFT liquidity, royalty revenue, or company profitability.",
+          "source_ids": ["wow-home", "wow-about", "wow-community", "wow-patio"]
+        },
+        "chain_dependence": {
+          "finding": "Ethereum secures collection ownership, while Patio profiles, discovery, customization, events, and team-led programs provide the social layer. Provenance can survive operator loss, but much of the community product cannot.",
+          "source_ids": ["wow-home", "wow-community", "wow-patio"]
+        },
+        "forensic_analysis": {
+          "version": "forensic-analysis-v1",
+          "outcome": {
+            "label": "middling",
+            "scope": "World of Women collection and current community-product operation, not market value",
+            "summary": "World of Women retains its original collection, global community programs, Patio tooling, and a rebuilt operating team, while current adoption, liquidity, and business economics remain unproven.",
+            "confidence": "high",
+            "as_of": "2026-07-28",
+            "source_refs": ["wow-about", "wow-community", "wow-patio"]
+          },
+          "why": {
+            "summary": "Observed: the project built a representation-led identity, expanded through Galaxy, maintained events and Patio, and explicitly rebuilt its team. Inference: community differentiation and product continuity prevent a terminal outcome, while the rebuild itself signals prior execution weakness and present recovery risk.",
+            "basis": "operator history and current community products; market-demand causality withheld",
+            "confidence": "medium",
+            "source_refs": ["wow-home", "wow-about", "wow-community", "wow-patio"]
+          },
+          "strategic_choices": [
+            {
+              "decision": "Anchor the brand in a fixed 10,000-avatar collection centered on representation.",
+              "intended_mechanism": "Create a recognizable identity and community underserved by earlier PFP brands.",
+              "consequence": "World of Women gained a durable cultural position, while cultural recognition alone could not guarantee operating or market success.",
+              "confidence": "high",
+              "source_refs": ["wow-home", "wow-about"]
+            },
+            {
+              "decision": "Expand through a separate 22,222-avatar Galaxy series.",
+              "intended_mechanism": "Broaden participation and extend the IP family.",
+              "consequence": "The brand reached more holders while increasing supply, segmentation, and cross-collection coordination risk.",
+              "confidence": "high",
+              "source_refs": ["wow-home"]
+            },
+            {
+              "decision": "Build Patio for profiles, discovery, customization, and community events.",
+              "intended_mechanism": "Give ownership a maintained social-product layer.",
+              "consequence": "Patio creates utility beyond display, while adding operator hosting, adoption, and moderation dependencies.",
+              "confidence": "high",
+              "source_refs": ["wow-patio", "wow-community"]
+            },
+            {
+              "decision": "Rebuild the team and frame 2026 as a new operating era.",
+              "intended_mechanism": "Reset execution and restore delivery capacity.",
+              "consequence": "The rebuild demonstrates adaptation, but also makes future delivery and trust recovery the decisive tests.",
+              "confidence": "high",
+              "source_refs": ["wow-about"]
+            }
+          ],
+          "counterfactual": {
+            "summary": "Remaining a single static collection would have protected focus but left the project with less social utility. Expansion and Patio can deepen community use, while additional supply and product overhead may dilute attention if the rebuilt team cannot sustain delivery.",
+            "limits": "Patio cohorts, event retention, collection overlap, revenue, and liquidity are unavailable.",
+            "confidence": "medium",
+            "source_refs": ["wow-home", "wow-about", "wow-patio"]
+          },
+          "watch": [
+            {
+              "signal": "The rebuilt team ships dated products and community programs on schedule.",
+              "implication": "Consistent delivery would support recovery; repeated resets would increase execution risk.",
+              "source_refs": ["wow-about"]
+            },
+            {
+              "signal": "Patio active use, profile creation, and event participation become reproducible.",
+              "implication": "Repeat use would validate the social-product layer beyond collection ownership.",
+              "source_refs": ["wow-patio", "wow-community"]
+            },
+            {
+              "signal": "Original and Galaxy holder overlap, retention, and liquidity become available.",
+              "implication": "These would show whether expansion broadened or fragmented the community.",
+              "source_refs": ["wow-home"]
+            }
+          ],
+          "unknowns": [
+            "How many members actively use Patio or attend recurring community programs?",
+            "How much overlap and retention exist between the original and Galaxy collections?",
+            "What are current holder concentration, bid depth, royalty receipts, and liquidity?",
+            "What revenue, staffing, and runway support the rebuilt operating team?"
+          ],
+          "review": {
+            "status": "current",
+            "last_reviewed_at": "2026-07-29",
+            "next_review_at": "2026-10-29",
+            "reviewer": "chaindump-research-desk"
+          }
+        }
+      },
+      "sources": [
+        {"id": "wow-home", "title": "World of Women — official collections", "url": "https://www.worldofwomen.xyz/", "checked_at": "2026-07-29"},
+        {"id": "wow-about", "title": "About World of Women — milestones and current leadership", "url": "https://www.worldofwomen.xyz/about", "checked_at": "2026-07-29"},
+        {"id": "wow-community", "title": "World of Women Community", "url": "https://www.worldofwomen.xyz/community", "checked_at": "2026-07-29"},
+        {"id": "wow-patio", "title": "Patio by World of Women", "url": "https://patio.worldofwomen.xyz/", "checked_at": "2026-07-29", "access_state": "service_unavailable", "verification_note": "Automated GET returned HTTP 503 on 2026-07-29; retained as prior-reviewed product evidence and not treated as independent current usage verification."}
+      ]
+    }
+  ]
+}
