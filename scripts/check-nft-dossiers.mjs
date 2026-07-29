@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateFieldCitedNft } from '../src/lib/nft-citation.mjs';
+import { validateForensicFreshness } from '../src/lib/evidence-freshness.mjs';
 
 const rootDir = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const requestedPath = process.argv[2] || 'docs/nft-citation-wave-2026-07-29.json';
@@ -16,6 +17,8 @@ if (!Array.isArray(document.dossiers) || !document.dossiers.length) errors.push(
 for (const dossier of document.dossiers || []) {
   const result = validateFieldCitedNft(dossier.profile, dossier.sources);
   if (!result.valid) errors.push(`${dossier.slug}: ${result.errors.join('; ')}`);
+  const freshness = validateForensicFreshness(dossier);
+  if (!freshness.valid) errors.push(`${dossier.slug} freshness: ${freshness.errors.join('; ')}`);
   for (const source of dossier.sources || []) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(source.checked_at || '')) errors.push(`${dossier.slug}: source ${source.id} needs checked_at`);
   }

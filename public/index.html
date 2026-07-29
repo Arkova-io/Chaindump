@@ -729,7 +729,7 @@ function srcHtml(sources, label) {
 // New NFT/Ordinals dossiers use a field-level evidence ledger.  Keep the
 // older source list visible, but never imply that legacy prose has this
 // stronger provenance model.
-function nftEvidenceHtml(profile, sources) {
+function nftEvidenceHtml(profile, sources, freshnessState) {
   if (!profile || profile.citation_schema !== 'field-v1' || !Array.isArray(profile.evidence)) return '';
   let all; try { all = typeof sources === 'string' ? JSON.parse(sources) : sources; } catch (e) { return ''; }
   if (!Array.isArray(all)) return '';
@@ -739,12 +739,25 @@ function nftEvidenceHtml(profile, sources) {
     const links = item.source_ids.map((id) => {
       const source = byId.get(id);
       if (!source || !source.url) return '';
-      return `<a href="${esc(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title || id)} ↗</a>`;
+      const sourceDate = source.source_date || 'unknown';
+      const verified = source.last_verified_at || source.checked_at || 'unknown';
+      const today = new Date().toISOString().slice(0, 10);
+      const stale = source.stale === true || (source.evidence_scope === 'current_state' && source.stale_after && today > source.stale_after);
+      const freshness = typeof source.stale === 'boolean' ? (stale ? 'STALE' : 'fresh') : 'freshness not rated';
+      return `<a href="${esc(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title || id)} ↗</a><span class="muted"> · source ${esc(sourceDate)} · verified ${esc(verified)} · ${esc(freshness)}</span>`;
     }).filter(Boolean).join(' · ');
     if (!links) return '';
-    return `<div class="gfield"><span class="gfl">${esc(item.field.replaceAll('_',' '))}</span> ${esc(String(item.value))}<span class="muted"> · as of ${esc(item.as_of || '—')} · ${esc(item.basis || 'source')}</span><div class="asrc">Cited evidence: ${links}</div></div>`;
+    const value = item.field === 'lifecycle_status' && freshnessState?.statusWithheld ? 'unknown — evidence review required' : item.value;
+    return `<div class="gfield"><span class="gfl">${esc(item.field.replaceAll('_',' '))}</span> ${esc(String(value))}<span class="muted"> · as of ${esc(item.as_of || '—')} · ${esc(item.basis || 'source')}</span><div class="asrc">Cited evidence: ${links}</div></div>`;
   }).filter(Boolean).join('');
   return rows ? `<div class="gsec">Field-level evidence</div>${rows}` : '';
+}
+
+function nftFreshnessHtml(profile, derived) {
+  const policy = profile && profile.evidence_policy;
+  if (!policy || policy.schema !== 'forensic-freshness-v1') return '';
+  const state = derived?.statusWithheld ? 'STALE · status withheld' : derived?.reviewOverdue ? 'review overdue' : 'current';
+  return `<div class="gfield"><span class="gfl">Evidence freshness</span> ${esc(state)}<span class="muted"> · basis ${esc(policy.status_basis || '—')} · status evidence ${esc(policy.status_as_of || '—')} · verified ${esc(policy.last_verified_at || '—')} · review by ${esc(policy.next_review_at || '—')}</span></div>`;
 }
 
 function parsedObject(value) {
@@ -2634,7 +2647,8 @@ function renderNft(data){
       ${p.benefits?`<div class="gsec">Holder benefits / products</div>${proseBox(p.benefits)}`:''}
       ${p.business?`<div class="gsec">Real-world business — product · distribution · strengths &amp; weaknesses</div>${proseBox(p.business)}`:''}
       ${p.analysis?`<div class="gsec">Lifecycle read</div>${proseBox(p.analysis)}`:''}
-      ${nftEvidenceHtml(p, c.sources)}
+      ${nftFreshnessHtml(p, c.freshness)}
+      ${nftEvidenceHtml(p, c.sources, c.freshness)}
       ${sources}
     </div>` : '';
     return `<div class="gcard ${open?'open':''}" role="button" tabindex="0" data-slug="${esc(c.slug)}">

@@ -49,6 +49,9 @@ describe('NFT / Ordinals citation-ready surface', () => {
   it('has a visible field-level evidence renderer and an honest legacy coverage caveat', () => {
     const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
     expect(html).toContain('function nftEvidenceHtml');
+    expect(html).toContain('function nftFreshnessHtml');
+    expect(html).toContain('Evidence freshness');
+    expect(html).toContain('source ${esc(sourceDate)} · verified ${esc(verified)}');
     expect(html).toContain('Field-level evidence');
     expect(html).toContain('Evidence coverage:');
     expect(html).toContain('legacy dossier');
