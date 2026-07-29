@@ -84,10 +84,32 @@ describe('checkMigrationsDir', () => {
 
     expect(errors).toEqual([]);
   });
+
+  it('flags TEMP staging tables that Cloudflare D1 rejects remotely', () => {
+    write(
+      '0001_temp_table.sql',
+      'CREATE TEMP TABLE migration_stage (id INTEGER);\nDROP TABLE migration_stage;',
+    );
+
+    const { errors } = checkMigrationsDir(dir);
+
+    expect(errors).toEqual([expect.stringContaining('CREATE TEMP TABLE')]);
+  });
+
+  it('accepts a normal staging table bracketed by DROP statements', () => {
+    write(
+      '0001_staging_table.sql',
+      'DROP TABLE IF EXISTS migration_stage;\nCREATE TABLE migration_stage (id INTEGER);\nDROP TABLE migration_stage;',
+    );
+
+    const { errors } = checkMigrationsDir(dir);
+
+    expect(errors).toEqual([]);
+  });
 });
 
 describe('the real migrations/ directory', () => {
-  it('has no numbering gaps and no BEGIN TRANSACTION / COMMIT; text anywhere, including 0007', () => {
+  it('has no numbering gaps, forbidden transaction text, or D1-incompatible TEMP tables', () => {
     const { errors } = checkMigrationsDir('migrations');
 
     expect(errors).toEqual([]);

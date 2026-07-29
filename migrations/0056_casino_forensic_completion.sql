@@ -2,7 +2,7 @@
 -- The temporary table makes the four completion updates deterministic and replay-safe.
 
 DROP TABLE IF EXISTS casino_forensic_completion_0056;
-CREATE TEMP TABLE casino_forensic_completion_0056 (
+CREATE TABLE casino_forensic_completion_0056 (
   case_id TEXT PRIMARY KEY,
   analysis TEXT NOT NULL CHECK (json_valid(analysis))
 );
