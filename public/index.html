@@ -1034,9 +1034,13 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
   if (row.primaryChain) venueContext.push(row.primaryChain);
   fields.push(
     `<div class="gfield"><span class="gfl">Venue</span> ${venueContext.map(esc).join(' · ')}</div>`,
+    `<div class="gfield"><span class="gfl">Observed status</span> ${esc(exchangeLabel(row.status || 'unknown'))}</div>`,
     `<div class="gfield"><span class="gfl">Product cohort</span> ${esc(exchangeLabel(row.productCohort))}</div>`,
     `<div class="gfield"><span class="gfl">Token</span> ${tokenLine}</div>`,
   );
+  const deployments = Array.isArray(row.analysis?.chains) ? row.analysis.chains.filter(Boolean) : [];
+  if (deployments.length) fields.push(`<div class="gfield"><span class="gfl">Deployment context</span> ${esc(deployments.join(' · '))}</div>`);
+  if (row.token?.launch_date) fields.push(`<div class="gfield"><span class="gfl">Token launch</span> ${esc(row.token.launch_date)}</div>`);
   const metricContract = [row.metricType, row.metricUnit, exchangeLabel(row.metricWindow)];
   if (row.metricAsOf) metricContract.push(`as of ${row.metricAsOf}`);
   metricContract.push(row.metricObservedAt ? `observed ${row.metricObservedAt}` : 'observation time unknown');

@@ -74,6 +74,9 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('observation time unknown');
     expect(html).toContain('lifecycle evidence');
     expect(html).toContain('next review');
+    expect(html).toContain('Observed status');
+    expect(html).toContain('Deployment context');
+    expect(html).toContain('Token launch');
     expect(html).toContain("String(row.metricUnit || '').toLowerCase()");
   });
 
