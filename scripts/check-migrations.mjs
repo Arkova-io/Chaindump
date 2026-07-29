@@ -30,18 +30,56 @@ import { pathToFileURL } from 'node:url';
 
 const TRANSACTION_TEXT_RE = /\bBEGIN\s+TRANSACTION\b|\bCOMMIT\s*;/i;
 const TEMP_TABLE_RE = /\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i;
-const SQL_TOKEN_RE = /'(?:''|[^'])*'|--[^\r\n]*(?:\r?\n|$)|\/\*[\s\S]*?\*\/|;/g;
+const SQL_TOKEN_RE = /'(?:''|[^'])*'|"(?:""|[^"])*"|`(?:``|[^`])*`|\[[^\]]*\]|--[^\r\n]*(?:\r?\n|$)|\/\*[\s\S]*?\*\/|[A-Za-z_][A-Za-z0-9_]*|;/g;
+const SQL_WORD_RE = /^[A-Za-z_][A-Za-z0-9_]*$/;
 export const MAX_D1_STATEMENT_BYTES = 95_000;
+
+function beginsTrigger(prefixWords) {
+  return (
+    prefixWords[0] === 'CREATE'
+    && (
+      prefixWords[1] === 'TRIGGER'
+      || (
+        ['TEMP', 'TEMPORARY'].includes(prefixWords[1])
+        && prefixWords[2] === 'TRIGGER'
+      )
+    )
+  );
+}
+
+function nextTriggerState(state, word) {
+  if (!state.active) return state;
+  if (!state.bodyStarted) {
+    return word === 'BEGIN' ? { ...state, bodyStarted: true, depth: 1 } : state;
+  }
+  if (word === 'BEGIN' || word === 'CASE') return { ...state, depth: state.depth + 1 };
+  if (word === 'END') return { ...state, depth: Math.max(0, state.depth - 1) };
+  return state;
+}
 
 export function sqlStatementByteLengths(sql) {
   const lengths = [];
   let statementStart = 0;
+  let prefixWords = [];
+  let trigger = { active: false, bodyStarted: false, depth: 0 };
 
   for (const match of sql.matchAll(SQL_TOKEN_RE)) {
-    if (match[0] !== ';') continue;
+    const token = match[0];
+    if (SQL_WORD_RE.test(token)) {
+      const word = token.toUpperCase();
+      if (prefixWords.length < 3) prefixWords.push(word);
+      if (beginsTrigger(prefixWords)) trigger = { ...trigger, active: true };
+      trigger = nextTriggerState(trigger, word);
+      continue;
+    }
+    if (token !== ';' || (trigger.active && (!trigger.bodyStarted || trigger.depth > 0))) {
+      continue;
+    }
     const statementEnd = match.index + 1;
     lengths.push(Buffer.byteLength(sql.slice(statementStart, statementEnd), 'utf8'));
     statementStart = statementEnd;
+    prefixWords = [];
+    trigger = { active: false, bodyStarted: false, depth: 0 };
   }
 
   if (sql.slice(statementStart).trim()) {

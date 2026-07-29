@@ -149,6 +149,34 @@ describe('checkMigrationsDir', () => {
 
     expect(lengths).toHaveLength(2);
   });
+
+  it('counts a trigger body as one D1 statement despite internal semicolons', () => {
+    const trigger = `
+CREATE TRIGGER audit_insert AFTER INSERT ON t
+BEGIN
+  INSERT INTO audit VALUES ('one;still-string');
+  INSERT INTO audit VALUES (CASE WHEN NEW.id > 0 THEN 'yes' ELSE 'no' END);
+END;
+SELECT 1;`;
+
+    expect(sqlStatementByteLengths(trigger)).toHaveLength(2);
+  });
+
+  it('rejects an oversized trigger as one complete D1 statement', () => {
+    const payload = 'x'.repeat(900);
+    const body = Array.from(
+      { length: 110 },
+      () => `  INSERT INTO audit VALUES ('${payload}');`,
+    ).join('\n');
+    write(
+      '0001_oversized_trigger.sql',
+      `CREATE TRIGGER audit_insert AFTER INSERT ON t\nBEGIN\n${body}\nEND;`,
+    );
+
+    expect(checkMigrationsDir(dir).errors).toEqual([
+      expect.stringContaining('SQLITE_TOOBIG'),
+    ]);
+  });
 });
 
 describe('the real migrations/ directory', () => {
