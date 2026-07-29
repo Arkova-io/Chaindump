@@ -33,8 +33,8 @@ describe('casino evidence-depth Wave B preparation', () => {
         sources: 41,
         reviewed_sources: 41,
         access_debt: 0,
-        reviewed_claims: 38,
-        partially_reviewed_claims: 17,
+        reviewed_claims: 34,
+        partially_reviewed_claims: 21,
         unresolved_claims: 5,
       },
     });
@@ -61,7 +61,22 @@ describe('casino evidence-depth Wave B preparation', () => {
     const unsupportedCausalClaim = structuredClone(document);
     unsupportedCausalClaim.cases[0].claims.why.review_state = 'reviewed';
     expect(validateArtifact(unsupportedCausalClaim).errors).toContain(
-      'bitstarz-dot-com/why: reviewed causal claim needs authority or two independence groups',
+      'bitstarz-dot-com/why: reviewed causal claim needs tier-A authority, tier-A/B independent evidence, or two independent tier-C origins',
+    );
+
+    const dataIsNotAuthority = structuredClone(document);
+    const betswirl = dataIsNotAuthority.cases.find(
+      (entry) => entry.dossier_id === 'betswirl-onchain-casino',
+    );
+    betswirl.claims.why.review_state = 'reviewed';
+    expect(validateArtifact(dataIsNotAuthority).errors).toContain(
+      'betswirl-onchain-casino/why: reviewed causal claim needs tier-A authority, tier-A/B independent evidence, or two independent tier-C origins',
+    );
+
+    const invalidCalendarDate = structuredClone(document);
+    invalidCalendarDate.cases[0].review.reviewed_at = '2026-02-31T20:30:00-04:00';
+    expect(validateArtifact(invalidCalendarDate).errors).toContain(
+      'bitstarz-dot-com: reviewed_at is not an ISO timestamp',
     );
   });
 

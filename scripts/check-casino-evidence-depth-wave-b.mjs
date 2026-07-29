@@ -31,11 +31,43 @@ export const REQUIRED_CLAIM_TOPICS = [
 const REVIEW_STATES = new Set(['reviewed', 'partially_reviewed', 'unresolved']);
 const CONFIDENCE_LEVELS = new Set(['low', 'medium', 'high']);
 const ACCESS_STATES = new Set(['accessible', 'blocked', 'removed', 'unknown']);
+const SOURCE_ROLES = new Set(['authority', 'independent', 'primary', 'data']);
 const REVIEWER = 'codex-research-agent';
 const AS_OF = '2026-07-29';
+const ISO_TIMESTAMP = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
 
 function add(errors, condition, message) {
   if (!condition) errors.push(message);
+}
+
+function isSemanticIsoTimestamp(value) {
+  const match = ISO_TIMESTAMP.exec(String(value ?? ''));
+  if (!match || Number.isNaN(Date.parse(value))) return false;
+  const [, year, month, day, hour, minute, second] = match.map(Number);
+  const calendar = new Date(Date.UTC(year, month - 1, day, hour, minute, second));
+  return calendar.getUTCFullYear() === year
+    && calendar.getUTCMonth() + 1 === month
+    && calendar.getUTCDate() === day
+    && calendar.getUTCHours() === hour
+    && calendar.getUTCMinutes() === minute
+    && calendar.getUTCSeconds() === second;
+}
+
+function hasIndependentCausalSupport(sources) {
+  const authority = sources.some((source) => (
+    source.source_tier === 'A' && source.source_role === 'authority'
+  ));
+  const strongIndependent = sources.some((source) => (
+    (source.source_tier === 'A' || source.source_tier === 'B')
+      && source.source_role === 'independent'
+  ));
+  const independentTierC = new Set(sources
+    .filter((source) => (
+      source.source_tier === 'C' && source.source_role === 'independent'
+    ))
+    .map((source) => source.independence_group)
+    .filter(Boolean));
+  return authority || strongIndependent || independentTierC.size >= 2;
 }
 
 export function readArtifact() {
@@ -106,8 +138,7 @@ export function validateArtifact(document) {
     add(errors, dossier.review?.reviewer === REVIEWER, `${prefix}: reviewer is missing`);
     add(
       errors,
-      typeof dossier.review?.reviewed_at === 'string'
-        && !Number.isNaN(Date.parse(dossier.review.reviewed_at)),
+      isSemanticIsoTimestamp(dossier.review?.reviewed_at),
       `${prefix}: reviewed_at is not an ISO timestamp`,
     );
     add(
@@ -134,7 +165,11 @@ export function validateArtifact(document) {
       sources.set(source.id, source);
       add(errors, /^https:\/\//.test(source.url ?? ''), `${prefix}/${source.id}: invalid URL`);
       add(errors, /^[A-D]$/.test(source.source_tier ?? ''), `${prefix}/${source.id}: invalid tier`);
-      add(errors, Boolean(source.source_role), `${prefix}/${source.id}: role is missing`);
+      add(
+        errors,
+        SOURCE_ROLES.has(source.source_role),
+        `${prefix}/${source.id}: invalid source role`,
+      );
       add(
         errors,
         Boolean(source.independence_group),
@@ -170,8 +205,7 @@ export function validateArtifact(document) {
         );
         add(
           errors,
-          typeof source.evidence_reviewed_at === 'string'
-            && !Number.isNaN(Date.parse(source.evidence_reviewed_at)),
+          isSemanticIsoTimestamp(source.evidence_reviewed_at),
           `${prefix}/${source.id}: reviewed source needs an ISO review timestamp`,
         );
       } else {
@@ -254,16 +288,10 @@ export function validateArtifact(document) {
       }
 
       if (topic === 'why' && claim.review_state === 'reviewed') {
-        const independenceGroups = new Set(
-          referencedSources.map((source) => source.independence_group),
-        );
-        const hasAuthority = referencedSources.some(
-          (source) => source.source_tier === 'A' || source.source_role === 'authority',
-        );
         add(
           errors,
-          hasAuthority || independenceGroups.size >= 2,
-          `${claimPrefix}: reviewed causal claim needs authority or two independence groups`,
+          hasIndependentCausalSupport(referencedSources),
+          `${claimPrefix}: reviewed causal claim needs tier-A authority, tier-A/B independent evidence, or two independent tier-C origins`,
         );
       }
     }

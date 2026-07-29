@@ -177,7 +177,7 @@
           "publisher": "DefiLlama",
           "url": "https://defillama.com/protocol/sx-bet?events=false&fees=true&tvl=false",
           "source_tier": "B",
-          "source_role": "independent_data",
+          "source_role": "data",
           "independence_group": "defillama_adapter",
           "access_state": "accessible",
           "access_method": "indexed_browser_review",
@@ -230,7 +230,7 @@
           "as_of": "2026-07-29",
           "source_ids": ["sx-defillama-current", "sx-terms-token-sunset", "sx-overview-current"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "strategic_choices": {
           "value": [
@@ -294,7 +294,7 @@
           "publisher": "DefiLlama",
           "url": "https://defillama.com/protocol/azuro?earnings=true&events=false&tvl=false",
           "source_tier": "B",
-          "source_role": "independent_data",
+          "source_role": "data",
           "independence_group": "defillama_adapter",
           "access_state": "accessible",
           "access_method": "indexed_browser_review",
@@ -362,7 +362,7 @@
           "as_of": "2026-07-29",
           "source_ids": ["azuro-defillama-current", "azuro-introduction", "azuro-liquidity-provider-risk"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "strategic_choices": {
           "value": [
@@ -441,7 +441,7 @@
           "publisher": "bustabit",
           "url": "https://stats.bustabit.com/v2/bankroll_stats.csv",
           "source_tier": "B",
-          "source_role": "primary_data",
+          "source_role": "primary",
           "independence_group": "bustabit_operator",
           "access_state": "accessible",
           "access_method": "direct_csv_review",
@@ -456,7 +456,7 @@
           "publisher": "UNLV Gaming Research & Review Journal",
           "url": "https://oasis.library.unlv.edu/grrj/vol30/iss1/1/",
           "source_tier": "B",
-          "source_role": "independent_academic",
+          "source_role": "independent",
           "independence_group": "unlv_peer_reviewed_research",
           "access_state": "accessible",
           "access_method": "indexed_browser_review",
@@ -805,7 +805,7 @@
           "publisher": "DefiLlama",
           "url": "https://defillama.com/protocol/overtime?treasury=true&tvl=false",
           "source_tier": "B",
-          "source_role": "independent_data",
+          "source_role": "data",
           "independence_group": "defillama",
           "access_state": "accessible",
           "access_method": "browser_review",
@@ -873,7 +873,7 @@
           "as_of": "2026-07-29",
           "source_ids": ["overtime-defillama-current", "overtime-trading-guidelines"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "strategic_choices": {
           "value": [
@@ -982,7 +982,7 @@
           "publisher": "L2BEAT",
           "url": "https://l2beat.com/scaling/projects/winr",
           "source_tier": "B",
-          "source_role": "independent_technical",
+          "source_role": "independent",
           "independence_group": "l2beat",
           "access_state": "accessible",
           "access_method": "browser_review",
@@ -997,7 +997,7 @@
           "publisher": "Paladin Blockchain Security",
           "url": "https://paladinsec.co/assets/audits/20230303_Paladin_WINRWhitelistPool_Final_Report.pdf",
           "source_tier": "B",
-          "source_role": "security_research",
+          "source_role": "independent",
           "independence_group": "paladin_security",
           "access_state": "accessible",
           "access_method": "pdf_review",
@@ -1145,7 +1145,7 @@
           "publisher": "CoinCheckup",
           "url": "https://coincheckup.com/blog/betfury-review-crypto-casino-with-custom-token-and-extensive-rewards",
           "source_tier": "C",
-          "source_role": "independent_trade",
+          "source_role": "independent",
           "independence_group": "coincheckup",
           "access_state": "accessible",
           "access_method": "browser_review",
@@ -1232,7 +1232,7 @@
           "publisher": "DefiLlama",
           "url": "https://defillama.com/protocol/betswirl?treasury=true&tvl=false",
           "source_tier": "B",
-          "source_role": "independent_data",
+          "source_role": "data",
           "independence_group": "defillama",
           "access_state": "accessible",
           "access_method": "browser_review",
@@ -1277,7 +1277,7 @@
           "publisher": "Paladin Blockchain Security",
           "url": "https://paladinsec.co/assets/audits/20241029_Paladin_BetswirlPvPWheel_Final_Report.pdf",
           "source_tier": "B",
-          "source_role": "security_research",
+          "source_role": "independent",
           "independence_group": "paladin_security",
           "access_state": "accessible",
           "access_method": "pdf_review",
@@ -1292,7 +1292,7 @@
           "publisher": "BscScan",
           "url": "https://bscscan.com/address/0xaa4d2931a9fe14c3dec8ac3f12923cbb535c0e5f",
           "source_tier": "A",
-          "source_role": "onchain_data",
+          "source_role": "data",
           "independence_group": "bscscan",
           "access_state": "accessible",
           "access_method": "browser_review",
@@ -1315,7 +1315,7 @@
           "as_of": "2026-07-29",
           "source_ids": ["betswirl-defillama-current", "betswirl-contracts", "betswirl-bscscan-current"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "strategic_choices": {
           "value": [
