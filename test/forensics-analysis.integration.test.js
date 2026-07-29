@@ -45,25 +45,33 @@ describe('Forensics analysis navigation', () => {
 });
 
 describe('DEX/CEX Analysis data surface', () => {
-  it('loads successful, mid, and dead cohorts for both venue types', () => {
-    for (const kind of ['dex', 'cex']) {
-      expect(html).toContain(`/api/successful-exchanges?kind=${kind}`);
-      expect(html).toContain(`/api/mid-exchanges?kind=${kind}`);
-      expect(html).toContain(`/api/dead-exchanges?kind=${kind}`);
-    }
+  it('loads normalized lifecycle cohorts for both venue types', () => {
+    expect(html).toContain('/api/exchange-analysis?kind=${kind}');
+    expect(html).toContain("['dex', 'cex'].map(fetchExchangeAnalysisKind)");
   });
 
-  it('provides search, venue, lifecycle, sort, and visible source controls', () => {
+  it('provides search, venue, lifecycle, cohort, quality, sort, and visible source controls', () => {
     expect(html).toContain('id="exchangeAnalysisSearch"');
     expect(html).toContain("filterButton('data-exchange-kind','dex'");
     expect(html).toContain("filterButton('data-exchange-lifecycle','successful'");
+    expect(html).toContain('id="exchangeAnalysisCohort"');
+    expect(html).toContain('id="exchangeAnalysisQuality"');
     expect(html).toContain('id="exchangeAnalysisSort"');
     expect(html).toContain('Cited sources');
   });
 
-  it('reads nested token metadata and case-normalizes metric units', () => {
-    expect(html).toContain('p.token_symbol || token.symbol || token.ticker');
-    expect(html).not.toContain('analysisText(p.token_symbol || p.token)');
+  it('renders normalized token, comparison, provenance, and quality metadata', () => {
+    expect(html).toContain('token.launch_timing');
+    expect(html).toContain('row.comparisonKey');
+    expect(html).toContain('row.metricAsOf');
+    expect(html).toContain('row.qualityIssues');
+    expect(html).toContain('operating_model_source_indexes');
+    expect(html).toContain('metric_source_indexes');
+    expect(html).toContain('custody_model_source_indexes');
+    expect(html).toContain('product_cohort_source_indexes');
+    expect(html).toContain('observation time unknown');
+    expect(html).toContain('lifecycle evidence');
+    expect(html).toContain('next review');
     expect(html).toContain("String(row.metricUnit || '').toLowerCase()");
   });
 });

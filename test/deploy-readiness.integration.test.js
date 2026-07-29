@@ -25,7 +25,7 @@ describe('production deployment readiness', () => {
     expect(deployWorkflow).toContain('BUILD_SHA:${GITHUB_SHA}');
     expect(releaseSurface).toContain('/api/health');
     expect(releaseSurface).toContain('/api/chains');
-    expect(releaseSurface).toContain('/api/successful-exchanges?kind=dex');
+    expect(releaseSurface).toContain('/api/exchange-analysis?kind=dex');
     expect(releaseSurface).toContain('/exchange-analysis');
     expect(releaseSurface).toContain('DEX/CEX Analysis');
   });
@@ -56,6 +56,14 @@ describe('production deployment readiness', () => {
       ['/api/mid-exchanges?kind=cex', { exchanges: [] }],
       ['/api/dead-exchanges?kind=dex', { exchanges: [] }],
       ['/api/dead-exchanges?kind=cex', { exchanges: [] }],
+      ['/api/exchange-analysis?kind=dex', {
+        cases: Array.from({ length: 29 }, (_, index) => ({ slug: `dex-${index}` })),
+        summary: { comparisonGroups: [] },
+      }],
+      ['/api/exchange-analysis?kind=cex', {
+        cases: Array.from({ length: 18 }, (_, index) => ({ slug: `cex-${index}` })),
+        summary: { comparisonGroups: [] },
+      }],
     ]);
     const fetchImpl = vi.fn(async (input) => {
       const url = new URL(input);
@@ -82,6 +90,8 @@ describe('production deployment readiness', () => {
       revision: 'expected-sha',
       chains: 50,
       successfulDex: 1,
+      normalizedDex: 29,
+      normalizedCex: 18,
     });
   });
 });

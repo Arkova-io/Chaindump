@@ -17,6 +17,7 @@ import { SCORE_META, TIER_CRITERIA, TIERS, BOARD_SIZE, CHANGE_90D_MIN_SPAN_DAYS,
 import { DEX_CATEGORIES, aggregateBreakdown, feedIsDegenerate, selectCandidates, dedupeChains, rollupDexProtocols } from './lib/llama.js';
 import { renderSsrRows } from './lib/ssr-rows.js';
 import { CHAIN_DOSSIER_DIMENSIONS } from './lib/chain-dossier.js';
+import { normalizeExchangeCase, summarizeExchangeCases } from './lib/exchange-analysis.js';
 
 const ENV = {};
 const app = new Hono();
@@ -1666,6 +1667,99 @@ async function getTiers() {
 // chain routes above: it is the same computation over a different table, and
 // the two already drift in shape (peak/current/drawdown vs a flat metric) in
 // ways that would make a shared helper fight both call sites more than it saves.
+
+// Citation-first lifecycle analysis. The query preserves the three source
+// tables and joins the normalized feature overlay by kind + slug + lifecycle.
+// The response is always scoped to exactly one venue kind, and the summary only
+// reports membership/counts for fully matching comparison keys. It never pools
+// metric values.
+app.get('/api/exchange-analysis', wrap(async (req, res) => {
+  const kind = req.query.kind === 'cex' ? 'cex' : 'dex';
+  const productCohort = typeof req.query.product_cohort === 'string' && req.query.product_cohort.trim()
+    ? req.query.product_cohort.trim() : null;
+  const quality = ['verified', 'partial', 'limited'].includes(req.query.quality)
+    ? req.query.quality : null;
+  const filters = { productCohort, quality };
+  try {
+    const rows = await dbQuery(
+      `WITH lifecycle_cases AS (
+         SELECT slug, kind, 'dead' AS lifecycle, venue_type, name, launched, NULL AS primary_chain,
+                verdict AS status, metric_label, metric_type, metric_unit,
+                current_metric AS metric, peak_metric, drawdown_pct, collapse_date AS event_date,
+                why AS summary, outlook, profile, sources, updated_at
+         FROM dead_exchanges
+         WHERE venue_type = 'exchange'
+         UNION ALL
+         SELECT slug, kind, 'mid', venue_type, name, launched, NULL,
+                verdict, metric_label, metric_type, metric_unit,
+                metric, NULL, NULL, NULL, why_stuck, outlook, profile, sources, updated_at
+         FROM mid_exchanges
+         WHERE venue_type = 'exchange'
+         UNION ALL
+         SELECT slug, type, 'successful', venue_type, name, launched, primary_chain,
+                status, metric_label, metric_type, metric_unit,
+                metric, NULL, NULL, NULL, why_successful, outlook, profile, sources, updated_at
+         FROM successful_exchanges
+         WHERE venue_type = 'exchange'
+       )
+       SELECT c.*,
+              f.operating_model AS feature_operating_model,
+              f.product_cohort AS feature_product_cohort,
+              f.custody_model AS feature_custody_model,
+              f.primary_chain AS feature_primary_chain,
+              f.chains AS feature_chains,
+              f.token_status AS feature_token_status,
+              f.token_symbol AS feature_token_symbol,
+              f.token_launch_date AS feature_token_launch_date,
+              f.token_launch_timing AS feature_token_launch_timing,
+              f.token_strategy AS feature_token_strategy,
+              f.token_source_url AS feature_token_source_url,
+              f.metric_type AS feature_metric_type,
+              f.metric_unit AS feature_metric_unit,
+              f.metric_window AS feature_metric_window,
+              f.metric_as_of AS feature_metric_as_of,
+              f.metric_observed_at AS feature_metric_observed_at,
+              f.comparability_key AS feature_comparability_key,
+              f.evidence AS feature_evidence,
+              f.quality_label AS feature_quality_label,
+              f.quality_issues AS feature_quality_issues,
+              f.lifecycle_evidence_date AS feature_lifecycle_evidence_date,
+              f.last_verified_at AS feature_last_verified_at,
+              f.next_review_at AS feature_next_review_at,
+              f.freshness_status AS feature_freshness_status
+       FROM lifecycle_cases c
+       LEFT JOIN exchange_case_features f
+         ON f.kind = c.kind AND f.slug = c.slug AND f.lifecycle = c.lifecycle
+       WHERE c.kind = ?
+       ORDER BY c.lifecycle ASC, c.name ASC`, [kind]);
+    const allCases = rows.map(normalizeExchangeCase);
+    const cases = allCases.filter((row) => (
+      (!productCohort || row.analysis.product_cohort === productCohort)
+      && (!quality || row.analysis.data_quality.label === quality)
+    ));
+    res.json({
+      kind,
+      filters,
+      cases,
+      count: cases.length,
+      available: {
+        productCohorts: [...new Set(allCases.map((row) => row.analysis.product_cohort))]
+          .sort((a, b) => a.localeCompare(b)),
+        qualityLabels: [...new Set(allCases.map((row) => row.analysis.data_quality.label))]
+          .sort((a, b) => a.localeCompare(b)),
+      },
+      summary: summarizeExchangeCases(cases, kind),
+    });
+  } catch (e) {
+    res.json({
+      kind, filters, cases: [], count: 0,
+      available: { productCohorts: [], qualityLabels: [] },
+      summary: summarizeExchangeCases([], kind),
+      error: e.message,
+    });
+  }
+}));
+
 app.get('/api/dead-exchanges', wrap(async (req, res) => {
   const kind = req.query.kind === 'cex' ? 'cex' : 'dex';
   try {
