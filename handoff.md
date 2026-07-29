@@ -197,8 +197,8 @@ NFT wave 2 verification:
 ## Web3 casino status
 
 - PR #45 delivered a conservative initial Web3 Casino Analysis product, not the full target corpus.
-- Published cases: 2 quality-passed dossiers.
-- Candidate ledger: 25 target candidates, with 23 partial/withheld.
+- Published cases: 4 quality-passed dossiers (Overtime, Decentral Games Poker Arcade, SX Bet, and Azuro).
+- Candidate ledger: 25 target candidates, with 21 partial/withheld after the SX Bet and Azuro promotions.
 - Important quality rule: no casino record should be public unless reviewed primary evidence, explicit scope, status evidence, an as-of metric, no blockers, and a defined outcome rule are present.
 - The UI exists and renders the publication-gated state; this satisfies the "must have UI" requirement for the initial casino slice but not the final corpus size goal.
 
@@ -233,14 +233,10 @@ Recommended six-hour research agent design:
 
 ## Current open work
 
-- Finish and publish `codex/nft-wave2-freshness-20260729`:
-  - Amend generated migration and handoff update into the NFT wave 2 branch.
-  - Push and open PR.
-  - Wait for remote CI and review signals.
-  - Merge only if remote checks are green, then verify production health and `/nft-analysis`.
+- Continue the existing PR #54 branch, `codex/nft-art-blocks-20260729`, which now contains the Art Blocks NFT dossier, six-hour review heartbeat/UI, primary BitMEX wind-down correction, SX Bet and Azuro casino dossiers, and the Bitcoin blockchain dossier. It is stacked on the now-merged CEX control wave and has been rebased/pushed accordingly.
 - Continue the original workflow; it is not done:
   - Continue top-50 blockchain same-format dossier completion.
-  - Continue Web3 Casino Analysis beyond the first 2 published records.
+  - Continue Web3 Casino Analysis beyond the first 4 published records.
   - Continue NFT/Ordinals from 30 toward the requested 50 case studies after wave 2 lands.
   - Keep every content/data PR tied to visible UI, API, tests, migration replay, and production smoke.
 
