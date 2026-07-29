@@ -12,7 +12,8 @@
     "check:casino-research": "node scripts/check-casino-research.mjs",
     "verify:casino-sources": "node scripts/verify-casino-sources.mjs",
     "check:migrations": "node scripts/check-migrations.mjs",
-    "check:worker": "node --input-type=module --check < src/worker.js"
+    "check:worker": "node --input-type=module --check < src/worker.js",
+    "check:nft-dossiers": "node scripts/check-nft-dossiers.mjs"
   },
   "dependencies": {
     "express": "^5.2.1",

@@ -1,0 +1,117 @@
+{
+  "schema": "chaindump-nft-field-v1",
+  "research_as_of": "2026-07-29",
+  "method": "Each published field is linked to a dated source identifier. Lifecycle labels are analyst classifications of the cited operating evidence, not price forecasts. No cross-collection floor, volume, or holder comparison is asserted where units or snapshots are not comparable.",
+  "dossiers": [
+    {
+      "slug": "nouns-dao",
+      "name": "Nouns",
+      "chain": "ethereum",
+      "category": "generative-governance",
+      "status": "thriving",
+      "profile": {
+        "citation_schema": "field-v1",
+        "launched": "2021-08",
+        "founder_engagement": "Nouns governance documentation remains published; proposals are voted on by Noun holders and delegates.",
+        "benefits": "One Noun is generated and auctioned every 24 hours; auction proceeds are deposited to the DAO treasury controlled by Noun owners.",
+        "analysis": "Classified thriving on continued protocol-defined daily auctions and documented holder governance, not on a secondary-market price claim. The supply is intentionally open-ended, so scarcity comparisons with fixed-supply PFP collections are inapposite.",
+        "evidence": [
+          { "field": "launch", "value": "2021-08 — Nouns Token contract deployment", "as_of": "2026-07-29", "basis": "onchain", "source_ids": ["nouns-token"] },
+          { "field": "supply_or_mint", "value": "Open-ended; one Noun is auctioned every 24 hours", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["nouns-auction"] },
+          { "field": "lifecycle_status", "value": "thriving — operational continuity and holder governance observed; not a price forecast", "as_of": "2026-07-29", "basis": "analyst", "source_ids": ["nouns-auction", "nouns-governance"] },
+          { "field": "founder_engagement", "value": "Nouns governance documentation remains published; proposals are voted on by Noun holders and delegates", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["nouns-governance"] },
+          { "field": "benefits", "value": "One Noun is generated and auctioned every 24 hours; auction proceeds are deposited to the DAO treasury controlled by Noun owners", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["nouns-auction"] },
+          { "field": "analysis", "value": "Thriving classification rests on continued daily auctions and documented holder governance, not a price forecast", "as_of": "2026-07-29", "basis": "analyst", "source_ids": ["nouns-auction", "nouns-governance"] }
+        ]
+      },
+      "sources": [
+        { "id": "nouns-token", "title": "Etherscan — Nouns DAO: Nouns Token", "url": "https://etherscan.io/address/0x9c8ff314c9bc7f6e59a9d9225fb22946427edc03", "publisher": "Etherscan", "checked_at": "2026-07-29" },
+        { "id": "nouns-auction", "title": "Nouns DAO — daily auction mechanism", "url": "https://nouns.wtf/noun/316", "publisher": "Nouns DAO", "checked_at": "2026-07-29" },
+        { "id": "nouns-governance", "title": "Nouns DAO documentation — proposals", "url": "https://docs.nouns.wtf/governance/proposals", "publisher": "Nouns DAO", "checked_at": "2026-07-29" }
+      ]
+    },
+    {
+      "slug": "solana-monkey-business",
+      "name": "Solana Monkey Business (Gen2)",
+      "chain": "solana",
+      "category": "pfp-community",
+      "status": "middling",
+      "profile": {
+        "citation_schema": "field-v1",
+        "launched": "2021-08-03",
+        "supply": 5000,
+        "royalties_enforced": "Operator states 5% of each Gen2 secondary sale is sent to the MonkeDAO treasury.",
+        "founder_engagement": "Operator site documents a Gen3 expansion and identifies MonkeDAO as the steward of Gen2, Gen3, and legacy collectibles.",
+        "analysis": "Classified middling: the cited operator record shows a live community expansion and explicit royalty destination, but this dossier deliberately makes no unsourced market-cap, floor, or holder-retention claim. The key research question is whether Gen3 distribution converts into lasting Gen2 utility rather than only launch interest.",
+        "evidence": [
+          { "field": "launch", "value": "2021-08-03", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["smb-operator"] },
+          { "field": "supply_or_mint", "value": "5,000 Gen2 NFTs", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["smb-operator"] },
+          { "field": "lifecycle_status", "value": "middling — active expansion is documented; no comparable market-performance claim is made", "as_of": "2026-07-29", "basis": "analyst", "source_ids": ["smb-operator", "smb-gen3"] },
+          { "field": "royalties_enforced", "value": "5% of each Gen2 secondary sale to the MonkeDAO treasury", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["smb-operator"] },
+          { "field": "founder_engagement", "value": "Operator documents Gen3 expansion and MonkeDAO stewardship of Gen2, Gen3, and legacy collectibles", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["smb-operator", "smb-gen3"] },
+          { "field": "analysis", "value": "Middling classification rests on documented active expansion, while floor, market-cap, and holder-retention claims are deliberately omitted", "as_of": "2026-07-29", "basis": "analyst", "source_ids": ["smb-operator", "smb-gen3"] }
+        ]
+      },
+      "sources": [
+        { "id": "smb-operator", "title": "Solana Monkey Business — Gen2 / Gen3 operator record", "url": "https://solanamonkey.business/", "publisher": "MonkeDAO", "checked_at": "2026-07-29" },
+        { "id": "smb-gen3", "title": "Solana Monkey Business — Gen3 progress", "url": "https://gen3.solanamonkey.business/", "publisher": "MonkeDAO", "checked_at": "2026-07-29" }
+      ]
+    },
+    {
+      "slug": "quantum-cats",
+      "name": "Quantum Cats",
+      "chain": "bitcoin-ordinals",
+      "category": "ordinals-pfp",
+      "status": "middling",
+      "profile": {
+        "citation_schema": "field-v1",
+        "launched": "2024",
+        "supply": 3333,
+        "founder_engagement": "Taproot Wizards continues to publish the collection and its OP_CAT advocacy framing.",
+        "benefits": "Collection narrative is explicitly tied to advocacy for re-enabling OP_CAT; this is a cultural/governance signal, not a contractual promise of utility.",
+        "analysis": "Classified middling: a first-party portal showed 2026 sales activity, but the dossier does not convert sparse sale observations into a liquidity or valuation conclusion. This is a thesis-linked Ordinals case: the important test is whether protocol advocacy sustains collector relevance after the initial inscription cycle.",
+        "evidence": [
+          { "field": "launch", "value": "2024", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["quantum-cats-site"] },
+          { "field": "supply_or_mint", "value": "3,333 Ordinals inscriptions", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["taproot-portal"] },
+          { "field": "lifecycle_status", "value": "middling — operator portal showed 2026 sale observations, without inferring market depth", "as_of": "2026-07-29", "basis": "analyst", "source_ids": ["taproot-portal"] },
+          { "field": "founder_engagement", "value": "Taproot Wizards continues to publish the collection and its OP_CAT advocacy framing", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["quantum-cats-site"] },
+          { "field": "benefits", "value": "Collection narrative is tied to advocacy for re-enabling OP_CAT; no contractual utility is asserted", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["quantum-cats-site"] },
+          { "field": "analysis", "value": "Middling classification is based on observed portal sale activity without inferring market depth or valuation", "as_of": "2026-07-29", "basis": "analyst", "source_ids": ["taproot-portal"] }
+        ]
+      },
+      "sources": [
+        { "id": "quantum-cats-site", "title": "Quantum Cats — OP_CAT thesis", "url": "https://www.quantumcats.xyz/", "publisher": "Taproot Wizards", "checked_at": "2026-07-29" },
+        { "id": "taproot-portal", "title": "Taproot Wizards portal — collection inventory and activity", "url": "https://portal.taprootwizards.com/", "publisher": "Taproot Wizards", "checked_at": "2026-07-29" }
+      ]
+    },
+    {
+      "slug": "metroverse",
+      "name": "Metroverse",
+      "chain": "ethereum",
+      "category": "nft-game",
+      "status": "dead",
+      "profile": {
+        "citation_schema": "field-v1",
+        "launched": "2022-01-18",
+        "supply": 10000,
+        "royalties_enforced": "Operator announced royalties would be set to 0% as operations wound down.",
+        "founder_engagement": "The team ended further development and open-sourced smart-contract code and block data; NFT ownership remained with holders.",
+        "analysis": "A clean shutdown case, not a rug-pull attribution: the team stated that engagement had fallen about 96% year over year, Battles did not reach expected engagement, and ongoing operations would cease. The NFT contracts and assets surviving does not mean the game business survived. This separates asset persistence from operating-product durability.",
+        "evidence": [
+          { "field": "launch", "value": "2022-01-18 — genesis city-block collection launch", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["metroverse-roadmap"] },
+          { "field": "supply_or_mint", "value": "10,000 genesis city blocks", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["metroverse-home"] },
+          { "field": "lifecycle_status", "value": "dead — team announced shutdown and end of further development; NFT ownership persisted", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["metroverse-closure"] },
+          { "field": "failure_signal", "value": "Operator reported site visits down about 96% year over year and insufficient Battle engagement", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["metroverse-closure"] },
+          { "field": "royalties_enforced", "value": "Royalties set to 0% as operations wound down", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["metroverse-closure"] },
+          { "field": "founder_engagement", "value": "Team ended further development and open-sourced smart-contract code and block data; NFT ownership persisted", "as_of": "2026-07-29", "basis": "operator", "source_ids": ["metroverse-closure"] },
+          { "field": "analysis", "value": "Dead classification follows the announced end of operations and reported engagement decline, without rug-pull attribution", "as_of": "2026-07-29", "basis": "analyst", "source_ids": ["metroverse-closure"] }
+        ]
+      },
+      "sources": [
+        { "id": "metroverse-home", "title": "Metroverse — genesis collection overview", "url": "https://metroverse.com/", "publisher": "Metroverse", "checked_at": "2026-07-29" },
+        { "id": "metroverse-roadmap", "title": "Metroverse — dated roadmap", "url": "https://metroverse.com/roadmap", "publisher": "Metroverse", "checked_at": "2026-07-29" },
+        { "id": "metroverse-closure", "title": "Metroverse — community closure notice", "url": "https://metroverse.com/community-notice", "publisher": "Metroverse", "checked_at": "2026-07-29" }
+      ]
+    }
+  ]
+}

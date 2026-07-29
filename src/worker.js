@@ -1,6 +1,7 @@
 import { Hono } from 'hono';
 import { OFAC_FILES, ofacFileUrl, parseSanctionedFile, buildSanctionedRows } from './lib/ofac.js';
 import { NFT_LIST_URL, NFT_PER_PAGE, nftRowsFromPage, dedupeNftRows } from './lib/nft.js';
+import { validateFieldCitedNft } from './lib/nft-citation.mjs';
 import { prefersMarkdown } from './lib/negotiate.js';
 import { renderEntityMarkdown } from './lib/entity-markdown.js';
 import { norm, resolveCategory, categoryLabel, coverageTier, relatedBlock, deriveCategory } from './lib/chainkit.js';
@@ -2077,7 +2078,16 @@ app.get('/api/nft-collection/:id', wrap(async (req, res) => {
 app.get('/api/nft', wrap(async (req, res) => {
   try {
     const rows = await dbQuery(`SELECT slug, name, chain, category, status, profile, sources, updated_at FROM nft_collections ORDER BY name`);
-    const collections = rows.map((r) => { let p = null; try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {} return { ...r, profile: p }; });
+    const collections = rows.map((r) => {
+      let p = null;
+      try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {}
+      const citation = validateFieldCitedNft(p, r.sources);
+      return {
+        ...r,
+        profile: p,
+        citation: { fieldCited: p?.citation_schema === 'field-v1' && citation.valid, errors: citation.errors },
+      };
+    });
     let analysis = null;
     try { const m = await dbQuery(`SELECT v, updated_at FROM graveyard_meta WHERE k='nft_analysis' LIMIT 1`); if (m[0]) analysis = { text: m[0].v, updated_at: m[0].updated_at }; } catch (e) {}
     // aggregate lifecycle stats from profiles
@@ -2103,8 +2113,10 @@ app.get('/api/nft', wrap(async (req, res) => {
       }
     } catch (e) {}
 
+    const fieldCitedCount = collections.filter((c) => c.citation.fieldCited).length;
     res.json({
       collections, count: collections.length, analysis, statusCounts, market,
+      citationCoverage: { fieldCitedCount, legacyCount: collections.length - fieldCitedCount },
       agg: {
         avgLifespanDays: avg(nums('lifespan_days')),
         avgHolderRetentionPct: avg(nums('holder_retention_pct')),
