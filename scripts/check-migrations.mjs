@@ -31,14 +31,18 @@ import { pathToFileURL } from 'node:url';
 const TRANSACTION_TEXT_RE = /\bBEGIN\s+TRANSACTION\b|\bCOMMIT\s*;/i;
 const TEMP_TABLE_RE = /\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i;
 export const MAX_D1_STATEMENT_BYTES = 95_000;
+const QUOTED_SQL_DELIMITERS = new Set(["'", '"', '`']);
 
-function isWordCharacter(character) {
+function isWordStart(character) {
   return (
     character === '_'
     || (character >= 'A' && character <= 'Z')
     || (character >= 'a' && character <= 'z')
-    || (character >= '0' && character <= '9')
   );
+}
+
+function isWordCharacter(character) {
+  return isWordStart(character) || (character >= '0' && character <= '9');
 }
 
 function skipDelimitedToken(sql, start, delimiter) {
@@ -53,28 +57,31 @@ function skipDelimitedToken(sql, start, delimiter) {
   return sql.length;
 }
 
-function nextSqlToken(sql, start) {
+function ignoredTokenEnd(sql, start) {
   const current = sql[start];
-  const next = sql[start + 1];
-  if (current === "'" || current === '"' || current === '`') {
-    return { kind: 'ignored', end: skipDelimitedToken(sql, start, current) };
-  }
+  if (QUOTED_SQL_DELIMITERS.has(current)) return skipDelimitedToken(sql, start, current);
   if (current === '[') {
     const closing = sql.indexOf(']', start + 1);
-    return { kind: 'ignored', end: closing === -1 ? sql.length : closing + 1 };
+    return closing === -1 ? sql.length : closing + 1;
   }
-  if (current === '-' && next === '-') {
+  const pair = sql.slice(start, start + 2);
+  if (pair === '--') {
     const newline = sql.indexOf('\n', start + 2);
-    return { kind: 'ignored', end: newline === -1 ? sql.length : newline + 1 };
+    return newline === -1 ? sql.length : newline + 1;
   }
-  if (current === '/' && next === '*') {
+  if (pair === '/*') {
     const closing = sql.indexOf('*/', start + 2);
-    return { kind: 'ignored', end: closing === -1 ? sql.length : closing + 2 };
+    return closing === -1 ? sql.length : closing + 2;
   }
+  return null;
+}
+
+function nextSqlToken(sql, start) {
+  const ignoredEnd = ignoredTokenEnd(sql, start);
+  if (ignoredEnd !== null) return { kind: 'ignored', end: ignoredEnd };
+  const current = sql[start];
   if (current === ';') return { kind: 'semicolon', end: start + 1 };
-  if (!isWordCharacter(current) || (current >= '0' && current <= '9')) {
-    return { kind: 'ignored', end: start + 1 };
-  }
+  if (!isWordStart(current)) return { kind: 'ignored', end: start + 1 };
   let end = start + 1;
   while (end < sql.length && isWordCharacter(sql[end])) end += 1;
   return { kind: 'word', word: sql.slice(start, end).toUpperCase(), end };
