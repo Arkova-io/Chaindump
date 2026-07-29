@@ -100,6 +100,7 @@ afterEach(() => {
 describe('exchange CEX causal Wave B migration 0060', () => {
   it('keeps generated SQL identical to the checked 13-case research manifest', () => {
     expect(migrationDocument()).toEqual(document);
+    expect(migration).not.toMatch(/\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i);
     expect(document.as_of).toBe('2026-07-29');
     expect(document.source_check.checked_at).toBe('2026-07-29');
     expect(document.cases.map(({ slug }) => slug)).toEqual(expectedSlugs);

@@ -1052,7 +1052,7 @@ export function renderExchangeForensicWaveAMigration(document) {
 -- Adds evidence-gated causal dossiers and corrects overstated lifecycle claims.
 
 DROP TABLE IF EXISTS exchange_forensic_wave_a_0059;
-CREATE TEMP TABLE exchange_forensic_wave_a_0059 (
+CREATE TABLE exchange_forensic_wave_a_0059 (
   table_name TEXT NOT NULL,
   kind TEXT NOT NULL,
   lifecycle TEXT NOT NULL,

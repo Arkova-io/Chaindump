@@ -99,6 +99,7 @@ afterEach(() => {
 describe('exchange forensic wave A migration 0059', () => {
   it('keeps the generated SQL payload identical to the checked research manifest', () => {
     expect(migrationDocument()).toEqual(document);
+    expect(migration).not.toMatch(/\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i);
     expect(document.schema).toBe('chaindump-exchange-forensic-wave-a-v1');
     expect(document.research_as_of).toBe('2026-07-29');
     expect(document.cases.map(({ slug }) => slug)).toEqual(expectedSlugs);
