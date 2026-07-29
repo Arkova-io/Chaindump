@@ -1933,8 +1933,14 @@ function casinoAnalysisCard(item) {
   const detail = state.casinoAnalysisDetails[item.case_id];
   const depth = item.publication_depth || {};
   const outcomeGap = publicationDepthGap(depth, 'forensic_analysis.outcome');
-  const statusLabel = outcomeGap ? 'support pending' : casinoLabel(item.status);
-  const outcomeLabel = outcomeGap
+  const statusPending = Boolean(
+    outcomeGap || item.publication_support?.status === 'pending_independent_support',
+  );
+  const outcomePending = Boolean(
+    outcomeGap || item.publication_support?.outcome === 'pending_independent_support',
+  );
+  const statusLabel = statusPending ? 'support pending' : casinoLabel(item.status);
+  const outcomeLabel = outcomePending
     ? 'outcome withheld — independent support pending'
     : casinoLabel(item.outcome_label || 'outcome unknown');
   const chains = Array.isArray(item.chains) && item.chains.length ? item.chains.join(' · ') : 'No chain scope published';
@@ -1946,7 +1952,7 @@ function casinoAnalysisCard(item) {
   // JSON to read a published dossier.
   const dossierLink = `/casino/${encodeURIComponent(item.case_id)}`;
   return `<div class="gcard ${open ? 'open' : ''}" role="button" tabindex="0" data-casino-case="${esc(item.case_id)}">
-    <div class="ghead"><div class="gname">${esc(item.brand_name)} <span class="gverdict ${!outcomeGap && item.status === 'active' ? 'recover' : 'declining'}">${esc(statusLabel)}</span></div>
+    <div class="ghead"><div class="gname">${esc(item.brand_name)} <span class="gverdict ${!statusPending && item.status === 'active' ? 'recover' : 'declining'}">${esc(statusLabel)}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${item.reviewed_source_count}<span class="gddl">editor reviewed</span></div></div>
     <div class="gmeta">${esc(casinoLabel(item.entity_kind))} · ${esc(casinoLabel(item.product_subtype))} · ${esc(chains)} · ${esc(outcomeLabel)} · ${esc(item.completeness_pct)}% complete · status evidence ${esc(item.status_as_of || '—')} · last reviewed ${esc(item.last_reviewed || '—')}</div>
     <div class="gbody">${esc(item.product_scope_note || 'Scoped research dossier.')}</div>

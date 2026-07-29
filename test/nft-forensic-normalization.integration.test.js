@@ -417,14 +417,18 @@ describe('NFT forensic normalization wave', () => {
     for (const dossier of document.dossiers) {
       const listRow = listed.get(dossier.slug);
       expect(listRow, dossier.slug).toBeTruthy();
-      expect(listRow.profile.token_model, dossier.slug).toBeTruthy();
-      expect(listRow.profile.chain_dependence, dossier.slug).toBeTruthy();
+      expect(listRow.profile.token_model, dossier.slug).toBeNull();
+      expect(listRow.profile.chain_dependence, dossier.slug).toBeNull();
+      expect(listRow.profile.publication_support, dossier.slug).toMatchObject({
+        token_model: 'pending_independent_support',
+        chain_dependence: 'pending_independent_support',
+      });
       expect(listRow.profile.forensic_analysis, dossier.slug).toMatchObject({
         version: 'forensic-analysis-v1',
-        outcome: { scope: expect.any(String) },
-        why: { summary: expect.any(String) },
+        outcome: { publication_support: 'pending_independent_support' },
+        why: { publication_support: 'pending_independent_support' },
         strategic_choices: expect.any(Array),
-        counterfactual: { summary: expect.any(String) },
+        counterfactual: { publication_support: 'pending_independent_support' },
         watch: expect.any(Array),
         unknowns: expect.any(Array),
         review: { next_review_at: expect.any(String) },
@@ -441,8 +445,8 @@ describe('NFT forensic normalization wave', () => {
       const detail = detailPayload.collections[0];
       expect(detail.profile.forensic_analysis)
         .toEqual(listRow.profile.forensic_analysis);
-      expect(detail.profile.token_model).toEqual(listRow.profile.token_model);
-      expect(detail.profile.chain_dependence).toEqual(listRow.profile.chain_dependence);
+      expect(detail.profile.token_model).toBeNull();
+      expect(detail.profile.chain_dependence).toBeNull();
       const detailSources = JSON.parse(detail.sources);
       expect(detailSources.every((source) => source.checked_at === '2026-07-29'))
         .toBe(true);
