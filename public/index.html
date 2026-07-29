@@ -790,9 +790,10 @@ function nftFreshnessHtml(profile, derived) {
   if (!policy || policy.schema !== 'forensic-freshness-v1') return '';
   const reviewOverdue = reviewDateIsDue(policy.next_review_at) || derived?.reviewOverdue;
   const scheduled = /^\d{4}-\d{2}-\d{2}$/.test(policy.next_review_at || '');
-  const state = derived?.statusWithheld ? 'STALE · status withheld'
-    : reviewOverdue ? 'review overdue'
-      : scheduled ? 'current' : 'unknown · no review schedule';
+  let state = 'unknown · no review schedule';
+  if (scheduled) state = 'current';
+  if (reviewOverdue) state = 'review overdue';
+  if (derived?.statusWithheld) state = 'STALE · status withheld';
   return `<div class="gfield"><span class="gfl">Evidence freshness</span> ${esc(state)}<span class="muted"> · basis ${esc(policy.status_basis || '—')} · status evidence ${esc(policy.status_as_of || '—')} · verified ${esc(policy.last_verified_at || '—')} · review by ${esc(policy.next_review_at || '—')}</span></div>`;
 }
 
@@ -868,14 +869,19 @@ function analysisDistributionHtml(title, items) {
     return 'info';
   };
   const rows = visible.map((item) => {
-    const width = total ? Math.max(item.count ? 3 : 0, (Number(item.count || 0) / total) * 100) : 0;
+    const count = Number(item.count || 0);
+    const minimumWidth = count ? 3 : 0;
+    const width = total ? Math.max(minimumWidth, (count / total) * 100) : 0;
     const label = `${item.label}: ${item.count} of ${total}`;
     return `<div class="tagrow" aria-label="${esc(label)}"><span class="tagn">${esc(item.label)}</span><span class="tagbarwrap"><span class="tagbar ${tone(item.key)}" style="width:${width.toFixed(1)}%"></span></span><span class="tagc">${esc(item.count)}</span></div>`;
   }).join('');
   return `<div><div class="gsec">${esc(title)} · ${total}</div><div class="taglist">${rows || '<div class="muted">No cohort data.</div>'}</div></div>`;
 }
 function analysisCohortPanel(leftTitle, leftItems, rightTitle, rightItems, note) {
-  return `<div class="gpanel analysis-distribution"><div class="gcols">${analysisDistributionHtml(leftTitle, leftItems)}${analysisDistributionHtml(rightTitle, rightItems)}</div>${note ? `<div class="gnar muted" style="margin-top:12px">${esc(note)}</div>` : ''}</div>`;
+  const noteHtml = note
+    ? '<div class="gnar muted" style="margin-top:12px">' + esc(note) + '</div>'
+    : '';
+  return `<div class="gpanel analysis-distribution"><div class="gcols">${analysisDistributionHtml(leftTitle, leftItems)}${analysisDistributionHtml(rightTitle, rightItems)}</div>${noteHtml}</div>`;
 }
 function reviewWindowState(lastReviewed, days = 90) {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(lastReviewed || '')) return 'unknown';
@@ -915,8 +921,9 @@ function nftReviewState(row) {
   return 'current';
 }
 function nftProfileRefHtml(value, sources) {
-  const refs = Array.isArray(value?.source_ids) ? value.source_ids
-    : Array.isArray(value?.source_refs) ? value.source_refs : [];
+  let refs = [];
+  if (Array.isArray(value?.source_ids)) refs = value.source_ids;
+  else if (Array.isArray(value?.source_refs)) refs = value.source_refs;
   const available = sourceArray(sources);
   const links = refs.map((ref) => {
     const key = typeof ref === 'string' ? ref : (ref?.id || ref?.url);
@@ -935,7 +942,9 @@ function nftStructuredValueHtml(value, sources) {
       if (item && typeof item === 'object') {
         const title = item.choice || item.decision || item.risk || item.signal || item.question || item.finding || item.summary || '';
         const detail = item.consequence || item.implication || item.mechanism || item.boundary || '';
-        return `<li>${title ? `<b>${esc(title)}</b>` : ''}${detail ? `<div class="muted">${esc(detail)}</div>` : ''}${nftProfileRefHtml(item, sources)}</li>`;
+        const titleHtml = title ? '<b>' + esc(title) + '</b>' : '';
+        const detailHtml = detail ? '<div class="muted">' + esc(detail) + '</div>' : '';
+        return `<li>${titleHtml}${detailHtml}${nftProfileRefHtml(item, sources)}</li>`;
       }
       return `<li>${esc(String(item))}</li>`;
     }).join('');
@@ -945,8 +954,17 @@ function nftStructuredValueHtml(value, sources) {
     const rows = Object.entries(value)
       .filter(([key, field]) => !['source_ids', 'source_refs'].includes(key) && field != null && field !== '')
       .map(([key, field]) => {
-        const text = Array.isArray(field) ? field.map((item) => typeof item === 'object' ? factObjectText(item) : String(item)).filter(Boolean).join(' · ')
-          : typeof field === 'object' ? (factObjectText(field) || JSON.stringify(field)) : String(field);
+        let text = '';
+        if (Array.isArray(field)) {
+          text = field.map((item) => {
+            if (typeof item === 'object') return factObjectText(item);
+            return String(item);
+          }).filter(Boolean).join(' · ');
+        } else if (typeof field === 'object') {
+          text = factObjectText(field) || JSON.stringify(field);
+        } else {
+          text = String(field);
+        }
         return text ? `<div class="gfield"><span class="gfl">${esc(key.replaceAll('_', ' '))}</span>${esc(text)}</div>` : '';
       }).filter(Boolean).join('');
     return `${rows}${nftProfileRefHtml(value, sources)}`;
