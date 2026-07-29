@@ -8,14 +8,14 @@ async function freshWorker() {
 
 const ctx = () => ({ waitUntil() {}, passThroughOnException() {} });
 
-function makeDB() {
+function makeDB({ refreshCompletedAt = '2026-07-29T18:00:00.000Z', agentCompletedAt = '2026-07-29T18:17:00.000Z' } = {}) {
   return {
     prepare(sql) {
       return {
         async all() {
           if (sql.includes('FROM forensic_refresh_runs')) {
             return { results: [{
-              run_id: 7, completed_at: '2026-07-29T18:00:00.000Z', status: 'completed',
+              run_id: 7, completed_at: refreshCompletedAt, status: 'completed',
               due_nft: 2, due_exchange: 3, due_casino: 1, due_chain: 4,
             }] };
           }
@@ -23,7 +23,7 @@ function makeDB() {
             return { results: [{
               run_id: 'github-3049-1',
               started_at: '2026-07-29T18:05:00.000Z',
-              completed_at: '2026-07-29T18:17:00.000Z',
+              completed_at: agentCompletedAt,
               status: 'completed',
               proposals_queued: 3,
             }] };
@@ -39,6 +39,7 @@ let database;
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.useRealTimers();
   database?.close();
   database = undefined;
 });
@@ -130,6 +131,8 @@ function freshnessFixture() {
 
 describe('forensic refresh status route', () => {
   it('exposes six-hour review debt without claiming automated promotion', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-07-29T20:00:00.000Z'));
     const worker = await freshWorker();
     const response = await worker.fetch(
       new Request('http://localhost/api/forensics-refresh-status'), { DB: makeDB() }, ctx(),
@@ -142,6 +145,42 @@ describe('forensic refresh status route', () => {
         run_id: 'github-3049-1',
         status: 'completed',
         proposals_queued: 3,
+      },
+      refresh_freshness: {
+        state: 'current',
+        last_completed_at: '2026-07-29T18:00:00.000Z',
+        next_due_at: '2026-07-30T00:00:00.000Z',
+        age_seconds: 7200,
+      },
+      proposal_agent_freshness: {
+        state: 'current',
+        last_completed_at: '2026-07-29T18:17:00.000Z',
+        next_due_at: '2026-07-30T00:17:00.000Z',
+        age_seconds: 6180,
+      },
+    });
+  });
+
+  it('labels missed six-hour runs stale instead of presenting an ancient success as current', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-07-30T02:00:00.000Z'));
+    const worker = await freshWorker();
+
+    const response = await worker.fetch(
+      new Request('http://localhost/api/forensics-refresh-status'), { DB: makeDB() }, ctx(),
+    );
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({
+      refresh_freshness: {
+        state: 'stale',
+        last_completed_at: '2026-07-29T18:00:00.000Z',
+        next_due_at: '2026-07-30T00:00:00.000Z',
+      },
+      proposal_agent_freshness: {
+        state: 'stale',
+        last_completed_at: '2026-07-29T18:17:00.000Z',
+        next_due_at: '2026-07-30T00:17:00.000Z',
       },
     });
   });
@@ -171,6 +210,38 @@ describe('forensic refresh status route', () => {
     expect((await response.json()).proposal_agent).toMatchObject({
       run_id: 'github-200-1',
       proposals_queued: 2,
+    });
+  });
+
+  it('keeps the exact last completed run visible while a newer attempt is running', async () => {
+    database = new DatabaseSync(':memory:');
+    database.exec(`
+      CREATE TABLE research_desk_runs (
+        run_id TEXT PRIMARY KEY,
+        started_at TEXT NOT NULL,
+        completed_at TEXT,
+        status TEXT NOT NULL,
+        proposals_queued INTEGER NOT NULL
+      );
+      INSERT INTO research_desk_runs VALUES
+        ('github-complete-1', '2026-07-29 18:00:00', '2026-07-29 18:08:00', 'completed', 2),
+        ('github-running-1', '2026-07-29 23:00:00', NULL, 'running', 0);
+    `);
+    const worker = await freshWorker();
+
+    const response = await worker.fetch(
+      new Request('http://localhost/api/forensics-refresh-status'),
+      { DB: d1Adapter(database) },
+      ctx(),
+    );
+
+    expect(await response.json()).toMatchObject({
+      proposal_agent: { run_id: 'github-running-1', status: 'running' },
+      proposal_agent_last_completed: {
+        run_id: 'github-complete-1',
+        completed_at: '2026-07-29 18:08:00',
+        proposals_queued: 2,
+      },
     });
   });
 

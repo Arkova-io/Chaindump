@@ -15,7 +15,11 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { query, tool, createSdkMcpServer } from "@anthropic-ai/claude-agent-sdk";
 import { z } from "zod";
-import { PROPOSAL_DATASETS, sanitizeSlug, buildRecord } from "./proposal.js";
+import {
+  PROPOSAL_DATASETS,
+  sanitizeSlug,
+  buildRecord,
+} from "./proposal.js";
 import { buildResearchSystemPrompt, DEFAULT_RESEARCH_TASK } from "./research.js";
 import { buildResearchRunId, postResearchRunStatus } from "./run-status.js";
 import { runResearchDeskLifecycle } from "./lifecycle.js";
@@ -77,9 +81,16 @@ const queueProposal = tool(
         "For analysis candidates: canonical entity id, exact field/claim, existing value if known, evidence, explicit as_of, source date/type/verification, causal reasoning, counterevidence/unknowns, and reviewer action. Never submit a full dossier replacement.",
       ),
     sources: z
-      .array(z.object({ title: z.string(), url: z.string().url() }))
+      .array(z.object({
+        id: z.string(),
+        title: z.string(),
+        url: z.string().url(),
+        source_type: z.string(),
+        verified_at: z.string(),
+        verification_result: z.enum(["resolved"]),
+      }))
       .min(1)
-      .describe("Resolving, authoritative sources — each must have been verified to load."),
+      .describe("Resolving, authoritative sources with stable ids and explicit verification metadata."),
     names_individuals: z
       .boolean()
       .describe("TRUE if this names a private individual or asserts fraud/crime. Forces human review (non-negotiable)."),

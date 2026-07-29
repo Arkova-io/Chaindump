@@ -4,6 +4,8 @@ import {
   REVIEW_REQUIRED_PROPOSAL_DATASETS,
   promotionPlan,
   proposalNeedsHumanReview,
+  researchCandidateSlug,
+  validateResearchCandidateProposal,
 } from '../src/lib/desk-promote.js';
 
 // Promoting a reviewed proposal into a live table must be injection-safe:
@@ -82,5 +84,45 @@ describe('promotionPlan', () => {
     expect(proposalNeedsHumanReview('dead_chains', true, 0.9)).toBe(true);
     expect(proposalNeedsHumanReview('dead_chains', false, 0.2)).toBe(true);
     expect(proposalNeedsHumanReview('dead_chains', false, NaN)).toBe(true);
+  });
+});
+
+describe('research candidate evidence contract', () => {
+  const payload = {
+    entity_id: 'Quantum Cats',
+    field_path: 'lifecycle.status',
+    claim: 'The current lifecycle state requires review.',
+    as_of: '2026-07-29',
+    source_refs: ['portal'],
+  };
+  const sources = [{
+    id: 'portal',
+    title: 'Taproot Wizards portal',
+    url: 'https://example.com/quantum-cats',
+    source_type: 'primary',
+    verified_at: '2026-07-29T18:00:00.000Z',
+    verification_result: 'resolved',
+  }];
+
+  it('derives one deterministic dedupe key per entity, field, and as-of date', () => {
+    expect(researchCandidateSlug(payload)).toBe('quantum-cats--lifecycle-status--2026-07-29');
+  });
+
+  it('accepts only citations explicitly referenced by the proposed claim', () => {
+    expect(validateResearchCandidateProposal(
+      'nft_lifecycle_candidate',
+      researchCandidateSlug(payload),
+      payload,
+      sources,
+    )).toMatchObject({ ok: true, canonicalSlug: 'quantum-cats--lifecycle-status--2026-07-29' });
+
+    const invalid = validateResearchCandidateProposal(
+      'nft_lifecycle_candidate',
+      researchCandidateSlug(payload),
+      { ...payload, source_refs: ['missing'] },
+      sources,
+    );
+    expect(invalid.ok).toBe(false);
+    expect(invalid.errors.join(' ')).toMatch(/missing/i);
   });
 });

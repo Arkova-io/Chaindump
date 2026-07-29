@@ -680,8 +680,9 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   casinoAnalysisData: null, casinoCoverage: null, casinoAnalysisError: '', casinoAnalysisQuery: '', casinoAnalysisSort: 'reviewed',
   casinoAnalysisStatus: 'all', casinoAnalysisKind: 'all', casinoAnalysisSubtype: 'all', casinoAnalysisToken: 'all', casinoAnalysisExpanded: null, casinoAnalysisDetails: {},
   nftCaseSort: 'name', nftCaseStatus: 'all', nftCaseChain: 'all',
-  forensicsRefresh: null, forensicsRefreshStatus: 'loading',
-  forensicsProposalAgent: null, forensicsProposalAgentStatus: 'loading' };
+  forensicsRefresh: null, forensicsRefreshStatus: 'loading', forensicsRefreshFreshness: null,
+  forensicsProposalAgent: null, forensicsProposalAgentStatus: 'loading', forensicsProposalAgentFreshness: null,
+  forensicsProposalAgentLastCompleted: null };
 
 const fmtUsd = (n) => n == null ? '—' : (n < 0 ? '-' : '') + '$' + Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 2 }).format(Math.abs(n));
 const fmtNum = (n) => n == null ? '—' : Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(n);
@@ -703,27 +704,38 @@ const safeUrl = (u) => { const s = String(u == null ? '' : u).trim(); return /^(
 // ---------------------------------------------------------------------------
 function forensicsRefreshText() {
   const refresh = state.forensicsRefresh;
+  const refreshFreshness = state.forensicsRefreshFreshness;
   let scan = 'Six-hour review scan: no completed scan recorded';
   if (state.forensicsRefreshStatus === 'loading') scan = 'Six-hour review scan: loading evidence-governance status…';
   else if (state.forensicsRefreshStatus === 'unavailable') scan = 'Six-hour review scan: status unavailable';
   else if (refresh) {
     const due = Number(refresh.due_nft || 0) + Number(refresh.due_exchange || 0) + Number(refresh.due_casino || 0) + Number(refresh.due_chain || 0);
-    scan = `Six-hour review scan: ${esc(refresh.completed_at || 'completed')} · ${esc(due)} dossier(s) due`;
+    const freshness = refreshFreshness?.state === 'stale'
+      ? 'STALE'
+      : refreshFreshness?.state === 'current' ? 'current' : refreshFreshness?.state || 'freshness unknown';
+    const nextDue = refreshFreshness?.next_due_at ? ` · next due ${esc(refreshFreshness.next_due_at)}` : '';
+    scan = `Six-hour review scan: ${esc(freshness)} · last completed ${esc(refreshFreshness?.last_completed_at || refresh.completed_at || 'unknown')}${nextDue} · ${esc(due)} dossier(s) due`;
   }
 
   const run = state.forensicsProposalAgent;
+  const runFreshness = state.forensicsProposalAgentFreshness;
+  const lastCompletedRun = state.forensicsProposalAgentLastCompleted;
+  const priorCompletion = lastCompletedRun?.completed_at
+    ? ` · last successful completion ${esc(lastCompletedRun.completed_at)}`
+    : '';
   let agent = 'Proposal research agent: no run recorded (opt-in workflow)';
   if (state.forensicsProposalAgentStatus === 'loading') agent = 'Proposal research agent: loading run status…';
   else if (state.forensicsProposalAgentStatus === 'unavailable') agent = 'Proposal research agent: status unavailable';
   else if (run?.status === 'running') {
-    const elapsed = Date.now() - Date.parse(run.started_at || '');
-    agent = Number.isFinite(elapsed) && elapsed > 45 * 60 * 1000
-      ? `Proposal research agent: interrupted or stale run since ${esc(run.started_at || 'unknown')}`
-      : `Proposal research agent: running since ${esc(run.started_at || 'unknown')}`;
+    agent = runFreshness?.state === 'stale'
+      ? `Proposal research agent: interrupted or STALE run since ${esc(run.started_at || 'unknown')}${priorCompletion}`
+      : `Proposal research agent: running since ${esc(run.started_at || 'unknown')}${priorCompletion}`;
   } else if (run?.status === 'completed') {
-    agent = `Proposal research agent: completed ${esc(run.completed_at || run.started_at || 'unknown')} · ${esc(run.proposals_queued || 0)} candidate(s) queued`;
+    const freshness = runFreshness?.state === 'stale' ? 'STALE' : runFreshness?.state || 'freshness unknown';
+    const nextDue = runFreshness?.next_due_at ? ` · next due ${esc(runFreshness.next_due_at)}` : '';
+    agent = `Proposal research agent: ${esc(freshness)} · completed ${esc(runFreshness?.last_completed_at || run.completed_at || run.started_at || 'unknown')}${nextDue} · ${esc(run.proposals_queued || 0)} candidate(s) queued`;
   } else if (run?.status === 'failed') {
-    agent = `Proposal research agent: failed ${esc(run.completed_at || run.started_at || 'unknown')}`;
+    agent = `Proposal research agent: failed ${esc(run.completed_at || run.started_at || 'unknown')}${priorCompletion}`;
   }
   return `${scan}<br>${agent} · proposal-only; human promotion required`;
 }
@@ -737,12 +749,18 @@ async function loadForensicsRefreshStatus() {
     const response = await fetch('/api/forensics-refresh-status');
     const payload = response.ok ? await response.json() : {};
     state.forensicsRefresh = payload.refresh || null;
+    state.forensicsRefreshFreshness = payload.refresh_freshness || null;
     state.forensicsProposalAgent = payload.proposal_agent || null;
+    state.forensicsProposalAgentFreshness = payload.proposal_agent_freshness || null;
+    state.forensicsProposalAgentLastCompleted = payload.proposal_agent_last_completed || null;
     state.forensicsRefreshStatus = response.ok ? 'loaded' : 'unavailable';
     state.forensicsProposalAgentStatus = response.ok && !payload.proposal_agent_error ? 'loaded' : 'unavailable';
   } catch {
     state.forensicsRefresh = null;
+    state.forensicsRefreshFreshness = null;
     state.forensicsProposalAgent = null;
+    state.forensicsProposalAgentFreshness = null;
+    state.forensicsProposalAgentLastCompleted = null;
     state.forensicsRefreshStatus = 'unavailable';
     state.forensicsProposalAgentStatus = 'unavailable';
   }
@@ -4681,7 +4699,7 @@ load();
 applyRoute();
 loadForensicsRefreshStatus();
 setInterval(load, 30000);
-setInterval(loadForensicsRefreshStatus, 6 * 60 * 60 * 1000);
+setInterval(loadForensicsRefreshStatus, 5 * 60 * 1000);
 // real-time refresh of whichever live-data tab is open (research tabs are static, skip them)
 const LIVE_REFRESH = { stables: loadStables, 'nft-analysis': loadNft, news: loadNews, markets: loadMarkets, power: loadPower };
 setInterval(() => {
