@@ -217,7 +217,7 @@ describe('summarizeExchangeCases', () => {
 
   it('reports trend-readiness gaps and predeclared falsifiers', () => {
     const cases = [
-      normalizeExchangeCase(row()),
+      normalizeExchangeCase(row({ feature_freshness_status: 'current' })),
       normalizeExchangeCase(row({
         slug: 'limited',
         lifecycle: 'mid',
@@ -245,5 +245,27 @@ describe('summarizeExchangeCases', () => {
         falsifier: expect.any(String),
       }),
     ]));
+  });
+
+  it('does not count stale or overdue records as current evidence', () => {
+    const cases = [
+      normalizeExchangeCase(row({
+        slug: 'current',
+        feature_freshness_status: 'current',
+        feature_next_review_at: '2099-01-01',
+      })),
+      normalizeExchangeCase(row({
+        slug: 'stale',
+        feature_freshness_status: 'stale',
+        feature_next_review_at: '2099-01-01',
+      })),
+      normalizeExchangeCase(row({
+        slug: 'overdue',
+        feature_freshness_status: 'current',
+        feature_next_review_at: '2020-01-01',
+      })),
+    ];
+
+    expect(summarizeExchangeCases(cases, 'dex').trendReadiness.currentEvidenceCases).toBe(1);
   });
 });

@@ -1347,9 +1347,14 @@ function exchangeAssociationRows(rows, labels = {}) {
     const interval = row.ci95 || {};
     const sample = `${row.successful || 0}/${row.sampleSize || 0} successful`;
     const uncertainty = `95% CI ${Math.round(Number(interval.low || 0) * 100)}–${Math.round(Number(interval.high || 0) * 100)}%`;
-    return `<div class="tagrow" aria-label="${esc(`${labels[row.key] || exchangeLabel(row.key)}: ${sample}; ${uncertainty}`)}">
-      <span class="tagn">${esc(labels[row.key] || exchangeLabel(row.key))}</span>
-      <span class="tagbarwrap"><span class="tagbar ${rate >= .5 ? 'good' : rate >= .25 ? 'warn' : 'muted'}" style="width:${(rate * 100).toFixed(1)}%"></span></span>
+    const rowLabel = labels[row.key] || exchangeLabel(row.key);
+    const ariaLabel = `${rowLabel}: ${sample}; ${uncertainty}`;
+    let tone = 'muted';
+    if (rate >= .5) tone = 'good';
+    else if (rate >= .25) tone = 'warn';
+    return `<div class="tagrow" aria-label="${esc(ariaLabel)}">
+      <span class="tagn">${esc(rowLabel)}</span>
+      <span class="tagbarwrap"><span class="tagbar ${tone}" style="width:${(rate * 100).toFixed(1)}%"></span></span>
       <span class="tagc">${Math.round(rate * 100)}%</span>
       <span class="muted"> · n=${esc(row.sampleSize || 0)} · ${esc(uncertainty)}${row.smallSample ? ' · small sample' : ''}</span>
     </div>`;

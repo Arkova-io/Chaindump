@@ -93,6 +93,16 @@ function associationGroups(items, keyFor, populationRate) {
     .sort((a, b) => b.sampleSize - a.sampleSize || a.key.localeCompare(b.key));
 }
 
+function isCurrentEvidence(row, asOfDate) {
+  const freshness = row.analysis?.freshness || {};
+  return row.analysis?.data_quality?.label !== 'limited'
+    && freshness.status === 'current'
+    && Boolean(freshness.last_verified_at)
+    && freshness.last_verified_at <= asOfDate
+    && Boolean(freshness.next_review_at)
+    && freshness.next_review_at >= asOfDate;
+}
+
 export function normalizeExchangeCase(row) {
   const profile = parse(row.profile, {});
   const chains = parse(row.feature_chains, profile.chains || []);
@@ -191,6 +201,7 @@ export function normalizeExchangeCase(row) {
 
 export function summarizeExchangeCases(cases, kind) {
   const scoped = cases.filter((row) => row.kind === kind);
+  const asOfDate = new Date().toISOString().slice(0, 10);
   const comparison = new Map();
   const products = new Map();
   const chains = new Map();
@@ -293,10 +304,7 @@ export function summarizeExchangeCases(cases, kind) {
     totalCases: scoped.length,
     causalDossiers: scoped.filter((row) => row.analysis?.forensic_analysis_status === 'published').length,
     documentedTokenCases: scoped.filter((row) => row.analysis?.token?.evidence_level === 'documented').length,
-    currentEvidenceCases: scoped.filter((row) => (
-      row.analysis?.freshness?.last_verified_at
-      && row.analysis?.data_quality?.label !== 'limited'
-    )).length,
+    currentEvidenceCases: scoped.filter((row) => isCurrentEvidence(row, asOfDate)).length,
     comparableMetricGroups: [...comparison.values()].filter((group) => group.count >= 2).length,
   };
   const hypotheses = [
