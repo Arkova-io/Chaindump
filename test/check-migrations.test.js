@@ -96,6 +96,17 @@ describe('checkMigrationsDir', () => {
     expect(errors).toEqual([expect.stringContaining('CREATE TEMP TABLE')]);
   });
 
+  it('also flags the TEMPORARY spelling', () => {
+    write(
+      '0001_temporary_table.sql',
+      'CREATE TEMPORARY TABLE migration_stage (id INTEGER);\nDROP TABLE migration_stage;',
+    );
+
+    const { errors } = checkMigrationsDir(dir);
+
+    expect(errors).toEqual([expect.stringContaining('CREATE TEMP TABLE')]);
+  });
+
   it('accepts a normal staging table bracketed by DROP statements', () => {
     write(
       '0001_staging_table.sql',
