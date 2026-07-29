@@ -19,6 +19,7 @@ import { DEX_CATEGORIES, aggregateBreakdown, feedIsDegenerate, selectCandidates,
 import { renderSsrRows } from './lib/ssr-rows.js';
 import { CHAIN_DOSSIER_DIMENSIONS } from './lib/chain-dossier.js';
 import { normalizeExchangeCase, summarizeExchangeCases } from './lib/exchange-analysis.js';
+import { buildNftLifecycleAnalysis } from './lib/nft-lifecycle-analysis.js';
 
 const ENV = {};
 const app = new Hono();
@@ -2361,8 +2362,6 @@ app.get('/api/nft', wrap(async (req, res) => {
         freshness,
       };
     });
-    let analysis = null;
-    try { const m = await dbQuery(`SELECT v, updated_at FROM graveyard_meta WHERE k='nft_analysis' LIMIT 1`); if (m[0]) analysis = { text: m[0].v, updated_at: m[0].updated_at }; } catch (e) {}
     // aggregate lifecycle stats from profiles
     const nums = (f) => collections.map((c) => c.profile && c.profile[f]).filter((x) => typeof x === 'number' && isFinite(x));
     const avg = (arr) => arr.length ? +(arr.reduce((a, b) => a + b, 0) / arr.length).toFixed(1) : null;
@@ -2387,6 +2386,7 @@ app.get('/api/nft', wrap(async (req, res) => {
     } catch (e) {}
 
     const fieldCitedCount = collections.filter((c) => c.citation.fieldCited).length;
+    const analysis = buildNftLifecycleAnalysis(collections);
     res.json({
       collections, count: collections.length, analysis, statusCounts, market,
       citationCoverage: { fieldCitedCount, legacyCount: collections.length - fieldCitedCount },
