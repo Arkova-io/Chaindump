@@ -23,9 +23,11 @@ permissions:
   contents: read
 
 concurrency:
-  # Never let two deploys race; a newer main supersedes an in-flight one.
+  # A production approval is revision-specific. If a newer main arrives while
+  # an older run is waiting for approval, cancel the stale run so it cannot hold
+  # this concurrency slot forever or be approved after it has been superseded.
   group: deploy-production
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   verify:
@@ -63,19 +65,19 @@ jobs:
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       - name: Deploy Worker
-        run: npx wrangler deploy
+        # The health route returns this revision so the smoke test can reject a
+        # healthy-but-stale Worker rather than treating any historical 200 as good.
+        run: npx wrangler deploy --var "BUILD_SHA:${GITHUB_SHA}"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       - name: Post-deploy smoke check
         # Give the edge a moment to propagate (~5-15s per CLAUDE.md §3.2), then
-        # confirm the live site answers 200 before calling the deploy good.
+        # prove the exact revision, Worker APIs, seeded exchange cohort and the
+        # four-link Forensics shell are all live before calling the deploy good.
         run: |
           sleep 20
-          for i in 1 2 3 4 5; do
-            code=$(curl -s -o /dev/null -w '%{http_code}' https://chaindump.xyz/api/health || echo 000)
-            echo "attempt $i: /api/health -> $code"
-            if [ "$code" = "200" ]; then exit 0; fi
-            sleep 10
-          done
-          echo "Smoke check did not see a 200 from /api/health (may be propagation lag; verify manually)."
-          exit 1
+          node scripts/smoke-production.mjs \
+            --base https://chaindump.xyz \
+            --revision "$GITHUB_SHA" \
+            --attempts 5 \
+            --delay 10000
