@@ -103,6 +103,65 @@ function isCurrentEvidence(row, asOfDate) {
     && freshness.next_review_at >= asOfDate;
 }
 
+function buildOutcomeAssociations(scoped) {
+  const overall = outcomeEstimate(scoped, null);
+  const populationRate = overall.successRate;
+  const tokenGroup = (row) => {
+    if (row.analysis?.token?.status !== 'launched') return 'not_identified';
+    return row.analysis.token.evidence_level === 'documented'
+      ? 'documented_launched'
+      : 'launched_unverified';
+  };
+  return {
+    overall,
+    tokenLaunch: associationGroups(scoped, tokenGroup, populationRate),
+    productCohort: associationGroups(
+      scoped,
+      (row) => row.analysis?.product_cohort || 'unclassified',
+      populationRate,
+    ),
+    primaryChain: associationGroups(
+      scoped,
+      (row) => row.primary_chain || 'unknown',
+      populationRate,
+    ),
+    method: 'Descriptive association only. Success is the published successful lifecycle; mid and dead are non-success outcomes. Rates use 95% Wilson score intervals. Risk differences compare each observed group with this kind-wide population and are not adjusted causal effects.',
+  };
+}
+
+function buildTrendReadiness(scoped, comparison, asOfDate) {
+  return {
+    totalCases: scoped.length,
+    causalDossiers: scoped.filter((row) => row.analysis?.forensic_analysis_status === 'published').length,
+    documentedTokenCases: scoped.filter((row) => row.analysis?.token?.evidence_level === 'documented').length,
+    currentEvidenceCases: scoped.filter((row) => isCurrentEvidence(row, asOfDate)).length,
+    comparableMetricGroups: [...comparison.values()].filter((group) => group.count >= 2).length,
+  };
+}
+
+function buildHypotheses() {
+  return [
+    {
+      variable: 'token_launch',
+      hypothesis: 'Documented token launch may correlate with liquidity bootstrapping or governance coordination, while poorly matched emissions can correlate with later decline.',
+      causalClaim: false,
+      falsifier: 'Within comparable product cohorts and launch eras, the rate difference disappears or reverses after separating token timing, incentive design, and evidence quality.',
+    },
+    {
+      variable: 'primary_chain',
+      hypothesis: 'Host-chain distribution, fees, wallet reach, and liquidity can shape venue adoption, but chain labels also proxy launch era and product type.',
+      causalClaim: false,
+      falsifier: 'Matched venues on the same product model show no persistent chain-context difference after controlling for launch cohort and token incentives.',
+    },
+    {
+      variable: 'product_cohort',
+      hypothesis: 'Focused product design and distribution may be more predictive than a generic DEX/CEX label.',
+      causalClaim: false,
+      falsifier: 'Cohort-level rate differences do not survive larger samples, explicit selection dates, and consistent lifecycle follow-up windows.',
+    },
+  ];
+}
+
 export function normalizeExchangeCase(row) {
   const profile = parse(row.profile, {});
   const chains = parse(row.feature_chains, profile.chains || []);
@@ -277,56 +336,9 @@ export function summarizeExchangeCases(cases, kind) {
     };
   }
 
-  const overallEstimate = outcomeEstimate(scoped, null);
-  const populationRate = overallEstimate.successRate;
-  const tokenGroup = (row) => {
-    if (row.analysis?.token?.status !== 'launched') return 'not_identified';
-    return row.analysis.token.evidence_level === 'documented'
-      ? 'documented_launched'
-      : 'launched_unverified';
-  };
-  const outcomeAssociations = {
-    overall: overallEstimate,
-    tokenLaunch: associationGroups(scoped, tokenGroup, populationRate),
-    productCohort: associationGroups(
-      scoped,
-      (row) => row.analysis?.product_cohort || 'unclassified',
-      populationRate,
-    ),
-    primaryChain: associationGroups(
-      scoped,
-      (row) => row.primary_chain || 'unknown',
-      populationRate,
-    ),
-    method: 'Descriptive association only. Success is the published successful lifecycle; mid and dead are non-success outcomes. Rates use 95% Wilson score intervals. Risk differences compare each observed group with this kind-wide population and are not adjusted causal effects.',
-  };
-  const trendReadiness = {
-    totalCases: scoped.length,
-    causalDossiers: scoped.filter((row) => row.analysis?.forensic_analysis_status === 'published').length,
-    documentedTokenCases: scoped.filter((row) => row.analysis?.token?.evidence_level === 'documented').length,
-    currentEvidenceCases: scoped.filter((row) => isCurrentEvidence(row, asOfDate)).length,
-    comparableMetricGroups: [...comparison.values()].filter((group) => group.count >= 2).length,
-  };
-  const hypotheses = [
-    {
-      variable: 'token_launch',
-      hypothesis: 'Documented token launch may correlate with liquidity bootstrapping or governance coordination, while poorly matched emissions can correlate with later decline.',
-      causalClaim: false,
-      falsifier: 'Within comparable product cohorts and launch eras, the rate difference disappears or reverses after separating token timing, incentive design, and evidence quality.',
-    },
-    {
-      variable: 'primary_chain',
-      hypothesis: 'Host-chain distribution, fees, wallet reach, and liquidity can shape venue adoption, but chain labels also proxy launch era and product type.',
-      causalClaim: false,
-      falsifier: 'Matched venues on the same product model show no persistent chain-context difference after controlling for launch cohort and token incentives.',
-    },
-    {
-      variable: 'product_cohort',
-      hypothesis: 'Focused product design and distribution may be more predictive than a generic DEX/CEX label.',
-      causalClaim: false,
-      falsifier: 'Cohort-level rate differences do not survive larger samples, explicit selection dates, and consistent lifecycle follow-up windows.',
-    },
-  ];
+  const outcomeAssociations = buildOutcomeAssociations(scoped);
+  const trendReadiness = buildTrendReadiness(scoped, comparison, asOfDate);
+  const hypotheses = buildHypotheses();
 
   return {
     kind,
