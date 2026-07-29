@@ -985,6 +985,7 @@ function normalizeExchangeResearchCase(row) {
     custodyModel: analysis.custody_model || '',
     token: parsedObject(analysis.token),
     freshness: parsedObject(analysis.freshness),
+    forensicStatus: analysis.forensic_analysis_status || (forensic ? 'published' : 'pending'),
     qualityLabel: quality.label || 'limited',
     qualityIssues: Array.isArray(quality.issues) ? quality.issues : [],
     evidence: parsedObject(analysis.evidence),
@@ -1124,6 +1125,7 @@ function exchangeAnalysisCard(row) {
   if (row.primaryChain) meta.push(row.primaryChain);
   if (row.launched) meta.push(`launched ${row.launched}`);
   meta.push(`data quality: ${row.qualityLabel}`);
+  meta.push(`forensic dossier: ${row.forensicStatus === 'published' ? 'published' : 'pending review'}`);
   const sourceLabel = row.sources.length === 1 ? 'source' : 'sources';
   meta.push(`${row.sources.length} ${sourceLabel}`);
   const dossierLink = `/exchange/${encodeURIComponent(row.kind)}/${encodeURIComponent(row.lifecycle)}/${encodeURIComponent(row.slug)}`;
@@ -1191,7 +1193,7 @@ function renderExchangeAnalysis() {
   const cohorts = [...new Set(rows.map((row) => row.productCohort))]
     .sort((a, b) => a.localeCompare(b));
   el.innerHTML = `${head}${errors}
-    <div class="gstats">${gstat(rows.filter(r=>r.kind==='dex').length, 'DEX cases')}${gstat(rows.filter(r=>r.kind==='cex').length, 'CEX cases')}${gstat(rows.filter(r=>r.qualityLabel==='verified').length, 'verified')}${gstat(rows.filter(r=>r.qualityLabel==='partial').length, 'partial')}</div>
+    <div class="gstats">${gstat(rows.filter(r=>r.kind==='dex').length, 'DEX cases')}${gstat(rows.filter(r=>r.kind==='cex').length, 'CEX cases')}${gstat(rows.filter(r=>r.forensicStatus==='published').length, 'forensic dossiers')}${gstat(rows.filter(r=>r.qualityLabel==='partial').length, 'partial')}</div>
     <div class="analysis-note">${cited} of ${rows.length} dossiers expose citations. Comparison requires the same venue kind, product cohort, metric type, unit, and window. Spot, routed, perpetual, TVL, loss, daily, and quarterly measures are never added together.</div>
     ${exchangeTrendSummary(state.exchangeAnalysisSummaries.dex, 'DEX')}
     ${exchangeTrendSummary(state.exchangeAnalysisSummaries.cex, 'CEX')}
