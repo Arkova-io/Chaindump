@@ -122,6 +122,25 @@ describe('NFT forensic normalization wave', () => {
     expect(migration).toBe(renderNftForensicNormalizationMigration(document));
   });
 
+  it('rejects a normalization manifest when a profile citation has no source record', () => {
+    const invalidDocument = structuredClone(document);
+    const dossier = invalidDocument.dossiers[0];
+    const citedSourceId = dossier.profile.forensic_analysis.outcome.source_refs[0];
+    dossier.sources = dossier.sources.filter(({ id }) => id !== citedSourceId);
+
+    expect(() => renderNftForensicNormalizationMigration(invalidDocument))
+      .toThrow(`unresolved source reference ${JSON.stringify(citedSourceId)}`);
+  });
+
+  it('rejects a normalization dossier with fewer than four explicit unknowns', () => {
+    const invalidDocument = structuredClone(document);
+    const dossier = invalidDocument.dossiers[0];
+    dossier.profile.forensic_analysis.unknowns = dossier.profile.forensic_analysis.unknowns.slice(0, 3);
+
+    expect(() => renderNftForensicNormalizationMigration(invalidDocument))
+      .toThrow(`${dossier.slug}: needs at least four explicit unknowns`);
+  });
+
   it('publishes source-resolved causal depth with honest inference boundaries', () => {
     for (const dossier of document.dossiers) {
       const analysis = dossier.profile.forensic_analysis;
@@ -225,11 +244,16 @@ describe('NFT forensic normalization wave', () => {
       expect(priorToken).not.toEqual(currentToken);
       expect(priorChain).not.toEqual(currentChain);
       const manifestSources = resolver(dossier.sources);
-      expect(current.sources).toEqual(prior.sources.map((source) => ({
-        ...source,
-        checked_at: '2026-07-29',
-        ...(manifestSources[source.id] || {}),
-      })));
+      const priorSourceIds = new Set(prior.sources.map(({ id }) => id));
+      expect(current.sources).toEqual([
+        ...prior.sources.map((source) => ({
+          ...source,
+          ...(manifestSources[source.id] || {}),
+        })),
+        ...dossier.sources
+          .filter(({ id }) => !priorSourceIds.has(id))
+          .map((source) => ({ ...source })),
+      ]);
 
       const databaseSources = resolver(current.sources);
       expect(validateFieldCitedNft(current.profile, current.sources), dossier.slug)
@@ -259,7 +283,6 @@ describe('NFT forensic normalization wave', () => {
         }
       }
     }
-
     const untouched = before.filter(({ slug }) => !expectedSlugs.includes(slug));
     expect(first.filter(({ slug }) => !expectedSlugs.includes(slug))).toEqual(untouched);
 
@@ -267,9 +290,71 @@ describe('NFT forensic normalization wave', () => {
     expect(snapshot(database)).toEqual(first);
     expect(database.prepare(`
       SELECT COUNT(*) AS count
-      FROM sqlite_temp_master
+      FROM sqlite_master
       WHERE type = 'table' AND name = 'nft_forensic_normalization_0058'
     `).get().count).toBe(0);
+  });
+
+  it('appends missing manifest sources without rewriting unmatched source freshness', () => {
+    database = createCorpus(57);
+    const dossier = document.dossiers.find(({ sources }) => sources.length > 1);
+    const sourceToAppend = dossier.sources.at(-1);
+    const profileBefore = JSON.parse(database.prepare(`
+      SELECT profile FROM nft_collections WHERE slug = ?
+    `).get(dossier.slug).profile);
+    const sourcesBefore = JSON.parse(database.prepare(`
+      SELECT sources FROM nft_collections WHERE slug = ?
+    `).get(dossier.slug).sources);
+    const matchedSource = {
+      ...sourcesBefore[0],
+      custom_archive_note: 'preserve this existing metadata',
+    };
+    const legacySource = {
+      ...sourcesBefore[0],
+      id: 'legacy-extra-source',
+      title: 'Legacy source retained for provenance',
+      url: 'https://example.com/legacy-source',
+      checked_at: '2026-06-01',
+    };
+    database.prepare(`
+      UPDATE nft_collections SET sources = ? WHERE slug = ?
+    `).run(
+      JSON.stringify([
+        matchedSource,
+        ...sourcesBefore.slice(1).filter(({ id }) => id !== sourceToAppend.id),
+        legacySource,
+      ]),
+      dossier.slug,
+    );
+
+    database.exec(migration);
+    const current = parseRow(database.prepare(`
+      SELECT profile, sources FROM nft_collections WHERE slug = ?
+    `).get(dossier.slug));
+    const currentSources = resolver(current.sources);
+
+    expect(currentSources[matchedSource.id])
+      .toMatchObject({ custom_archive_note: 'preserve this existing metadata' });
+    expect(currentSources[legacySource.id])
+      .toMatchObject({ checked_at: '2026-06-01' });
+    expect(currentSources[sourceToAppend.id])
+      .toMatchObject({ url: sourceToAppend.url, checked_at: '2026-07-29' });
+    expect(dossier.sources.every(({ id }) => currentSources[id])).toBe(true);
+    expect(validateFieldCitedNft(current.profile, current.sources))
+      .toEqual({ valid: true, errors: [] });
+    expect(validateForensicAnalysis(current.profile.forensic_analysis, {
+      resolver: currentSources,
+    })).toEqual({
+      errors: [],
+      warnings: [],
+      withheld_sections: [],
+    });
+    expect(current.profile).toMatchObject({
+      ...profileBefore,
+      forensic_analysis: dossier.profile.forensic_analysis,
+      token_model: dossier.profile.token_model,
+      chain_dependence: dossier.profile.chain_dependence,
+    });
   });
 
   it('finishes a 51-of-51 validator-clean normalized NFT corpus after 0057 and 0058', () => {

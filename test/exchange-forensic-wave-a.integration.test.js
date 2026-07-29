@@ -27,14 +27,6 @@ const expectedSlugs = [
   'bitmart',
 ];
 
-function migrationDocument() {
-  const match = migration.match(
-    /-- canonical-payload-start[\s\S]*?VALUES \('([\s\S]*?)'\) -- NOSONAR:[^\n]*\n\)\nINSERT OR REPLACE/,
-  );
-  if (!match) throw new Error('0059 canonical payload not found');
-  return JSON.parse(match[1].replaceAll("''", "'"));
-}
-
 function applyMigrations(database, through = 59) {
   const migrationDirectory = new URL('../migrations/', import.meta.url);
   const files = readdirSync(migrationDirectory)
@@ -97,14 +89,20 @@ afterEach(() => {
 });
 
 describe('exchange forensic wave A migration 0059', () => {
-  it('keeps the generated SQL payload identical to the checked research manifest', () => {
-    expect(migrationDocument()).toEqual(document);
+  it('keeps one bounded generated statement per checked research case', () => {
     expect(migration).not.toMatch(/\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i);
+    expect(migration).toContain('-- batched-payload-start');
+    expect(migration.match(
+      /INSERT OR REPLACE INTO exchange_forensic_wave_a_0059\n/g,
+    )).toHaveLength(document.cases.length);
     expect(document.schema).toBe('chaindump-exchange-forensic-wave-a-v1');
     expect(document.research_as_of).toBe('2026-07-29');
     expect(document.cases.map(({ slug }) => slug)).toEqual(expectedSlugs);
     expect(document.cases.filter(({ kind }) => kind === 'dex')).toHaveLength(4);
     expect(document.cases.filter(({ kind }) => kind === 'cex')).toHaveLength(9);
+    for (const entry of document.cases) {
+      expect(migration, entry.slug).toContain(`  '${entry.slug.replaceAll("'", "''")}',`);
+    }
   });
 
   it('publishes complete, resolving forensic analyses with source freshness metadata', () => {
@@ -163,7 +161,7 @@ describe('exchange forensic wave A migration 0059', () => {
     `).get()).toEqual(untouchedBefore);
     expect(database.prepare(`
       SELECT COUNT(*) AS count
-      FROM sqlite_temp_master
+      FROM sqlite_master
       WHERE type = 'table' AND name = 'exchange_forensic_wave_a_0059'
     `).get().count).toBe(0);
   });
@@ -177,10 +175,15 @@ describe('exchange forensic wave A migration 0059', () => {
       WHERE kind = 'dex' AND slug = 'spiritswap'
     `).get().count).toBe(0);
     const spirit = database.prepare(`
-      SELECT verdict, why_stuck, profile
+      SELECT venue_type, name, launched, verdict, why_stuck, profile
       FROM mid_exchanges
       WHERE kind = 'dex' AND slug = 'spiritswap'
     `).get();
+    expect(spirit).toMatchObject({
+      venue_type: 'exchange',
+      name: 'SpiritSwap',
+      launched: '2021-04',
+    });
     expect(spirit.verdict).toBe('declining');
     expect(spirit.why_stuck).toContain('rescue');
     expect(JSON.parse(spirit.profile)).toMatchObject({
@@ -205,6 +208,44 @@ describe('exchange forensic wave A migration 0059', () => {
       forensic_analysis: { outcome: { label: 'failed' } },
     });
     expect(JSON.parse(deus.profile).scope).toContain('not every current DEUS-branded');
+  });
+
+  it('preserves SpiritSwap identity fields when migration 0059 is replayed', () => {
+    database = new DatabaseSync(':memory:');
+    applyMigrations(database, 58);
+    database.prepare(`
+      UPDATE dead_exchanges
+      SET venue_type = ?, name = ?, launched = ?
+      WHERE kind = 'dex' AND slug = 'spiritswap'
+    `).run('forensic-amm', 'SpiritSwap canonical', '2021-04-20');
+
+    database.exec(migration);
+    expect(database.prepare(`
+      SELECT venue_type, name, launched
+      FROM mid_exchanges
+      WHERE kind = 'dex' AND slug = 'spiritswap'
+    `).get()).toEqual({
+      venue_type: 'forensic-amm',
+      name: 'SpiritSwap canonical',
+      launched: '2021-04-20',
+    });
+
+    database.prepare(`
+      UPDATE mid_exchanges
+      SET venue_type = ?, name = ?, launched = ?
+      WHERE kind = 'dex' AND slug = 'spiritswap'
+    `).run('corrected-amm', 'SpiritSwap corrected', '2021-04-30');
+    database.exec(migration);
+
+    expect(database.prepare(`
+      SELECT venue_type, name, launched
+      FROM mid_exchanges
+      WHERE kind = 'dex' AND slug = 'spiritswap'
+    `).get()).toEqual({
+      venue_type: 'corrected-amm',
+      name: 'SpiritSwap corrected',
+      launched: '2021-04-30',
+    });
   });
 
   it('keeps BitMEX and BitMart as announced wind-downs and removes unsupported causes', () => {

@@ -16,6 +16,9 @@
 //   3. No TEMP tables. Cloudflare D1's remote query authorizer rejects
 //      CREATE TEMP TABLE with SQLITE_AUTH even though local SQLite accepts it.
 //      Generated staging tables must use a normal table bracketed by DROP TABLE.
+//   4. Keep every SQL statement below a conservative 95 KB. D1 rejects larger
+//      statements with SQLITE_TOOBIG even when the migration file itself is valid.
+//      Research waves must emit one bounded statement per dossier.
 //
 // Migrations 0001–0009 predate this guard and were loaded out-of-band (0001 is a
 // bulk backup dump). None of them actually contain the literal text this guard
@@ -27,6 +30,122 @@ import { pathToFileURL } from 'node:url';
 
 const TRANSACTION_TEXT_RE = /\bBEGIN\s+TRANSACTION\b|\bCOMMIT\s*;/i;
 const TEMP_TABLE_RE = /\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i;
+export const MAX_D1_STATEMENT_BYTES = 95_000;
+const QUOTED_SQL_DELIMITERS = new Set(["'", '"', '`']);
+
+function isWordStart(character) {
+  return (
+    character === '_'
+    || (character >= 'A' && character <= 'Z')
+    || (character >= 'a' && character <= 'z')
+  );
+}
+
+function isWordCharacter(character) {
+  return isWordStart(character) || (character >= '0' && character <= '9');
+}
+
+function skipDelimitedToken(sql, start, delimiter) {
+  for (let index = start + 1; index < sql.length; index += 1) {
+    if (sql[index] !== delimiter) continue;
+    if (sql[index + 1] === delimiter) {
+      index += 1;
+      continue;
+    }
+    return index + 1;
+  }
+  return sql.length;
+}
+
+function ignoredTokenEnd(sql, start) {
+  const current = sql[start];
+  if (QUOTED_SQL_DELIMITERS.has(current)) return skipDelimitedToken(sql, start, current);
+  if (current === '[') {
+    const closing = sql.indexOf(']', start + 1);
+    return closing === -1 ? sql.length : closing + 1;
+  }
+  const pair = sql.slice(start, start + 2);
+  if (pair === '--') {
+    const newline = sql.indexOf('\n', start + 2);
+    return newline === -1 ? sql.length : newline + 1;
+  }
+  if (pair === '/*') {
+    const closing = sql.indexOf('*/', start + 2);
+    return closing === -1 ? sql.length : closing + 2;
+  }
+  return null;
+}
+
+function nextSqlToken(sql, start) {
+  const ignoredEnd = ignoredTokenEnd(sql, start);
+  if (ignoredEnd !== null) return { kind: 'ignored', end: ignoredEnd };
+  const current = sql[start];
+  if (current === ';') return { kind: 'semicolon', end: start + 1 };
+  if (!isWordStart(current)) return { kind: 'ignored', end: start + 1 };
+  let end = start + 1;
+  while (end < sql.length && isWordCharacter(sql[end])) end += 1;
+  return { kind: 'word', word: sql.slice(start, end).toUpperCase(), end };
+}
+
+function beginsTrigger(prefixWords) {
+  return (
+    prefixWords[0] === 'CREATE'
+    && (
+      prefixWords[1] === 'TRIGGER'
+      || (
+        ['TEMP', 'TEMPORARY'].includes(prefixWords[1])
+        && prefixWords[2] === 'TRIGGER'
+      )
+    )
+  );
+}
+
+function nextTriggerState(state, word) {
+  if (!state.active) return state;
+  if (!state.bodyStarted) {
+    return word === 'BEGIN' ? { ...state, bodyStarted: true, depth: 1 } : state;
+  }
+  if (word === 'BEGIN' || word === 'CASE') return { ...state, depth: state.depth + 1 };
+  if (word === 'END') return { ...state, depth: Math.max(0, state.depth - 1) };
+  return state;
+}
+
+export function sqlStatementByteLengths(sql) {
+  const lengths = [];
+  let statementStart = 0;
+  let prefixWords = [];
+  let trigger = { active: false, bodyStarted: false, depth: 0 };
+
+  for (let index = 0; index < sql.length;) {
+    const token = nextSqlToken(sql, index);
+    if (token.kind === 'word') {
+      const { word } = token;
+      if (prefixWords.length < 3) prefixWords.push(word);
+      if (beginsTrigger(prefixWords)) trigger = { ...trigger, active: true };
+      trigger = nextTriggerState(trigger, word);
+      index = token.end;
+      continue;
+    }
+    if (
+      token.kind !== 'semicolon'
+      || (trigger.active && (!trigger.bodyStarted || trigger.depth > 0))
+    ) {
+      index = token.end;
+      continue;
+    }
+    const statementEnd = token.end;
+    lengths.push(Buffer.byteLength(sql.slice(statementStart, statementEnd), 'utf8'));
+    statementStart = statementEnd;
+    prefixWords = [];
+    trigger = { active: false, bodyStarted: false, depth: 0 };
+    index = token.end;
+  }
+
+  if (sql.slice(statementStart).trim()) {
+    lengths.push(Buffer.byteLength(sql.slice(statementStart), 'utf8'));
+  }
+  return lengths;
+}
 
 export function checkMigrationsDir(dir) {
   const files = readdirSync(dir)
@@ -65,6 +184,14 @@ export function checkMigrationsDir(dir) {
       errors.push(
         `${f}: contains CREATE TEMP TABLE, which Cloudflare D1 rejects remotely with ` +
           `SQLITE_AUTH. Use a normal staging table with DROP TABLE before and after it.`,
+      );
+    }
+    const largestStatement = Math.max(0, ...sqlStatementByteLengths(sql));
+    if (largestStatement > MAX_D1_STATEMENT_BYTES) {
+      errors.push(
+        `${f}: contains a ${largestStatement}-byte SQL statement; Cloudflare D1 rejects ` +
+          `oversized statements with SQLITE_TOOBIG. Keep each statement at or below ` +
+          `${MAX_D1_STATEMENT_BYTES} bytes by batching one dossier per statement.`,
       );
     }
   }
