@@ -21,14 +21,16 @@ import { buildResearchSystemPrompt, DEFAULT_RESEARCH_TASK } from "./research.js"
 const MCP_URL = process.env.CHAINDUMP_MCP_URL || "https://chaindump-mcp-270018525501.us-central1.run.app/mcp";
 const QUEUE_DIR = process.env.DESK_QUEUE_DIR || "./proposals";
 const MODEL = process.env.DESK_MODEL || "claude-sonnet-5";
-const MAX_TURNS = Number(process.env.DESK_MAX_TURNS) || 40;
+const MAX_TURNS = Number(process.env.DESK_MAX_TURNS) || 20;
 const CHAINDUMP_BASE = (process.env.CHAINDUMP_BASE_URL || "https://chaindump.xyz").replace(/\/$/, "");
 const DESK_PROPOSAL_TOKEN = process.env.DESK_PROPOSAL_TOKEN || process.env.DESK_TOKEN;
+let proposalPersistenceFailures = 0;
 
 // Persist a proposal to the durable, human-reviewed queue via the Worker's
-// authenticated write path (/api/desk/propose). Falls back to a local file when
-// DESK_PROPOSAL_TOKEN isn't set (offline/dev) or on a transient POST failure. Returns
-// where it landed, for the tool's confirmation text.
+// authenticated write path (/api/desk/propose). Falls back to a local file only
+// when DESK_PROPOSAL_TOKEN isn't set (offline/dev). A configured remote queue
+// must fail loudly: a GitHub runner's local filesystem is ephemeral and cannot
+// safely masquerade as durable persistence.
 async function tryPostProposal(record: unknown): Promise<boolean> {
   if (!DESK_PROPOSAL_TOKEN) return false;
   try {
@@ -38,11 +40,11 @@ async function tryPostProposal(record: unknown): Promise<boolean> {
       body: JSON.stringify(record),
     });
     if (r.ok) return true;
-    console.error(`[desk] propose ${r.status}; falling back to local file`);
+    throw new Error(`proposal queue returned HTTP ${r.status}`);
   } catch (e) {
-    console.error("[desk] propose failed; falling back to local file:", e instanceof Error ? e.message : e);
+    proposalPersistenceFailures += 1;
+    throw new Error(`proposal queue write failed: ${e instanceof Error ? e.message : e}`);
   }
-  return false;
 }
 
 async function persistProposal(dataset: string, slug: string, record: unknown): Promise<string> {
@@ -145,6 +147,9 @@ async function runDesk(task: string): Promise<void> {
     for (const block of message.message.content) {
       if (block.type === "tool_use" && block.name === "mcp__desk__queue_proposal") proposals += 1;
     }
+  }
+  if (proposalPersistenceFailures > 0) {
+    throw new Error(`${proposalPersistenceFailures} proposal queue write(s) failed; no ephemeral fallback was accepted`);
   }
 }
 

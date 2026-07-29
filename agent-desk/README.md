@@ -92,4 +92,6 @@ Environment variables: `ANTHROPIC_API_KEY` (required),
 `DESK_TASK`, `DESK_MODEL`, `DESK_MAX_TURNS`, and `DESK_QUEUE_DIR`.
 `DESK_TOKEN` remains a temporary proposal-only migration fallback. Without a
 proposal token, local development falls back to JSON files in `./proposals`;
-the scheduled workflow validates both required secrets before running.
+the scheduled workflow validates both required secrets before running. When a
+proposal token is configured, a failed queue write fails the run instead of
+falling back to the ephemeral runner filesystem.

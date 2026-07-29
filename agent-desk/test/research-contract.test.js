@@ -53,4 +53,14 @@ describe("scheduled workflow safety contract", () => {
     expect(workflow).not.toContain("/api/desk/promote");
     expect(workflow).not.toContain("contents: write");
   });
+
+  it("keeps the documented and runtime default turn budget aligned", () => {
+    const entrypoint = readFileSync(
+      new URL("../src/index.ts", import.meta.url),
+      "utf8",
+    );
+    expect(entrypoint).toContain('Number(process.env.DESK_MAX_TURNS) || 20');
+    expect(entrypoint).toContain("no ephemeral fallback was accepted");
+    expect(entrypoint).not.toContain("falling back to local file");
+  });
 });
