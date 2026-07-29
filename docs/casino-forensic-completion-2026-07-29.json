@@ -1,0 +1,428 @@
+{
+  "schema": "forensic-analysis-v1",
+  "as_of": "2026-07-29",
+  "generated_migration": "0056_casino_forensic_completion.sql",
+  "scope_note": "This completion wave upgrades the four already-published Web3 casino records that lacked the shared causal evidence contract. Conclusions remain scoped to the named protocol or product. Current documentation proves product design and maintained surfaces, not profitability, legal availability, liquidity quality, or commercial success. An explicitly current review can conclude that operating status is unknown when the latest product-specific evidence is stale.",
+  "cases": [
+    {
+      "case_id": "azuro",
+      "source_urls": [
+        "https://gem.azuro.org/knowledge-hub/introduction/what-is-azuro",
+        "https://gem.azuro.org/hub/blockchains/deployment-addresses",
+        "https://gem.azuro.org/knowledge-hub/azur/tokenomics",
+        "https://gem.azuro.org/knowledge-hub/azur/st-azur",
+        "https://gem.azuro.org/knowledge-hub/azur/p-azur",
+        "https://gem.azuro.org/terms-of-use"
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "unclassified",
+          "summary": "Azuro has active, versioned prediction-market infrastructure, current developer releases, production deployments on several EVM networks, and a documented AZUR staking and locking system. The evidence supports a maintained protocol and a differentiated shared-liquidity design. It does not establish comparable wagers, fees, retained liquidity, application users, LP returns, or token distributions, so commercial outcome remains unclassified rather than being inferred from deployment breadth.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "https://gem.azuro.org/knowledge-hub/introduction/what-is-azuro",
+            "https://gem.azuro.org/hub/blockchains/deployment-addresses",
+            "https://gem.azuro.org/knowledge-hub/azur/tokenomics",
+            "https://gem.azuro.org/knowledge-hub/azur/st-azur",
+            "https://gem.azuro.org/knowledge-hub/azur/p-azur"
+          ]
+        },
+        "why": {
+          "summary": "Azuro chose infrastructure rather than a single house or consumer sportsbook: independent applications connect to common vAMM-based pools, while LPs underwrite many prediction markets through shared liquidity. That architecture can reduce the cold-start burden for new frontends and removes one canonical interface as a single distribution dependency. Its success still depends on attracting bettors, applications, data providers, and risk-bearing LP capital at the same time. Multi-chain deployment broadens addressable distribution but duplicates version, integration, and liquidity-coordination work. AZUR adds governance and conditional reward plumbing through stAZUR and the two-year pAZUR lock, yet the cited design does not prove that realized distributions offset lockup, token, or LP risk.",
+          "confidence": "medium",
+          "source_refs": [
+            "https://gem.azuro.org/knowledge-hub/introduction/what-is-azuro",
+            "https://gem.azuro.org/hub/blockchains/deployment-addresses",
+            "https://gem.azuro.org/knowledge-hub/azur/st-azur",
+            "https://gem.azuro.org/knowledge-hub/azur/p-azur"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Build reusable prediction-market infrastructure for independent applications instead of operating one canonical consumer sportsbook.",
+            "consequence": "Application builders can compete on distribution and experience while sharing protocol liquidity, but Azuro cannot manufacture frontend demand and product compliance merely by deploying contracts.",
+            "confidence": "high",
+            "source_refs": ["https://gem.azuro.org/knowledge-hub/introduction/what-is-azuro"]
+          },
+          {
+            "decision": "Use vAMMs and singleton liquidity pools that expose LP capital across many markets.",
+            "consequence": "New markets inherit available pool capacity instead of bootstrapping isolated order books, while LPs accept correlated pricing, resolution, and wagering exposure across the pool.",
+            "confidence": "high",
+            "source_refs": ["https://gem.azuro.org/knowledge-hub/introduction/what-is-azuro"]
+          },
+          {
+            "decision": "Maintain versioned deployments across Polygon, Gnosis, Base, Chiliz, Arbitrum, and Linea rather than depend on one chain.",
+            "consequence": "Azuro can meet applications where users and distribution already exist, but chain and version breadth create fragmented integrations and do not prove equal demand on each deployment.",
+            "confidence": "high",
+            "source_refs": ["https://gem.azuro.org/hub/blockchains/deployment-addresses"]
+          },
+          {
+            "decision": "Separate liquid AZUR, staked stAZUR, and a two-year pAZUR locking path for variable USDT distributions.",
+            "consequence": "The design rewards long-duration alignment and avoids representing liquid AZUR as an automatic revenue claim, but increases token-model complexity and exposes participants to lockup and distribution uncertainty.",
+            "confidence": "high",
+            "source_refs": [
+              "https://gem.azuro.org/knowledge-hub/azur/tokenomics",
+              "https://gem.azuro.org/knowledge-hub/azur/st-azur",
+              "https://gem.azuro.org/knowledge-hub/azur/p-azur"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "A single Azuro-operated sportsbook would make distribution, operating metrics, and legal responsibility easier to attribute, but would abandon the multi-application thesis and create a central interface dependency. Concentrating liquidity and development on one chain could deepen one venue and reduce integration cost, while sacrificing the distribution reach Azuro explicitly pursued. The current evidence shows the chosen architecture exists; it does not establish which alternative would produce better retention or economics.",
+          "confidence": "medium",
+          "source_refs": [
+            "https://gem.azuro.org/knowledge-hub/introduction/what-is-azuro",
+            "https://gem.azuro.org/hub/blockchains/deployment-addresses",
+            "https://gem.azuro.org/terms-of-use"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Reproducible application-level wagers, fees, active bettors, pool utilization, and LP return after losses and incentives.",
+            "implication": "Sustained, independently reproducible usage and risk-adjusted LP returns would permit a commercial outcome; deployment counts alone do not.",
+            "source_refs": [
+              "https://gem.azuro.org/knowledge-hub/introduction/what-is-azuro",
+              "https://gem.azuro.org/hub/blockchains/deployment-addresses"
+            ]
+          },
+          {
+            "signal": "Actual stAZUR and pAZUR distributions, lock participation, token-policy changes, and version migrations by chain.",
+            "implication": "Material recurring distributions and orderly migrations would support token and protocol alignment; weak participation or fragmented legacy deployments would weaken it.",
+            "source_refs": [
+              "https://gem.azuro.org/knowledge-hub/azur/st-azur",
+              "https://gem.azuro.org/knowledge-hub/azur/p-azur",
+              "https://gem.azuro.org/hub/blockchains/deployment-addresses"
+            ]
+          },
+          {
+            "signal": "Legal-entity, licence, restriction, or enforcement changes for each application using Azuro.",
+            "implication": "Protocol terms cannot substitute for product-by-product legal evidence, so distribution can expand while regulated access contracts.",
+            "source_refs": ["https://gem.azuro.org/terms-of-use"]
+          }
+        ],
+        "unknowns": [
+          "What are comparable wagers, fees, active bettors, retained liquidity, and LP returns by application and chain?",
+          "How concentrated are application distribution, data providers, pool liquidity, and governance control?",
+          "What net distributions have stAZUR or pAZUR participants actually received after token incentives and lockup cost?",
+          "Which legal operators and licences, if any, cover each consumer application?"
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "case_id": "overtime",
+      "source_urls": [
+        "https://docs.overtime.io/resources/terms-of-use",
+        "https://docs.overtime.io/learn-about-overtime/how-overtime-works",
+        "https://docs.overtime.io/get-started/faq"
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "unclassified",
+          "summary": "Overtime's current documentation presents an active, non-custodial sportsbook whose pricing, trading, and settlement run through smart contracts on Optimism, Arbitrum, and Base. It also identifies OVER as the official token. Those facts establish a live product surface and its architecture, but the reviewed sources do not supply comparable settled volume, fees, recurring bettors, retained LP capital, or token value capture. Outcome therefore remains unclassified.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "https://docs.overtime.io/learn-about-overtime/how-overtime-works",
+            "https://docs.overtime.io/get-started/faq",
+            "https://docs.overtime.io/resources/terms-of-use"
+          ]
+        },
+        "why": {
+          "summary": "Overtime chose an onchain AMM sportsbook instead of a custodial house: third-party liquidity supplies collateral, contracts create and settle markets, and users retain wallet custody. The model makes market mechanics auditable and removes custody from the interface, but it does not eliminate smart-contract, oracle, resolution, liquidity, or front-end access risk. Deploying across three L2s can lower transaction costs and broaden wallet distribution while fragmenting liquidity and operations. The OVER token gives the protocol a coordination asset, but the reviewed FAQ does not establish a contract, supply, fee claim, or measurable contribution to retention. These choices explain how the product operates, not whether it has durable demand.",
+          "confidence": "medium",
+          "source_refs": [
+            "https://docs.overtime.io/learn-about-overtime/how-overtime-works",
+            "https://docs.overtime.io/get-started/faq",
+            "https://docs.overtime.io/resources/terms-of-use"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Execute market creation, pricing, trading, and settlement through smart contracts rather than a custodial sportsbook ledger.",
+            "consequence": "Users can retain wallet custody and inspect settlement mechanics, while accepting contract, oracle, resolution, and wallet-transaction risk.",
+            "confidence": "high",
+            "source_refs": [
+              "https://docs.overtime.io/learn-about-overtime/how-overtime-works",
+              "https://docs.overtime.io/get-started/faq"
+            ]
+          },
+          {
+            "decision": "Use an AMM backed by third-party LP capital to provide continuous market pricing.",
+            "consequence": "The protocol can quote markets without matching every bettor to another bettor, but sustainable depth depends on LP economics and risk controls that the reviewed sources do not quantify.",
+            "confidence": "high",
+            "source_refs": ["https://docs.overtime.io/learn-about-overtime/how-overtime-works"]
+          },
+          {
+            "decision": "Deploy the sportsbook across Optimism, Arbitrum, and Base.",
+            "consequence": "Multiple L2 entry points broaden distribution and reduce reliance on one sequencer ecosystem, while splitting contracts, liquidity, support, and measurement across networks.",
+            "confidence": "high",
+            "source_refs": ["https://docs.overtime.io/learn-about-overtime/how-overtime-works"]
+          },
+          {
+            "decision": "Use OVER holders, the Overtime DAO, and the Overtime Council to govern key protocol decisions.",
+            "consequence": "The token anchors a disclosed governance structure, while actual control concentration, participation, emissions, and fee value capture remain unmeasured in this evidence set.",
+            "confidence": "high",
+            "source_refs": ["https://docs.overtime.io/get-started/faq"]
+          }
+        ],
+        "counterfactual": {
+          "summary": "A custodial single-chain sportsbook could concentrate liquidity, abstract wallet friction, and simplify support, but would reintroduce operator custody and opaque settlement. A one-chain non-custodial version could deepen that chain's liquidity while shrinking distribution. Omitting a token would remove incentive and governance complexity, although the present record does not show whether OVER materially improves either function.",
+          "confidence": "medium",
+          "source_refs": [
+            "https://docs.overtime.io/learn-about-overtime/how-overtime-works",
+            "https://docs.overtime.io/get-started/faq"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Settled volume, unique recurring bettors, fees, market depth, LP utilization, and LP returns by chain.",
+            "implication": "Durable usage and retained risk capital would move the case out of unclassified; contract deployment and market count cannot do so.",
+            "source_refs": ["https://docs.overtime.io/learn-about-overtime/how-overtime-works"]
+          },
+          {
+            "signal": "OVER contract, supply, emissions, governance participation, and any documented fee-distribution mechanism.",
+            "implication": "Evidence of net utility or value capture would connect the token to product success; emissions without durable demand would point to subsidy dependence.",
+            "source_refs": ["https://docs.overtime.io/get-started/faq"]
+          },
+          {
+            "signal": "Terms, restricted jurisdictions, interface access, oracle policy, and settlement-dispute changes.",
+            "implication": "Permissionless contracts can remain deployed while practical or lawful access narrows.",
+            "source_refs": [
+              "https://docs.overtime.io/resources/terms-of-use",
+              "https://docs.overtime.io/learn-about-overtime/how-overtime-works"
+            ]
+          }
+        ],
+        "unknowns": [
+          "What are comparable settled volume, fee revenue, active-bettor retention, market depth, and LP returns?",
+          "How concentrated are bettors, LP capital, data providers, resolution authority, and frontend distribution?",
+          "What rights, emissions, and realized value capture attach to OVER?",
+          "What legal entity, licence, and jurisdiction-specific availability govern each interface?"
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "case_id": "sx-bet",
+      "source_urls": [
+        "https://docs.sx.bet/user-guides/getting-started/overview.md",
+        "https://docs.sx.bet/user-guides/getting-started/how-it-works.md",
+        "https://docs.sx.bet/api-reference/references.md",
+        "https://docs.sx.bet/user-guides/rewards/maker-rewards.md",
+        "https://docs.sx.bet/user-guides/more/betting-rules.md"
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "unclassified",
+          "summary": "SX Bet's current documentation describes a live peer-to-peer sports-prediction exchange on SX mainnet, with non-custodial wallet authorization, escrowed matched stakes, USDC settlement, maker rewards, and a published fee schedule of 0% for single bets and 5% on winning parlays. The evidence establishes the market design and current configuration, but not matched volume, order-book depth, recurring bettors, fee revenue, retention, or token economics. Commercial outcome remains unclassified.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "https://docs.sx.bet/user-guides/getting-started/overview.md",
+            "https://docs.sx.bet/user-guides/getting-started/how-it-works.md",
+            "https://docs.sx.bet/api-reference/references.md",
+            "https://docs.sx.bet/user-guides/rewards/maker-rewards.md"
+          ]
+        },
+        "why": {
+          "summary": "SX Bet chose a peer-to-peer exchange rather than betting against a house. Makers must supply prices and depth, takers choose orders, matched stakes move to contract escrow, and USDC reduces settlement-unit volatility. This can make pricing competitive and custody legible, but it creates a liquidity cold-start problem: without enough makers, bettors see thin or unattractive markets. A dedicated SX mainnet provides a tailored execution environment and uses SX for gas, while tying the product to its chain's availability, bridge and wallet distribution. Maker rewards address liquidity supply, but the cited documentation does not show whether rewarded depth persists without subsidy.",
+          "confidence": "medium",
+          "source_refs": [
+            "https://docs.sx.bet/user-guides/getting-started/overview.md",
+            "https://docs.sx.bet/user-guides/getting-started/how-it-works.md",
+            "https://docs.sx.bet/api-reference/references.md",
+            "https://docs.sx.bet/user-guides/rewards/maker-rewards.md"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Operate a peer-to-peer order-driven sports exchange instead of taking the other side as the house.",
+            "consequence": "The venue avoids a conventional house book and lets market participants set prices, but product quality becomes dependent on maker coverage, competitive spreads, and reliable resolution.",
+            "confidence": "high",
+            "source_refs": ["https://docs.sx.bet/user-guides/getting-started/overview.md"]
+          },
+          {
+            "decision": "Keep wallet custody with users and escrow only matched stakes for settlement in USDC.",
+            "consequence": "Users avoid depositing an open-ended custodial balance and wager accounting uses a stable unit, while matched funds still depend on contracts, resolution, chain uptime, and correct token configuration.",
+            "confidence": "high",
+            "source_refs": [
+              "https://docs.sx.bet/user-guides/getting-started/how-it-works.md",
+              "https://docs.sx.bet/api-reference/references.md"
+            ]
+          },
+          {
+            "decision": "Run on SX mainnet and use SX as network gas.",
+            "consequence": "The exchange gains control over execution configuration and can align chain and product incentives, but concentrates application availability and user onboarding on one small chain ecosystem.",
+            "confidence": "high",
+            "source_refs": [
+              "https://docs.sx.bet/api-reference/references.md",
+              "https://docs.sx.bet/user-guides/rewards/maker-rewards.md"
+            ]
+          },
+          {
+            "decision": "Charge no stated fee on single bets, charge 5% on winning parlays, and subsidize makers with USDC rewards.",
+            "consequence": "The structure can attract simple-bet flow and reward liquidity provision, but sustainable economics depend on parlay mix and whether maker depth survives after rewards.",
+            "confidence": "high",
+            "source_refs": [
+              "https://docs.sx.bet/user-guides/getting-started/overview.md",
+              "https://docs.sx.bet/user-guides/rewards/maker-rewards.md"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "A house-backed sportsbook could guarantee quotes in more markets and hide order-book complexity, but would replace peer pricing with operator risk and discretion. Deploying on a larger general-purpose chain could improve wallet and stablecoin distribution while surrendering the tailored SX execution environment. Charging a uniform fee could create clearer revenue, but might suppress the price-sensitive single-bet flow the zero-fee choice targets.",
+          "confidence": "medium",
+          "source_refs": [
+            "https://docs.sx.bet/user-guides/getting-started/overview.md",
+            "https://docs.sx.bet/user-guides/getting-started/how-it-works.md",
+            "https://docs.sx.bet/api-reference/references.md"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Matched volume, active bettors, maker count, spreads, depth, fill rate, and fee revenue by bet type.",
+            "implication": "Persistent two-sided depth and repeat bettors would validate the exchange model; rewarded quotes without fills or retention would indicate subsidy dependence.",
+            "source_refs": [
+              "https://docs.sx.bet/user-guides/getting-started/overview.md",
+              "https://docs.sx.bet/user-guides/rewards/maker-rewards.md"
+            ]
+          },
+          {
+            "signal": "Maker-reward budget, SX mainnet uptime, bridge and USDC configuration, and SX token contract or supply disclosures.",
+            "implication": "Reliable infrastructure and transparent incentive cost support durability; reward cuts or chain friction can directly reduce liquidity.",
+            "source_refs": [
+              "https://docs.sx.bet/api-reference/references.md",
+              "https://docs.sx.bet/user-guides/rewards/maker-rewards.md"
+            ]
+          },
+          {
+            "signal": "Primary legal-entity, licence, market-resolution, and jurisdictional-availability documents.",
+            "implication": "Betting rules define settlement but do not establish who may lawfully operate or use the product.",
+            "source_refs": ["https://docs.sx.bet/user-guides/more/betting-rules.md"]
+          }
+        ],
+        "unknowns": [
+          "What are matched volume, recurring bettors, order-book depth, fill rate, and fee revenue by market and bet type?",
+          "How much maker liquidity remains after rewards are removed, and what is the net cost of those rewards?",
+          "What rights or value capture attach to SX beyond network gas, and what are its current contract and supply?",
+          "Which legal entity, licence, and jurisdictional restrictions govern SX Bet?"
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "case_id": "decentral-games-poker-arcade",
+      "source_urls": [
+        "https://docs.decentral.games/legal/terms-of-use",
+        "https://docs.decentral.games/legal/disclaimer"
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "unclassified",
+          "summary": "The latest reviewed Poker Arcade-specific terms, dated June 30, 2024, identify BAG Limited, LTD and describe a free-to-play peer-to-peer poker simulation using autonomously deployed contracts on Polygon. A separate disclaimer says no regulatory authority examined or approved the information. Those sources establish the historical product, operator, chain, and legal-scope boundary; they do not establish operation in 2026, active tables, repeat players, sustainable rewards, or product economics. The current operating and commercial outcomes are therefore explicitly unclassified.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "https://docs.decentral.games/legal/terms-of-use",
+            "https://docs.decentral.games/legal/disclaimer"
+          ]
+        },
+        "why": {
+          "summary": "Poker Arcade chose a narrow free-to-play, peer-to-peer poker product with user-controlled keys and autonomously deployed Polygon contracts. That design can reduce operator custody and use a lower-cost chain for repeated game actions, but poker still requires concurrent players, active tables, fair game mechanics, usable onboarding, and sustained distribution. The product-specific evidence is more than two years old at review time and supplies no current activity series. The dominant analytical fact is therefore evidence decay: a historical contract surface cannot support a current success, failure, or even active-status claim. The named BVI operator and disclaimer improve attribution but do not demonstrate a gaming licence or jurisdictional availability.",
+          "confidence": "medium",
+          "source_refs": [
+            "https://docs.decentral.games/legal/terms-of-use",
+            "https://docs.decentral.games/legal/disclaimer"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Scope the product as a peer-to-peer Poker Arcade rather than a general casino balance or house-banked game.",
+            "consequence": "The product can focus on social poker and player-versus-player liquidity, while becoming especially sensitive to simultaneous player density and table availability.",
+            "confidence": "high",
+            "source_refs": ["https://docs.decentral.games/legal/terms-of-use"]
+          },
+          {
+            "decision": "Use autonomously deployed Polygon contracts and place private-key responsibility with users.",
+            "consequence": "The operator reduces direct wallet custody and can use lower-cost execution, while users retain key-management risk and the product depends on Polygon, contracts, and accessible interfaces.",
+            "confidence": "high",
+            "source_refs": ["https://docs.decentral.games/legal/terms-of-use"]
+          },
+          {
+            "decision": "Publish product-specific BAG Limited terms with BVI governing law and unlawful-use restrictions.",
+            "consequence": "The operator and contractual scope are attributable, but governing-law language and use restrictions do not establish a gaming licence or legality for every user.",
+            "confidence": "high",
+            "source_refs": ["https://docs.decentral.games/legal/terms-of-use"]
+          },
+          {
+            "decision": "Make Poker Arcade free-to-play and use Badges and arcade-style prizes to encourage daily play and competition.",
+            "consequence": "The design avoids presenting the cited game as house-banked real-money poker, while making retention depend on gameplay, social competition, and reward utility that current evidence does not measure.",
+            "confidence": "high",
+            "source_refs": ["https://docs.decentral.games/legal/terms-of-use"]
+          }
+        ],
+        "counterfactual": {
+          "summary": "A custodial poker room could abstract wallets and concentrate account liquidity, but would add operator custody and withdrawal risk. A real-money or broader casino could create clearer direct monetization and cross-sell, while adding regulatory exposure and diluting the narrow free-to-play poker identity. Most importantly, current signed releases, current interface evidence, or reproducible contract activity would permit a lifecycle classification; absent those, treating old terms as proof of present operation would create false certainty.",
+          "confidence": "medium",
+          "source_refs": [
+            "https://docs.decentral.games/legal/terms-of-use",
+            "https://docs.decentral.games/legal/disclaimer"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "A current operator announcement, accessible Poker Arcade interface, versioned contract release, or reproducible Polygon game activity.",
+            "implication": "Fresh product-specific evidence could resolve whether the application is active, paused, superseded, or dead.",
+            "source_refs": ["https://docs.decentral.games/legal/terms-of-use"]
+          },
+          {
+            "signal": "Concurrent players, active tables, hands played, repeat-player retention, Badge or prize utility, and contract settlement performance.",
+            "implication": "Peer-to-peer poker succeeds on player density; contract existence without contemporaneous tables or repeat play is not adoption.",
+            "source_refs": ["https://docs.decentral.games/legal/terms-of-use"]
+          },
+          {
+            "signal": "Current legal entity, licence, jurisdiction restrictions, token position, and regulatory disclosures for this exact product.",
+            "implication": "A product-specific legal update is required before making availability, approval, or token claims.",
+            "source_refs": [
+              "https://docs.decentral.games/legal/terms-of-use",
+              "https://docs.decentral.games/legal/disclaimer"
+            ]
+          }
+        ],
+        "unknowns": [
+          "Is Poker Arcade currently operating, accessible, and supported by its named operator?",
+          "What are concurrent players, hands, active-table depth, retention, Badge or prize utility, and settlement performance?",
+          "Were the Polygon contracts upgraded, superseded, paused, or abandoned after the 2024 terms snapshot?",
+          "Does this exact product have a current token, gaming licence, or documented jurisdictional availability?"
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    }
+  ]
+}
