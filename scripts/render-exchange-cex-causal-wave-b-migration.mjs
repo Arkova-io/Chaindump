@@ -98,7 +98,7 @@ CREATE TABLE exchange_cex_causal_wave_b_0060 (
 
 -- canonical-payload-start
 WITH wave_b_payload(document) AS (
-  VALUES ('${payload}')
+  VALUES ('${payload}') -- NOSONAR: deterministic cited research payload
 )
 INSERT OR REPLACE INTO exchange_cex_causal_wave_b_0060 (
   target_table,
