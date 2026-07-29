@@ -24,7 +24,7 @@ describe('Bitcoin chain dossier', () => {
     expect(rows).toHaveLength(CHAIN_DOSSIER_DIMENSIONS.length + 1);
     expect(validateChainDossierRows(rows, ['Bitcoin'])).toEqual([]);
     const facts = Object.fromEntries(rows.map((row) => [row.dimension, JSON.parse(row.data)]));
-    expect(facts.token).toMatchObject({ token_symbol: 'BTC', gas_token: 'BTC', max_supply: 21000000 });
+    expect(facts.token).toMatchObject({ token_symbol: 'BTC', gas_token: 'BTC', max_supply: null, consensus_money_upper_bound_btc: 21000000 });
     expect(facts.onchain.tvl_current_usd).toBeNull();
     expect(facts.onchain.fees_24h_usd).toBeNull();
     expect(facts._meta.unsourced_fields).toContain('onchain.current_activity_metrics');
