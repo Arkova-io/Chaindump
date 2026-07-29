@@ -1,0 +1,57 @@
+name: Research Desk Proposals
+
+# Paid model-backed research is opt-in. Both scheduled and manual runs skip
+# unless the repository variable RESEARCH_DESK_ENABLED is exactly "true".
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch:
+    inputs:
+      task:
+        description: Optional bounded proposal-only research task
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-desk-proposals
+  cancel-in-progress: false
+
+jobs:
+  proposal-scan:
+    if: ${{ vars.RESEARCH_DESK_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: agent-desk
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: agent-desk/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - name: Validate proposal-only credentials
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.RESEARCH_DESK_ANTHROPIC_API_KEY }}
+          DESK_PROPOSAL_TOKEN: ${{ secrets.RESEARCH_DESK_PROPOSAL_TOKEN }}
+        run: |
+          test -n "$ANTHROPIC_API_KEY" || { echo "Missing RESEARCH_DESK_ANTHROPIC_API_KEY"; exit 1; }
+          test -n "$DESK_PROPOSAL_TOKEN" || { echo "Missing RESEARCH_DESK_PROPOSAL_TOKEN"; exit 1; }
+      - name: Queue verified research candidates
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.RESEARCH_DESK_ANTHROPIC_API_KEY }}
+          DESK_PROPOSAL_TOKEN: ${{ secrets.RESEARCH_DESK_PROPOSAL_TOKEN }}
+          CHAINDUMP_BASE_URL: https://chaindump.xyz
+          CHAINDUMP_MCP_URL: https://chaindump-mcp-270018525501.us-central1.run.app/mcp
+          DESK_MODEL: ${{ vars.RESEARCH_DESK_MODEL || 'claude-sonnet-5' }}
+          DESK_MAX_TURNS: ${{ vars.RESEARCH_DESK_MAX_TURNS || '20' }}
+          DESK_TASK: ${{ inputs.task || '' }}
+        run: npm start

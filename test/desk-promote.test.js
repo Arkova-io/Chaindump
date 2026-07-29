@@ -1,5 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { PROMOTABLE, promotionPlan } from '../src/lib/desk-promote.js';
+import {
+  PROMOTABLE,
+  REVIEW_REQUIRED_PROPOSAL_DATASETS,
+  promotionPlan,
+  proposalNeedsHumanReview,
+} from '../src/lib/desk-promote.js';
 
 // Promoting a reviewed proposal into a live table must be injection-safe:
 // table + column names come ONLY from a fixed per-dataset whitelist; every
@@ -56,5 +61,26 @@ describe('promotionPlan', () => {
   it('every whitelisted column is a real column (guards typos)', () => {
     // sanity: known datasets present
     expect(Object.keys(PROMOTABLE).sort()).toEqual(['dead_chains', 'mid_chains', 'risk_signals', 'scam_intel']);
+  });
+
+  it('keeps complex forensic evidence candidates review-only and non-promotable', () => {
+    expect(REVIEW_REQUIRED_PROPOSAL_DATASETS).toEqual([
+      'blockchain_analysis_candidate',
+      'exchange_analysis_candidate',
+      'casino_analysis_candidate',
+      'nft_lifecycle_candidate',
+    ]);
+    for (const dataset of REVIEW_REQUIRED_PROPOSAL_DATASETS) {
+      expect(PROMOTABLE[dataset]).toBeUndefined();
+      expect(proposalNeedsHumanReview(dataset, false, 1)).toBe(true);
+      expect(() => promotionPlan(dataset, 'candidate', { field: 'status' }, null)).toThrow(/not promotable/i);
+    }
+  });
+
+  it('preserves the base confidence and attribution review gate', () => {
+    expect(proposalNeedsHumanReview('dead_chains', false, 0.9)).toBe(false);
+    expect(proposalNeedsHumanReview('dead_chains', true, 0.9)).toBe(true);
+    expect(proposalNeedsHumanReview('dead_chains', false, 0.2)).toBe(true);
+    expect(proposalNeedsHumanReview('dead_chains', false, NaN)).toBe(true);
   });
 });
