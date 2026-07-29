@@ -205,7 +205,7 @@ SELECT
   json_extract(patch.row_patch, '$.verdict'),
   json_extract(patch.row_patch, '$.summary'),
   json_extract(patch.row_patch, '$.outlook'),
-  json_set(json(patch.replace_profile), '$.forensic_analysis', json(patch.forensic_analysis)),
+  json_set(json(patch.replace_profile), '$.forensic_analysis', json(patch.forensic_analysis)), -- NOSONAR: shared profile schema path
   patch.sources,
   '2026-07-29'
 FROM exchange_forensic_wave_a_0059 AS patch

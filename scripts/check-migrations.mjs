@@ -30,9 +30,55 @@ import { pathToFileURL } from 'node:url';
 
 const TRANSACTION_TEXT_RE = /\bBEGIN\s+TRANSACTION\b|\bCOMMIT\s*;/i;
 const TEMP_TABLE_RE = /\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i;
-const SQL_TOKEN_RE = /'(?:''|[^'])*'|"(?:""|[^"])*"|`(?:``|[^`])*`|\[[^\]]*\]|--[^\r\n]*(?:\r?\n|$)|\/\*[\s\S]*?\*\/|[A-Za-z_][A-Za-z0-9_]*|;/g;
-const SQL_WORD_RE = /^[A-Za-z_][A-Za-z0-9_]*$/;
 export const MAX_D1_STATEMENT_BYTES = 95_000;
+
+function isWordCharacter(character) {
+  return (
+    character === '_'
+    || (character >= 'A' && character <= 'Z')
+    || (character >= 'a' && character <= 'z')
+    || (character >= '0' && character <= '9')
+  );
+}
+
+function skipDelimitedToken(sql, start, delimiter) {
+  for (let index = start + 1; index < sql.length; index += 1) {
+    if (sql[index] !== delimiter) continue;
+    if (sql[index + 1] === delimiter) {
+      index += 1;
+      continue;
+    }
+    return index + 1;
+  }
+  return sql.length;
+}
+
+function nextSqlToken(sql, start) {
+  const current = sql[start];
+  const next = sql[start + 1];
+  if (current === "'" || current === '"' || current === '`') {
+    return { kind: 'ignored', end: skipDelimitedToken(sql, start, current) };
+  }
+  if (current === '[') {
+    const closing = sql.indexOf(']', start + 1);
+    return { kind: 'ignored', end: closing === -1 ? sql.length : closing + 1 };
+  }
+  if (current === '-' && next === '-') {
+    const newline = sql.indexOf('\n', start + 2);
+    return { kind: 'ignored', end: newline === -1 ? sql.length : newline + 1 };
+  }
+  if (current === '/' && next === '*') {
+    const closing = sql.indexOf('*/', start + 2);
+    return { kind: 'ignored', end: closing === -1 ? sql.length : closing + 2 };
+  }
+  if (current === ';') return { kind: 'semicolon', end: start + 1 };
+  if (!isWordCharacter(current) || (current >= '0' && current <= '9')) {
+    return { kind: 'ignored', end: start + 1 };
+  }
+  let end = start + 1;
+  while (end < sql.length && isWordCharacter(sql[end])) end += 1;
+  return { kind: 'word', word: sql.slice(start, end).toUpperCase(), end };
+}
 
 function beginsTrigger(prefixWords) {
   return (
@@ -63,23 +109,29 @@ export function sqlStatementByteLengths(sql) {
   let prefixWords = [];
   let trigger = { active: false, bodyStarted: false, depth: 0 };
 
-  for (const match of sql.matchAll(SQL_TOKEN_RE)) {
-    const token = match[0];
-    if (SQL_WORD_RE.test(token)) {
-      const word = token.toUpperCase();
+  for (let index = 0; index < sql.length;) {
+    const token = nextSqlToken(sql, index);
+    if (token.kind === 'word') {
+      const { word } = token;
       if (prefixWords.length < 3) prefixWords.push(word);
       if (beginsTrigger(prefixWords)) trigger = { ...trigger, active: true };
       trigger = nextTriggerState(trigger, word);
+      index = token.end;
       continue;
     }
-    if (token !== ';' || (trigger.active && (!trigger.bodyStarted || trigger.depth > 0))) {
+    if (
+      token.kind !== 'semicolon'
+      || (trigger.active && (!trigger.bodyStarted || trigger.depth > 0))
+    ) {
+      index = token.end;
       continue;
     }
-    const statementEnd = match.index + 1;
+    const statementEnd = token.end;
     lengths.push(Buffer.byteLength(sql.slice(statementStart, statementEnd), 'utf8'));
     statementStart = statementEnd;
     prefixWords = [];
     trigger = { active: false, bodyStarted: false, depth: 0 };
+    index = token.end;
   }
 
   if (sql.slice(statementStart).trim()) {
