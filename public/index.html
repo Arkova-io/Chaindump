@@ -1208,6 +1208,9 @@ function casinoDetailBody(item, detail) {
   if (detail === 'loading') return '<div class="gexp"><div class="skel">Loading cited dossier…</div></div>';
   if (detail?.error) return `<div class="gexp"><div class="muted">Couldn't load this dossier: ${esc(detail.error)}</div></div>`;
   if (!detail) return '';
+  // The summary endpoint intentionally omits operator and launch identity
+  // fields; use the cited detail record when a card is expanded.
+  const identity = detail.case || item;
   const synthesis = detail.synthesis || {};
   const sections = [
     ['Lifecycle &amp; current situation', synthesis.present_situation],
@@ -1228,8 +1231,8 @@ function casinoDetailBody(item, detail) {
   const domain = safeUrl(`https://${item.primary_domain}`);
   return `<div class="gexp">
     <div class="gfield"><span class="gfl">Domain</span><a href="${esc(domain)}" target="_blank" rel="noopener noreferrer">${esc(item.primary_domain)} ↗</a></div>
-    <div class="gfield"><span class="gfl">Operator</span>${esc(item.legal_operator || 'not published')} · parent ${esc(item.parent_entity || 'not published')}</div>
-    <div class="gfield"><span class="gfl">Launch</span>${esc(item.launched || 'unknown')} · evidence precision ${esc(item.date_precision || 'unknown')}</div>
+    <div class="gfield"><span class="gfl">Operator</span>${esc(identity.legal_operator || 'not published')} · parent ${esc(identity.parent_entity || 'not published')}</div>
+    <div class="gfield"><span class="gfl">Launch</span>${esc(identity.launched || 'unknown')} · evidence precision ${esc(identity.date_precision || 'unknown')}</div>
     <div class="gfield"><span class="gfl">Custody</span>${esc(casinoLabel(item.custody_model))}</div>
     <div class="gfield"><span class="gfl">Token</span>${esc(item.token_status === 'documented' ? (item.token_symbol || 'Documented token') : casinoLabel(item.token_status))}</div>
     <div class="gfield"><span class="gfl">Research status</span>${esc(item.confidence || 'unknown')} confidence · ${esc(item.completeness_pct)}% evidence completeness · reviewed ${esc(item.last_reviewed || '—')}</div>

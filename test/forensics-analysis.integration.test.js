@@ -113,6 +113,12 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('publication-gated dossier${filtered.length===1');
   });
 
+  it('uses the detailed cited casino case for expanded identity fields omitted from summary cards', () => {
+    expect(html).toContain('const identity = detail.case || item;');
+    expect(html).toContain('identity.legal_operator');
+    expect(html).toContain('identity.date_precision');
+  });
+
   it('keeps unverified candidates visibly withheld rather than rendering them as analyses', () => {
     expect(html).toContain('candidates withheld');
     expect(html).toContain('intentionally not presented as analyses');
