@@ -5,7 +5,7 @@
   "method": "Risk-first evidence repair. Adverse, legal, loss, and causal claims require one resolving/reviewed T1 authority, one resolving/reviewed independent T2, or two resolving/reviewed independent T3 publishers. A T2 operator source can pass only a narrow lifecycle/status claim that the operator reports about itself. Access timestamps do not imply editorial evidence review.",
   "source_verification": {
     "checked_at": "2026-07-29",
-    "method": "Direct page or document review",
+    "method": "HTTP retrieval and source-identity verification; this does not establish claim-level editorial review.",
     "states": [
       "resolving"
     ],
@@ -93,7 +93,7 @@
           "source_role": "primary",
           "access_state": "resolving",
           "resolving": true,
-          "evidence_reviewed": true,
+          "evidence_reviewed": false,
           "checked_at": "2026-07-29",
           "evidence_locator": "Operator notice dated July 23, 2026 gives the closure, risk-limit, force-close, withdrawal, and BMEX-unstaking schedule and attributes the decision only to a board strategic review."
         },
@@ -106,7 +106,7 @@
           "source_role": "independent",
           "access_state": "resolving",
           "resolving": true,
-          "evidence_reviewed": true,
+          "evidence_reviewed": false,
           "checked_at": "2026-07-29",
           "evidence_locator": "Reuters independently confirms the announced September 23 closure and reports Kaiko's estimate of about $400,000 daily volume and less than 0.01% market share; Reuters also states that BitMEX did not disclose a more specific reason."
         }
@@ -146,7 +146,7 @@
           "source_role": "authority",
           "access_state": "resolving",
           "resolving": true,
-          "evidence_reviewed": true,
+          "evidence_reviewed": false,
           "checked_at": "2026-07-29",
           "evidence_locator": "DOJ release dated January 27, 2025 records Peken Global's guilty plea, more than $297 million in forfeiture and fines, U.S. exit, management restrictions, and admitted U.S.-customer figures."
         },
@@ -159,7 +159,7 @@
           "source_role": "authority",
           "access_state": "resolving",
           "resolving": true,
-          "evidence_reviewed": true,
+          "evidence_reviewed": false,
           "checked_at": "2026-07-29",
           "evidence_locator": "Court-filed consent order dated March 30, 2026 imposes a permanent injunction and $500,000 civil monetary penalty concerning unregistered direct U.S. access."
         },
@@ -172,7 +172,7 @@
           "source_role": "primary",
           "access_state": "resolving",
           "resolving": true,
-          "evidence_reviewed": true,
+          "evidence_reviewed": false,
           "checked_at": "2026-07-29",
           "evidence_locator": "Operator notice states U.S. account closure, IP restrictions, and the assisted-withdrawal process while saying non-U.S. services remain operational."
         },
@@ -185,7 +185,7 @@
           "source_role": "primary",
           "access_state": "resolving",
           "resolving": true,
-          "evidence_reviewed": true,
+          "evidence_reviewed": false,
           "checked_at": "2026-07-29",
           "evidence_locator": "Operator page reports a June 30, 2026 snapshot for BTC, ETH, USDT, and USDC. It is retained as scoped operator evidence and not treated as an audit of complete entity-wide solvency."
         }
@@ -403,7 +403,7 @@
           "source_role": "primary",
           "access_state": "resolving",
           "resolving": true,
-          "evidence_reviewed": true,
+          "evidence_reviewed": false,
           "verification_note": "Operator notice confirms cessation, inability to renew the Formula 1 licence, and the available replacement or payout paths. It does not disclose licence negotiations, economics, player counts, or completion rates."
         },
         {
@@ -422,7 +422,7 @@
           "source_role": "independent",
           "access_state": "resolving",
           "resolving": true,
-          "evidence_reviewed": true,
+          "evidence_reviewed": false,
           "verification_note": "Independent motorsport reporting confirms launch timing, closure after non-renewal of the Formula 1 licence, and historically high-value NFT sales. Sale values are historical transactions, not current valuation or holder recovery."
         }
       ],
@@ -454,12 +454,13 @@
   ],
   "reference_repairs": {
     "checked_at": "2026-07-29",
-    "method": "Register every forensic source reference missing from its dossier source array. evidence_reviewed=true is used only when the URL was already mapped to a published field-level forensic claim and the cited page identity was rechecked; it is not inferred from HTTP status or an access timestamp. Unavailable links remain explicitly non-resolving and unreviewed.",
+    "method": "Register every forensic source reference missing from its dossier source array. resolving and access_state record retrieval status only. evidence_reviewed remains false for URL/source-identity checks unless a named reviewer, review time, and field-level evidence mapping are present. Unavailable links remain explicitly non-resolving and unreviewed.",
     "summary": {
       "dossier_count": 40,
       "source_ref_count": 179,
       "resolving_source_ref_count": 161,
-      "unavailable_source_ref_count": 18
+      "unavailable_source_ref_count": 18,
+      "editorially_reviewed_source_ref_count": 1
     },
     "exchange_patches": [
       {
@@ -505,7 +506,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -518,7 +519,7 @@
             "source_role": "independent",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -553,7 +554,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -566,7 +567,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -579,7 +580,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -592,7 +593,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -605,7 +606,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -627,7 +628,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -640,7 +641,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -662,7 +663,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -675,7 +676,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -719,7 +720,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -732,7 +733,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -745,7 +746,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -758,7 +759,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -771,7 +772,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -784,7 +785,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -797,7 +798,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -810,7 +811,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -823,7 +824,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -845,7 +846,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -871,7 +872,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -884,7 +885,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -897,7 +898,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -932,7 +933,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -954,7 +955,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -967,7 +968,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -989,7 +990,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1002,7 +1003,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1015,7 +1016,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1028,7 +1029,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -1050,7 +1051,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1063,7 +1064,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1076,7 +1077,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -1098,7 +1099,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1111,7 +1112,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1124,7 +1125,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -1168,7 +1169,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1203,7 +1204,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1216,7 +1217,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -1238,7 +1239,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1251,7 +1252,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1264,7 +1265,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -1299,7 +1300,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -1321,7 +1322,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1334,7 +1335,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1347,7 +1348,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1360,7 +1361,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1373,7 +1374,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1386,7 +1387,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -1408,7 +1409,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1421,7 +1422,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1434,7 +1435,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1447,7 +1448,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1473,7 +1474,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -1495,7 +1496,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1508,7 +1509,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1521,7 +1522,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1534,7 +1535,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -1556,7 +1557,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1569,7 +1570,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1582,7 +1583,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1595,7 +1596,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -1617,7 +1618,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1656,7 +1657,7 @@
             "source_role": "independent",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1704,7 +1705,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1717,7 +1718,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1730,7 +1731,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1743,7 +1744,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -1765,7 +1766,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1778,7 +1779,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -1800,7 +1801,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1813,7 +1814,7 @@
             "source_role": "independent",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1826,7 +1827,7 @@
             "source_role": "independent",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -1848,7 +1849,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1874,7 +1875,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1887,7 +1888,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1900,7 +1901,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1913,7 +1914,7 @@
             "source_role": "independent",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1926,7 +1927,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1939,7 +1940,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -1961,7 +1962,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1974,7 +1975,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -1987,7 +1988,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2000,7 +2001,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2013,7 +2014,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2026,7 +2027,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2039,7 +2040,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2052,7 +2053,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2065,7 +2066,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -2087,7 +2088,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2100,7 +2101,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2113,7 +2114,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2126,7 +2127,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2139,7 +2140,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -2161,7 +2162,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2174,7 +2175,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2187,7 +2188,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2200,7 +2201,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2213,7 +2214,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2226,7 +2227,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2239,7 +2240,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2252,7 +2253,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -2274,7 +2275,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2287,7 +2288,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2300,7 +2301,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2313,7 +2314,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2326,7 +2327,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -2348,7 +2349,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2361,7 +2362,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2374,7 +2375,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2387,7 +2388,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2400,7 +2401,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2413,7 +2414,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2426,7 +2427,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2439,7 +2440,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2452,7 +2453,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -2474,7 +2475,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2487,7 +2488,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2500,7 +2501,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2513,7 +2514,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2526,7 +2527,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2539,7 +2540,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -2561,7 +2562,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2574,7 +2575,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2587,7 +2588,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2600,7 +2601,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2613,7 +2614,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2626,7 +2627,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2639,7 +2640,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2652,7 +2653,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -2687,7 +2688,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2700,7 +2701,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2713,7 +2714,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2726,7 +2727,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2739,7 +2740,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2752,7 +2753,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2765,7 +2766,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2778,7 +2779,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -2800,7 +2801,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2813,7 +2814,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2839,7 +2840,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2852,7 +2853,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -2874,7 +2875,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2887,7 +2888,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2900,7 +2901,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2913,7 +2914,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -2935,7 +2936,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2948,7 +2949,7 @@
             "source_role": "data",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]
@@ -2970,7 +2971,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2983,7 +2984,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -2996,7 +2997,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -3031,7 +3032,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -3044,7 +3045,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -3057,7 +3058,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -3070,7 +3071,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -3083,7 +3084,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -3096,7 +3097,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -3109,7 +3110,7 @@
             "source_role": "authority",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           },
           {
@@ -3122,7 +3123,7 @@
             "source_role": "primary",
             "access_state": "resolving",
             "resolving": true,
-            "evidence_reviewed": true,
+            "evidence_reviewed": false,
             "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
           }
         ]

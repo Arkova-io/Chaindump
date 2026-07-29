@@ -68,8 +68,17 @@ function assertSource(source, path, casino = false, allowUnavailable = false) {
   }
   const resolving = source.resolving === true || source.resolving === 1;
   const reviewed = source.evidence_reviewed === true || source.evidence_reviewed === 1;
-  if ((!allowUnavailable && (!resolving || !reviewed)) || (allowUnavailable && reviewed !== resolving)) {
-    throw new Error(`${path}: resolving and evidence_reviewed must be explicit`);
+  if (!Object.hasOwn(source, 'evidence_reviewed')) {
+    throw new Error(`${path}: editorial review state must be explicit`);
+  }
+  if (!allowUnavailable && !resolving) {
+    throw new Error(`${path}: source must be resolving`);
+  }
+  if (reviewed && (!source.evidence_reviewed_at?.trim() || !source.evidence_reviewer?.trim())) {
+    throw new Error(`${path}: editorial review requires reviewer identity and review time`);
+  }
+  if (!reviewed && (source.evidence_reviewed_at || source.evidence_reviewer)) {
+    throw new Error(`${path}: unreviewed source cannot carry editorial review provenance`);
   }
   if (allowUnavailable && !resolving && !source.access_state?.trim()) {
     throw new Error(`${path}: unavailable source requires an explicit access state`);
@@ -171,12 +180,14 @@ export function validatePublicationDepthManifest(document) {
   const referenceRepairs = document.reference_repairs;
   if (
     referenceRepairs?.checked_at !== '2026-07-29'
-    || !referenceRepairs.method?.includes('not inferred from HTTP status or an access timestamp')
+    || !referenceRepairs.method?.includes('evidence_reviewed remains false')
+    || !referenceRepairs.method?.includes('named reviewer, review time')
     || JSON.stringify(referenceRepairs.summary) !== JSON.stringify({
       dossier_count: 40,
       source_ref_count: 179,
       resolving_source_ref_count: 161,
       unavailable_source_ref_count: 18,
+      editorially_reviewed_source_ref_count: 1,
     })
   ) {
     throw new Error('Publication-depth reference-repair summary is invalid');

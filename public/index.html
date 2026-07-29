@@ -789,9 +789,40 @@ function kindToggle(kind){
 }
 // Robust source renderer — handles both plain URL strings ["https://…"] and
 // {title,url} objects, dedups, and derives a clean domain label when no title.
+function evidenceStatusParts(source) {
+  if (!source || typeof source !== 'object') return [];
+  const hasEvidenceContract = [
+    'registered',
+    'reachable',
+    'resolving',
+    'evidence_reviewed',
+  ].some((key) => Object.prototype.hasOwnProperty.call(source, key))
+    || Boolean(source.source_tier || source.source_role);
+  if (!hasEvidenceContract) return [];
+  const truthy = (value) => value === true || value === 1 || value === '1';
+  const parts = ['registered'];
+  if (
+    Object.prototype.hasOwnProperty.call(source, 'reachable')
+    || Object.prototype.hasOwnProperty.call(source, 'resolving')
+  ) {
+    parts.push(truthy(source.reachable ?? source.resolving) ? 'reachable' : 'not reachable');
+  }
+  if (Object.prototype.hasOwnProperty.call(source, 'evidence_reviewed')) {
+    parts.push(truthy(source.evidence_reviewed) ? 'editor reviewed' : 'editor review pending');
+  }
+  if (source.source_tier) parts.push(`tier ${source.source_tier}`);
+  if (source.source_role) parts.push(`role ${String(source.source_role).replaceAll('_', ' ')}`);
+  if (truthy(source.evidence_reviewed) && source.evidence_reviewer) {
+    parts.push(`reviewer ${source.evidence_reviewer}`);
+  }
+  if (truthy(source.evidence_reviewed) && source.evidence_reviewed_at) {
+    parts.push(`reviewed ${source.evidence_reviewed_at}`);
+  }
+  return parts;
+}
 function sourceMetadataHtml(source) {
   if (!source || typeof source !== 'object') return '';
-  const metadata = [];
+  const metadata = evidenceStatusParts(source).map(esc);
   if (source.source_date) metadata.push(`source ${esc(source.source_date)}`);
   if (source.checked_at || source.accessed_at) metadata.push(`inspected ${esc(source.checked_at || source.accessed_at)}`);
   if (source.last_verified_at) metadata.push(`verified ${esc(source.last_verified_at)}`);
@@ -876,7 +907,8 @@ function sourceArray(value) {
     const url = typeof source === 'string' ? source : source && source.url;
     if (!url || seen.has(url) || safeUrl(url) === '#') return null;
     seen.add(url);
-    return typeof source === 'string' ? { url } : {
+    if (typeof source === 'string') return { url };
+    const normalized = {
       id: source.id || '',
       title: source.title || '',
       url,
@@ -891,7 +923,25 @@ function sourceArray(value) {
       stale_after: source.stale_after || '',
       stale: typeof source.stale === 'boolean' ? source.stale : null,
       reference_id: source.reference_id || '',
+      source_tier: source.source_tier || '',
+      source_role: source.source_role || '',
+      evidence_reviewed_at: source.evidence_reviewed_at || '',
+      evidence_reviewer: source.evidence_reviewer || '',
     };
+    if (Object.prototype.hasOwnProperty.call(source, 'registered')) {
+      normalized.registered = source.registered === true || source.registered === 1;
+    }
+    if (Object.prototype.hasOwnProperty.call(source, 'resolving')) {
+      normalized.resolving = source.resolving === true || source.resolving === 1;
+    }
+    if (Object.prototype.hasOwnProperty.call(source, 'reachable')) {
+      normalized.reachable = source.reachable === true || source.reachable === 1;
+    }
+    if (Object.prototype.hasOwnProperty.call(source, 'evidence_reviewed')) {
+      normalized.evidence_reviewed = source.evidence_reviewed === true
+        || source.evidence_reviewed === 1;
+    }
+    return normalized;
   }).filter(Boolean);
 }
 // Published forensic conclusions carry their own source references. Surface
@@ -1623,6 +1673,31 @@ function casinoReviewState(item) {
     ? forensicReviewState(review, reviewWindowState(item.last_reviewed))
     : reviewWindowState(item.last_reviewed);
 }
+function casinoEvidenceStatusHtml(source) {
+  const parts = evidenceStatusParts(source).map(esc);
+  return parts.length
+    ? `<div class="muted" style="margin:3px 0 0 68px">${parts.join(' · ')}</div>`
+    : '';
+}
+function casinoPublicationDepthBanner(depth) {
+  if (!depth) {
+    return '<div class="analysis-note"><b>Claim-support audit unavailable.</b> Dossier inclusion is not proof that high-risk claims meet the independent-support threshold.</div>';
+  }
+  const total = Number(depth.high_risk_claim_count) || 0;
+  const passing = Number(depth.passing_high_risk_claim_count) || 0;
+  const unresolved = Number(depth.unresolved_high_risk_claim_count) || 0;
+  const status = unresolved
+    ? `${unresolved} pending / withheld`
+    : 'support threshold met';
+  return `<div class="analysis-note"><b>High-risk claim support: ${esc(passing)} of ${esc(total)} meet policy · ${esc(status)}.</b> Corpus inclusion measures indexed coverage, not editorial claim support. Unsupported lifecycle, causal, legal, loss, and counterfactual conclusions are withheld below.</div>`;
+}
+function casinoDepthSectionHtml(label, text, depth, isUnsupported) {
+  if (!text) return '';
+  const gap = (depth?.unresolved_high_risk_claims || []).find(isUnsupported);
+  return `<div class="gsec">${label}</div>${gap
+    ? publicationPendingHtml(label.replaceAll('&amp;', '&'), gap)
+    : proseBox(text)}`;
+}
 function casinoDetailBody(item, detail) {
   if (detail === 'loading') return '<div class="gexp"><div class="skel">Loading cited dossier…</div></div>';
   if (detail?.error) return `<div class="gexp"><div class="muted">Couldn't load this dossier: ${esc(detail.error)}</div></div>`;
@@ -1631,22 +1706,50 @@ function casinoDetailBody(item, detail) {
   // fields; use the cited detail record when a card is expanded.
   const identity = detail.case || item;
   const synthesis = detail.synthesis || {};
+  const depth = detail.publication_depth || item.publication_depth;
   const sections = [
-    ['Lifecycle &amp; current situation', synthesis.present_situation],
-    ['Operating model &amp; distribution', synthesis.business_mechanism],
-    ['Token &amp; value-capture evidence', synthesis.token_contribution],
-    ['Chain dependence', synthesis.chain_dependence],
-    ['Legal scope &amp; evidence limit', synthesis.risk_legal_posture],
-    ['Success / failure hypotheses', synthesis.success_failure_hypotheses],
-    ['Counterfactual', synthesis.counterfactual],
-    ['Outlook &amp; review triggers', casinoOutlookText(synthesis.outlook)],
-    ['Lessons from this case', Array.isArray(synthesis.lessons_learned) ? synthesis.lessons_learned.join(' ') : synthesis.lessons_learned],
-  ].map(([label, text]) => text ? `<div class="gsec">${label}</div>${proseBox(text)}` : '').join('');
+    [
+      'Lifecycle &amp; current situation',
+      synthesis.present_situation,
+      (gap) => gap.type === 'lifecycle' || gap.path === 'forensic_analysis.outcome',
+    ],
+    ['Operating model &amp; distribution', synthesis.business_mechanism, () => false],
+    ['Token &amp; value-capture evidence', synthesis.token_contribution, () => false],
+    ['Chain dependence', synthesis.chain_dependence, () => false],
+    ['Legal scope &amp; evidence limit', synthesis.risk_legal_posture, (gap) => gap.type === 'legal'],
+    [
+      'Success / failure hypotheses',
+      synthesis.success_failure_hypotheses,
+      (gap) => gap.path === 'forensic_analysis.why'
+        || gap.path.startsWith('forensic_analysis.strategic_choices['),
+    ],
+    [
+      'Counterfactual',
+      synthesis.counterfactual,
+      (gap) => gap.path === 'forensic_analysis.counterfactual',
+    ],
+    ['Outlook &amp; review triggers', casinoOutlookText(synthesis.outlook), () => false],
+    [
+      'Lessons from this case',
+      Array.isArray(synthesis.lessons_learned)
+        ? synthesis.lessons_learned.join(' ')
+        : synthesis.lessons_learned,
+      () => false,
+    ],
+  ].map(([label, text, isUnsupported]) => (
+    casinoDepthSectionHtml(label, text, depth, isUnsupported)
+  )).join('');
   const observations = (detail.observations || []).map(casinoObservationHtml).join('') || '<div class="muted">No comparable operating metric is published in this dossier.</div>';
   const events = (detail.events || []).map(casinoEventHtml).join('') || '<div class="muted">No independently scoped lifecycle event is published in this dossier.</div>';
   const licenceRows = (detail.licences || []).map((licence) => `<div class="gfield"><span class="gfl">Licence</span>${esc(licence.authority)} · ${esc(licence.jurisdiction)} · ${esc(licence.licence_status)} · ${esc(licence.legal_entity || 'entity not published')} · ${esc((licence.activities || []).join(', ') || 'activity not published')} · as of ${esc(licence.as_of)}</div>`).join('');
   const licences = licenceRows || '<div class="muted">No licence observation is published. Do not infer global legality from this dossier.</div>';
-  const claimRows = (detail.claims || []).map((claim) => `<div class="gfield"><span class="gfl">${esc(claim.field_path)}</span><a href="${esc(safeUrl(claim.url))}" target="_blank" rel="noopener noreferrer">${esc(claim.title)} ↗</a><div class="muted" style="margin:3px 0 0 68px">${esc(claim.support_direction)} · ${esc(claim.evidence_locator)}</div></div>`).join('') || '<div class="muted">No reviewed claim evidence is available.</div>';
+  const claimRows = (detail.claims || []).map((claim) => {
+    const pending = claim.publication_support === 'pending_independent_support';
+    const evidence = pending
+      ? '<div class="analysis-note" style="margin:4px 0 0 68px"><b>High-risk claim withheld — independent support pending.</b> The registered source remains available for editorial review.</div>'
+      : `<div class="muted" style="margin:3px 0 0 68px">${esc(claim.support_direction)} · ${esc(claim.evidence_locator)}</div>`;
+    return `<div class="gfield"><span class="gfl">${esc(claim.field_path)}</span><a href="${esc(safeUrl(claim.url))}" target="_blank" rel="noopener noreferrer">${esc(claim.title)} ↗</a>${evidence}${casinoEvidenceStatusHtml({ ...claim, registered: true, reachable: claim.resolving })}</div>`;
+  }).join('') || '<div class="muted">No registered claim evidence is available.</div>';
   const domain = safeUrl(`https://${item.primary_domain}`);
   return `<div class="gexp">
     <div class="gfield"><span class="gfl">Domain</span><a href="${esc(domain)}" target="_blank" rel="noopener noreferrer">${esc(item.primary_domain)} ↗</a></div>
@@ -1655,17 +1758,26 @@ function casinoDetailBody(item, detail) {
     <div class="gfield"><span class="gfl">Custody</span>${esc(casinoLabel(item.custody_model))}</div>
     <div class="gfield"><span class="gfl">Token</span>${esc(item.token_status === 'documented' ? (item.token_symbol || 'Documented token') : casinoLabel(item.token_status))}</div>
     <div class="gfield"><span class="gfl">Research status</span>${esc(item.confidence || 'unknown')} confidence · ${esc(item.completeness_pct)}% evidence completeness · reviewed ${esc(item.last_reviewed || '—')}</div>
+    <div class="gfield"><span class="gfl">Evidence status</span>${esc(identity.registered_source_count)} registered · ${esc(identity.reachable_source_count)} reachable · ${esc(identity.reviewed_source_count)} editor reviewed</div>
     <div class="gfield"><span class="gfl">Known gaps</span>${esc((item.unsourced_fields || []).map(casinoLabel).join(' · ') || 'none published')}</div>
     ${sections}<div class="gsec">Documented metrics &amp; comparability limits</div>${observations}
     <div class="gsec">Lifecycle timeline</div>${events}
+    ${casinoPublicationDepthBanner(depth)}
     ${forensicAnalysisHtml(synthesis.forensic_analysis, (ref) => {
       const value = typeof ref === 'string' ? ref : (ref?.url || ref?.value);
       if (!value) return null;
       const claim = (detail.claims || []).find((claim) => claim.claim_id === value || claim.url === value);
-      return claim ? { url: claim.url, title: claim.title } : (String(value).startsWith('https://') ? { url: value, title: 'source' } : null);
-    }, 'This casino dossier retains its cited lifecycle and operating analysis; a normalized causal contract is pending review.')}
+      const source = (detail.sources || []).find((item) => (
+        item.id === value || item.url === value
+      ));
+      if (source) return source;
+      if (claim) return { ...claim, registered: true, reachable: claim.resolving };
+      return String(value).startsWith('https://')
+        ? { url: value, title: 'source', verification_note: 'source registry status unavailable' }
+        : null;
+    }, 'This casino dossier is indexed; its normalized causal contract is pending review.', depth)}
     <div class="gsec">Licence observations</div>${licences}
-    <div class="gsec">Field evidence</div>${claimRows}
+    <div class="gsec">Field evidence &amp; review status</div>${claimRows}
     ${srcHtml(detail.sources, 'Cited sources: ')}<div class="muted" style="margin-top:8px">Last manually reviewed ${esc(item.last_reviewed || '—')}</div>
   </div>`;
 }
@@ -1674,28 +1786,31 @@ function casinoAnalysisCard(item) {
   const detail = state.casinoAnalysisDetails[item.case_id];
   const chains = Array.isArray(item.chains) && item.chains.length ? item.chains.join(' · ') : 'No chain scope published';
   const body = open ? casinoDetailBody(item, detail) : '';
-  const sourceLabel = item.source_count === 1 ? 'reviewed source' : 'reviewed sources';
-  const sourcePreview = `<div class="analysis-src-preview"><div class="asrc">Cited sources: ${esc(item.source_count)} ${sourceLabel}; open dossier for field-level links.</div></div>`;
+  const sourcePreview = `<div class="analysis-src-preview"><div class="asrc">Evidence: ${esc(item.registered_source_count)} registered · ${esc(item.reachable_source_count)} reachable · ${esc(item.reviewed_source_count)} editor reviewed; open dossier for field-level links and status.</div></div>`;
+  const depth = item.publication_depth || {};
+  const supportPreview = `<div class="analysis-src-preview"><div class="asrc">High-risk support: ${esc(depth.passing_high_risk_claim_count || 0)}/${esc(depth.high_risk_claim_count || 0)} meet policy · ${esc(depth.unresolved_high_risk_claim_count || 0)} pending / withheld.</div></div>`;
   // Keep the public handoff inside the research UI. The API remains the data
   // source for the lazy detail pane; a reader should never have to inspect raw
   // JSON to read a published dossier.
   const dossierLink = `/casino/${encodeURIComponent(item.case_id)}`;
   return `<div class="gcard ${open ? 'open' : ''}" role="button" tabindex="0" data-casino-case="${esc(item.case_id)}">
     <div class="ghead"><div class="gname">${esc(item.brand_name)} <span class="gverdict ${item.status === 'active' ? 'recover' : 'declining'}">${esc(casinoLabel(item.status))}</span></div>
-    <div class="gdd" style="color:var(--muted2);font-size:14px">${item.source_count}<span class="gddl">reviewed sources</span></div></div>
+    <div class="gdd" style="color:var(--muted2);font-size:14px">${item.reviewed_source_count}<span class="gddl">editor reviewed</span></div></div>
     <div class="gmeta">${esc(casinoLabel(item.entity_kind))} · ${esc(casinoLabel(item.product_subtype))} · ${esc(chains)} · ${esc(casinoLabel(item.outcome_label || 'outcome unknown'))} · ${esc(item.completeness_pct)}% complete · status evidence ${esc(item.status_as_of || '—')} · last reviewed ${esc(item.last_reviewed || '—')}</div>
     <div class="gbody">${esc(item.product_scope_note || 'Scoped research dossier.')}</div>
-    ${sourcePreview}
+    ${supportPreview}${sourcePreview}
     ${body}<div class="gexpand">${open ? 'Hide dossier ▲' : 'Full cited dossier ▾'} · <a href="${esc(dossierLink)}" target="_blank" rel="noopener noreferrer">Open dossier →</a></div>
   </div>`;
 }
 function renderCasinoAnalysis() {
   const el = document.getElementById('casinoanalysisview');
-  const head = pageHead('Web3 Casino Analysis', 'Citation-gated research across onchain casinos, sportsbooks, betting exchanges, bankrolls, and gaming infrastructure.');
-  if (!state.casinoAnalysisData) { el.innerHTML = `${head}<div class="skel">Loading publication-gated casino dossiers…</div>`; return; }
+  const head = pageHead('Web3 Casino Analysis', 'Indexed, cited research across onchain casinos, sportsbooks, betting exchanges, bankrolls, and gaming infrastructure. Claim support varies and is shown per dossier.');
+  if (!state.casinoAnalysisData) { el.innerHTML = `${head}<div class="skel">Loading indexed casino dossiers and claim-support audits…</div>`; return; }
   const coverage = state.casinoCoverage || {};
   const cases = state.casinoAnalysisData.cases || [];
-  const unpublished = Math.max(0, Number(coverage.target_count || 0) - cases.length);
+  const claimSupport = state.casinoAnalysisData.claim_support || {};
+  const missing = Number(coverage.missing_count)
+    || Math.max(0, Number(coverage.target_count || 0) - cases.length);
   const q = state.casinoAnalysisQuery.toLowerCase();
   const filtered = cases.filter((item) => (
     (state.casinoAnalysisStatus === 'all' || item.status === state.casinoAnalysisStatus) &&
@@ -1709,9 +1824,9 @@ function renderCasinoAnalysis() {
   const subtypes = [...new Set(cases.map((item) => item.product_subtype).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   const tokens = [...new Set(cases.map((item) => item.token_status).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   if (!cases.length) {
-    const emptyCopy = coverage.target_count ? `${esc(coverage.target_count)} candidates remain research pending and are intentionally not presented as analyses.` : 'Cases appear only after sources and claims pass the publication gate.';
+    const emptyCopy = coverage.target_count ? `${esc(coverage.target_count)} expected dossier IDs remain absent from the indexed corpus.` : 'No indexed dossier rows are available.';
     const unavailable = state.casinoAnalysisError ? '<br/><span class="muted">The public dossier service is temporarily unavailable; candidates remain withheld.</span>' : '';
-    el.innerHTML = `${head}<div class="analysis-empty"><b>No casino dossiers are published yet.</b><br/>${emptyCopy}${unavailable}</div>`;
+    el.innerHTML = `${head}<div class="analysis-empty"><b>No casino dossiers are indexed yet.</b><br/>${emptyCopy}${unavailable}</div>`;
     return;
   }
   const cohortPanel = analysisCohortPanel(
@@ -1722,10 +1837,10 @@ function renderCasinoAnalysis() {
     'Bars prefer each causal map’s explicit next-review date and use the 90-day dossier policy only when that field is absent. A current review is not evidence of profitability or legal availability.',
   );
   el.innerHTML = `${head}
-    <div class="analysis-note">Only records with reviewed primary evidence, explicit scope, status evidence, an as-of metric, no blockers, and a defined outcome rule appear here. No cross-case “largest casino” ranking is computed.</div>
-    <div class="gstats">${gstat(cases.length, 'published dossiers')}${gstat(unpublished, 'candidates withheld')}${gstat(cases.filter(item=>item.token_status==='documented').length, 'documented tokens')}${gstat(cases.filter(item=>item.outcome_label==='unclassified').length, 'outcomes unclassified')}</div>
+    <div class="analysis-note"><b>${esc(coverage.present_count ?? cases.length)}/${esc(coverage.target_count || cases.length)} corpus coverage measures indexed dossiers, not editorial claim support.</b> Across the visible corpus, ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} high-risk claims meet the independent-support policy and ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending / withheld. No cross-case “largest casino” ranking is computed.</div>
+    <div class="gstats">${gstat(cases.length, 'indexed dossiers')}${gstat(missing, 'expected dossiers missing')}${gstat(claimSupport.unresolved_high_risk_claim_count || 0, 'high-risk claims pending')}${gstat(cases.filter(item=>item.token_status==='documented').length, 'documented tokens')}</div>
     ${cohortPanel}
-    <div class="analysis-note">The index does not treat candidate inclusion, a named chain, a token, or an interface as proof of success. Open a dossier to inspect field-level sources, lifecycle events, metric scope, gaps, and review date.</div>
+    <div class="analysis-note">Legend: “registered” means the citation exists in the dossier; “reachable” records retrieval; “editor reviewed” requires explicit review provenance. None alone proves a high-risk conclusion. Open a dossier to see which lifecycle, causal, legal, loss, and counterfactual claims meet policy or are withheld.</div>
     <div class="toolbar"><div class="analysis-controls">
       <input id="casinoAnalysisSearch" class="search" placeholder="Search casinos, chains or findings…" value="${esc(state.casinoAnalysisQuery)}" />
       <label class="muted" for="casinoAnalysisStatus">Status</label>
@@ -1744,7 +1859,7 @@ function renderCasinoAnalysis() {
       <select id="casinoAnalysisSort" class="analysis-select"><option value="reviewed"${state.casinoAnalysisSort==='reviewed'?' selected':''}>Last reviewed</option><option value="name"${state.casinoAnalysisSort==='name'?' selected':''}>Name</option><option value="sources"${state.casinoAnalysisSort==='sources'?' selected':''}>Reviewed source count</option></select>
     </div></div>
     <div class="analysis-actions"><a class="kindbtn" href="/api/casino-coverage" target="_blank" rel="noopener noreferrer">Open coverage ledger →</a></div>
-    <div class="dsec" style="margin:18px 0 10px">${filtered.length} publication-gated dossier${filtered.length===1?'':'s'} shown · cohort as of ${esc(coverage.universe_as_of || state.casinoAnalysisData.as_of || '—')}</div>
+    <div class="dsec" style="margin:18px 0 10px">${filtered.length} indexed dossier${filtered.length===1?'':'s'} shown · claim support varies · cohort as of ${esc(coverage.universe_as_of || state.casinoAnalysisData.as_of || '—')}</div>
     <div class="gwrap">${filtered.map(casinoAnalysisCard).join('') || '<div class="skel">No casino dossiers match these filters.</div>'}</div>`;
 }
 async function loadCasinoAnalysis() {
@@ -2306,9 +2421,16 @@ function forensicRefHtml(ref, resolveRef) {
     ? ref
     : (resolveRef && resolveRef(ref));
   if (!resolved || !resolved.url) return '';
-  return ` <a class="ecite" href="${esc(safeUrl(resolved.url))}" target="_blank" rel="noopener noreferrer">${esc(resolved.title || 'source')} ↗</a>`;
+  return ` <a class="ecite" href="${esc(safeUrl(resolved.url))}" target="_blank" rel="noopener noreferrer">${esc(resolved.title || 'source')} ↗</a>${sourceMetadataHtml(resolved)}`;
 }
-function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is indexed, but its structured causal analysis has not passed the publication gate yet.') {
+function publicationDepthGap(depth, path) {
+  return (depth?.unresolved_high_risk_claims || []).find((claim) => claim.path === path) || null;
+}
+function publicationPendingHtml(label, gap) {
+  const reason = (gap?.gaps || []).map((value) => String(value).replaceAll('_', ' ')).join(' · ');
+  return `<div class="analysis-note"><b>${esc(label)} withheld — independent support pending.</b>${reason ? ` ${esc(reason)}.` : ''} Registered sources remain visible for review; this conclusion is not presented as independently verified.</div>`;
+}
+function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is indexed, but its structured causal analysis is pending review.', publicationDepth = null) {
   const a = parsedObject(contract);
   if (!a || (a.schema !== 'forensic-analysis-v1' && a.version !== 'forensic-analysis-v1')) {
     return `<div class="dsec">Forensic analysis</div><div class="analysis-note">${esc(pendingText)}</div>`;
@@ -2317,7 +2439,8 @@ function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is 
   const citedList = (items, mapper) => Array.isArray(items) && items.length
     ? `<ul class="evlist">${items.map(mapper).filter(Boolean).join('')}</ul>` : '';
   const whyItems = Array.isArray(a.why) ? a.why : (a.why ? [a.why] : []);
-  const why = citedList(whyItems, (factor) => {
+  const whyGap = publicationDepthGap(publicationDepth, 'forensic_analysis.why');
+  const why = whyGap ? publicationPendingHtml('Why this outcome', whyGap) : citedList(whyItems, (factor) => {
     if (!factor) return '';
     const claim = factor.claim || factor.summary;
     if (!claim) return '';
@@ -2328,7 +2451,14 @@ function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is 
       ? `<div class="muted">Alternative: ${esc(factor.alternatives.join(' · '))}</div>` : '';
     return `<li><b>${esc(exchangeLabel(factor.factor || 'other'))}:</b> ${esc(claim)}${refs}<span class="muted">${esc(basis + confidence)}</span>${alternatives}</li>`;
   });
-  const choices = citedList(a.strategic_choices, (choice) => {
+  const choices = citedList(a.strategic_choices, (choice, index) => {
+    const gap = publicationDepthGap(
+      publicationDepth,
+      `forensic_analysis.strategic_choices[${index}]`,
+    );
+    if (gap) {
+      return `<li><b>Strategic-choice conclusion withheld — independent support pending.</b><div class="muted">Registered sources remain available below; this conclusion is not presented as independently verified.</div></li>`;
+    }
     const choiceText = choice?.choice || choice?.decision;
     if (!choice || !choiceText) return '';
     const refs = (choice.evidence_refs || choice.source_refs || []).map((ref) => forensicRefHtml(ref, resolveRef)).join('');
@@ -2339,9 +2469,15 @@ function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is 
   });
   const counter = parsedObject(a.counterfactual);
   const counterText = counter?.intervention ? `${counter.intervention}${counter.mechanism ? ` — ${counter.mechanism}` : ''}` : counter?.summary;
-  const counterfactual = counterText
-    ? `${proseBox(counterText)}${counter.limits ? `<div class="muted">Limit: ${esc(counter.limits)}</div>` : ''}`
-    : '';
+  const counterGap = publicationDepthGap(
+    publicationDepth,
+    'forensic_analysis.counterfactual',
+  );
+  const counterfactual = counterGap
+    ? publicationPendingHtml('Counterfactual', counterGap)
+    : counterText
+      ? `${proseBox(counterText)}${counter.limits ? `<div class="muted">Limit: ${esc(counter.limits)}</div>` : ''}`
+      : '';
   const watch = citedList(a.watch, (item) => {
     if (!item?.signal) return '';
     const refs = (item.evidence_refs || item.source_refs || []).map((ref) => forensicRefHtml(ref, resolveRef)).join('');
@@ -2354,8 +2490,12 @@ function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is 
   });
   const review = parsedObject(a.review);
   const outcomeText = outcome.label ? `${exchangeLabel(outcome.label)}${outcome.scope ? ` · ${outcome.scope}` : ''}${outcome.summary ? ` · ${outcome.summary}` : ''}` : 'outcome withheld';
+  const outcomeGap = publicationDepthGap(publicationDepth, 'forensic_analysis.outcome');
+  const outcomeRow = outcomeGap
+    ? publicationPendingHtml('Scoped outcome', outcomeGap)
+    : `<div class="gfield"><span class="gfl">Scoped outcome</span>${esc(outcomeText)}${(outcome.source_refs || outcome.evidence_refs || []).map((ref) => forensicRefHtml(ref, resolveRef)).join('')}</div>`;
   const sections = [
-    `<div class="gfield"><span class="gfl">Scoped outcome</span>${esc(outcomeText)}${(outcome.source_refs || outcome.evidence_refs || []).map((ref) => forensicRefHtml(ref, resolveRef)).join('')}</div>`,
+    outcomeRow,
     why ? `<div class="gsec">Why this outcome</div>${why}` : '',
     choices ? `<div class="gsec">Strategic choices</div>${choices}` : '',
     counterfactual ? `<div class="gsec">What could have been different</div>${counterfactual}` : '',

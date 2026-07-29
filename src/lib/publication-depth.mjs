@@ -304,8 +304,9 @@ export function evaluatePublicationClaim(claim, registeredSources) {
   const tierOneAuthority = accessible.filter((source) => (
     source.tier === 'T1' && source.role === 'authority'
   ));
-  const tierTwoIndependent = accessible.filter((source) => (
-    source.tier === 'T2' && source.role === 'independent'
+  const strongIndependent = accessible.filter((source) => (
+    (source.tier === 'T1' || source.tier === 'T2')
+    && source.role === 'independent'
   ));
   const tierTwoPrimaryLifecycle = accessible.filter((source) => (
     source.tier === 'T2' && source.role === 'primary'
@@ -316,7 +317,7 @@ export function evaluatePublicationClaim(claim, registeredSources) {
     .filter(Boolean));
   const passes = !claim.high_risk
     || tierOneAuthority.length >= 1
-    || tierTwoIndependent.length >= 1
+    || strongIndependent.length >= 1
     || independentTierThree.size >= 2;
   const passesWithOperatorLifecycle = passes || (
     claim.type === 'lifecycle' && tierTwoPrimaryLifecycle.length >= 1
@@ -333,7 +334,7 @@ export function evaluatePublicationClaim(claim, registeredSources) {
     source_count: unique.length,
     resolving_reviewed_source_count: accessible.length,
     t1_authority_source_count: tierOneAuthority.length,
-    t2_independent_source_count: tierTwoIndependent.length,
+    t1_t2_independent_source_count: strongIndependent.length,
     t2_primary_lifecycle_source_count: tierTwoPrimaryLifecycle.length,
     independent_t3_publisher_count: independentTierThree.size,
     unresolved_refs: unresolvedRefs,
@@ -399,12 +400,43 @@ function inspectDossier({ vertical, id, name, sources, claims }) {
       source_count: claim.source_count,
       resolving_reviewed_source_count: claim.resolving_reviewed_source_count,
       t1_authority_source_count: claim.t1_authority_source_count,
-      t2_independent_source_count: claim.t2_independent_source_count,
+      t1_t2_independent_source_count: claim.t1_t2_independent_source_count,
       t2_primary_lifecycle_source_count: claim.t2_primary_lifecycle_source_count,
       independent_t3_publisher_count: claim.independent_t3_publisher_count,
       unresolved_refs: claim.unresolved_refs,
       gaps: claim.gaps,
     })),
+  };
+}
+
+export function assessCasinoPublicationDepth({
+  caseId,
+  name,
+  sources,
+  claims,
+  forensicAnalysis,
+}) {
+  const assessment = inspectDossier({
+    vertical: 'casino',
+    id: caseId,
+    name,
+    sources: asArray(sources),
+    claims: [
+      ...collectCasinoClaims(asArray(claims)),
+      ...collectForensicClaims(forensicAnalysis),
+    ],
+  });
+  return {
+    status: assessment.unresolved_high_risk_claim_count > 0
+      ? 'claim_support_pending'
+      : 'high_risk_support_threshold_met',
+    claim_count: assessment.claim_count,
+    high_risk_claim_count: assessment.high_risk_claim_count,
+    passing_high_risk_claim_count: assessment.passing_high_risk_claim_count,
+    unresolved_high_risk_claim_count: assessment.unresolved_high_risk_claim_count,
+    unmatched_source_ref_count: assessment.unmatched_source_ref_count,
+    unresolved_high_risk_claims: assessment.unresolved_high_risk_claims,
+    policy_note: 'Corpus inclusion measures indexed dossier coverage, not editorial claim support. Unsupported high-risk conclusions remain pending.',
   };
 }
 
@@ -576,7 +608,7 @@ export function buildPublicationDepthInventory(database, options = {}) {
     as_of: options.asOf || null,
     policy: {
       high_risk_claim_types: [...HIGH_RISK_CLAIM_TYPES].sort(),
-      passing_rule: 'High-risk claims require one resolving/reviewed T1 authority, one resolving/reviewed independent T2, or two resolving/reviewed independent T3 publishers. A T2 operator/primary source can pass only a narrow lifecycle/status claim that the operator reports about itself.',
+      passing_rule: 'High-risk claims require one resolving/reviewed T1 authority, one resolving/reviewed independent T1 or T2 source, or two resolving/reviewed independent T3 publishers. A primary T1 source does not satisfy the independent threshold. A T2 operator/primary source can pass only a narrow lifecycle/status claim that the operator reports about itself.',
       access_rule: 'Missing resolving/access metadata is reported as not_recorded and never silently treated as accessible.',
       review_rule: 'Access timestamps never imply editorial evidence review; evidence_reviewed must be explicit.',
       reference_rule: 'Direct URL references must also exist in the dossier source registry; unmatched refs remain explicit gaps.',

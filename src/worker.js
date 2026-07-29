@@ -29,6 +29,11 @@ import { renderSsrRows } from './lib/ssr-rows.js';
 import { CHAIN_DOSSIER_DIMENSIONS } from './lib/chain-dossier.js';
 import { normalizeExchangeCase, summarizeExchangeCases } from './lib/exchange-analysis.js';
 import { buildNftLifecycleAnalysis } from './lib/nft-lifecycle-analysis.js';
+import {
+  casinoPublicationCoverageSql,
+  summarizeCasinoPublicationCoverage,
+} from './lib/casino-publication-cohort.js';
+import { assessCasinoPublicationDepth } from './lib/publication-depth.mjs';
 
 const ENV = {};
 const app = new Hono();
@@ -2439,9 +2444,10 @@ app.get('/api/nft', wrap(async (req, res) => {
   }
 }));
 
-// Web3 casino / betting research. Only records that pass the editorial
-// publication gate are reachable here; the candidate ledger is never an API
-// source because candidate inclusion is not an analysis.
+// Web3 casino / betting research. Indexed dossiers are distinct from draft
+// candidates, but corpus inclusion is not treated as proof that every high-risk
+// claim meets the independent-support threshold. That status is computed and
+// published separately for every case.
 const CASINO_ENTITY_KINDS = new Set(['custodial_operator', 'onchain_casino', 'betting_exchange', 'bankroll_protocol', 'gaming_infrastructure']);
 const CASINO_PRODUCT_SUBTYPES = new Set(['casino', 'sportsbook', 'casino_and_sportsbook', 'poker', 'betting_exchange', 'prediction_market', 'bankroll', 'infrastructure']);
 const CASINO_STATUSES = new Set(['active', 'restricted', 'paused', 'wind_down_announced', 'inactive', 'insolvent', 'superseded', 'unknown']);
@@ -2459,7 +2465,42 @@ function casinoCaseRow(row) {
     unsourced_fields: parseCasinoJson(row.unsourced_fields, []),
     forensic_review: parseCasinoJson(row.forensic_review, null),
     source_count: Number(row.source_count) || 0,
+    registered_source_count: Number(row.registered_source_count) || 0,
+    reachable_source_count: Number(row.reachable_source_count) || 0,
+    reviewed_source_count: Number(row.reviewed_source_count ?? row.source_count) || 0,
   };
+}
+function casinoPublicationDepthMap(caseRows, claimRows, synthesisRows) {
+  const claimsByCase = new Map();
+  const sourcesByCase = new Map();
+  for (const claim of claimRows) {
+    if (!claimsByCase.has(claim.case_id)) claimsByCase.set(claim.case_id, []);
+    claimsByCase.get(claim.case_id).push(claim);
+    if (!sourcesByCase.has(claim.case_id)) sourcesByCase.set(claim.case_id, new Map());
+    sourcesByCase.get(claim.case_id).set(claim.source_id, {
+      source_id: claim.source_id,
+      canonical_url: claim.url,
+      title: claim.title,
+      publisher: claim.publisher,
+      source_tier: claim.source_tier,
+      source_role: claim.source_role,
+      resolving: claim.resolving,
+      evidence_reviewed: claim.evidence_reviewed,
+      evidence_reviewed_at: claim.evidence_reviewed_at,
+      evidence_reviewer: claim.evidence_reviewer,
+    });
+  }
+  const synthesisByCase = new Map(synthesisRows.map((row) => [
+    row.case_id,
+    parseCasinoJson(row.outlook, {}),
+  ]));
+  return new Map(caseRows.map((row) => [row.case_id, assessCasinoPublicationDepth({
+    caseId: row.case_id,
+    name: row.brand_name,
+    sources: [...(sourcesByCase.get(row.case_id)?.values() || [])],
+    claims: claimsByCase.get(row.case_id) || [],
+    forensicAnalysis: synthesisByCase.get(row.case_id)?.forensic_analysis,
+  })]));
 }
 app.get('/api/casinos', wrap(async (req, res) => {
   const filters = [
@@ -2481,25 +2522,72 @@ app.get('/api/casinos', wrap(async (req, res) => {
     binds.push(value);
   }
   const sort = String(req.query.sort || 'reviewed').trim();
-  const orderBy = { name: 'c.brand_name COLLATE NOCASE ASC', sources: 'source_count DESC, c.brand_name COLLATE NOCASE ASC', reviewed: 'c.last_reviewed DESC, c.brand_name COLLATE NOCASE ASC' }[sort] || 'c.last_reviewed DESC, c.brand_name COLLATE NOCASE ASC';
+  const orderBy = { name: 'c.brand_name COLLATE NOCASE ASC', sources: 'reviewed_source_count DESC, c.brand_name COLLATE NOCASE ASC', reviewed: 'c.last_reviewed DESC, c.brand_name COLLATE NOCASE ASC' }[sort] || 'c.last_reviewed DESC, c.brand_name COLLATE NOCASE ASC';
   try {
-    const rows = await dbQuery(
-      `SELECT c.case_id, c.brand_name, c.entity_kind, c.product_subtype, c.primary_domain, c.custody_model, c.chains,
+    const [rows, depthClaims, depthSyntheses] = await Promise.all([
+      dbQuery(
+        `SELECT c.case_id, c.brand_name, c.entity_kind, c.product_subtype, c.primary_domain, c.custody_model, c.chains,
               c.product_scope_note, c.status, c.status_as_of, c.outcome_label, c.outcome_as_of, c.token_status,
               c.token_symbol, c.token_name, c.completeness_pct, c.confidence, c.unsourced_fields, c.last_reviewed,
               (SELECT json_extract(syn.outlook, '$.forensic_analysis.review')
                  FROM casino_syntheses syn WHERE syn.case_id = c.case_id LIMIT 1) AS forensic_review,
+              (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl
+                WHERE cl.case_id = c.case_id) AS registered_source_count,
+              (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id
+                WHERE cl.case_id = c.case_id AND s.resolving = 1) AS reachable_source_count,
+              (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id
+                WHERE cl.case_id = c.case_id AND s.resolving = 1 AND s.evidence_reviewed = 1) AS reviewed_source_count,
               (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id
                 WHERE cl.case_id = c.case_id AND s.resolving = 1 AND s.evidence_reviewed = 1) AS source_count
          FROM casino_cases c WHERE ${where.join(' AND ')} ORDER BY ${orderBy}`,
-      binds,
-    );
-    const cases = rows.map(casinoCaseRow);
+        binds,
+      ),
+      dbQuery(`
+        SELECT
+          cl.case_id, cl.claim_id, cl.field_path, cl.source_id, cl.evidence_locator,
+          cl.claim_type, cl.support_direction, cl.analyst_note,
+          s.canonical_url AS url, s.title, s.publisher, s.source_tier, s.source_role,
+          s.resolving, s.evidence_reviewed, s.evidence_reviewed_at, s.evidence_reviewer
+        FROM casino_claims cl
+        JOIN casino_sources s ON s.source_id = cl.source_id
+        JOIN casino_cases c ON c.case_id = cl.case_id
+        WHERE c.quality_passed = 1
+        ORDER BY cl.case_id, cl.claim_id
+      `),
+      dbQuery(`
+        SELECT syn.case_id, syn.outlook
+        FROM casino_syntheses syn
+        JOIN casino_cases c ON c.case_id = syn.case_id
+        WHERE c.quality_passed = 1
+        ORDER BY syn.case_id
+      `),
+    ]);
+    const depthByCase = casinoPublicationDepthMap(rows, depthClaims, depthSyntheses);
+    const cases = rows.map((row) => ({
+      ...casinoCaseRow(row),
+      publication_depth: depthByCase.get(row.case_id),
+    }));
     const asOf = cases.map((item) => item.status_as_of).filter(Boolean).sort().at(-1) || null;
+    const claimSupport = {
+      high_risk_claim_count: cases.reduce(
+        (sum, item) => sum + item.publication_depth.high_risk_claim_count,
+        0,
+      ),
+      passing_high_risk_claim_count: cases.reduce(
+        (sum, item) => sum + item.publication_depth.passing_high_risk_claim_count,
+        0,
+      ),
+      unresolved_high_risk_claim_count: cases.reduce(
+        (sum, item) => sum + item.publication_depth.unresolved_high_risk_claim_count,
+        0,
+      ),
+      policy_note: 'Indexed dossier coverage is not editorial claim support; claim support varies by case.',
+    };
     res.json({
       cases,
       count: cases.length,
       as_of: asOf,
+      claim_support: claimSupport,
     });
   } catch {
     res.json({ cases: [], count: 0, as_of: null, error: 'casino research unavailable' });
@@ -2507,19 +2595,8 @@ app.get('/api/casinos', wrap(async (req, res) => {
 }));
 app.get('/api/casino-coverage', wrap(async (req, res) => {
   try {
-    const rows = await dbQuery(`
-      SELECT
-        'web3-casino-full-corpus-2026-07-29' AS cohort_id,
-        MAX(selection_as_of) AS universe_as_of,
-        COUNT(*) AS target_count,
-        SUM(CASE WHEN quality_passed = 1 THEN 1 ELSE 0 END) AS quality_passed_count,
-        SUM(CASE WHEN quality_passed = 0 THEN 1 ELSE 0 END) AS partial_count,
-        0 AS missing_count,
-        'casino-dossier-v1+forensic-analysis-v1' AS methodology_version,
-        MAX(updated_at) AS updated_at
-      FROM casino_cases
-    `);
-    res.json({ coverage: rows[0] || null });
+    const rows = await dbQuery(casinoPublicationCoverageSql());
+    res.json({ coverage: summarizeCasinoPublicationCoverage(rows) });
   } catch {
     res.json({ coverage: null, error: 'casino coverage unavailable' });
   }
@@ -2530,18 +2607,68 @@ app.get('/api/casino/:case_id', wrap(async (req, res) => {
     return res.status(400).json({ error: 'invalid case id' });
   }
   try {
-    const rows = await dbQuery(`SELECT c.case_id, c.brand_name, c.entity_kind, c.product_subtype, c.legal_operator, c.parent_entity, c.primary_domain, c.launched, c.date_precision, c.custody_model, c.chains, c.product_scope_note, c.status, c.status_as_of, c.outcome_label, c.outcome_as_of, c.outcome_rule_id, c.token_status, c.token_symbol, c.token_name, c.token_contracts, c.token_launch_date, c.token_utility, c.token_fee_revenue_rights, c.token_supply, c.confidence, c.completeness_pct, c.unsourced_fields, c.last_reviewed, (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id WHERE cl.case_id = c.case_id AND s.resolving = 1 AND s.evidence_reviewed = 1) AS source_count FROM casino_cases c WHERE c.case_id = ? AND c.quality_passed = 1 LIMIT 1`, [caseId]);
+    const rows = await dbQuery(`
+      SELECT
+        c.case_id, c.brand_name, c.entity_kind, c.product_subtype, c.legal_operator,
+        c.parent_entity, c.primary_domain, c.launched, c.date_precision, c.custody_model,
+        c.chains, c.product_scope_note, c.status, c.status_as_of, c.outcome_label,
+        c.outcome_as_of, c.outcome_rule_id, c.token_status, c.token_symbol, c.token_name,
+        c.token_contracts, c.token_launch_date, c.token_utility, c.token_fee_revenue_rights,
+        c.token_supply, c.confidence, c.completeness_pct, c.unsourced_fields, c.last_reviewed,
+        (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl
+          WHERE cl.case_id = c.case_id) AS registered_source_count,
+        (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl
+          JOIN casino_sources s ON s.source_id = cl.source_id
+          WHERE cl.case_id = c.case_id AND s.resolving = 1) AS reachable_source_count,
+        (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl
+          JOIN casino_sources s ON s.source_id = cl.source_id
+          WHERE cl.case_id = c.case_id AND s.resolving = 1
+            AND s.evidence_reviewed = 1) AS reviewed_source_count,
+        (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl
+          JOIN casino_sources s ON s.source_id = cl.source_id
+          WHERE cl.case_id = c.case_id AND s.resolving = 1
+            AND s.evidence_reviewed = 1) AS source_count
+      FROM casino_cases c
+      WHERE c.case_id = ? AND c.quality_passed = 1
+      LIMIT 1
+    `, [caseId]);
     if (!rows[0]) {
       return res.status(404).json({ error: 'published casino dossier not found' });
     }
     const [claims, observations, events, licences, syntheses] = await Promise.all([
-      dbQuery(`SELECT cl.claim_id, cl.field_path, cl.evidence_locator, cl.claim_type, cl.support_direction, cl.analyst_note, cl.checked_at, s.source_id, s.canonical_url AS url, s.title, s.publisher, s.published_at, s.accessed_at, s.source_tier, s.source_role FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id WHERE cl.case_id = ? AND s.resolving = 1 AND s.evidence_reviewed = 1 ORDER BY cl.claim_id`, [caseId]),
+      dbQuery(`
+        SELECT
+          cl.claim_id, cl.field_path, cl.evidence_locator, cl.claim_type,
+          cl.support_direction, cl.analyst_note, cl.checked_at,
+          s.source_id, s.canonical_url AS url, s.title, s.publisher, s.published_at,
+          s.accessed_at, s.source_tier, s.source_role, s.resolving,
+          s.evidence_reviewed, s.evidence_reviewed_at, s.evidence_reviewer
+        FROM casino_claims cl
+        JOIN casino_sources s ON s.source_id = cl.source_id
+        WHERE cl.case_id = ?
+        ORDER BY cl.claim_id
+      `, [caseId]),
       dbQuery(`SELECT * FROM casino_observations WHERE case_id = ? ORDER BY as_of DESC, metric_dimension ASC`, [caseId]),
       dbQuery(`SELECT * FROM casino_events WHERE case_id = ? ORDER BY event_date DESC`, [caseId]),
       dbQuery(`SELECT * FROM casino_licences WHERE case_id = ? ORDER BY as_of DESC`, [caseId]),
       dbQuery(`SELECT * FROM casino_syntheses WHERE case_id = ? LIMIT 1`, [caseId]),
     ]);
-    const sources = [...new Map(claims.map((claim) => [claim.source_id, { title: claim.title, url: claim.url, publisher: claim.publisher, accessed_at: claim.accessed_at }])).values()];
+    const sources = [...new Map(claims.map((claim) => [claim.source_id, {
+      id: claim.source_id,
+      title: claim.title,
+      url: claim.url,
+      publisher: claim.publisher,
+      published_at: claim.published_at,
+      accessed_at: claim.accessed_at,
+      source_tier: claim.source_tier,
+      source_role: claim.source_role,
+      registered: true,
+      resolving: Number(claim.resolving) === 1,
+      reachable: Number(claim.resolving) === 1,
+      evidence_reviewed: Number(claim.evidence_reviewed) === 1,
+      evidence_reviewed_at: claim.evidence_reviewed_at,
+      evidence_reviewer: claim.evidence_reviewer,
+    }])).values()];
     let synthesis = null;
     if (syntheses[0]) {
       const outlook = parseCasinoJson(syntheses[0].outlook, {});
@@ -2556,12 +2683,29 @@ app.get('/api/casino/:case_id', wrap(async (req, res) => {
         forensic_analysis: outlook?.forensic_analysis || null,
       };
     }
+    const publicationDepth = assessCasinoPublicationDepth({
+      caseId,
+      name: rows[0].brand_name,
+      sources,
+      claims,
+      forensicAnalysis: synthesis?.forensic_analysis,
+    });
+    const unresolvedPaths = new Set(
+      publicationDepth.unresolved_high_risk_claims.map(({ path }) => path),
+    );
+    const publicClaims = claims.map((claim) => ({
+      ...claim,
+      publication_support: unresolvedPaths.has(`casino_claims.${claim.claim_id}`)
+        ? 'pending_independent_support'
+        : null,
+    }));
     res.json({
-      case: casinoCaseRow(rows[0]), claims, sources,
+      case: casinoCaseRow(rows[0]), claims: publicClaims, sources,
       observations: observations.map((item) => ({ ...item, chain_scope: parseCasinoJson(item.chain_scope, []), source_claim_ids: parseCasinoJson(item.source_claim_ids, []), quality_flags: parseCasinoJson(item.quality_flags, []) })),
       events: events.map((item) => ({ ...item, source_claim_ids: parseCasinoJson(item.source_claim_ids, []) })),
       licences: licences.map((item) => ({ ...item, domains: parseCasinoJson(item.domains, []), activities: parseCasinoJson(item.activities, []), source_claim_ids: parseCasinoJson(item.source_claim_ids, []) })),
       synthesis,
+      publication_depth: publicationDepth,
     });
   } catch {
     res.status(502).json({ error: 'casino dossier unavailable' });
@@ -3588,7 +3732,7 @@ app.get('/llms.txt', (c) => {
     '## Entity deep-links',
     '- Chain profile: ' + ORIGIN + '/chain/{name} (e.g. ' + ORIGIN + '/chain/ethereum) — live TVL, volume, fundamentals and analyst take.',
     '- Exchange dossier: ' + ORIGIN + '/exchange/{dex|cex}/{successful|mid|dead}/{slug} — cited lifecycle, causal map, strategy and unknowns.',
-    '- Casino dossier: ' + ORIGIN + '/casino/{case_id} — publication-gated lifecycle, operating model, evidence and review date.',
+    '- Casino dossier: ' + ORIGIN + '/casino/{case_id} — indexed lifecycle and operating analysis with per-claim support, evidence state and review date.',
     '- Scam case: ' + ORIGIN + '/scam/{slug} — traced wallets, fund-flow and sources.',
     '- NFT collection: ' + ORIGIN + '/collection/{id} — curated lifecycle dossier when published, otherwise live collection metrics.',
     '',

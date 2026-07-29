@@ -1,4 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import {
+  CASINO_PUBLICATION_CASE_IDS,
+  summarizeCasinoPublicationCoverage,
+} from '../src/lib/casino-publication-cohort.js';
 
 async function freshWorker() {
   vi.resetModules();
@@ -33,9 +37,12 @@ const PUBLISHED_CASE = {
   }),
   quality_passed: 1,
   source_count: 3,
+  registered_source_count: 5,
+  reachable_source_count: 4,
+  reviewed_source_count: 3,
 };
 
-function makeDB({ published = [PUBLISHED_CASE] } = {}) {
+function makeDB({ published = [PUBLISHED_CASE], missingCoverage = [] } = {}) {
   return {
     prepare(sql) {
       return {
@@ -47,30 +54,42 @@ function makeDB({ published = [PUBLISHED_CASE] } = {}) {
           if (sql.includes('FROM casino_cases c WHERE c.quality_passed = 1')) {
             return { results: published };
           }
-          if (sql.includes('FROM casino_cases c WHERE c.case_id')) {
+          if (sql.includes('WHERE c.case_id = ? AND c.quality_passed = 1')) {
             const [caseId] = this.binds || [];
             return { results: published.filter((item) => item.case_id === caseId) };
           }
-          if (sql.includes("'web3-casino-full-corpus-2026-07-29' AS cohort_id")) {
+          if (sql.includes('WITH expected(case_id) AS')) {
             return {
-              results: [{
-                cohort_id: 'web3-casino-full-corpus-2026-07-29',
-                universe_as_of: '2026-07-29',
-                target_count: 29,
-                quality_passed_count: 29,
-                partial_count: 0,
-                missing_count: 0,
-              }],
+              results: CASINO_PUBLICATION_CASE_IDS.map((caseId) => ({
+                expected_case_id: caseId,
+                present_case_id: missingCoverage.includes(caseId) ? null : caseId,
+                quality_passed: missingCoverage.includes(caseId) ? null : 1,
+                selection_as_of: missingCoverage.includes(caseId) ? null : '2026-07-29',
+                updated_at: missingCoverage.includes(caseId) ? null : '2026-07-29',
+              })),
             };
           }
           if (sql.includes('FROM casino_claims')) {
             return {
               results: [{
+                case_id: 'overtime',
+                claim_id: 'casino:claim:overtime:status',
+                field_path: 'status.active',
+                evidence_locator: 'Current operator page presents an active protocol.',
+                claim_type: 'status',
+                support_direction: 'supports',
+                analyst_note: 'Operator-reported status only.',
                 source_id: 'casino:source:overtime:how',
                 title: 'How Overtime Works',
                 url: 'https://docs.overtime.io/learn-about-overtime/how-overtime-works',
                 publisher: 'Overtime Documentation',
                 accessed_at: '2026-07-29',
+                source_tier: 'B',
+                source_role: 'primary',
+                resolving: 1,
+                evidence_reviewed: 0,
+                evidence_reviewed_at: null,
+                evidence_reviewer: null,
               }],
             };
           }
@@ -117,6 +136,28 @@ describe('casino publication routes', () => {
         next_review_at: '2026-08-05',
       },
     });
+    expect(body.case).toMatchObject({
+      registered_source_count: 5,
+      reachable_source_count: 4,
+      reviewed_source_count: 3,
+    });
+    expect(body.sources).toEqual([expect.objectContaining({
+      id: 'casino:source:overtime:how',
+      source_tier: 'B',
+      source_role: 'primary',
+      registered: true,
+      resolving: true,
+      reachable: true,
+      evidence_reviewed: false,
+      evidence_reviewed_at: null,
+      evidence_reviewer: null,
+    })]);
+    expect(body.publication_depth).toMatchObject({
+      status: 'claim_support_pending',
+      unresolved_high_risk_claim_count: expect.any(Number),
+    });
+    expect(body.publication_depth.unresolved_high_risk_claim_count).toBeGreaterThan(0);
+    expect(body.claims[0].publication_support).toBe('pending_independent_support');
   });
 
   it('lists only quality-passed dossiers with reviewed-source counts', async () => {
@@ -130,10 +171,24 @@ describe('casino publication routes', () => {
     expect(response.status).toBe(200);
     const body = await response.json();
     expect(body.count).toBe(1);
-    expect(body.cases[0]).toMatchObject({ case_id: 'overtime', source_count: 3 });
+    expect(body.cases[0]).toMatchObject({
+      case_id: 'overtime',
+      source_count: 3,
+      registered_source_count: 5,
+      reachable_source_count: 4,
+      reviewed_source_count: 3,
+    });
     expect(body.cases[0].chains).toEqual(['Optimism', 'Arbitrum', 'Base']);
     expect(body.cases[0].unsourced_fields).toEqual(['licence', 'comparable_operating_metric']);
     expect(body.cases[0].forensic_review).toMatchObject({ next_review_at: '2026-08-05' });
+    expect(body.cases[0].publication_depth).toMatchObject({
+      status: 'claim_support_pending',
+      unresolved_high_risk_claim_count: expect.any(Number),
+    });
+    expect(body.claim_support).toMatchObject({
+      high_risk_claim_count: expect.any(Number),
+      unresolved_high_risk_claim_count: expect.any(Number),
+    });
   });
 
   it('does not expose an unpublished candidate through the detail route', async () => {
@@ -162,6 +217,44 @@ describe('casino publication routes', () => {
       target_count: 29,
       quality_passed_count: 29,
       partial_count: 0,
+      missing_count: 0,
+      missing_case_ids: [],
+    });
+  });
+
+  it('keeps the 29-case denominator and names a deleted dossier as missing', async () => {
+    const missingCaseId = 'zkasino-alleged-platform';
+    const worker = await freshWorker();
+    const response = await worker.fetch(
+      new Request('http://localhost/api/casino-coverage'),
+      { DB: makeDB({ missingCoverage: [missingCaseId] }) },
+      ctx(),
+    );
+
+    expect(response.status).toBe(200);
+    expect((await response.json()).coverage).toMatchObject({
+      target_count: 29,
+      present_count: 28,
+      quality_passed_count: 28,
+      partial_count: 0,
+      missing_count: 1,
+      missing_case_ids: [missingCaseId],
+    });
+  });
+
+  it('summarizes an absent row as missing instead of shrinking the cohort', () => {
+    const rows = CASINO_PUBLICATION_CASE_IDS.slice(0, -1).map((caseId) => ({
+      expected_case_id: caseId,
+      present_case_id: caseId,
+      quality_passed: 1,
+      updated_at: '2026-07-29',
+    }));
+    expect(summarizeCasinoPublicationCoverage(rows)).toMatchObject({
+      target_count: 29,
+      present_count: 28,
+      quality_passed_count: 28,
+      missing_count: 1,
+      missing_case_ids: ['zkasino-alleged-platform'],
     });
   });
 });
