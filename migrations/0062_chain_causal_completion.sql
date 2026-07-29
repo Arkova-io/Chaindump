@@ -26,7 +26,8 @@ SET
       )
     )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = CASE
     WHEN facts.dimension = 'synthesis' THEN (
       SELECT json_group_array(json(source_json))
@@ -80,7 +81,8 @@ SET
       )
     )
     ELSE facts.sources
-  END,
+  END
+  ,
   updated_at = '2026-07-29'
 WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
   AND facts.dimension IN ('synthesis', '_meta');
@@ -109,7 +111,8 @@ SET
       )
     )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = CASE
     WHEN facts.dimension = 'synthesis' THEN (
       SELECT json_group_array(json(source_json))
@@ -163,7 +166,8 @@ SET
       )
     )
     ELSE facts.sources
-  END,
+  END
+  ,
   updated_at = '2026-07-29'
 WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
   AND facts.dimension IN ('synthesis', '_meta');
@@ -192,7 +196,8 @@ SET
       )
     )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = CASE
     WHEN facts.dimension = 'synthesis' THEN (
       SELECT json_group_array(json(source_json))
@@ -246,7 +251,8 @@ SET
       )
     )
     ELSE facts.sources
-  END,
+  END
+  ,
   updated_at = '2026-07-29'
 WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
   AND facts.dimension IN ('synthesis', '_meta');
@@ -275,7 +281,8 @@ SET
       )
     )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = CASE
     WHEN facts.dimension = 'synthesis' THEN (
       SELECT json_group_array(json(source_json))
@@ -329,7 +336,8 @@ SET
       )
     )
     ELSE facts.sources
-  END,
+  END
+  ,
   updated_at = '2026-07-29'
 WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
   AND facts.dimension IN ('synthesis', '_meta');
@@ -358,7 +366,8 @@ SET
       )
     )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = CASE
     WHEN facts.dimension = 'synthesis' THEN (
       SELECT json_group_array(json(source_json))
@@ -412,7 +421,8 @@ SET
       )
     )
     ELSE facts.sources
-  END,
+  END
+  ,
   updated_at = '2026-07-29'
 WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
   AND facts.dimension IN ('synthesis', '_meta');
@@ -441,7 +451,8 @@ SET
       )
     )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = CASE
     WHEN facts.dimension = 'synthesis' THEN (
       SELECT json_group_array(json(source_json))
@@ -495,7 +506,8 @@ SET
       )
     )
     ELSE facts.sources
-  END,
+  END
+  ,
   updated_at = '2026-07-29'
 WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
   AND facts.dimension IN ('synthesis', '_meta');
@@ -524,7 +536,8 @@ SET
       )
     )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = CASE
     WHEN facts.dimension = 'synthesis' THEN (
       SELECT json_group_array(json(source_json))
@@ -578,7 +591,8 @@ SET
       )
     )
     ELSE facts.sources
-  END,
+  END
+  ,
   updated_at = '2026-07-29'
 WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
   AND facts.dimension IN ('synthesis', '_meta');
@@ -607,7 +621,8 @@ SET
       )
     )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = CASE
     WHEN facts.dimension = 'synthesis' THEN (
       SELECT json_group_array(json(source_json))
@@ -661,7 +676,8 @@ SET
       )
     )
     ELSE facts.sources
-  END,
+  END
+  ,
   updated_at = '2026-07-29'
 WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
   AND facts.dimension IN ('synthesis', '_meta');
@@ -690,7 +706,8 @@ SET
       )
     )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = CASE
     WHEN facts.dimension = 'synthesis' THEN (
       SELECT json_group_array(json(source_json))
@@ -744,7 +761,8 @@ SET
       )
     )
     ELSE facts.sources
-  END,
+  END
+  ,
   updated_at = '2026-07-29'
 WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
   AND facts.dimension IN ('synthesis', '_meta');
@@ -773,7 +791,8 @@ SET
       )
     )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = CASE
     WHEN facts.dimension = 'synthesis' THEN (
       SELECT json_group_array(json(source_json))
@@ -827,7 +846,8 @@ SET
       )
     )
     ELSE facts.sources
-  END,
+  END
+  ,
   updated_at = '2026-07-29'
 WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
   AND facts.dimension IN ('synthesis', '_meta');
@@ -856,7 +876,8 @@ SET
       )
     )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = CASE
     WHEN facts.dimension = 'synthesis' THEN (
       SELECT json_group_array(json(source_json))
@@ -910,7 +931,8 @@ SET
       )
     )
     ELSE facts.sources
-  END,
+  END
+  ,
   updated_at = '2026-07-29'
 WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
   AND facts.dimension IN ('synthesis', '_meta');
@@ -939,7 +961,8 @@ SET
       )
     )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = CASE
     WHEN facts.dimension = 'synthesis' THEN (
       SELECT json_group_array(json(source_json))
@@ -993,7 +1016,8 @@ SET
       )
     )
     ELSE facts.sources
-  END,
+  END
+  ,
   updated_at = '2026-07-29'
 WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
   AND facts.dimension IN ('synthesis', '_meta');
@@ -1022,7 +1046,8 @@ SET
       )
     )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = CASE
     WHEN facts.dimension = 'synthesis' THEN (
       SELECT json_group_array(json(source_json))
@@ -1076,7 +1101,8 @@ SET
       )
     )
     ELSE facts.sources
-  END,
+  END
+  ,
   updated_at = '2026-07-29'
 WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
   AND facts.dimension IN ('synthesis', '_meta');
@@ -1105,7 +1131,8 @@ SET
       )
     )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = CASE
     WHEN facts.dimension = 'synthesis' THEN (
       SELECT json_group_array(json(source_json))
@@ -1159,7 +1186,8 @@ SET
       )
     )
     ELSE facts.sources
-  END,
+  END
+  ,
   updated_at = '2026-07-29'
 WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
   AND facts.dimension IN ('synthesis', '_meta');
@@ -1188,7 +1216,8 @@ SET
       )
     )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = CASE
     WHEN facts.dimension = 'synthesis' THEN (
       SELECT json_group_array(json(source_json))
@@ -1242,7 +1271,8 @@ SET
       )
     )
     ELSE facts.sources
-  END,
+  END
+  ,
   updated_at = '2026-07-29'
 WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
   AND facts.dimension IN ('synthesis', '_meta');
@@ -1261,7 +1291,8 @@ SET
         json_extract((SELECT payload FROM correction_seed), '$.patch')
       )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = (
     SELECT json_group_array(json(source_json))
     FROM (
@@ -1331,7 +1362,8 @@ SET
         json_extract((SELECT payload FROM correction_seed), '$.patch')
       )
     ELSE facts.data
-  END,
+  END
+  ,
   sources = (
     SELECT json_group_array(json(source_json))
     FROM (

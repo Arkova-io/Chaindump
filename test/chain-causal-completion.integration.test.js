@@ -3,6 +3,7 @@ import { createHash } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, readdirSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { unstable_splitSqlQuery } from 'wrangler';
 import { validateForensicAnalysis } from '../src/lib/forensic-analysis.js';
 
 const expectedChains = [
@@ -168,6 +169,13 @@ describe('chain causal completion migration 0062', () => {
       .toHaveLength(document.corrections.length);
     expect(Math.max(...correctionStatementByteLengths(migration)))
       .toBeLessThanOrEqual(maxD1StatementBytes);
+    const wranglerStatements = unstable_splitSqlQuery(migration);
+    expect(wranglerStatements).toHaveLength(
+      document.cases.length + document.corrections.length,
+    );
+    expect(Math.max(...wranglerStatements.map(
+      (statement) => Buffer.byteLength(statement, 'utf8'),
+    ))).toBeLessThanOrEqual(maxD1StatementBytes);
     expect(document.schema).toBe('chaindump-chain-causal-completion-v1');
     expect(document.research_as_of).toBe('2026-07-29');
     expect(document.cases.map(({ chain }) => chain).sort()).toEqual(expectedChains);
