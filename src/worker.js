@@ -1220,21 +1220,32 @@ app.post('/api/admin/refresh', wrap(async (req, res) => {
 }));
 
 // ---------------------------------------------------------------------------
-// Research desk (Phase G) write path — DESK_TOKEN-guarded. The autonomous desk
+// Research desk (Phase G) write path. Autonomous proposal submission and human
+// review use separate credentials: a compromised proposal agent must never be
+// able to inspect the queue or publish/reject its own work.
 // POSTs verified, sourced findings to /api/desk/propose; they land as 'pending'
 // in desk_proposals (a durable, human-reviewed queue). Nothing reaches the live
 // tables without a human promoting it (CLAUDE.md §1.5). Disabled (404) unless
-// DESK_TOKEN is set.
+// the relevant scoped token is set. DESK_TOKEN remains a proposal-only migration
+// fallback; reviewer endpoints require DESK_REVIEW_TOKEN.
 // ---------------------------------------------------------------------------
-function deskAuth(req, res) {
-  const token = ENV.DESK_TOKEN || '';
+function deskAuth(req, res, scope) {
+  const proposalToken = ENV.DESK_PROPOSAL_TOKEN || ENV.DESK_TOKEN || '';
+  const reviewToken = ENV.DESK_REVIEW_TOKEN || '';
+  // Fail closed on a scope-collapsing configuration. Merely renaming one
+  // shared secret would still let the autonomous agent review its own work.
+  if (scope === 'review' && reviewToken && reviewToken === proposalToken) {
+    res.status(404).json({ error: 'not found' });
+    return false;
+  }
+  const token = scope === 'proposal' ? proposalToken : reviewToken;
   if (!token) { res.status(404).json({ error: 'not found' }); return false; }
   if ((req.headers['authorization'] || '') !== `Bearer ${token}`) { res.status(401).json({ error: 'unauthorized' }); return false; }
   return true;
 }
 
 app.post('/api/desk/propose', wrap(async (req, res) => {
-  if (!deskAuth(req, res)) return;
+  if (!deskAuth(req, res, 'proposal')) return;
   if (!ENV.DB) return res.status(503).json({ error: 'no DB' });
   let b;
   try { b = await req.raw.json(); } catch (e) { return res.status(400).json({ error: 'invalid JSON body: ' + (e && e.message || e) }); }
@@ -1261,7 +1272,7 @@ app.post('/api/desk/propose', wrap(async (req, res) => {
 }));
 
 app.get('/api/desk/pending', wrap(async (req, res) => {
-  if (!deskAuth(req, res)) return;
+  if (!deskAuth(req, res, 'review')) return;
   if (!ENV.DB) return res.status(503).json({ error: 'no DB' });
   try {
     const status = String(req.query.status || 'pending');
@@ -1276,7 +1287,7 @@ app.get('/api/desk/pending', wrap(async (req, res) => {
 // table + column names come only from the PROMOTABLE whitelist (never the proposal);
 // every value is bound. Marks the proposal status='promoted'.
 app.post('/api/desk/promote', wrap(async (req, res) => {
-  if (!deskAuth(req, res)) return;
+  if (!deskAuth(req, res, 'review')) return;
   if (!ENV.DB) return res.status(503).json({ error: 'no DB' });
   let b; try { b = await req.raw.json(); } catch (e) { return res.status(400).json({ error: 'invalid JSON body' }); }
   const dataset = String(b.dataset || '').trim();
@@ -1314,7 +1325,7 @@ app.post('/api/desk/promote', wrap(async (req, res) => {
 
 // Human-in-the-loop: reject a proposal (won't touch live tables).
 app.post('/api/desk/reject', wrap(async (req, res) => {
-  if (!deskAuth(req, res)) return;
+  if (!deskAuth(req, res, 'review')) return;
   if (!ENV.DB) return res.status(503).json({ error: 'no DB' });
   let b; try { b = await req.raw.json(); } catch (e) { return res.status(400).json({ error: 'invalid JSON body' }); }
   const dataset = String(b.dataset || '').trim();
@@ -1735,11 +1746,15 @@ async function getTiers() {
 // metric values.
 app.get('/api/exchange-analysis', wrap(async (req, res) => {
   const kind = req.query.kind === 'cex' ? 'cex' : 'dex';
+  const lifecycle = ['successful', 'mid', 'dead'].includes(req.query.lifecycle)
+    ? req.query.lifecycle : null;
+  const slug = typeof req.query.slug === 'string' && /^[a-z0-9._-]+$/i.test(req.query.slug)
+    ? req.query.slug.toLowerCase() : null;
   const productCohort = typeof req.query.product_cohort === 'string' && req.query.product_cohort.trim()
     ? req.query.product_cohort.trim() : null;
   const quality = ['verified', 'partial', 'limited'].includes(req.query.quality)
     ? req.query.quality : null;
-  const filters = { productCohort, quality };
+  const filters = { lifecycle, slug, productCohort, quality };
   try {
     const rows = await dbQuery(
       `WITH lifecycle_cases AS (
@@ -1794,7 +1809,9 @@ app.get('/api/exchange-analysis', wrap(async (req, res) => {
        ORDER BY c.lifecycle ASC, c.name ASC`, [kind]);
     const allCases = rows.map(normalizeExchangeCase);
     const cases = allCases.filter((row) => (
-      (!productCohort || row.analysis.product_cohort === productCohort)
+      (!lifecycle || row.lifecycle === lifecycle)
+      && (!slug || String(row.slug).toLowerCase() === slug)
+      && (!productCohort || row.analysis.product_cohort === productCohort)
       && (!quality || row.analysis.data_quality.label === quality)
     ));
     res.json({
@@ -2231,7 +2248,12 @@ app.get('/api/nft-collection/:id', wrap(async (req, res) => {
 
 app.get('/api/nft', wrap(async (req, res) => {
   try {
-    const rows = await dbQuery(`SELECT slug, name, chain, category, status, profile, sources, updated_at FROM nft_collections ORDER BY name`);
+    const requestedSlug = typeof req.query.slug === 'string' && /^[a-z0-9._-]+$/i.test(req.query.slug)
+      ? req.query.slug.toLowerCase() : null;
+    const allRows = await dbQuery(`SELECT slug, name, chain, category, status, profile, sources, updated_at FROM nft_collections ORDER BY name`);
+    const rows = requestedSlug
+      ? allRows.filter((row) => String(row.slug).toLowerCase() === requestedSlug)
+      : allRows;
     const collections = rows.map((r) => {
       let p = null;
       try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {}
@@ -2303,7 +2325,9 @@ function casinoCaseRow(row) {
   return {
     ...row,
     chains: parseCasinoJson(row.chains, []), token_contracts: parseCasinoJson(row.token_contracts, []),
-    unsourced_fields: parseCasinoJson(row.unsourced_fields, []), source_count: Number(row.source_count) || 0,
+    unsourced_fields: parseCasinoJson(row.unsourced_fields, []),
+    forensic_review: parseCasinoJson(row.forensic_review, null),
+    source_count: Number(row.source_count) || 0,
   };
 }
 app.get('/api/casinos', wrap(async (req, res) => {
@@ -2332,6 +2356,8 @@ app.get('/api/casinos', wrap(async (req, res) => {
       `SELECT c.case_id, c.brand_name, c.entity_kind, c.product_subtype, c.primary_domain, c.custody_model, c.chains,
               c.product_scope_note, c.status, c.status_as_of, c.outcome_label, c.outcome_as_of, c.token_status,
               c.token_symbol, c.token_name, c.completeness_pct, c.confidence, c.unsourced_fields, c.last_reviewed,
+              (SELECT json_extract(syn.outlook, '$.forensic_analysis.review')
+                 FROM casino_syntheses syn WHERE syn.case_id = c.case_id LIMIT 1) AS forensic_review,
               (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id
                 WHERE cl.case_id = c.case_id AND s.resolving = 1 AND s.evidence_reviewed = 1) AS source_count
          FROM casino_cases c WHERE ${where.join(' AND ')} ORDER BY ${orderBy}`,
@@ -2374,12 +2400,26 @@ app.get('/api/casino/:case_id', wrap(async (req, res) => {
       dbQuery(`SELECT * FROM casino_syntheses WHERE case_id = ? LIMIT 1`, [caseId]),
     ]);
     const sources = [...new Map(claims.map((claim) => [claim.source_id, { title: claim.title, url: claim.url, publisher: claim.publisher, accessed_at: claim.accessed_at }])).values()];
+    let synthesis = null;
+    if (syntheses[0]) {
+      const outlook = parseCasinoJson(syntheses[0].outlook, {});
+      synthesis = {
+        ...syntheses[0],
+        outlook,
+        lessons_learned: parseCasinoJson(syntheses[0].lessons_learned, []),
+        source_claim_ids: parseCasinoJson(syntheses[0].source_claim_ids, []),
+        // Casino waves store the shared causal contract inside the JSON outlook
+        // column so older D1 schemas remain compatible. Hoist it at the public
+        // boundary: the UI and agents consume one stable synthesis shape.
+        forensic_analysis: outlook?.forensic_analysis || null,
+      };
+    }
     res.json({
       case: casinoCaseRow(rows[0]), claims, sources,
       observations: observations.map((item) => ({ ...item, chain_scope: parseCasinoJson(item.chain_scope, []), source_claim_ids: parseCasinoJson(item.source_claim_ids, []), quality_flags: parseCasinoJson(item.quality_flags, []) })),
       events: events.map((item) => ({ ...item, source_claim_ids: parseCasinoJson(item.source_claim_ids, []) })),
       licences: licences.map((item) => ({ ...item, domains: parseCasinoJson(item.domains, []), activities: parseCasinoJson(item.activities, []), source_claim_ids: parseCasinoJson(item.source_claim_ids, []) })),
-      synthesis: syntheses[0] ? { ...syntheses[0], outlook: parseCasinoJson(syntheses[0].outlook, {}), lessons_learned: parseCasinoJson(syntheses[0].lessons_learned, []), source_claim_ids: parseCasinoJson(syntheses[0].source_claim_ids, []) } : null,
+      synthesis,
     });
   } catch {
     res.status(502).json({ error: 'casino dossier unavailable' });
@@ -3012,6 +3052,10 @@ async function sendPage(req, res, { title, desc, url, ld, apiUrl }) {
 // Views that are valid single-segment deep-links → their share copy.
 const VIEW_OG = {
   live: ['Live · Top 50 chains — Chaindump', 'The top 50 chains ranked by composite on-chain activity (volume, TVL, fees), with live capital-flow and anomaly signals.'],
+  'blockchain-analysis': ['Blockchain Analysis — Chaindump', 'Sortable, citation-backed lifecycle dossiers for the current top 50 plus stuck, dying and dead blockchains.'],
+  'exchange-analysis': ['DEX/CEX Analysis — Chaindump', 'Comparable, citation-backed forensic dossiers across successful, middling and failed decentralized and centralized exchanges.'],
+  'casino-analysis': ['Web3 Casino Analysis — Chaindump', 'Publication-gated lifecycle research across onchain casinos, sportsbooks, betting exchanges, bankrolls and gaming infrastructure.'],
+  'nft-analysis': ['NFT and Ordinals Analysis — Chaindump', 'Sortable, freshness-gated lifecycle research across NFT and Ordinals collections, with field-level citations and explicit unknowns.'],
   mid: ['Stuck / Mid chains — Chaindump', 'Alive-but-directionless chains: real product, weak token value capture, or a stalled thesis.'],
   grave: ['Chain Graveyard — Chaindump', 'Why chains die: the forensic taxonomy of dead chains — mercenary TVL, points collapse, unlock dumps, rugs, and hacks.'],
   nft: ['NFTs & Ordinals — Chaindump', 'The full NFT & Ordinals collection universe across chains, plus deep-dive lifecycle case studies.'],
@@ -3118,6 +3162,102 @@ app.get('/chain/:name', wrap(async (req, res) => {
   const apiUrl = row ? `${ORIGIN}/api/chain/${encodeURIComponent(key)}` : undefined;
   await sendPage(req, res, { title, desc, url, ld, apiUrl });
 }));
+function ogDescription(value, fallback) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  if (!text) return fallback;
+  return text.length > 280 ? `${text.slice(0, 277).trimEnd()}…` : text;
+}
+function publicSourceUrls(value) {
+  let sources = value;
+  if (typeof sources === 'string') {
+    try { sources = JSON.parse(sources); } catch (error) { return []; }
+  }
+  if (!Array.isArray(sources)) return [];
+  return [...new Set(sources.map((source) => typeof source === 'string' ? source : source?.url)
+    .filter((url) => /^https?:\/\//i.test(url || '')))];
+}
+async function exchangePageRow(kind, lifecycle, slug) {
+  if (!['dex', 'cex'].includes(kind) || !['successful', 'mid', 'dead'].includes(lifecycle)) return null;
+  if (lifecycle === 'successful') {
+    return (await dbQuery(
+      `SELECT slug, name, why_successful AS summary, outlook, sources, updated_at
+         FROM successful_exchanges
+        WHERE type = ? AND slug = ? AND venue_type = 'exchange' LIMIT 1`,
+      [kind, slug],
+    ))[0] || null;
+  }
+  if (lifecycle === 'mid') {
+    return (await dbQuery(
+      `SELECT slug, name, why_stuck AS summary, outlook, sources, updated_at
+         FROM mid_exchanges
+        WHERE kind = ? AND slug = ? AND venue_type = 'exchange' LIMIT 1`,
+      [kind, slug],
+    ))[0] || null;
+  }
+  return (await dbQuery(
+    `SELECT slug, name, why AS summary, outlook, sources, updated_at
+       FROM dead_exchanges
+      WHERE kind = ? AND slug = ? AND venue_type = 'exchange' LIMIT 1`,
+    [kind, slug],
+  ))[0] || null;
+}
+app.get('/exchange/:kind/:lifecycle/:slug', wrap(async (req, res) => {
+  const kind = String(req.params.kind || '').toLowerCase();
+  const lifecycle = String(req.params.lifecycle || '').toLowerCase();
+  const slug = String(req.params.slug || '').toLowerCase();
+  let row = null;
+  try { row = await exchangePageRow(kind, lifecycle, slug); } catch (error) {}
+  const url = `${ORIGIN}/exchange/${encodeURIComponent(kind)}/${encodeURIComponent(lifecycle)}/${encodeURIComponent(slug)}`;
+  const label = kind === 'cex' ? 'CEX' : 'DEX';
+  const title = row ? `${row.name} — ${label} forensic dossier | Chaindump` : `${label} forensic dossier — Chaindump`;
+  const desc = row
+    ? ogDescription(row.summary, `${row.name} ${lifecycle} ${label} lifecycle dossier with cited evidence on Chaindump.`)
+    : OG_DESC_FALLBACK;
+  const citations = publicSourceUrls(row?.sources);
+  const ld = row ? [
+    {
+      '@type': 'Article', '@id': `${url}#article`, headline: `${row.name} — ${label} forensic dossier`,
+      description: desc, url, mainEntityOfPage: url, dateModified: row.updated_at || undefined,
+      isPartOf: { '@id': `${ORIGIN}/#site` }, author: { '@id': `${ORIGIN}/#org` },
+      publisher: { '@id': `${ORIGIN}/#org` }, citation: citations,
+    },
+    breadcrumb('DEX/CEX Analysis', `${ORIGIN}/exchange-analysis`, row.name, url),
+  ] : undefined;
+  const apiUrl = row
+    ? `${ORIGIN}/api/exchange-analysis?kind=${encodeURIComponent(kind)}&lifecycle=${encodeURIComponent(lifecycle)}&slug=${encodeURIComponent(slug)}`
+    : undefined;
+  await sendPage(req, res, { title, desc, url, ld, apiUrl });
+}));
+app.get('/casino/:case_id', wrap(async (req, res) => {
+  const caseId = String(req.params.case_id || '').toLowerCase();
+  let row = null;
+  try {
+    row = (await dbQuery(
+      `SELECT c.case_id, c.brand_name, c.product_scope_note, c.status, c.outcome_label, c.last_reviewed,
+              (SELECT json_group_array(json_object('title', s.title, 'url', s.canonical_url))
+                 FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id
+                WHERE cl.case_id = c.case_id AND s.resolving = 1 AND s.evidence_reviewed = 1) AS sources
+         FROM casino_cases c WHERE c.case_id = ? AND c.quality_passed = 1 LIMIT 1`,
+      [caseId],
+    ))[0] || null;
+  } catch (error) {}
+  const url = `${ORIGIN}/casino/${encodeURIComponent(caseId)}`;
+  const title = row ? `${row.brand_name} — Web3 casino forensic dossier | Chaindump` : 'Web3 casino forensic dossier — Chaindump';
+  const desc = row
+    ? ogDescription(row.product_scope_note, `${row.brand_name}: ${row.outcome_label || row.status || 'reviewed'} Web3 casino lifecycle dossier.`)
+    : OG_DESC_FALLBACK;
+  const ld = row ? [
+    {
+      '@type': 'Article', '@id': `${url}#article`, headline: `${row.brand_name} — Web3 casino forensic dossier`,
+      description: desc, url, mainEntityOfPage: url, dateModified: row.last_reviewed || undefined,
+      isPartOf: { '@id': `${ORIGIN}/#site` }, author: { '@id': `${ORIGIN}/#org` },
+      publisher: { '@id': `${ORIGIN}/#org` }, citation: publicSourceUrls(row.sources),
+    },
+    breadcrumb('Web3 Casino Analysis', `${ORIGIN}/casino-analysis`, row.brand_name, url),
+  ] : undefined;
+  const apiUrl = row ? `${ORIGIN}/api/casino/${encodeURIComponent(caseId)}` : undefined;
+  await sendPage(req, res, { title, desc, url, ld, apiUrl });
+}));
 app.get('/scam/:slug', wrap(async (req, res) => {
   const slug = String(req.params.slug || '');
   let row = null;
@@ -3136,15 +3276,38 @@ app.get('/scam/:slug', wrap(async (req, res) => {
 app.get('/collection/:id', wrap(async (req, res) => {
   const id = String(req.params.id || '');
   let row = null;
-  try { if (ENV.DB) row = await ENV.DB.prepare(`SELECT name, chain FROM nft_catalog WHERE id = ?`).bind(id).first(); } catch (e) {}
-  const title = row ? `${row.name} — Chaindump` : 'NFT Collection — Chaindump';
-  const desc = row ? `${row.name} (${row.chain}) — live floor, market cap, 24h volume and holders on Chaindump.` : OG_DESC_FALLBACK;
+  let lifecycle = null;
+  // Curated lifecycle dossiers take precedence when a CoinGecko catalog id
+  // happens to share the same slug (Azuki is a real example). The SPA opens a
+  // lifecycle dossier for this URL, so its server metadata must not describe a
+  // different live-market page.
+  try {
+    lifecycle = (await dbQuery(
+      `SELECT slug, name, chain, status, profile, sources, updated_at
+         FROM nft_collections WHERE slug = ? LIMIT 1`,
+      [id],
+    ))[0] || null;
+    row = lifecycle;
+  } catch (error) {}
+  if (!row) {
+    try { if (ENV.DB) row = await ENV.DB.prepare(`SELECT name, chain FROM nft_catalog WHERE id = ?`).bind(id).first(); } catch (e) {}
+  }
+  const title = lifecycle
+    ? `${row.name} — NFT lifecycle dossier | Chaindump`
+    : row ? `${row.name} — Chaindump` : 'NFT Collection — Chaindump';
+  let lifecycleProfile = {};
+  try { lifecycleProfile = lifecycle?.profile ? JSON.parse(lifecycle.profile) : {}; } catch (error) {}
+  const desc = lifecycle
+    ? ogDescription(lifecycleProfile.analysis, `${row.name} (${row.chain}) — ${row.status || 'reviewed'} NFT/Ordinals lifecycle dossier with cited evidence on Chaindump.`)
+    : row ? `${row.name} (${row.chain}) — live floor, market cap, 24h volume and holders on Chaindump.` : OG_DESC_FALLBACK;
   const url = `${ORIGIN}/collection/${encodeURIComponent(id)}`;
   const ld = row ? [
-    { '@type': 'Dataset', '@id': url + '#dataset', name: `${row.name} NFT market metrics`, description: desc, url, isPartOf: { '@id': ORIGIN + '/#site' }, publisher: { '@id': ORIGIN + '/#org' }, citation: ['https://www.coingecko.com/'] },
-    breadcrumb('NFTs & Ordinals', `${ORIGIN}/nft`, row.name, url),
+    { '@type': 'Dataset', '@id': url + '#dataset', name: lifecycle ? `${row.name} lifecycle evidence` : `${row.name} NFT market metrics`, description: desc, url, isPartOf: { '@id': ORIGIN + '/#site' }, publisher: { '@id': ORIGIN + '/#org' }, dateModified: lifecycle?.updated_at || undefined, citation: lifecycle ? publicSourceUrls(lifecycle.sources) : ['https://www.coingecko.com/'] },
+    breadcrumb('NFT and Ordinals Analysis', `${ORIGIN}/nft-analysis`, row.name, url),
   ] : undefined;
-  const apiUrl = row ? `${ORIGIN}/api/nft-collection/${encodeURIComponent(id)}` : undefined;
+  const apiUrl = lifecycle
+    ? `${ORIGIN}/api/nft?slug=${encodeURIComponent(id)}`
+    : row ? `${ORIGIN}/api/nft-collection/${encodeURIComponent(id)}` : undefined;
   await sendPage(req, res, { title, desc, url, ld, apiUrl });
 }));
 
@@ -3178,7 +3341,7 @@ app.get('/robots.txt', (c) => c.text(ROBOTS_TXT, 200, { 'cache-control': 'public
 app.get('/llms.txt', (c) => {
   const label = (v) => (VIEW_OG[v][0] || '').replace(/ — Chaindump$/, '');
   const line = (v) => `- [${label(v)}](${ORIGIN}/${v}): ${VIEW_OG[v][1]}`;
-  const contentViews = ['live', 'mid', 'grave', 'traces', 'stables', 'nft', 'rwa', 'infra', 'markets', 'geo', 'uspolicy', 'power', 'news'].filter((v) => VIEW_OG[v]);
+  const contentViews = ['live', 'blockchain-analysis', 'exchange-analysis', 'casino-analysis', 'nft-analysis', 'mid', 'grave', 'traces', 'stables', 'rwa', 'infra', 'markets', 'geo', 'uspolicy', 'power', 'news'].filter((v) => VIEW_OG[v]);
   const body = [
     '# Chaindump',
     '',
@@ -3191,8 +3354,10 @@ app.get('/llms.txt', (c) => {
     '',
     '## Entity deep-links',
     '- Chain profile: ' + ORIGIN + '/chain/{name} (e.g. ' + ORIGIN + '/chain/ethereum) — live TVL, volume, fundamentals and analyst take.',
+    '- Exchange dossier: ' + ORIGIN + '/exchange/{dex|cex}/{successful|mid|dead}/{slug} — cited lifecycle, causal map, strategy and unknowns.',
+    '- Casino dossier: ' + ORIGIN + '/casino/{case_id} — publication-gated lifecycle, operating model, evidence and review date.',
     '- Scam case: ' + ORIGIN + '/scam/{slug} — traced wallets, fund-flow and sources.',
-    '- NFT collection: ' + ORIGIN + '/collection/{id} — live floor, market cap, volume, holders.',
+    '- NFT collection: ' + ORIGIN + '/collection/{id} — curated lifecycle dossier when published, otherwise live collection metrics.',
     '',
     '## Full context',
     '- [llms-full.txt](' + ORIGIN + '/llms-full.txt): current top-chains table (real data) plus every view\'s analysis, inlined as text.',
@@ -3235,7 +3400,7 @@ async function llmsFullBody() {
     }
   } catch (e) { console.error('[llms-full] snapshot skipped:', e && e.message); }
   const label = (v) => (VIEW_OG[v][0] || '').replace(/ — Chaindump$/, '');
-  const contentViews = ['live', 'mid', 'grave', 'traces', 'stables', 'nft', 'rwa', 'infra', 'markets', 'geo', 'uspolicy', 'power', 'news'].filter((v) => VIEW_OG[v]);
+  const contentViews = ['live', 'blockchain-analysis', 'exchange-analysis', 'casino-analysis', 'nft-analysis', 'mid', 'grave', 'traces', 'stables', 'rwa', 'infra', 'markets', 'geo', 'uspolicy', 'power', 'news'].filter((v) => VIEW_OG[v]);
   const body = [
     '# Chaindump — full context for LLMs',
     '',
@@ -3276,6 +3441,22 @@ app.get('/sitemap.xml', async (c) => {
     for (const s of scams) if (s.slug) urls.push(`${ORIGIN}/scam/${encodeURIComponent(s.slug)}`);
     if (ENV.DB) { const { results } = await ENV.DB.prepare(`SELECT id FROM nft_catalog LIMIT 200`).all(); for (const r of (results || [])) if (r.id != null) urls.push(`${ORIGIN}/collection/${encodeURIComponent(r.id)}`); }
   } catch (e) { console.error('[sitemap] case/collection deep-links skipped:', e instanceof Error ? e.message : e); }
+  try {
+    const [exchanges, casinos, lifecycleNfts] = await Promise.all([
+      dbQuery(
+        `SELECT type AS kind, 'successful' AS lifecycle, slug FROM successful_exchanges WHERE venue_type = 'exchange'
+         UNION ALL SELECT kind, 'mid', slug FROM mid_exchanges WHERE venue_type = 'exchange'
+         UNION ALL SELECT kind, 'dead', slug FROM dead_exchanges WHERE venue_type = 'exchange'`,
+      ),
+      dbQuery(`SELECT case_id FROM casino_cases WHERE quality_passed = 1`),
+      dbQuery(`SELECT slug FROM nft_collections`),
+    ]);
+    for (const row of exchanges) {
+      if (row.kind && row.lifecycle && row.slug) urls.push(`${ORIGIN}/exchange/${encodeURIComponent(row.kind)}/${encodeURIComponent(row.lifecycle)}/${encodeURIComponent(row.slug)}`);
+    }
+    for (const row of casinos) if (row.case_id) urls.push(`${ORIGIN}/casino/${encodeURIComponent(row.case_id)}`);
+    for (const row of lifecycleNfts) if (row.slug) urls.push(`${ORIGIN}/collection/${encodeURIComponent(row.slug)}`);
+  } catch (e) { console.error('[sitemap] forensic dossier deep-links skipped:', e instanceof Error ? e.message : e); }
   const lm = lastmod ? `<lastmod>${lastmod}</lastmod>` : '';
   const body = '<?xml version="1.0" encoding="UTF-8"?>\n'
     + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'

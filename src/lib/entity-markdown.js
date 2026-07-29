@@ -39,7 +39,10 @@ export function renderEntityMarkdown({ title, desc, url, ld, apiUrl } = {}) {
 
   if (article && article.headline) lines.push(`_${article.headline}_`, '');
 
-  const citations = dataset && Array.isArray(dataset.citation) ? dataset.citation : [];
+  const citations = [...new Set([
+    ...(dataset && Array.isArray(dataset.citation) ? dataset.citation : []),
+    ...(article && Array.isArray(article.citation) ? article.citation : []),
+  ])];
   if (citations.length) {
     lines.push('## Sources', '');
     for (const c of citations) lines.push(`- ${c}`);

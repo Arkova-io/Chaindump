@@ -1,6 +1,6 @@
 # Container for the Chaindump research desk — a Cloud Run JOB (runs one pass to
 # completion, no server/port). Multi-stage: build TypeScript, then a slim prod
-# image. ANTHROPIC_API_KEY + DESK_TOKEN are injected as Cloud Run secrets.
+# image. ANTHROPIC_API_KEY + DESK_PROPOSAL_TOKEN are injected as Cloud Run secrets.
 FROM node:20-slim AS build
 WORKDIR /app
 COPY package*.json tsconfig.json ./

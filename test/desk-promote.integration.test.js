@@ -81,7 +81,7 @@ describe('/api/desk/promote', () => {
       },
     });
     db.proposals.set('dead_chains:blast-fix', { payload: JSON.stringify({}), sources: null, status: 'pending' });
-    const env = { DB: db, DESK_TOKEN: 'secret' };
+    const env = { DB: db, DESK_REVIEW_TOKEN: 'secret' };
 
     const res = await worker.fetch(
       promoteRequest({ dataset: 'dead_chains', slug: 'blast-fix', record: { chain: 'Blast', verdict: 'zombie' } }),
@@ -100,7 +100,7 @@ describe('/api/desk/promote', () => {
     const worker = await freshWorker();
     const db = makeDeskDB({ proposal: { payload: JSON.stringify({}), sources: null, status: 'pending' } });
     db.proposals.set('dead_chains:newchain', { payload: JSON.stringify({}), sources: null, status: 'pending' });
-    const env = { DB: db, DESK_TOKEN: 'secret' };
+    const env = { DB: db, DESK_REVIEW_TOKEN: 'secret' };
 
     const res = await worker.fetch(
       promoteRequest({ dataset: 'dead_chains', slug: 'newchain', record: { chain: 'NewChain', verdict: 'dead', sources: [{ title: 't', url: 'https://u' }] } }),
@@ -110,5 +110,49 @@ describe('/api/desk/promote', () => {
     const row = db.chains.get('NewChain');
     expect(row.verdict).toBe('dead');
     expect(row.sources).toBeTruthy();
+  });
+
+  it('does not let a proposal credential read, promote, or reject queued work', async () => {
+    const worker = await freshWorker();
+    const db = makeDeskDB();
+    const env = { DB: db, DESK_PROPOSAL_TOKEN: 'proposal-secret', DESK_REVIEW_TOKEN: 'review-secret' };
+    const auth = { authorization: 'Bearer proposal-secret', 'content-type': 'application/json' };
+    const body = JSON.stringify({ dataset: 'dead_chains', slug: 'candidate' });
+
+    const pending = await worker.fetch(new Request('http://localhost/api/desk/pending', { headers: auth }), env, ctx());
+    const promote = await worker.fetch(new Request('http://localhost/api/desk/promote', { method: 'POST', headers: auth, body }), env, ctx());
+    const reject = await worker.fetch(new Request('http://localhost/api/desk/reject', { method: 'POST', headers: auth, body }), env, ctx());
+
+    expect(pending.status).toBe(401);
+    expect(promote.status).toBe(401);
+    expect(reject.status).toBe(401);
+  });
+
+  it('fails closed when proposal and reviewer scopes are configured with the same secret', async () => {
+    const worker = await freshWorker();
+    const db = makeDeskDB();
+    const env = { DB: db, DESK_PROPOSAL_TOKEN: 'shared-secret', DESK_REVIEW_TOKEN: 'shared-secret' };
+    const pending = await worker.fetch(new Request('http://localhost/api/desk/pending', {
+      headers: { authorization: 'Bearer shared-secret' },
+    }), env, ctx());
+
+    expect(pending.status).toBe(404);
+  });
+
+  it('keeps DESK_TOKEN as a proposal-only migration fallback', async () => {
+    const worker = await freshWorker();
+    const db = makeDeskDB();
+    const headers = { authorization: 'Bearer legacy-secret', 'content-type': 'application/json' };
+    const env = { DB: db, DESK_TOKEN: 'legacy-secret' };
+
+    const proposal = await worker.fetch(new Request('http://localhost/api/desk/propose', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ dataset: 'dead_chains', slug: 'candidate', confidence: 0.9 }),
+    }), env, ctx());
+    const pending = await worker.fetch(new Request('http://localhost/api/desk/pending', { headers }), env, ctx());
+
+    expect(proposal.status).toBe(200);
+    expect(pending.status).toBe(404);
   });
 });
