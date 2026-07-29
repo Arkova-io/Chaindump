@@ -30,50 +30,18 @@ import { pathToFileURL } from 'node:url';
 
 const TRANSACTION_TEXT_RE = /\bBEGIN\s+TRANSACTION\b|\bCOMMIT\s*;/i;
 const TEMP_TABLE_RE = /\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i;
+const SQL_TOKEN_RE = /'(?:''|[^'])*'|--[^\r\n]*(?:\r?\n|$)|\/\*[\s\S]*?\*\/|;/g;
 export const MAX_D1_STATEMENT_BYTES = 95_000;
 
 export function sqlStatementByteLengths(sql) {
   const lengths = [];
   let statementStart = 0;
-  let inString = false;
-  let inLineComment = false;
-  let inBlockComment = false;
 
-  for (let index = 0; index < sql.length; index += 1) {
-    const current = sql[index];
-    const next = sql[index + 1];
-
-    if (inLineComment) {
-      if (current === '\n') inLineComment = false;
-      continue;
-    }
-    if (inBlockComment) {
-      if (current === '*' && next === '/') {
-        inBlockComment = false;
-        index += 1;
-      }
-      continue;
-    }
-    if (inString) {
-      if (current === "'" && next === "'") {
-        index += 1;
-      } else if (current === "'") {
-        inString = false;
-      }
-      continue;
-    }
-    if (current === '-' && next === '-') {
-      inLineComment = true;
-      index += 1;
-    } else if (current === '/' && next === '*') {
-      inBlockComment = true;
-      index += 1;
-    } else if (current === "'") {
-      inString = true;
-    } else if (current === ';') {
-      lengths.push(Buffer.byteLength(sql.slice(statementStart, index + 1), 'utf8'));
-      statementStart = index + 1;
-    }
+  for (const match of sql.matchAll(SQL_TOKEN_RE)) {
+    if (match[0] !== ';') continue;
+    const statementEnd = match.index + 1;
+    lengths.push(Buffer.byteLength(sql.slice(statementStart, statementEnd), 'utf8'));
+    statementStart = statementEnd;
   }
 
   if (sql.slice(statementStart).trim()) {
