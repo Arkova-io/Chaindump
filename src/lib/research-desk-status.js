@@ -2,6 +2,7 @@ export const RESEARCH_DESK_CADENCE_MS = 6 * 60 * 60 * 1000;
 export const FORENSIC_SCAN_GRACE_MS = 10 * 60 * 1000;
 export const PROPOSAL_RUN_GRACE_MS = 45 * 60 * 1000;
 export const PROPOSAL_RUNNING_LIMIT_MS = 45 * 60 * 1000;
+export const PROPOSAL_SCHEDULE_MINUTE_UTC = 17;
 
 function parseUtcTimestamp(value) {
   if (typeof value !== 'string' || !value.trim()) return NaN;
@@ -15,7 +16,22 @@ function isoOrNull(timestamp) {
   return Number.isFinite(timestamp) ? new Date(timestamp).toISOString() : null;
 }
 
-function timedState(timestamp, nowMs, graceMs) {
+function nextProposalSchedule(timestamp) {
+  if (!Number.isFinite(timestamp)) return NaN;
+  const completed = new Date(timestamp);
+  const scheduledHour = Math.floor(completed.getUTCHours() / 6) * 6;
+  let candidate = Date.UTC(
+    completed.getUTCFullYear(),
+    completed.getUTCMonth(),
+    completed.getUTCDate(),
+    scheduledHour,
+    PROPOSAL_SCHEDULE_MINUTE_UTC,
+  );
+  if (candidate <= timestamp) candidate += RESEARCH_DESK_CADENCE_MS;
+  return candidate;
+}
+
+function timedState(timestamp, nowMs, graceMs, nextDue = timestamp + RESEARCH_DESK_CADENCE_MS) {
   if (!Number.isFinite(timestamp) || timestamp > nowMs + FORENSIC_SCAN_GRACE_MS) {
     return {
       state: 'unknown',
@@ -24,7 +40,6 @@ function timedState(timestamp, nowMs, graceMs) {
       age_seconds: null,
     };
   }
-  const nextDue = timestamp + RESEARCH_DESK_CADENCE_MS;
   return {
     state: nowMs > nextDue + graceMs ? 'stale' : 'current',
     last_completed_at: isoOrNull(timestamp),
@@ -63,6 +78,12 @@ export function proposalAgentFreshness(run, nowMs = Date.now()) {
       started_at: isoOrNull(startedAt),
     };
   }
-  const result = timedState(parseUtcTimestamp(run.completed_at), nowMs, PROPOSAL_RUN_GRACE_MS);
+  const completedAt = parseUtcTimestamp(run.completed_at);
+  const result = timedState(
+    completedAt,
+    nowMs,
+    PROPOSAL_RUN_GRACE_MS,
+    nextProposalSchedule(completedAt),
+  );
   return run.status === 'failed' ? { ...result, state: 'failed' } : result;
 }

@@ -185,6 +185,24 @@ describe('forensic refresh status route', () => {
     });
   });
 
+  it('reports the fixed minute-17 proposal schedule instead of drifting with run duration', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-07-29T20:00:00.000Z'));
+    const worker = await freshWorker();
+
+    const response = await worker.fetch(
+      new Request('http://localhost/api/forensics-refresh-status'),
+      { DB: makeDB({ agentCompletedAt: '2026-07-29T18:30:00.000Z' }) },
+      ctx(),
+    );
+
+    expect((await response.json()).proposal_agent_freshness).toMatchObject({
+      state: 'current',
+      last_completed_at: '2026-07-29T18:30:00.000Z',
+      next_due_at: '2026-07-30T00:17:00.000Z',
+    });
+  });
+
   it('uses run_id as a deterministic tie-breaker for equal start times', async () => {
     database = new DatabaseSync(':memory:');
     database.exec(`
