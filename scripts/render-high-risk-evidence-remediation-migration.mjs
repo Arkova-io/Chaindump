@@ -15,6 +15,10 @@ import {
   fileURLToPath,
   pathToFileURL,
 } from 'node:url';
+import {
+  assessCasinoPublicationDepth,
+  assessExchangePublicationDepth,
+} from '../src/lib/publication-depth.mjs';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const defaultDocumentPath = resolve(
@@ -181,6 +185,14 @@ function buildExchangeRows(document, database) {
       if (!target) throw new Error(`Unknown exchange target ${entry.dossier_id}`);
       const row = exchangeRow(database, target);
       const profile = parseJson(row.profile);
+      const before = assessExchangePublicationDepth({
+        kind: target.kind,
+        lifecycle: target.lifecycle,
+        slug: target.slug,
+        name: row.name,
+        sources: parseJson(row.sources, []),
+        forensicAnalysis: profile.forensic_analysis,
+      });
       const sources = mergeSources(
         parseJson(row.sources, []),
         entry.source_additions,
@@ -201,8 +213,30 @@ function buildExchangeRows(document, database) {
         name: row.name,
         profile,
         sources,
+        publication_depth_before: before,
       };
     });
+}
+
+function casinoRegisteredSources(database, caseId) {
+  return database.prepare(`
+    SELECT DISTINCT
+      s.source_id,
+      s.canonical_url,
+      s.title,
+      s.publisher,
+      s.source_tier,
+      s.source_role,
+      s.resolving,
+      s.evidence_reviewed,
+      s.evidence_reviewed_at,
+      s.evidence_reviewer,
+      s.accessed_at
+    FROM casino_sources AS s
+    JOIN casino_claims AS c USING (source_id)
+    WHERE c.case_id = ?
+    ORDER BY s.source_id
+  `).all(caseId);
 }
 
 function casinoCaseState(database, entry) {
@@ -213,12 +247,21 @@ function casinoCaseState(database, entry) {
   `).get(entry.dossier_id);
   if (!synthesis) throw new Error(`Missing casino synthesis ${entry.dossier_id}`);
 
+  const outlook = parseJson(synthesis.outlook);
   const claims = database.prepare(`
     SELECT *
     FROM casino_claims
     WHERE case_id = ?
     ORDER BY claim_id
   `).all(entry.dossier_id).map((claim) => ({ ...claim }));
+  const existingSources = casinoRegisteredSources(database, entry.dossier_id);
+  const before = assessCasinoPublicationDepth({
+    caseId: entry.dossier_id,
+    name: entry.dossier_id,
+    sources: existingSources,
+    claims,
+    forensicAnalysis: outlook.forensic_analysis,
+  });
   const byClaimId = new Map(claims.map((claim) => [claim.claim_id, claim]));
   for (const patch of asArray(entry.casino_claim_patches)) {
     const claim = byClaimId.get(patch.claim_id);
@@ -233,7 +276,6 @@ function casinoCaseState(database, entry) {
     }
   }
 
-  const outlook = parseJson(synthesis.outlook);
   const unknownsBefore = JSON.stringify(outlook.forensic_analysis?.unknowns);
   applyForensicPatches(outlook, entry.forensic_claim_patches);
   const unknownsAfter = JSON.stringify(outlook.forensic_analysis?.unknowns);
@@ -245,6 +287,8 @@ function casinoCaseState(database, entry) {
     outlook,
     claims,
     source_additions: asArray(entry.source_additions),
+    sources: mergeSources(existingSources, entry.source_additions, []),
+    publication_depth_before: before,
   };
 }
 
@@ -261,13 +305,61 @@ export function buildHighRiskEvidenceRemediation(document, database) {
   if (document.migration_sequence?.assigned_id != null) {
     throw new Error('Preparation branch must remain unnumbered');
   }
-  if (asArray(document.unresolved_claims).length !== 20) {
-    throw new Error('Exactly 20 unresolved claims must be preserved');
+  if (asArray(document.unresolved_claims).length !== 37) {
+    throw new Error('Exactly 37 unresolved claims must be preserved');
   }
-  return {
+  const state = {
     exchange_rows: buildExchangeRows(document, database),
     casino_rows: buildCasinoRows(document, database),
   };
+  const rows = [
+    ...state.exchange_rows.map((row) => ({
+      id: row.dossier_id,
+      before: row.publication_depth_before,
+      after: assessExchangePublicationDepth({
+        kind: row.kind,
+        lifecycle: row.lifecycle,
+        slug: row.slug,
+        name: row.name,
+        sources: row.sources,
+        forensicAnalysis: row.profile.forensic_analysis,
+      }),
+    })),
+    ...state.casino_rows.map((row) => ({
+      id: row.case_id,
+      before: row.publication_depth_before,
+      after: assessCasinoPublicationDepth({
+        caseId: row.case_id,
+        name: row.case_id,
+        sources: row.sources,
+        claims: row.claims,
+        forensicAnalysis: row.outlook.forensic_analysis,
+      }),
+    })),
+  ];
+  const casesById = new Map(document.cases.map((entry) => [entry.dossier_id, entry]));
+  for (const row of rows) {
+    const entry = casesById.get(row.id);
+    if (!entry) throw new Error(`Missing projected support summary for ${row.id}`);
+    const expected = entry.support_summary;
+    const actualBefore = row.before.unresolved_high_risk_claim_count;
+    const actualAfter = row.after.unresolved_high_risk_claim_count;
+    if (
+      actualBefore !== entry.unresolved_before
+      || actualBefore !== expected.high_risk_before
+      || actualAfter !== entry.unresolved_after_projected
+      || actualAfter !== expected.high_risk_after_projected
+      || actualBefore - actualAfter !== expected.resolved_projected
+      || asArray(entry.remains_unresolved).length !== expected.unresolved_preserved
+    ) {
+      throw new Error(
+        `${row.id}: projected publication support does not match the shared evaluator `
+        + `(actual ${actualBefore}->${actualAfter}, projected `
+        + `${expected.high_risk_before}->${expected.high_risk_after_projected})`,
+      );
+    }
+  }
+  return state;
 }
 
 function casinoSourceSql(source) {
@@ -383,7 +475,7 @@ SET outlook = ${quoteSql(JSON.stringify(row.outlook))},
 WHERE case_id = ${quoteSql(row.case_id)};`).join('\n\n');
 
   return `-- Generated by scripts/render-high-risk-evidence-remediation-migration.mjs.
--- Applies editorially reviewed, claim-specific evidence while preserving 20 unknowns.
+-- Applies editorially reviewed, claim-specific evidence while preserving 37 unsupported high-risk claims.
 
 DROP TABLE IF EXISTS ${table};
 CREATE TABLE ${table} (

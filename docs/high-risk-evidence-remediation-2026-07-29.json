@@ -12,7 +12,7 @@
     }
   },
   "publication_policy": {
-    "high_risk_pass": "One resolving/reviewed T1 authority; one resolving/reviewed independent T1/T2 source; or two resolving/reviewed independent T3 publishers. A T2 primary can pass only a narrow lifecycle/status claim.",
+    "high_risk_pass": "One resolving/reviewed T1 authority; one resolving/reviewed independent T1/T2 source; or two resolving/reviewed independent T3 evidence origins. Publisher diversity does not create origin independence. A T2 primary can pass only a narrow lifecycle/status claim.",
     "review_identity": "codex-research-agent",
     "review_date": "2026-07-29",
     "guardrail": "Source attachment is claim-specific. A source is not attached merely to make a gate pass, and unsupported causal attribution remains unresolved."
@@ -80,6 +80,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Reports the treasury deficit, approximately 18 months of runway, and proposal to divert 100% of platform fees to the treasury multisig.",
           "evidence_scope": "treasury_event",
+          "independence_group": "sushiswap-kanpai-proposal-2022-12",
           "checked_at": "2026-07-29",
           "last_verified_at": "2026-07-29",
           "evidence_reviewed_at": "2026-07-29",
@@ -101,6 +102,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Reports the implemented fee diversion, temporary one-year term, token-holder fee removal, and concentrated vote.",
           "evidence_scope": "treasury_event_and_vote_concentration",
+          "independence_group": "sushiswap-kanpai-implementation-vote-2023-01",
           "checked_at": "2026-07-29",
           "last_verified_at": "2026-07-29",
           "evidence_reviewed_at": "2026-07-29",
@@ -197,7 +199,7 @@
     {
       "dossier_id": "dex:successful:aerodrome",
       "unresolved_before": 7,
-      "unresolved_after_projected": 2,
+      "unresolved_after_projected": 7,
       "source_additions": [
         {
           "id": "aerodrome-coindesk-aero",
@@ -210,6 +212,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Reports Aerodrome's Base position, TVL context, and the planned Aerodrome/Velodrome consolidation into Aero.",
           "evidence_scope": "lifecycle_and_strategy_event",
+          "independence_group": "aero-project-announcement-2026-01",
           "source_dependency": "Substantially reports the same project-announcement event as the paired The Block coverage; publisher diversity does not make the underlying causal evidence independent.",
           "checked_at": "2026-07-29",
           "last_verified_at": "2026-07-29",
@@ -232,6 +235,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Reports Aerodrome as a successful Base DEX and describes the Aero central-liquidity-hub, merger, chain expansion, and token conversion.",
           "evidence_scope": "lifecycle_and_strategy_event",
+          "independence_group": "aero-project-announcement-2026-01",
           "source_dependency": "Substantially reports the same project-announcement event as the paired CoinDesk coverage; publisher diversity does not make the underlying causal evidence independent.",
           "checked_at": "2026-07-29",
           "last_verified_at": "2026-07-29",
@@ -282,23 +286,28 @@
         }
       ],
       "remains_unresolved": [
+        "forensic_analysis.outcome — the two T3 reports share one project-announcement evidence origin",
+        "forensic_analysis.why — the two T3 reports share one project-announcement evidence origin",
+        "forensic_analysis.strategic_choices[0] — the two T3 reports share one project-announcement evidence origin",
         "forensic_analysis.strategic_choices[1] — token/emission mechanics need independent economic evidence",
-        "forensic_analysis.strategic_choices[2] — value distribution claim remains first-party"
+        "forensic_analysis.strategic_choices[2] — value distribution claim remains first-party",
+        "forensic_analysis.strategic_choices[3] — the two T3 reports share one project-announcement evidence origin",
+        "forensic_analysis.counterfactual — the two T3 reports share one project-announcement evidence origin"
       ],
       "source_metadata_patches": [],
       "casino_claim_additions": [],
       "evidence_boundary": "The two event reports substantially derive from the same project announcement. They support the AERO expansion event and current strategy framing, but not independent proof that token or emission design caused success.",
       "support_summary": {
         "high_risk_before": 7,
-        "high_risk_after_projected": 2,
-        "resolved_projected": 5,
-        "unresolved_preserved": 2
+        "high_risk_after_projected": 7,
+        "resolved_projected": 0,
+        "unresolved_preserved": 7
       }
     },
     {
       "dossier_id": "dex:dead:solidly",
       "unresolved_before": 7,
-      "unresolved_after_projected": 1,
+      "unresolved_after_projected": 7,
       "source_additions": [
         {
           "id": "solidly-decrypt-exit",
@@ -311,6 +320,8 @@
           "evidence_reviewed": true,
           "evidence_locator": "Reports the Solidly launch/snapshot-driven Fantom TVL surge, Cronje/Nell exit, planned service termination, and immediate SOLID price shock.",
           "evidence_scope": "lifecycle_event",
+          "independence_group": "cronje-nell-defi-exit-announcement-2022-03",
+          "source_dependency": "Reports the same Cronje/Nell departure announcement as the paired The Block coverage; separate newsrooms do not create a second evidence origin for the exit event.",
           "checked_at": "2026-07-29",
           "last_verified_at": "2026-07-29",
           "evidence_reviewed_at": "2026-07-29",
@@ -332,6 +343,8 @@
           "evidence_reviewed": true,
           "evidence_locator": "Reports Solidly's contribution to Fantom's temporary TVL rank, termination announcement, and more than 30% one-day liquidity decline in Solidly/Solidex.",
           "evidence_scope": "lifecycle_event_and_liquidity_response",
+          "independence_group": "cronje-nell-defi-exit-announcement-2022-03",
+          "source_dependency": "Reports the same Cronje/Nell departure announcement as the paired Decrypt coverage; separate newsrooms do not create a second evidence origin for the exit event.",
           "checked_at": "2026-07-29",
           "last_verified_at": "2026-07-29",
           "evidence_reviewed_at": "2026-07-29",
@@ -388,22 +401,28 @@
         }
       ],
       "remains_unresolved": [
-        "forensic_analysis.strategic_choices[1] — vote-escrow fee/emission design lacks a second independent publisher or stronger research source"
+        "forensic_analysis.outcome — the two T3 reports share one departure-announcement evidence origin",
+        "forensic_analysis.why — the two T3 reports share one departure-announcement evidence origin",
+        "forensic_analysis.strategic_choices[0] — the two T3 reports share one departure-announcement evidence origin",
+        "forensic_analysis.strategic_choices[1] — vote-escrow fee/emission design lacks a second independent evidence origin or stronger research source",
+        "forensic_analysis.strategic_choices[2] — the two T3 reports share one departure-announcement evidence origin",
+        "forensic_analysis.strategic_choices[3] — the two T3 reports share one departure-announcement evidence origin",
+        "forensic_analysis.counterfactual — the two T3 reports share one departure-announcement evidence origin"
       ],
       "source_metadata_patches": [],
       "casino_claim_additions": [],
-      "evidence_boundary": null,
+      "evidence_boundary": "The two reports trace the lifecycle shock to the same Cronje/Nell departure announcement. They document the event and market response but count as one T3 evidence origin.",
       "support_summary": {
         "high_risk_before": 7,
-        "high_risk_after_projected": 1,
-        "resolved_projected": 6,
-        "unresolved_preserved": 1
+        "high_risk_after_projected": 7,
+        "resolved_projected": 0,
+        "unresolved_preserved": 7
       }
     },
     {
       "dossier_id": "cex:dead:bitmart",
       "unresolved_before": 7,
-      "unresolved_after_projected": 1,
+      "unresolved_after_projected": 7,
       "source_additions": [
         {
           "id": "bitmart-theblock-winddown",
@@ -416,6 +435,8 @@
           "evidence_reviewed": true,
           "evidence_locator": "Reports the phased shutdown, the global CEO's statement that he was not consulted, BMX's near-60% one-day drop, and the operator's nonspecific rationale.",
           "evidence_scope": "lifecycle_event_and_management_context",
+          "independence_group": "bitmart-wind-down-announcement-2026-07",
+          "source_dependency": "Reports the same BitMart wind-down announcement as the paired Decrypt coverage; separate newsrooms do not create a second evidence origin for the closure schedule.",
           "checked_at": "2026-07-29",
           "last_verified_at": "2026-07-29",
           "evidence_reviewed_at": "2026-07-29",
@@ -437,6 +458,8 @@
           "evidence_reviewed": true,
           "evidence_locator": "Reports deposits/orders stopped, August trading halt, January 2027 platform closure, withdrawal review conditions, BMX decline, and that no specific cause was disclosed.",
           "evidence_scope": "lifecycle_event_and_withdrawal_process",
+          "independence_group": "bitmart-wind-down-announcement-2026-07",
+          "source_dependency": "Reports the same BitMart wind-down announcement as the paired The Block coverage; separate newsrooms do not create a second evidence origin for the closure schedule.",
           "checked_at": "2026-07-29",
           "last_verified_at": "2026-07-29",
           "evidence_reviewed_at": "2026-07-29",
@@ -493,16 +516,22 @@
         }
       ],
       "remains_unresolved": [
-        "forensic_analysis.strategic_choices[3] — the separate risk-control statement does not establish a causal connection to closure"
+        "forensic_analysis.outcome — the two T3 reports share one operator-announcement evidence origin",
+        "forensic_analysis.why — the two T3 reports share one operator-announcement evidence origin and disclose no specific cause",
+        "forensic_analysis.strategic_choices[0] — the two T3 reports share one operator-announcement evidence origin",
+        "forensic_analysis.strategic_choices[1] — the two T3 reports share one operator-announcement evidence origin",
+        "forensic_analysis.strategic_choices[2] — the two T3 reports share one operator-announcement evidence origin",
+        "forensic_analysis.strategic_choices[3] — the separate risk-control statement does not establish a causal connection to closure",
+        "forensic_analysis.counterfactual — the two T3 reports share one operator-announcement evidence origin"
       ],
       "source_metadata_patches": [],
       "casino_claim_additions": [],
-      "evidence_boundary": "Independent reporting supports the wind-down schedule and management context, not a specific causal explanation for closure.",
+      "evidence_boundary": "The two reports trace the wind-down schedule to the same operator announcement. They document the schedule and management context but count as one T3 evidence origin and do not prove a cause.",
       "support_summary": {
         "high_risk_before": 7,
-        "high_risk_after_projected": 1,
-        "resolved_projected": 6,
-        "unresolved_preserved": 1
+        "high_risk_after_projected": 7,
+        "resolved_projected": 0,
+        "unresolved_preserved": 7
       }
     },
     {
@@ -829,10 +858,10 @@
   ],
   "projected_result": {
     "selected_unresolved_high_risk_claims_before": 60,
-    "selected_unresolved_high_risk_claims_after": 20,
-    "reduction": 40,
-    "reduction_pct": 66.67,
-    "explicitly_left_unresolved": 20
+    "selected_unresolved_high_risk_claims_after": 37,
+    "reduction": 23,
+    "reduction_pct": 38.33,
+    "explicitly_left_unresolved": 37
   },
   "implementation_notes": [
     "Assign a migration number only after the current migration sequence is final.",
@@ -873,6 +902,21 @@
     },
     {
       "dossier_id": "dex:successful:aerodrome",
+      "description": "forensic_analysis.outcome — the two T3 reports share one project-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:successful:aerodrome",
+      "description": "forensic_analysis.why — the two T3 reports share one project-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:successful:aerodrome",
+      "description": "forensic_analysis.strategic_choices[0] — the two T3 reports share one project-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:successful:aerodrome",
       "description": "forensic_analysis.strategic_choices[1] — token/emission mechanics need independent economic evidence",
       "publication_support": "unresolved"
     },
@@ -882,13 +926,83 @@
       "publication_support": "unresolved"
     },
     {
+      "dossier_id": "dex:successful:aerodrome",
+      "description": "forensic_analysis.strategic_choices[3] — the two T3 reports share one project-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:successful:aerodrome",
+      "description": "forensic_analysis.counterfactual — the two T3 reports share one project-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
       "dossier_id": "dex:dead:solidly",
-      "description": "forensic_analysis.strategic_choices[1] — vote-escrow fee/emission design lacks a second independent publisher or stronger research source",
+      "description": "forensic_analysis.outcome — the two T3 reports share one departure-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:dead:solidly",
+      "description": "forensic_analysis.why — the two T3 reports share one departure-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:dead:solidly",
+      "description": "forensic_analysis.strategic_choices[0] — the two T3 reports share one departure-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:dead:solidly",
+      "description": "forensic_analysis.strategic_choices[1] — vote-escrow fee/emission design lacks a second independent evidence origin or stronger research source",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:dead:solidly",
+      "description": "forensic_analysis.strategic_choices[2] — the two T3 reports share one departure-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:dead:solidly",
+      "description": "forensic_analysis.strategic_choices[3] — the two T3 reports share one departure-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:dead:solidly",
+      "description": "forensic_analysis.counterfactual — the two T3 reports share one departure-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:dead:bitmart",
+      "description": "forensic_analysis.outcome — the two T3 reports share one operator-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:dead:bitmart",
+      "description": "forensic_analysis.why — the two T3 reports share one operator-announcement evidence origin and disclose no specific cause",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:dead:bitmart",
+      "description": "forensic_analysis.strategic_choices[0] — the two T3 reports share one operator-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:dead:bitmart",
+      "description": "forensic_analysis.strategic_choices[1] — the two T3 reports share one operator-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:dead:bitmart",
+      "description": "forensic_analysis.strategic_choices[2] — the two T3 reports share one operator-announcement evidence origin",
       "publication_support": "unresolved"
     },
     {
       "dossier_id": "cex:dead:bitmart",
       "description": "forensic_analysis.strategic_choices[3] — the separate risk-control statement does not establish a causal connection to closure",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:dead:bitmart",
+      "description": "forensic_analysis.counterfactual — the two T3 reports share one operator-announcement evidence origin",
       "publication_support": "unresolved"
     },
     {

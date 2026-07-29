@@ -14,6 +14,11 @@ import {
   buildHighRiskEvidenceRemediation,
   renderHighRiskEvidenceRemediationMigration,
 } from '../scripts/render-high-risk-evidence-remediation-migration.mjs';
+import {
+  buildPublicationDepthInventory,
+  evaluatePublicationClaim,
+  normalizePublicationSource,
+} from '../src/lib/publication-depth.mjs';
 
 const documentUrl = new URL(
   '../docs/high-risk-evidence-remediation-2026-07-29.json',
@@ -72,7 +77,7 @@ afterEach(() => {
 });
 
 describe('unnumbered high-risk evidence remediation preparation', () => {
-  it('keeps the implementation unnumbered and preserves all twenty honest gaps', () => {
+  it('keeps the implementation unnumbered and preserves all thirty-seven honest gaps', () => {
     expect(document.schema).toBe('chaindump-high-risk-remediation-implementation-v1');
     expect(document.status).toBe('implementation-prepared-no-migration-number-assigned');
     expect(document.migration_sequence).toMatchObject({
@@ -81,14 +86,14 @@ describe('unnumbered high-risk evidence remediation preparation', () => {
       rendered: false,
     });
     expect(document.cases).toHaveLength(10);
-    expect(document.unresolved_claims).toHaveLength(20);
+    expect(document.unresolved_claims).toHaveLength(37);
     expect(document.unresolved_claims.every(
       ({ publication_support: support }) => support === 'unresolved',
     )).toBe(true);
     expect(document.cases.reduce(
       (sum, entry) => sum + entry.remains_unresolved.length,
       0,
-    )).toBe(20);
+    )).toBe(37);
     expect(existsSync(new URL(
       '../migrations/0065_high_risk_evidence_remediation.sql',
       import.meta.url,
@@ -116,7 +121,52 @@ describe('unnumbered high-risk evidence remediation preparation', () => {
       expect(source.evidence_reviewed_at).toBe('2026-07-29');
       expect(source.access_checked_at).toBe('2026-07-29');
       expect(source.verification_note).toContain(source.evidence_locator);
+      const normalized = normalizePublicationSource(source);
+      if (normalized.tier === 'T3' && normalized.role === 'independent') {
+        expect(normalized.independence_group).toBeTruthy();
+      }
     }
+  });
+
+  it('counts evidence origins rather than publishers for every same-event pair', () => {
+    const pairs = [
+      ['dex:successful:aerodrome', 'aerodrome-coindesk-aero', 'aerodrome-theblock-aero'],
+      ['dex:dead:solidly', 'solidly-decrypt-exit', 'solidly-theblock-exit'],
+      ['cex:dead:bitmart', 'bitmart-theblock-winddown', 'bitmart-decrypt-winddown'],
+    ];
+    for (const [dossierId, leftId, rightId] of pairs) {
+      const entry = document.cases.find(({ dossier_id: id }) => id === dossierId);
+      const sources = entry.source_additions.filter(({ id }) => (
+        id === leftId || id === rightId
+      ));
+      const normalized = sources.map(normalizePublicationSource);
+      expect(new Set(normalized.map(({ independence_key: key }) => key)).size).toBe(1);
+      const registered = new Map(sources.flatMap((source) => {
+        const value = normalizePublicationSource(source);
+        return [[value.id, value], [value.url, value]];
+      }));
+      const support = evaluatePublicationClaim({
+        path: 'mutation.same_event',
+        type: 'causal',
+        high_risk: true,
+        source_refs: sources.map(({ url }) => url),
+      }, registered);
+      expect(support.independent_t3_publisher_count).toBe(1);
+      expect(support.passes).toBe(false);
+    }
+  });
+
+  it('rejects a publisher-diversity mutation that invents a second evidence origin', () => {
+    database = createCorpus();
+    const mutated = structuredClone(document);
+    const aerodrome = mutated.cases.find(
+      ({ dossier_id: id }) => id === 'dex:successful:aerodrome',
+    );
+    aerodrome.source_additions.find(
+      ({ id }) => id === 'aerodrome-theblock-aero',
+    ).independence_group = 'invented-independent-origin';
+    expect(() => buildHighRiskEvidenceRemediation(mutated, database))
+      .toThrow(/projected publication support does not match the shared evaluator/);
   });
 
   it('retains the adversarial boundaries instead of converting inference into fact', () => {
@@ -190,6 +240,14 @@ describe('unnumbered high-risk evidence remediation preparation', () => {
     expect(Math.max(...statements.map((statement) => Buffer.byteLength(statement))))
       .toBeLessThan(95_000);
     database.exec(sql);
+    const inventory = buildPublicationDepthInventory(database);
+    for (const entry of document.cases) {
+      const dossier = inventory.dossiers.find(({ id }) => id === entry.dossier_id);
+      expect(
+        dossier?.unresolved_high_risk_claim_count,
+        `${entry.dossier_id}: shared publication-depth count`,
+      ).toBe(entry.support_summary.high_risk_after_projected);
+    }
 
     const sushi = database.prepare(`
       SELECT profile, sources

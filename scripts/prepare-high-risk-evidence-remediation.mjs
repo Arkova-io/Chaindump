@@ -2,6 +2,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { isAbsolute, relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { normalizePublicationSource } from '../src/lib/publication-depth.mjs';
 
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 const REVIEWER = 'codex-research-agent';
@@ -42,21 +43,46 @@ const EVIDENCE_SCOPE = {
 };
 
 const SOURCE_BOUNDARIES = {
+  'sushi-coindesk-kanpai': {
+    independence_group: 'sushiswap-kanpai-proposal-2022-12',
+  },
+  'sushi-theblock-kanpai': {
+    independence_group: 'sushiswap-kanpai-implementation-vote-2023-01',
+  },
   'sushi-certik-routeprocessor2': {
     source_role: 'security-research',
     independence_caveat: 'CertiK had a prior commercial audit relationship with Sushi. Its postmortem states the affected RouteProcessor2 router was outside that audit scope; use it for incident mechanics, not as cleanly independent proof of broader causality.',
   },
   'aerodrome-coindesk-aero': {
+    independence_group: 'aero-project-announcement-2026-01',
     source_dependency: 'Substantially reports the same project-announcement event as the paired The Block coverage; publisher diversity does not make the underlying causal evidence independent.',
   },
   'aerodrome-theblock-aero': {
+    independence_group: 'aero-project-announcement-2026-01',
     source_dependency: 'Substantially reports the same project-announcement event as the paired CoinDesk coverage; publisher diversity does not make the underlying causal evidence independent.',
+  },
+  'solidly-decrypt-exit': {
+    independence_group: 'cronje-nell-defi-exit-announcement-2022-03',
+    source_dependency: 'Reports the same Cronje/Nell departure announcement as the paired The Block coverage; separate newsrooms do not create a second evidence origin for the exit event.',
+  },
+  'solidly-theblock-exit': {
+    independence_group: 'cronje-nell-defi-exit-announcement-2022-03',
+    source_dependency: 'Reports the same Cronje/Nell departure announcement as the paired Decrypt coverage; separate newsrooms do not create a second evidence origin for the exit event.',
+  },
+  'bitmart-theblock-winddown': {
+    independence_group: 'bitmart-wind-down-announcement-2026-07',
+    source_dependency: 'Reports the same BitMart wind-down announcement as the paired Decrypt coverage; separate newsrooms do not create a second evidence origin for the closure schedule.',
+  },
+  'bitmart-decrypt-winddown': {
+    independence_group: 'bitmart-wind-down-announcement-2026-07',
+    source_dependency: 'Reports the same BitMart wind-down announcement as the paired The Block coverage; separate newsrooms do not create a second evidence origin for the closure schedule.',
   },
 };
 
 const CASE_BOUNDARIES = {
   'dex:successful:aerodrome': 'The two event reports substantially derive from the same project announcement. They support the AERO expansion event and current strategy framing, but not independent proof that token or emission design caused success.',
-  'cex:dead:bitmart': 'Independent reporting supports the wind-down schedule and management context, not a specific causal explanation for closure.',
+  'dex:dead:solidly': 'The two reports trace the lifecycle shock to the same Cronje/Nell departure announcement. They document the event and market response but count as one T3 evidence origin.',
+  'cex:dead:bitmart': 'The two reports trace the wind-down schedule to the same operator announcement. They document the schedule and management context but count as one T3 evidence origin and do not prove a cause.',
   'cex:mid:htx': 'OFSI establishes the UK sanctions relationship; it does not establish that sanctions caused reported volume decline, insolvency, or global closure.',
   'cex:successful:binance': 'DOJ and CFTC findings support the compliance-strategy record. They do not establish present solvency, profitability, or the contribution of BNB.',
   'stake-dot-com': 'The UK Gambling Commission notice is scoped to the Great Britain white-label arrangement. It does not classify Stake globally.',
@@ -184,8 +210,8 @@ export function prepareHighRiskRemediation(raw) {
   const cases = asArray(raw.cases).map(normalizeCase);
   if (cases.length !== 10) throw new Error(`Expected 10 dossiers, received ${cases.length}`);
   const unresolved = unresolvedRows(cases);
-  if (unresolved.length !== 20) {
-    throw new Error(`Expected 20 honest unresolved claims, received ${unresolved.length}`);
+  if (unresolved.length !== 37) {
+    throw new Error(`Expected 37 honest unresolved claims, received ${unresolved.length}`);
   }
   const sources = cases.flatMap(({ source_additions: additions }) => additions);
   if (sources.length !== 14) throw new Error(`Expected 14 reviewed source additions, received ${sources.length}`);
@@ -205,6 +231,14 @@ export function prepareHighRiskRemediation(raw) {
       || !source.evidence_locator
     ) {
       throw new Error(`Source review provenance incomplete: ${sourceId(source)}`);
+    }
+    const normalized = normalizePublicationSource(source);
+    if (
+      normalized.tier === 'T3'
+      && normalized.role === 'independent'
+      && !normalized.independence_group
+    ) {
+      throw new Error(`T3 source requires an explicit evidence-origin group: ${sourceId(source)}`);
     }
   }
   const accessCounts = Object.groupBy(sources, ({ access_state: state }) => state);
