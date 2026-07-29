@@ -2,7 +2,11 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { mkdtempSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { checkMigrationsDir } from '../scripts/check-migrations.mjs';
+import {
+  checkMigrationsDir,
+  MAX_D1_STATEMENT_BYTES,
+  sqlStatementByteLengths,
+} from '../scripts/check-migrations.mjs';
 
 // Regression coverage for the 0007_mid_chains_stuck.sql incident: a migration
 // comment that merely *mentioned* "BEGIN TRANSACTION" (to say it had none) broke
@@ -116,6 +120,34 @@ describe('checkMigrationsDir', () => {
     const { errors } = checkMigrationsDir(dir);
 
     expect(errors).toEqual([]);
+  });
+
+  it('flags an oversized D1 statement while accepting the same payload in batches', () => {
+    const oversized = 'x'.repeat(MAX_D1_STATEMENT_BYTES);
+    write('0001_oversized.sql', `INSERT INTO t (payload) VALUES ('${oversized}');`);
+
+    expect(checkMigrationsDir(dir).errors).toEqual([
+      expect.stringContaining('SQLITE_TOOBIG'),
+    ]);
+
+    rmSync(join(dir, '0001_oversized.sql'));
+    const half = 'x'.repeat(Math.floor(MAX_D1_STATEMENT_BYTES / 2));
+    write(
+      '0001_batched.sql',
+      `INSERT INTO t (payload) VALUES ('${half}');\n`
+      + `INSERT INTO t (payload) VALUES ('${half}');`,
+    );
+
+    expect(checkMigrationsDir(dir).errors).toEqual([]);
+  });
+
+  it('splits only on semicolons outside SQL strings and comments', () => {
+    const lengths = sqlStatementByteLengths(
+      "-- comment; ignored\nINSERT INTO t VALUES ('semi;colon', 'it''s safe');\n"
+      + '/* block; comment */ SELECT 1;',
+    );
+
+    expect(lengths).toHaveLength(2);
   });
 });
 

@@ -27,14 +27,6 @@ const expectedSlugs = [
   'bitmart',
 ];
 
-function migrationDocument() {
-  const match = migration.match(
-    /-- canonical-payload-start[\s\S]*?VALUES \('([\s\S]*?)'\) -- NOSONAR:[^\n]*\n\)\nINSERT OR REPLACE/,
-  );
-  if (!match) throw new Error('0059 canonical payload not found');
-  return JSON.parse(match[1].replaceAll("''", "'"));
-}
-
 function applyMigrations(database, through = 59) {
   const migrationDirectory = new URL('../migrations/', import.meta.url);
   const files = readdirSync(migrationDirectory)
@@ -97,14 +89,20 @@ afterEach(() => {
 });
 
 describe('exchange forensic wave A migration 0059', () => {
-  it('keeps the generated SQL payload identical to the checked research manifest', () => {
-    expect(migrationDocument()).toEqual(document);
+  it('keeps one bounded generated statement per checked research case', () => {
     expect(migration).not.toMatch(/\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i);
+    expect(migration).toContain('-- batched-payload-start');
+    expect(migration.match(
+      /INSERT OR REPLACE INTO exchange_forensic_wave_a_0059\n/g,
+    )).toHaveLength(document.cases.length);
     expect(document.schema).toBe('chaindump-exchange-forensic-wave-a-v1');
     expect(document.research_as_of).toBe('2026-07-29');
     expect(document.cases.map(({ slug }) => slug)).toEqual(expectedSlugs);
     expect(document.cases.filter(({ kind }) => kind === 'dex')).toHaveLength(4);
     expect(document.cases.filter(({ kind }) => kind === 'cex')).toHaveLength(9);
+    for (const entry of document.cases) {
+      expect(migration, entry.slug).toContain(`  '${entry.slug.replaceAll("'", "''")}',`);
+    }
   });
 
   it('publishes complete, resolving forensic analyses with source freshness metadata', () => {

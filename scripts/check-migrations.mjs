@@ -16,6 +16,9 @@
 //   3. No TEMP tables. Cloudflare D1's remote query authorizer rejects
 //      CREATE TEMP TABLE with SQLITE_AUTH even though local SQLite accepts it.
 //      Generated staging tables must use a normal table bracketed by DROP TABLE.
+//   4. Keep every SQL statement below a conservative 95 KB. D1 rejects larger
+//      statements with SQLITE_TOOBIG even when the migration file itself is valid.
+//      Research waves must emit one bounded statement per dossier.
 //
 // Migrations 0001–0009 predate this guard and were loaded out-of-band (0001 is a
 // bulk backup dump). None of them actually contain the literal text this guard
@@ -27,6 +30,57 @@ import { pathToFileURL } from 'node:url';
 
 const TRANSACTION_TEXT_RE = /\bBEGIN\s+TRANSACTION\b|\bCOMMIT\s*;/i;
 const TEMP_TABLE_RE = /\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i;
+export const MAX_D1_STATEMENT_BYTES = 95_000;
+
+export function sqlStatementByteLengths(sql) {
+  const lengths = [];
+  let statementStart = 0;
+  let inString = false;
+  let inLineComment = false;
+  let inBlockComment = false;
+
+  for (let index = 0; index < sql.length; index += 1) {
+    const current = sql[index];
+    const next = sql[index + 1];
+
+    if (inLineComment) {
+      if (current === '\n') inLineComment = false;
+      continue;
+    }
+    if (inBlockComment) {
+      if (current === '*' && next === '/') {
+        inBlockComment = false;
+        index += 1;
+      }
+      continue;
+    }
+    if (inString) {
+      if (current === "'" && next === "'") {
+        index += 1;
+      } else if (current === "'") {
+        inString = false;
+      }
+      continue;
+    }
+    if (current === '-' && next === '-') {
+      inLineComment = true;
+      index += 1;
+    } else if (current === '/' && next === '*') {
+      inBlockComment = true;
+      index += 1;
+    } else if (current === "'") {
+      inString = true;
+    } else if (current === ';') {
+      lengths.push(Buffer.byteLength(sql.slice(statementStart, index + 1), 'utf8'));
+      statementStart = index + 1;
+    }
+  }
+
+  if (sql.slice(statementStart).trim()) {
+    lengths.push(Buffer.byteLength(sql.slice(statementStart), 'utf8'));
+  }
+  return lengths;
+}
 
 export function checkMigrationsDir(dir) {
   const files = readdirSync(dir)
@@ -65,6 +119,14 @@ export function checkMigrationsDir(dir) {
       errors.push(
         `${f}: contains CREATE TEMP TABLE, which Cloudflare D1 rejects remotely with ` +
           `SQLITE_AUTH. Use a normal staging table with DROP TABLE before and after it.`,
+      );
+    }
+    const largestStatement = Math.max(0, ...sqlStatementByteLengths(sql));
+    if (largestStatement > MAX_D1_STATEMENT_BYTES) {
+      errors.push(
+        `${f}: contains a ${largestStatement}-byte SQL statement; Cloudflare D1 rejects ` +
+          `oversized statements with SQLITE_TOOBIG. Keep each statement at or below ` +
+          `${MAX_D1_STATEMENT_BYTES} bytes by batching one dossier per statement.`,
       );
     }
   }
