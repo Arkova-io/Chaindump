@@ -1684,6 +1684,51 @@ app.get('/api/mid-exchanges', wrap(async (req, res) => {
   }
 }));
 
+// Citation-backed successful-exchange dossiers. This deliberately returns
+// metric *groups*, never a cross-venue total: spot volume, routed volume and
+// perpetual notional are different observations and are only comparable within
+// their own metric_type + unit cohort. The dedicated Forensics UI consumes this
+// alongside /api/mid-exchanges and /api/dead-exchanges.
+app.get('/api/successful-exchanges', wrap(async (req, res) => {
+  const kind = req.query.kind === 'cex' ? 'cex' : 'dex';
+  const chain = typeof req.query.chain === 'string' && req.query.chain.trim() ? req.query.chain.trim() : null;
+  const metricType = typeof req.query.metric_type === 'string' && req.query.metric_type.trim() ? req.query.metric_type.trim() : null;
+  const filters = { chain, metricType };
+  try {
+    const where = ['type = ?'];
+    const binds = [kind];
+    if (chain) { where.push('primary_chain = ?'); binds.push(chain); }
+    if (metricType) { where.push('metric_type = ?'); binds.push(metricType); }
+    const rows = await dbQuery(
+      `SELECT slug, type AS kind, venue_type, name, launched, primary_chain, status,
+              metric_label, metric_type, metric_unit, metric, why_successful, outlook,
+              profile, sources, updated_at
+       FROM successful_exchanges WHERE ${where.join(' AND ')}
+       ORDER BY metric_type ASC, metric_unit ASC, metric DESC, name ASC`, binds);
+    const exchanges = rows.map((r) => {
+      let profile = null; let sources = [];
+      try { profile = r.profile ? JSON.parse(r.profile) : null; } catch (e) {}
+      try { sources = r.sources ? JSON.parse(r.sources) : []; } catch (e) {}
+      return { ...r, profile, sources };
+    });
+    const groups = new Map();
+    for (const row of exchanges) {
+      const metricTypeKey = row.metric_type || 'unknown';
+      const metricUnit = row.metric_unit || 'unknown';
+      const key = `${metricTypeKey}:${metricUnit}`;
+      const group = groups.get(key) || { metricType: metricTypeKey, metricUnit, count: 0 };
+      group.count++;
+      groups.set(key, group);
+    }
+    const metricGroups = [...groups.values()].sort((a, b) => (
+      a.metricType.localeCompare(b.metricType) || a.metricUnit.localeCompare(b.metricUnit)
+    ));
+    res.json({ kind, filters, exchanges, count: exchanges.length, metricGroups });
+  } catch (e) {
+    res.json({ kind, filters, exchanges: [], count: 0, metricGroups: [], error: e.message });
+  }
+}));
+
 // ---------------------------------------------------------------------------
 // Dynamic DEX tier classifier — classifyChains' pattern applied to DefiLlama's
 // per-protocol DEX volume instead of per-chain TVL. There is no CEX equivalent:
