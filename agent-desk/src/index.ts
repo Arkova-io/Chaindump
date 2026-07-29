@@ -22,18 +22,18 @@ const QUEUE_DIR = process.env.DESK_QUEUE_DIR || "./proposals";
 const MODEL = process.env.DESK_MODEL || "claude-sonnet-5";
 const MAX_TURNS = Number(process.env.DESK_MAX_TURNS) || 40;
 const CHAINDUMP_BASE = (process.env.CHAINDUMP_BASE_URL || "https://chaindump.xyz").replace(/\/$/, "");
-const DESK_TOKEN = process.env.DESK_TOKEN;
+const DESK_PROPOSAL_TOKEN = process.env.DESK_PROPOSAL_TOKEN || process.env.DESK_TOKEN;
 
 // Persist a proposal to the durable, human-reviewed queue via the Worker's
 // authenticated write path (/api/desk/propose). Falls back to a local file when
-// DESK_TOKEN isn't set (offline/dev) or on a transient POST failure. Returns
+// DESK_PROPOSAL_TOKEN isn't set (offline/dev) or on a transient POST failure. Returns
 // where it landed, for the tool's confirmation text.
 async function tryPostProposal(record: unknown): Promise<boolean> {
-  if (!DESK_TOKEN) return false;
+  if (!DESK_PROPOSAL_TOKEN) return false;
   try {
     const r = await fetch(`${CHAINDUMP_BASE}/api/desk/propose`, {
       method: "POST",
-      headers: { "content-type": "application/json", authorization: `Bearer ${DESK_TOKEN}` },
+      headers: { "content-type": "application/json", authorization: `Bearer ${DESK_PROPOSAL_TOKEN}` },
       body: JSON.stringify(record),
     });
     if (r.ok) return true;
