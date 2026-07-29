@@ -733,6 +733,60 @@ function assertStatementSize(label, statement) {
   return statement;
 }
 
+function renderSourceMerge(seedTable) {
+  return `(
+      SELECT json_group_array(json(source_json))
+      FROM (
+        SELECT source_json
+        FROM (
+          SELECT
+            CASE
+              WHEN new_source.value IS NULL THEN old_source.value
+              ELSE json_set(
+                json_patch(old_source.value, new_source.value),
+                '$.checked_at',
+                CASE
+                  WHEN json_extract(old_source.value, '$.checked_at')
+                    > json_extract(new_source.value, '$.checked_at')
+                    THEN json_extract(old_source.value, '$.checked_at')
+                  ELSE COALESCE(
+                    json_extract(new_source.value, '$.checked_at'),
+                    json_extract(old_source.value, '$.checked_at')
+                  )
+                END
+              )
+            END AS source_json,
+            old_source.key AS position
+          FROM json_each(COALESCE(facts.sources, '[]')) AS old_source
+          LEFT JOIN json_each(
+            json_extract((SELECT payload FROM ${seedTable}), '$.sources')
+          ) AS new_source
+            ON json_extract(new_source.value, '$.url')
+              = json_extract(old_source.value, '$.url')
+          WHERE json_extract(old_source.value, '$.url') IS NULL
+            OR old_source.key = (
+              SELECT MIN(candidate.key)
+              FROM json_each(COALESCE(facts.sources, '[]')) AS candidate
+              WHERE json_extract(candidate.value, '$.url')
+                = json_extract(old_source.value, '$.url')
+            )
+          UNION ALL
+          SELECT new_source.value AS source_json, 10000 + new_source.key AS position
+          FROM json_each(
+            json_extract((SELECT payload FROM ${seedTable}), '$.sources')
+          ) AS new_source
+          WHERE NOT EXISTS (
+            SELECT 1
+            FROM json_each(COALESCE(facts.sources, '[]')) AS existing
+            WHERE json_extract(existing.value, '$.url')
+              = json_extract(new_source.value, '$.url')
+          )
+        )
+        ORDER BY position
+      )
+    )`;
+}
+
 function renderCaseStatement(entry) {
   const payload = JSON.stringify(entry).replaceAll("'", "''");
   const statement = `-- canonical-case-start ${entry.chain}
@@ -761,57 +815,7 @@ SET
   END
   ,
   sources = CASE
-    WHEN facts.dimension = 'synthesis' THEN (
-      SELECT json_group_array(json(source_json))
-      FROM (
-        SELECT source_json
-        FROM (
-          SELECT
-            CASE
-              WHEN new_source.value IS NULL THEN old_source.value
-              ELSE json_set(
-                json_patch(old_source.value, new_source.value),
-                '$.checked_at',
-                CASE
-                  WHEN json_extract(old_source.value, '$.checked_at')
-                    > json_extract(new_source.value, '$.checked_at')
-                    THEN json_extract(old_source.value, '$.checked_at')
-                  ELSE COALESCE(
-                    json_extract(new_source.value, '$.checked_at'),
-                    json_extract(old_source.value, '$.checked_at')
-                  )
-                END
-              )
-            END AS source_json,
-            old_source.key AS position
-          FROM json_each(COALESCE(facts.sources, '[]')) AS old_source
-          LEFT JOIN json_each(
-            json_extract((SELECT payload FROM causal_seed), '$.sources')
-          ) AS new_source
-            ON json_extract(new_source.value, '$.url')
-              = json_extract(old_source.value, '$.url')
-          WHERE json_extract(old_source.value, '$.url') IS NULL
-            OR old_source.key = (
-              SELECT MIN(candidate.key)
-              FROM json_each(COALESCE(facts.sources, '[]')) AS candidate
-              WHERE json_extract(candidate.value, '$.url')
-                = json_extract(old_source.value, '$.url')
-            )
-          UNION ALL
-          SELECT new_source.value AS source_json, 10000 + new_source.key AS position
-          FROM json_each(
-            json_extract((SELECT payload FROM causal_seed), '$.sources')
-          ) AS new_source
-          WHERE NOT EXISTS (
-            SELECT 1
-            FROM json_each(COALESCE(facts.sources, '[]')) AS existing
-            WHERE json_extract(existing.value, '$.url')
-              = json_extract(new_source.value, '$.url')
-          )
-        )
-        ORDER BY position
-      )
-    )
+    WHEN facts.dimension = 'synthesis' THEN ${renderSourceMerge('causal_seed')}
     ELSE facts.sources
   END
   ,
@@ -840,54 +844,7 @@ SET
     ELSE facts.data
   END
   ,
-  sources = (
-    SELECT json_group_array(json(source_json))
-    FROM (
-      SELECT
-        CASE
-          WHEN new_source.value IS NULL THEN old_source.value
-          ELSE json_set(
-            json_patch(old_source.value, new_source.value),
-            '$.checked_at',
-            CASE
-              WHEN json_extract(old_source.value, '$.checked_at')
-                > json_extract(new_source.value, '$.checked_at')
-                THEN json_extract(old_source.value, '$.checked_at')
-              ELSE COALESCE(
-                json_extract(new_source.value, '$.checked_at'),
-                json_extract(old_source.value, '$.checked_at')
-              )
-            END
-          )
-        END AS source_json,
-        old_source.key AS position
-      FROM json_each(COALESCE(facts.sources, '[]')) AS old_source
-      LEFT JOIN json_each(
-        json_extract((SELECT payload FROM correction_seed), '$.sources')
-      ) AS new_source
-        ON json_extract(new_source.value, '$.url')
-          = json_extract(old_source.value, '$.url')
-      WHERE json_extract(old_source.value, '$.url') IS NULL
-        OR old_source.key = (
-          SELECT MIN(candidate.key)
-          FROM json_each(COALESCE(facts.sources, '[]')) AS candidate
-          WHERE json_extract(candidate.value, '$.url')
-            = json_extract(old_source.value, '$.url')
-        )
-      UNION ALL
-      SELECT new_source.value AS source_json, 10000 + new_source.key AS position
-      FROM json_each(
-        json_extract((SELECT payload FROM correction_seed), '$.sources')
-      ) AS new_source
-      WHERE NOT EXISTS (
-        SELECT 1
-        FROM json_each(COALESCE(facts.sources, '[]')) AS existing
-        WHERE json_extract(existing.value, '$.url')
-          = json_extract(new_source.value, '$.url')
-      )
-      ORDER BY position
-    )
-  ),
+  sources = ${renderSourceMerge('correction_seed')},
   updated_at = '${checkedAt}'
 WHERE facts.chain = json_extract((SELECT payload FROM correction_seed), '$.chain')
   AND facts.dimension = json_extract(

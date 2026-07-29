@@ -2,7 +2,15 @@ import { Buffer } from 'node:buffer';
 import { createHash } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, readdirSync } from 'node:fs';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  describe,
+  expect,
+  it,
+  vi,
+} from 'vitest';
 import { unstable_splitSqlQuery } from 'wrangler';
 import { validateForensicAnalysis } from '../src/lib/forensic-analysis.js';
 
@@ -144,6 +152,8 @@ async function freshWorker() {
 
 const ctx = () => ({ waitUntil() {}, passThroughOnException() {} });
 let database;
+let apiDatabase;
+let apiWorker;
 
 function stubChainFeeds() {
   const universe = migrationTouchedChains.map((name, index) => ({
@@ -185,6 +195,17 @@ afterEach(() => {
 });
 
 describe('chain causal completion migration 0062', () => {
+  beforeAll(async () => {
+    apiDatabase = new DatabaseSync(':memory:');
+    applyMigrations(apiDatabase);
+    apiWorker = await freshWorker();
+  });
+
+  afterAll(() => {
+    apiDatabase?.close();
+    apiDatabase = undefined;
+  });
+
   it('keeps generated SQL identical to the checked research manifest', () => {
     const { document, manifest, migration } = loadArtifacts();
     expect(migrationCases(migration)).toEqual(document.cases);
@@ -195,12 +216,13 @@ describe('chain causal completion migration 0062', () => {
       }`,
     );
     expect(migration).not.toMatch(/\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i);
-    expect(caseStatementByteLengths(migration)).toHaveLength(document.cases.length);
-    expect(Math.max(...caseStatementByteLengths(migration)))
+    const caseByteLengths = caseStatementByteLengths(migration);
+    const correctionByteLengths = correctionStatementByteLengths(migration);
+    expect(caseByteLengths).toHaveLength(document.cases.length);
+    expect(Math.max(...caseByteLengths))
       .toBeLessThanOrEqual(maxD1StatementBytes);
-    expect(correctionStatementByteLengths(migration))
-      .toHaveLength(document.corrections.length);
-    expect(Math.max(...correctionStatementByteLengths(migration)))
+    expect(correctionByteLengths).toHaveLength(document.corrections.length);
+    expect(Math.max(...correctionByteLengths))
       .toBeLessThanOrEqual(maxD1StatementBytes);
     const wranglerStatements = unstable_splitSqlQuery(migration);
     expect(wranglerStatements).toHaveLength(
@@ -406,14 +428,11 @@ describe('chain causal completion migration 0062', () => {
 
   it('serves each causal dossier through the chain API and has a visible chain UI section', async () => {
     const { document } = loadArtifacts();
-    database = new DatabaseSync(':memory:');
-    applyMigrations(database);
     stubChainFeeds();
-    const worker = await freshWorker();
     for (const entry of document.cases) {
-      const response = await worker.fetch(
+      const response = await apiWorker.fetch(
         new Request(`http://localhost/api/chain/${encodeURIComponent(entry.chain)}`),
-        { DB: d1(database) },
+        { DB: d1(apiDatabase) },
         ctx(),
       );
       expect(response.status, entry.chain).toBe(200);
@@ -440,9 +459,9 @@ describe('chain causal completion migration 0062', () => {
       }
     }
 
-    const xdcResponse = await worker.fetch(
+    const xdcResponse = await apiWorker.fetch(
       new Request('http://localhost/api/chain/XDC'),
-      { DB: d1(database) },
+      { DB: d1(apiDatabase) },
       ctx(),
     );
     expect(xdcResponse.status).toBe(200);
@@ -463,9 +482,9 @@ describe('chain causal completion migration 0062', () => {
       expect(xdcSourcesByUrl[expectedSource.url]).toMatchObject(expectedSource);
     }
 
-    const osmosisResponse = await worker.fetch(
+    const osmosisResponse = await apiWorker.fetch(
       new Request('http://localhost/api/chain/Osmosis'),
-      { DB: d1(database) },
+      { DB: d1(apiDatabase) },
       ctx(),
     );
     expect(osmosisResponse.status).toBe(200);
