@@ -3162,6 +3162,66 @@ function nftSupplyText(supply) {
     ? `${Intl.NumberFormat('en').format(supply)} supply`
     : String(supply);
 }
+function analysisCountMap(items) {
+  return Object.fromEntries((items || []).map((item) => [item.key, Number(item.count || 0)]));
+}
+function nftAggregateAnalysisHtml(data) {
+  const analysis = data.analysis || {};
+  if (analysis.schema !== 'nft-lifecycle-cohort-v1') {
+    return '<div class="gnar muted">Aggregate analysis compiling from published dossiers…</div>';
+  }
+  const cohort = analysis.cohort || {};
+  const coverage = analysis.coverage || {};
+  const statuses = analysisCountMap(cohort.statuses);
+  const review = analysisCountMap(cohort.review_states);
+  const total = Number(cohort.total || 0);
+  const classified = total - Number(statuses.unknown || 0);
+  const chainChart = (cohort.chain_chart || cohort.chains || [])
+    .map((item) => ({
+      ...item,
+      label: item.key === '__other_exact_chain_labels__'
+        ? `Other (${item.label_count || 0} exact labels)`
+        : chainLabel(item.key),
+    }));
+  const topThreeChains = (cohort.chains || []).slice(0, 3);
+  const topThree = topThreeChains.reduce((sum, item) => sum + Number(item.count || 0), 0);
+  const topChainRead = topThreeChains.map((item) => {
+    const mix = (cohort.chain_status?.[item.key] || [])
+      .map((entry) => `${entry.count} ${entry.key}`)
+      .join(', ');
+    return `${chainLabel(item.key)}: ${mix}`;
+  }).join(' · ');
+  const anchors = (analysis.evidenceAnchors || []).map((anchor) => {
+    const source = anchor.source || {};
+    if (!source.url) return '';
+    return `<a href="/collection/${encodeURIComponent(anchor.slug)}">${esc(anchor.name)}</a> <span class="muted">(${esc(anchor.status)})</span> — <a href="${esc(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title || 'source')} ↗</a>`;
+  }).filter(Boolean);
+  const coverageLine = (label, key) => `${label}: ${Number(coverage[key] || 0)} of ${total}`;
+  const confidence = analysisCountMap(coverage.outcome_confidence);
+  const whyConfidence = analysisCountMap(coverage.why_confidence);
+  const sourceAccess = (coverage.source_access_states || [])
+    .map((item) => `${item.count} ${item.key.replaceAll('_', ' ')}`)
+    .join(', ');
+  const accessVerifiedThrough = analysis.evidenceWindow?.source_access_verified_through;
+  const limitations = (analysis.limitations || []).map((item) => `<li>${esc(item)}</li>`).join('');
+  const falsifiers = (analysis.falsifiers || []).map((item) => `<li>${esc(item)}</li>`).join('');
+  return `<div class="gsec">Cohort finding · lifecycle status through ${esc(analysis.evidenceWindow?.newest_lifecycle_status_as_of || 'unknown')}</div>
+    <div class="gbody">This is a <b>${total}-dossier</b> forensic cohort, not a market census. ${classified} cases carry a published lifecycle label after the freshness gate; ${Number(statuses.unknown || 0)} are unknown rather than being forced into a conclusion. The observed mix is ${Number(statuses.thriving || 0)} thriving, ${Number(statuses.middling || 0)} middling, ${Number(statuses.dead || 0)} dead, and ${Number(statuses.declining || 0)} declining. Those shares describe this selected library only—they are not NFT success probabilities.</div>
+    <div class="gsec">Chain and lifecycle association</div>
+    <div class="gbody">The three largest exact chain labels account for ${topThree} of ${total} dossiers. Their observed lifecycle mix is ${esc(topChainRead)}. Chain labels are retained as published, including mixed-chain cases. The page does not convert this association into a chain-caused outcome: launch timing, product, distribution, team execution, and market cycle are uncontrolled.</div>
+    ${analysisDistributionHtml('Exact chain labels', chainChart)}
+    <div class="gsec">Token · product · founder · community evidence</div>
+    <div class="gbody">${esc(coverageLine('Normalized token/value-capture field', 'token_model'))}; ${esc(coverageLine('chain-dependence field', 'chain_dependence'))}; ${esc(coverageLine('structured product/value-capture field', 'products_and_value_capture'))}; ${esc(coverageLine('founder-engagement field', 'founder_engagement'))}; ${esc(coverageLine('community-history field', 'community_history'))}; ${esc(coverageLine('holder-benefit field', 'benefits'))}. These are documentation counts, not positive signals. In particular, token-model coverage cannot answer “did it launch a token?” until token status is a controlled field across the full cohort.</div>
+    <div class="gsec">Decision depth and causal boundary</div>
+    <div class="gbody">${Number(coverage.forensic_dossiers || 0)} of ${total} dossiers have a normalized causal map containing ${Number(coverage.strategic_choices || 0)} documented strategic choices, ${Number(coverage.watch_signals || 0)} watch/falsifier signals, and ${Number(coverage.material_unknowns || 0)} explicit unknowns. Outcome confidence is ${Number(confidence.high || 0)} high and ${Number(confidence.medium || 0)} medium; “why” confidence is ${Number(whyConfidence.high || 0)} high and ${Number(whyConfidence.medium || 0)} medium. These are evidence-qualified analyst judgments, not experimental causal estimates.</div>
+    <div class="gsec">Evidence contract and freshness</div>
+    <div class="gbody">${Number(coverage.field_cited || 0)} of ${total} dossiers pass the field-citation contract, covering ${Number(coverage.field_claims || 0)} field claims and ${Number(coverage.source_records || 0)} source records (${Number(coverage.distinct_source_urls || 0)} distinct URLs). ${Number(coverage.forensic_references_ledger_matched || 0)} of ${Number(coverage.forensic_references_total || 0)} causal references match a source ID or URL in the published ledgers; ledger matching proves linkage coverage, not successful URL access or claim truth. Current review state: ${Number(review.current || 0)} current, ${Number(review.review_due || 0)} review due, ${Number(review.withheld || 0)} stale/withheld, ${Number(review.legacy || 0)} legacy. Published lifecycle-status evidence spans ${esc(analysis.evidenceWindow?.oldest_lifecycle_status_as_of || 'unknown')} to ${esc(analysis.evidenceWindow?.newest_lifecycle_status_as_of || 'unknown')}; forensic outcome summaries span ${esc(analysis.evidenceWindow?.oldest_forensic_outcome_as_of || 'unknown')} to ${esc(analysis.evidenceWindow?.newest_forensic_outcome_as_of || 'unknown')}; lifecycle dossiers were reviewed through ${esc(analysis.evidenceWindow?.lifecycle_reviewed_through || 'unknown')}; source records were inspected through ${esc(analysis.evidenceWindow?.source_inspected_through || 'unknown')}. ${accessVerifiedThrough ? `Explicit successful source access is recorded through ${esc(accessVerifiedThrough)}.` : 'No source in this cohort records an explicit successful-access state, so an access-verified-through date is withheld.'} Recorded source access states: ${esc(sourceAccess || 'not recorded')}.</div>
+    <div class="gsec">What this dataset does not yet prove</div><ul class="evlist">${limitations}</ul>
+    <div class="gsec">What would change the aggregate read</div><ul class="evlist">${falsifiers}</ul>
+    <div class="gsec">Cited dossier anchors</div>
+    <div class="gbody">These are examples for inspection, not a substitute for the full cohort: ${anchors.join(' · ') || 'no source anchors available'}.</div>
+    <div class="asrc">Aggregate evidence: <a href="/api/nft" target="_blank" rel="noopener noreferrer">open the live cohort JSON ↗</a> · every dossier below links to its field-level evidence and source ledger.</div>`;
+}
 function renderNft(data){
   const el = document.getElementById('nftview');
   state.nftData = data;
@@ -3198,7 +3258,7 @@ function renderNft(data){
     'Lifecycle bars cover curated case studies only. Freshness is derived from each field-cited dossier’s evidence policy; legacy source lists remain visibly separate.',
   );
   const panel = `<div class="gpanel">
-    ${data.analysis?accordion('Lifecycle analysis — what the data says', data.analysis.text, true):'<div class="gnar muted">Aggregate analysis compiling…</div>'}
+    ${accordionHtml(`Lifecycle analysis — what the ${data.analysis?.cohort?.total ?? data.collections.length}-case data can and cannot say`, nftAggregateAnalysisHtml(data), true)}
   </div>`;
   const caseQ = state.nftCaseQuery || '';
   const chains = [...new Set(data.collections.map((c) => c.chain).filter(Boolean))].sort((a, b) => chainLabel(a).localeCompare(chainLabel(b)));
