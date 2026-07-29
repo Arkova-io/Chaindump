@@ -15,19 +15,22 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { query, tool, createSdkMcpServer } from "@anthropic-ai/claude-agent-sdk";
 import { z } from "zod";
-import { gateProposal, sanitizeSlug, buildRecord } from "./proposal.js";
+import { PROPOSAL_DATASETS, sanitizeSlug, buildRecord } from "./proposal.js";
+import { buildResearchSystemPrompt, DEFAULT_RESEARCH_TASK } from "./research.js";
 
 const MCP_URL = process.env.CHAINDUMP_MCP_URL || "https://chaindump-mcp-270018525501.us-central1.run.app/mcp";
 const QUEUE_DIR = process.env.DESK_QUEUE_DIR || "./proposals";
 const MODEL = process.env.DESK_MODEL || "claude-sonnet-5";
-const MAX_TURNS = Number(process.env.DESK_MAX_TURNS) || 40;
+const MAX_TURNS = Number(process.env.DESK_MAX_TURNS) || 20;
 const CHAINDUMP_BASE = (process.env.CHAINDUMP_BASE_URL || "https://chaindump.xyz").replace(/\/$/, "");
 const DESK_PROPOSAL_TOKEN = process.env.DESK_PROPOSAL_TOKEN || process.env.DESK_TOKEN;
+let proposalPersistenceFailures = 0;
 
 // Persist a proposal to the durable, human-reviewed queue via the Worker's
-// authenticated write path (/api/desk/propose). Falls back to a local file when
-// DESK_PROPOSAL_TOKEN isn't set (offline/dev) or on a transient POST failure. Returns
-// where it landed, for the tool's confirmation text.
+// authenticated write path (/api/desk/propose). Falls back to a local file only
+// when DESK_PROPOSAL_TOKEN isn't set (offline/dev). A configured remote queue
+// must fail loudly: a GitHub runner's local filesystem is ephemeral and cannot
+// safely masquerade as durable persistence.
 async function tryPostProposal(record: unknown): Promise<boolean> {
   if (!DESK_PROPOSAL_TOKEN) return false;
   try {
@@ -37,11 +40,11 @@ async function tryPostProposal(record: unknown): Promise<boolean> {
       body: JSON.stringify(record),
     });
     if (r.ok) return true;
-    console.error(`[desk] propose ${r.status}; falling back to local file`);
+    throw new Error(`proposal queue returned HTTP ${r.status}`);
   } catch (e) {
-    console.error("[desk] propose failed; falling back to local file:", e instanceof Error ? e.message : e);
+    proposalPersistenceFailures += 1;
+    throw new Error(`proposal queue write failed: ${e instanceof Error ? e.message : e}`);
   }
-  return false;
 }
 
 async function persistProposal(dataset: string, slug: string, record: unknown): Promise<string> {
@@ -58,15 +61,19 @@ async function persistProposal(dataset: string, slug: string, record: unknown): 
 
 const queueProposal = tool(
   "queue_proposal",
-  "Queue ONE researched, fully-sourced finding for HUMAN REVIEW before it is published to Chaindump. This is the only way to persist a finding — it never publishes directly. Call it once per verified finding, as the final step. Every claim must already be verified against a resolving source.",
+  "Queue ONE researched, fully-sourced finding for HUMAN REVIEW. This is the only persistence path and it never publishes. Cross-vertical analysis datasets accept field-level evidence candidates only, never full dossier replacements. Call once per verified, deduplicated claim as the final step.",
   {
     dataset: z
-      .enum(["scam_intel", "dead_chains", "mid_chains", "risk_signals", "policy", "desk_log"])
-      .describe("Which Chaindump dataset this proposal targets."),
+      .enum(PROPOSAL_DATASETS)
+      .describe("Target queue. Analysis candidate datasets are evidence-only and cannot be directly promoted."),
     slug: z.string().min(2).describe("Stable kebab-case identifier for the entity/finding."),
     title: z.string().describe("Short human-readable title."),
     summary: z.string().describe("One-paragraph summary of the finding and why it matters now."),
-    payload: z.record(z.string(), z.unknown()).describe("Proposed row fields for the dataset (shape depends on the target table)."),
+    payload: z
+      .record(z.string(), z.unknown())
+      .describe(
+        "For analysis candidates: canonical entity id, exact field/claim, existing value if known, evidence, explicit as_of, source date/type/verification, causal reasoning, counterevidence/unknowns, and reviewer action. Never submit a full dossier replacement.",
+      ),
     sources: z
       .array(z.object({ title: z.string(), url: z.string().url() }))
       .min(1)
@@ -95,18 +102,7 @@ const deskTools = createSdkMcpServer({ name: "desk", version: "0.1.0", tools: [q
 
 // ---- the desk's operating rules --------------------------------------------
 
-const SYSTEM_PROMPT = `You are the Chaindump research desk — an autonomous analyst that keeps Chaindump's blockchain-intelligence data fresh and sourced.
-
-ACCURACY IS SACRED (non-negotiable):
-- Every material figure, name, address, tx, or date must come from a RESOLVING, AUTHORITATIVE source that you VERIFY loads (WebFetch) before you use it. Prefer government / mainstream / NPO / primary sources over crypto-media alone for policy and attribution.
-- NEVER fabricate a name, address, transaction, figure, or date. If you cannot verify it, omit it and note the gap.
-- Adversarially fact-check every finding before queuing it: try to disprove it; only keep what survives.
-- Deduplicate against what Chaindump already knows — use the chain-intel MCP tools (chain_forensics, scam_cases, screen_address, etc.) to check existing coverage first.
-- Attribute blame to culpable INDIVIDUALS only with strong sourcing; NEVER blame neutral infrastructure (mixers, bridges, exchanges, DEXs). Anything naming a private individual or asserting fraud/crime MUST set names_individuals=true.
-
-YOUR ONLY OUTPUT is calls to queue_proposal. You do NOT publish; a human reviews the queue and promotes proposals. Queue one proposal per verified finding, with its sources and a confidence score. Low-confidence or individual-naming findings are auto-routed to human review — that is expected and correct.
-
-Work the loop: discover candidates -> research each -> verify sources resolve -> dedupe against existing Chaindump data (MCP tools) -> queue the survivors. Be rigorous, not prolific: a handful of well-sourced, novel, verified findings beats a long list of thin ones.`;
+const SYSTEM_PROMPT = buildResearchSystemPrompt(CHAINDUMP_BASE);
 
 // ---- one desk run -----------------------------------------------------------
 
@@ -152,16 +148,17 @@ async function runDesk(task: string): Promise<void> {
       if (block.type === "tool_use" && block.name === "mcp__desk__queue_proposal") proposals += 1;
     }
   }
+  if (proposalPersistenceFailures > 0) {
+    throw new Error(`${proposalPersistenceFailures} proposal queue write(s) failed; no ephemeral fallback was accepted`);
+  }
 }
 
 // ---- entry ------------------------------------------------------------------
 // A single scheduled pass. In prod this is a Cloud Run Job / scheduled GitHub
-// Action; the task can be parameterized (scam discovery, dying-chain sweep,
-// policy update, trend-analysis refresh). Default: a scam/exploit discovery pass.
+// Action; the task can be parameterized. The default is a bounded review-debt
+// pass across all four analysis surfaces, not an instruction to rewrite them.
 
-const TASK =
-  process.env.DESK_TASK ||
-  `Do a fresh discovery pass for NEW or newly-escalated crypto scams, exploits, and rug pulls from the last ~2 weeks. For each credible candidate: verify the loss, chain, date, and attribution against resolving authoritative sources; check whether Chaindump already covers it (scam_cases tool); and queue the novel, verified ones via queue_proposal (dataset "scam_intel"). Aim for quality over quantity — 3-6 well-sourced findings.`;
+const TASK = process.env.DESK_TASK || DEFAULT_RESEARCH_TASK;
 
 try {
   if (!process.env.ANTHROPIC_API_KEY) {

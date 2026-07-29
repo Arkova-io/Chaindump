@@ -7,7 +7,7 @@ import { prefersMarkdown } from './lib/negotiate.js';
 import { renderEntityMarkdown } from './lib/entity-markdown.js';
 import { norm, resolveCategory, categoryLabel, coverageTier, relatedBlock, deriveCategory } from './lib/chainkit.js';
 import { annotateDataQuality, assessChainDataQuality } from './lib/data-quality.js';
-import { promotionPlan } from './lib/desk-promote.js';
+import { promotionPlan, proposalNeedsHumanReview } from './lib/desk-promote.js';
 import { USDC_DP, monthKeyFromDate, isLiveMode, decodePaymentHeader, paymentRequirements, structuralCheck, pruneStaleQuota } from './lib/x402.js';
 import { TAG_LABELS, canonTags, isFraudy, causeVocab } from './lib/causes.js';
 // Aliased deliberately: causes.js above exports TAG_LABELS/canonTags into this
@@ -1254,10 +1254,10 @@ app.post('/api/desk/propose', wrap(async (req, res) => {
   if (!dataset || !slug) return res.status(400).json({ error: 'dataset and slug are required' });
   const namesIndividuals = b.names_individuals ? 1 : 0;
   const confidence = Number(b.confidence);
-  // Force human review for individual-naming/fraud claims or low/invalid confidence
-  // (NaN counts as low — force review, the safe default).
-  const highConfidence = Number.isFinite(confidence) && confidence >= 0.75;
-  const needsReview = (namesIndividuals || !highConfidence) ? 1 : 0;
+  // Force human review for individual-naming/fraud claims, low/invalid
+  // confidence, and every complex forensic evidence-candidate dataset. The
+  // latter is enforced here even if a stale/compromised client stamps false.
+  const needsReview = proposalNeedsHumanReview(dataset, namesIndividuals, confidence) ? 1 : 0;
   try {
     await ENV.DB.prepare(
       `INSERT INTO desk_proposals (dataset, slug, title, summary, payload, sources, names_individuals, confidence, needs_human_review, status, queued_at)

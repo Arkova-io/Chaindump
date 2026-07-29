@@ -34,6 +34,23 @@ export const PROMOTABLE = {
   },
 };
 
+// Complex forensic-analysis proposals are evidence packets, not table rows.
+// They must be reconciled with a canonical dossier by a human and therefore
+// stay absent from PROMOTABLE. This server-side allowlist is independent of the
+// agent's own gate: a compromised or stale proposal client cannot bypass it.
+export const REVIEW_REQUIRED_PROPOSAL_DATASETS = Object.freeze([
+  'blockchain_analysis_candidate',
+  'exchange_analysis_candidate',
+  'casino_analysis_candidate',
+  'nft_lifecycle_candidate',
+]);
+
+export function proposalNeedsHumanReview(dataset, namesIndividuals, confidence) {
+  if (REVIEW_REQUIRED_PROPOSAL_DATASETS.includes(dataset)) return true;
+  const highConfidence = Number.isFinite(confidence) && confidence >= 0.75;
+  return Boolean(namesIndividuals) || !highConfidence;
+}
+
 /**
  * Build a safe INSERT plan for promoting a proposal.
  * @returns {{ table: string, pk: string, columns: string[], values: unknown[] }}

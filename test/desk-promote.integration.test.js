@@ -40,7 +40,19 @@ function makeDeskDB({ proposal, chainRow } = {}) {
         return null;
       },
       async run() {
-        if (/INTO dead_chains/.test(this.sql)) {
+        if (/INTO desk_proposals/.test(this.sql)) {
+          const [
+            dataset, slug, title, summary, payload, sources,
+            namesIndividuals, confidence, needsHumanReview,
+          ] = this.binds;
+          proposals.set(`${dataset}:${slug}`, {
+            dataset, slug, title, summary, payload, sources,
+            names_individuals: namesIndividuals,
+            confidence,
+            needs_human_review: needsHumanReview,
+            status: 'pending',
+          });
+        } else if (/INTO dead_chains/.test(this.sql)) {
           const cols = this.sql.match(/\(([^)]+)\)\s+VALUES/)[1].split(',').map((s) => s.trim());
           const rec = {};
           cols.forEach((c, i) => { rec[c] = this.binds[i]; });
@@ -154,5 +166,37 @@ describe('/api/desk/promote', () => {
 
     expect(proposal.status).toBe(200);
     expect(pending.status).toBe(404);
+  });
+
+  it('server-forces every complex analysis candidate to human review', async () => {
+    const worker = await freshWorker();
+    const db = makeDeskDB();
+    const env = { DB: db, DESK_PROPOSAL_TOKEN: 'proposal-secret' };
+    const datasets = [
+      'blockchain_analysis_candidate',
+      'exchange_analysis_candidate',
+      'casino_analysis_candidate',
+      'nft_lifecycle_candidate',
+    ];
+
+    for (const dataset of datasets) {
+      const slug = `${dataset}-one`;
+      const response = await worker.fetch(new Request('http://localhost/api/desk/propose', {
+        method: 'POST',
+        headers: { authorization: 'Bearer proposal-secret', 'content-type': 'application/json' },
+        body: JSON.stringify({
+          dataset,
+          slug,
+          confidence: 1,
+          names_individuals: false,
+          // A stale/compromised client must not be able to lower the gate.
+          needs_human_review: false,
+        }),
+      }), env, ctx());
+
+      expect(response.status).toBe(200);
+      expect((await response.json()).needs_human_review).toBe(true);
+      expect(db.proposals.get(`${dataset}:${slug}`).needs_human_review).toBe(1);
+    }
   });
 });
