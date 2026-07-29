@@ -1,0 +1,850 @@
+[
+  {
+    "chain": "XDC",
+    "source_catalog": {
+      "coverage": {"title": "Chaindump top-50 chain coverage snapshot", "url": "https://chaindump.xyz/api/chains"},
+      "history": {"title": "Seven years of XDC mainnet", "url": "https://xdc.org/articles/seven-years-of-xdc-mainnet"},
+      "network": {"title": "XDC Network technical specification", "url": "https://xdc.org/network/tech-specs"},
+      "foundation": {"title": "XDC Foundation and network history", "url": "https://xdc.org/network/history"},
+      "tokeninfo": {"title": "XDC Network FAQ", "url": "https://xdc.org/resources/faqs"},
+      "funding": {"title": "XDC $50M LDA Capital investment", "url": "https://xdc.org/articles/xdc-accelerates-network-expansion-with-ldas-50-m"},
+      "token": {"title": "CoinGecko XDC market-data API", "url": "https://api.coingecko.com/api/v3/coins/xdce-crowd-sale"},
+      "tvl": {"title": "DefiLlama XDC historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/XDC"},
+      "fees": {"title": "DefiLlama XDC fees API", "url": "https://api.llama.fi/overview/fees/XDC?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama XDC revenue API", "url": "https://api.llama.fi/overview/fees/XDC?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama XDC DEX-volume API", "url": "https://api.llama.fi/overview/dexs/XDC?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["coverage", "history", "network"],
+      "token": ["tokeninfo", "token"],
+      "capital": ["funding", "foundation"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["funding", "foundation"],
+      "narrative": ["history", "network"],
+      "risk": ["network", "foundation", "ofac"],
+      "synthesis": ["history", "network", "token", "tvl", "fees", "revenue", "volume", "stables"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "XDC",
+        "aliases": ["XDC Network", "XinFin Network"],
+        "category": "L1",
+        "vm": "EVM",
+        "launched": "2019-06-01",
+        "launch_date_precision": "day",
+        "status": "declining",
+        "top50_rank": 46,
+        "lifecycle": [
+          {"date": "2019-06-01", "type": "launch", "description": "XDC opened its EVM-compatible mainnet for enterprise, trade-finance, and tokenization applications.", "source_url": "https://xdc.org/articles/seven-years-of-xdc-mainnet"},
+          {"date": "2022-10-03", "type": "strategic_financing", "description": "LDA Capital committed $50M using part of the founders' XDC allocation.", "source_url": "https://xdc.org/articles/xdc-accelerates-network-expansion-with-ldas-50-m"},
+          {"date": "2024-09", "type": "consensus_upgrade", "description": "XDC 2.0 introduced a deterministic BFT committee, Chained HotStuff, three-block finality, and forensic evidence of double-signing.", "source_url": "https://xdc.org/network/tech-specs"},
+          {"date": "2025-01-18", "type": "tvl_peak", "description": "DefiLlama's reviewed series reached a $37.9M TVL peak.", "source_url": "https://api.llama.fi/v2/historicalChainTvl/XDC"},
+          {"date": "2026-07-29", "type": "current_snapshot", "description": "XDC ranked 46th on Chaindump's live activity board with tracked TVL 94.61% below peak.", "source_url": "https://chaindump.xyz/api/chains"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "launched",
+        "token_symbol": "XDC",
+        "gas_token": "XDC",
+        "launch_date": "2019-06-01",
+        "launch_date_precision": "day",
+        "launch_relation": "XDC is the native gas, validator, value-transfer, and application utility asset of the network.",
+        "token_cg_id": "xdce-crowd-sale",
+        "token_current_usd": 0.02727886,
+        "token_ath_usd": 0.192754,
+        "token_ath_date": "2021-08-20",
+        "price_drawdown_pct": 85.85,
+        "market_cap_usd": 544153349,
+        "fdv_usd": 1038446599,
+        "circulating_supply": 19946688440,
+        "total_supply": 38065686425.1,
+        "max_supply": null,
+        "unlock_overhang_pct": 47.6,
+        "source_url": "https://api.coingecko.com/api/v3/coins/xdce-crowd-sale"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": 50000000,
+        "rounds": [
+          {"date": "2022-10-03", "type": "token-backed strategic investment", "amount_usd": 50000000, "lead": "LDA Capital", "participants": [], "source_url": "https://xdc.org/articles/xdc-accelerates-network-expansion-with-ldas-50-m"}
+        ],
+        "treasury_usd": null,
+        "backers_tier": "tier2",
+        "notes": "The disclosed investment leveraged founders' XDC allocation; it is not characterized here as equity, protocol revenue, or Foundation treasury."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 37872056,
+        "tvl_peak_date": "2025-01-18",
+        "tvl_current_usd": 2040109,
+        "tvl_drawdown_pct": 94.61,
+        "stablecoin_tvl_usd": 78837345.56,
+        "spot_dex_volume_24h_usd": 1010944,
+        "spot_dex_volume_30d_usd": 6032650,
+        "fees_24h_usd": 3566.28,
+        "fees_30d_usd": 95883.91,
+        "revenue_24h_usd": 804.74,
+        "revenue_30d_usd": 21671.3,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/XDC",
+        "fees_source_url": "https://api.llama.fi/overview/fees/XDC?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/XDC?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/XDC?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "Stablecoin circulating supply is not protocol TVL; XDC's RWA and enterprise activity may also occur outside DefiLlama-tracked DeFi adapters."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [
+          {"name": "Atul Khekade", "role": "co-founder", "source_url": "https://xdc.org/articles/xdc-accelerates-network-expansion-with-ldas-50-m"},
+          {"name": "Ritesh Kakkad", "role": "co-founder", "source_url": "https://xdc.org/articles/xdc-accelerates-network-expansion-with-ldas-50-m"}
+        ],
+        "entity": "XDC Foundation is an independent community-focused entity created through a XinFin grant; the network also has masternodes and open-source contributors.",
+        "key_events": [
+          {"date": "2021", "type": "foundation_formation", "description": "XDC Foundation formed to support ecosystem development and aggregate community participation.", "source_url": "https://xdc.org/network/history"},
+          {"date": "2024-09", "type": "protocol_upgrade", "description": "The community activated XDC 2.0 consensus.", "source_url": "https://xdc.org/network/tech-specs"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Modernize trade finance, payments, and real-world-asset issuance on a fast EVM-compatible enterprise network.",
+        "positioning": "A delegated-proof-of-stake L1 emphasizing institutional validators, trade documents, native USDC, CCTP, and tokenized financial assets.",
+        "competitors": [
+          {"name": "Hedera", "relationship": "enterprise and tokenization competitor"},
+          {"name": "Stellar", "relationship": "payments and asset-issuance competitor"},
+          {"name": "Avalanche", "relationship": "institutional subnet and RWA competitor"}
+        ],
+        "narrative_arc": "XDC moved from hybrid-enterprise blockchain branding toward public institutional RWA infrastructure, while DeFi TVL contracted despite stablecoin growth.",
+        "media_sentiment": "neutral"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; archived exact-name SDN review remains open."},
+        "extraction_flags": ["delegated_validator_set", "founder_token_allocation", "supply_overhang", "enterprise_dependency", "subnet_fragmentation"],
+        "audit_status": null,
+        "risks": [
+          {"type": "validator_concentration", "detail": "XDPoS relies on a selected masternode set; XDC 2.0 tolerates fewer than one-third adversarial committee members per epoch.", "source_url": "https://xdc.org/network/tech-specs"},
+          {"type": "token_concentration", "detail": "The $50M financing originated from founders' XDC allocation and 47.60% of reported supply was non-circulating.", "source_url": "https://xdc.org/articles/xdc-accelerates-network-expansion-with-ldas-50-m"},
+          {"type": "activity_mismatch", "detail": "Stablecoin supply greatly exceeded tracked TVL while TVL was 94.61% below peak, making ecosystem liquidity composition difficult to infer.", "source_url": "https://stablecoins.llama.fi/stablecoinchains"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "XDC had only $2.0M of tracked TVL but $78.8M of stablecoins and $6.0M of 30-day DEX volume, suggesting activity not captured by a conventional DeFi-TVL narrative.",
+        "postmortem": null,
+        "why": "XDC retained relevance through long uptime, EVM compatibility, institutional partnerships, and a focused trade-finance/RWA thesis, but it has not converted that positioning into deep public DeFi capital.",
+        "success_mechanism": "Fast BFT finality and EVM tooling lower institutional integration cost; native USDC and tokenization rails address settlement; XDC gas and masternode staking secure execution.",
+        "strategic_choices": [
+          "Optimize for trade finance and RWAs rather than general-purpose retail DeFi.",
+          "Use XDPoS masternodes and later Chained HotStuff for fast accountable finality.",
+          "Retain EVM compatibility and add sovereign subnets for enterprise customization."
+        ],
+        "unknowns": [
+          "Current masternode, committee, founder-wallet, and Foundation treasury concentration.",
+          "How much stablecoin supply is active settlement capital versus idle or bridge inventory.",
+          "Current RWA value, legal enforceability, redemption performance, and issuer concentration.",
+          "Why public DeFi TVL declined despite native USDC and institutional expansion."
+        ],
+        "lessons_learned": [
+          "Enterprise integrations and DeFi TVL measure different adoption paths.",
+          "Fast delegated consensus improves usability while preserving validator-selection risk.",
+          "Large stablecoin supply needs flow and redemption analysis before it supports an adoption claim."
+        ],
+        "could_differ": "A permissionless validator model could improve neutrality but weaken the controlled performance and institutional onboarding XDC prioritizes.",
+        "outlook": {"bull": "Trade-finance tokenization produces recurring stablecoin settlement and fees.", "base": "XDC remains a durable institutional niche with shallow public DeFi.", "bear": "RWA pilots fail to scale and token/validator concentration limits adoption.", "most_likely": "base"},
+        "cause_tags": ["trade_finance", "rwa", "xdpos", "institutional_validators", "defi_contraction"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 85,
+      "confidence": "high",
+      "unsourced_fields": ["capital.treasury_usd", "team.regulatory_status", "risk.audit_status", "risk.archived_sanctions_check", "risk.validator_and_holder_concentration", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.rwa_value_and_redemption_performance"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "Fluent",
+    "source_catalog": {
+      "coverage": {"title": "Chaindump top-50 chain coverage snapshot", "url": "https://chaindump.xyz/api/chains"},
+      "launch": {"title": "Fluent mainnet and BLEND launch report", "url": "https://www.theblock.co/post/398756/fluent-launches-ethereum-layer-2-mainnet-and-blend-token-with-50-million-day-one-liquidity"},
+      "overview": {"title": "Fluent blended-execution overview", "url": "https://docs.fluent.xyz/knowledge-base/fluent-overview"},
+      "staledocs": {"title": "Fluent pre-mainnet network documentation", "url": "https://docs.fluent.xyz/connect-to-fluent/"},
+      "site": {"title": "Fluent reputation-app network", "url": "https://www.fluent.xyz/"},
+      "contract": {"title": "Verified BLEND ERC-20 proxy and supply", "url": "https://etherscan.io/token/0xd8A271974E8EdAE9D7b58e3370dc1669427503F4"},
+      "token": {"title": "CoinGecko Fluent market page", "url": "https://www.coingecko.com/en/coins/fluent"},
+      "tvl": {"title": "DefiLlama Fluent historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Fluent"},
+      "fees": {"title": "DefiLlama Fluent fees API", "url": "https://api.llama.fi/overview/fees/Fluent?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Fluent revenue API", "url": "https://api.llama.fi/overview/fees/Fluent?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Fluent DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Fluent?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["coverage", "launch", "overview", "staledocs"],
+      "token": ["launch", "contract", "token"],
+      "capital": ["launch"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["launch", "site"],
+      "narrative": ["overview", "site"],
+      "risk": ["overview", "staledocs", "contract", "ofac"],
+      "synthesis": ["launch", "overview", "token", "tvl", "fees", "revenue", "volume", "stables"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Fluent",
+        "aliases": ["Fluent Network"],
+        "category": "L2_rollup",
+        "vm": "other",
+        "launched": "2026-04-24",
+        "launch_date_precision": "day",
+        "status": "emerging",
+        "top50_rank": 47,
+        "lifecycle": [
+          {"date": "2025", "type": "public_testnet", "description": "Fluent documented a resettable testnet supporting Solidity and Rust while rollup and zk components matured.", "source_url": "https://docs.fluent.xyz/connect-to-fluent/"},
+          {"date": "2026-04-24", "type": "launch", "description": "Fluent activated mainnet and BLEND with $50M of committed day-one liquidity.", "source_url": "https://www.theblock.co/post/398756/fluent-launches-ethereum-layer-2-mainnet-and-blend-token-with-50-million-day-one-liquidity"},
+          {"date": "2026-06-05", "type": "tvl_peak", "description": "DefiLlama's reviewed series reached $30.4M TVL.", "source_url": "https://api.llama.fi/v2/historicalChainTvl/Fluent"},
+          {"date": "2026-07-29", "type": "documentation_divergence", "description": "Production data showed mainnet activity while indexed official developer pages still described testnet-only parameters; current-state claims therefore use the dated launch and live APIs.", "source_url": "https://docs.fluent.xyz/connect-to-fluent/"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "launched",
+        "token_symbol": "BLEND",
+        "gas_token": "BLEND",
+        "launch_date": "2026-04-24",
+        "launch_date_precision": "day",
+        "launch_relation": "BLEND launched with Fluent mainnet as the network's native fee, staking, and governance asset; the verified Ethereum proxy reports a fixed 1B supply.",
+        "token_cg_id": "fluent",
+        "token_current_usd": 0.06332,
+        "token_ath_usd": 0.2519,
+        "token_ath_date": "2026-04-29",
+        "price_drawdown_pct": 74.86,
+        "market_cap_usd": 12664000,
+        "fdv_usd": 63320000,
+        "circulating_supply": 200000000,
+        "total_supply": 1000000000,
+        "max_supply": 1000000000,
+        "unlock_overhang_pct": 80,
+        "source_url": "https://www.coingecko.com/en/coins/fluent"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": 11200000,
+        "rounds": [
+          {"date": "2026", "type": "aggregate disclosed financing", "amount_usd": 11200000, "lead": null, "participants": ["Polychain Capital", "Echo participants", "Native Crypto", "Q42", "Wagmi VC", "TPC Ventures"], "source_url": "https://www.theblock.co/post/398756/fluent-launches-ethereum-layer-2-mainnet-and-blend-token-with-50-million-day-one-liquidity"}
+        ],
+        "treasury_usd": null,
+        "backers_tier": "tier1",
+        "notes": "The aggregate includes venture, testnet, and public token-sale financing reported at launch; $50M committed launch liquidity is excluded from capital raised."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 30429597,
+        "tvl_peak_date": "2026-06-05",
+        "tvl_current_usd": 11460778,
+        "tvl_drawdown_pct": 62.34,
+        "stablecoin_tvl_usd": 2348363.59,
+        "spot_dex_volume_24h_usd": 383058,
+        "spot_dex_volume_30d_usd": 4544745,
+        "fees_24h_usd": 2818,
+        "fees_30d_usd": 143380,
+        "revenue_24h_usd": 919,
+        "revenue_30d_usd": 40199.08,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Fluent",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Fluent?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Fluent?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Fluent?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "Committed launch liquidity is not substituted for current TVL. The live series begins after mainnet and is separated from testnet activity."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [],
+        "entity": "Fluent Labs and Fluent Foundation.",
+        "key_events": [
+          {"date": "2025-07", "type": "testnet_financing", "description": "Fluent reported a $2.2M testnet round involving Echo and several crypto funds.", "source_url": "https://www.theblock.co/post/398756/fluent-launches-ethereum-layer-2-mainnet-and-blend-token-with-50-million-day-one-liquidity"},
+          {"date": "2026-04-24", "type": "mainnet_launch", "description": "The team launched the blended-execution L2 and BLEND.", "source_url": "https://www.theblock.co/post/398756/fluent-launches-ethereum-layer-2-mainnet-and-blend-token-with-50-million-day-one-liquidity"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Let contracts written for EVM, Wasm, and eventually SVM compose atomically in one shared state, while adding programmable reputation through Prints.",
+        "positioning": "A young Ethereum L2 using rWasm as a common execution substrate for cross-language blended applications.",
+        "competitors": [
+          {"name": "Arbitrum Stylus", "relationship": "EVM-plus-Wasm execution competitor"},
+          {"name": "Neon EVM", "relationship": "cross-VM compatibility competitor"},
+          {"name": "ZKsync", "relationship": "Ethereum ZK-rollup tooling and liquidity competitor"}
+        ],
+        "narrative_arc": "Fluent shifted from broad multi-VM expressivity to reputation-based applications and launched with structured liquidity, but must prove that blended execution produces applications users cannot obtain elsewhere.",
+        "media_sentiment": "mixed"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; archived exact-name SDN review remains open."},
+        "extraction_flags": ["new_mainnet", "documentation_lag", "sequencer_centralization", "cross_vm_complexity", "token_unlock_overhang"],
+        "audit_status": null,
+        "risks": [
+          {"type": "documentation_freshness", "detail": "Official developer pages still describe resettable testnet parameters after the separately reported mainnet launch, raising integration and research error risk.", "source_url": "https://docs.fluent.xyz/connect-to-fluent/"},
+          {"type": "execution_complexity", "detail": "EVM, Wasm, and planned SVM semantics compile into rWasm compatibility contracts, expanding consensus-critical and cross-ABI attack surface.", "source_url": "https://docs.fluent.xyz/knowledge-base/fluent-overview"},
+          {"type": "token_control", "detail": "BLEND is an ERC1967 upgradeable proxy and 80% of fixed supply was non-circulating in the reviewed snapshot.", "source_url": "https://etherscan.io/token/0xd8A271974E8EdAE9D7b58e3370dc1669427503F4"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Three months after launch, Fluent retained $11.5M TVL and $4.5M of 30-day DEX volume, while BLEND was 74.86% below ATH and current TVL was 62.34% below peak.",
+        "postmortem": null,
+        "why": "Fluent attracted capital through Polychain-backed financing, a $50M pre-deposit structure, and a differentiated cross-VM pitch; retention depends on whether blended/reputation apps generate demand after launch liquidity decays.",
+        "success_mechanism": "rWasm provides a common execution target, compatibility contracts expose VM semantics, shared state removes application-level bridges, and Prints supplies reputation primitives.",
+        "strategic_choices": [
+          "Compile multiple VM targets into one rWasm state machine rather than bridge separate chains.",
+          "Launch BLEND for fees, staking, and governance alongside mainnet.",
+          "Use structured pre-deposits to solve day-one liquidity.",
+          "Narrow positioning toward reputation-based applications after leading with general expressivity."
+        ],
+        "unknowns": [
+          "Current sequencer, prover, DA, bridge, upgrade-admin, and BLEND proxy control.",
+          "Which advertised VM targets and proof components are production-live versus planned.",
+          "How much launch liquidity was incentive-sensitive and how concentrated current TVL is.",
+          "The detailed BLEND vesting schedule and ownership concentration behind the 80% overhang."
+        ],
+        "lessons_learned": [
+          "Cross-VM composability removes bridges at the application layer but adds execution-layer complexity.",
+          "Pre-deposits create liquidity on day one without proving retention.",
+          "Production documentation must be updated as part of launch, not treated as an afterthought."
+        ],
+        "could_differ": "Supporting only EVM and Wasm first would reduce consensus complexity but weaken Fluent's central blended-execution claim.",
+        "outlook": {"bull": "Prints and blended applications establish a unique reputation-app category.", "base": "Fluent remains a small experimental L2 while mainnet components mature.", "bear": "Unlocks, documentation lag, and limited unique apps drain launch liquidity.", "most_likely": "base"},
+        "cause_tags": ["blended_execution", "rwasm", "prints", "predeposit_liquidity", "documentation_lag"],
+        "confidence": "medium"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 78,
+      "confidence": "medium",
+      "unsourced_fields": ["capital.treasury_usd", "team.complete_founder_roster", "team.regulatory_status", "risk.audit_status", "risk.archived_sanctions_check", "risk.production_control_thresholds", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.production_vm_feature_matrix"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "Algorand",
+    "source_catalog": {
+      "coverage": {"title": "Chaindump top-50 chain coverage snapshot", "url": "https://chaindump.xyz/api/chains"},
+      "launch": {"title": "Algorand mainnet launch record", "url": "https://forum.algorand.co/t/final-release-before-mainnet-v1-0-26/688"},
+      "consensus": {"title": "Algorand Pure Proof-of-Stake consensus", "url": "https://dev.algorand.co/concepts/protocol/overview/"},
+      "overview": {"title": "Why Algorand", "url": "https://dev.algorand.co/getting-started/why-algorand/"},
+      "tokeninfo": {"title": "Official ALGO token overview", "url": "https://algorand.co/technology/the-algo"},
+      "rewards": {"title": "Algorand protocol staking rewards", "url": "https://specs.algorand.co/ledger/non-normative/ledger-nn-protocol-rewards"},
+      "token": {"title": "CoinGecko Algorand market-data API", "url": "https://api.coingecko.com/api/v3/coins/algorand"},
+      "tvl": {"title": "DefiLlama Algorand historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Algorand"},
+      "fees": {"title": "DefiLlama Algorand fees API", "url": "https://api.llama.fi/overview/fees/Algorand?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Algorand revenue API", "url": "https://api.llama.fi/overview/fees/Algorand?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Algorand DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Algorand?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["coverage", "launch", "consensus"],
+      "token": ["tokeninfo", "rewards", "token"],
+      "capital": ["tokeninfo"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["overview", "launch"],
+      "narrative": ["overview", "consensus", "tokeninfo"],
+      "risk": ["consensus", "overview", "tokeninfo", "ofac"],
+      "synthesis": ["consensus", "token", "tvl", "fees", "revenue", "volume", "stables"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Algorand",
+        "aliases": ["Algorand MainNet"],
+        "category": "L1",
+        "vm": "other",
+        "launched": "2019-06-19",
+        "launch_date_precision": "day",
+        "status": "declining",
+        "top50_rank": 48,
+        "lifecycle": [
+          {"date": "2019-06-19", "type": "launch", "description": "Algorand formally opened its permissionless Pure Proof-of-Stake mainnet.", "source_url": "https://forum.algorand.co/t/final-release-before-mainnet-v1-0-26/688"},
+          {"date": "2019-11-21", "type": "smart_contract_launch", "description": "Algorand 2.0 added Layer-1 assets, atomic transfers, and smart-contract functionality.", "source_url": "https://forum.algorand.co/t/algorand-v2-0-0-release-notes/1130"},
+          {"date": "2024-02-10", "type": "tvl_peak", "description": "DefiLlama's reviewed history reached a $319.1M TVL peak.", "source_url": "https://api.llama.fi/v2/historicalChainTvl/Algorand"},
+          {"date": "2025", "type": "staking_rewards", "description": "Protocol rewards shifted toward active block proposers, with legacy passive distribution disabled on mainnet.", "source_url": "https://specs.algorand.co/ledger/non-normative/ledger-nn-protocol-rewards"},
+          {"date": "2026-07-29", "type": "current_snapshot", "description": "Algorand ranked 48th and tracked TVL stood 91.69% below peak.", "source_url": "https://chaindump.xyz/api/chains"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "launched",
+        "token_symbol": "ALGO",
+        "gas_token": "ALGO",
+        "launch_date": "2019-06-19",
+        "launch_date_precision": "day",
+        "launch_relation": "All 10B ALGO were minted at launch; ALGO pays fees, secures Pure Proof of Stake, participates in governance, and powers applications.",
+        "token_cg_id": "algorand",
+        "token_current_usd": 0.075877,
+        "token_ath_usd": 3.56,
+        "token_ath_date": "2019-06-20",
+        "price_drawdown_pct": 97.87,
+        "market_cap_usd": 681224131,
+        "fdv_usd": 681224131,
+        "circulating_supply": 8969018347.04063,
+        "total_supply": 8969018347.04063,
+        "max_supply": 10000000000,
+        "unlock_overhang_pct": 10.31,
+        "source_url": "https://api.coingecko.com/api/v3/coins/algorand"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": null,
+        "rounds": [],
+        "treasury_usd": null,
+        "backers_tier": "tier1",
+        "notes": "Historic company financings, token auctions, Foundation token holdings, and ecosystem commitments require reconciliation; none is asserted as a current protocol treasury here."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 319103080,
+        "tvl_peak_date": "2024-02-10",
+        "tvl_current_usd": 26526998,
+        "tvl_drawdown_pct": 91.69,
+        "stablecoin_tvl_usd": 43648508.99,
+        "spot_dex_volume_24h_usd": 389674,
+        "spot_dex_volume_30d_usd": 8074576,
+        "fees_24h_usd": 983.46,
+        "fees_30d_usd": 7587.11,
+        "revenue_24h_usd": 168.46,
+        "revenue_30d_usd": 4336.11,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Algorand",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Algorand?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Algorand?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Algorand?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "Fees are intentionally low, so fee revenue cannot be compared with high-fee chains without considering usage and subsidy economics."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [
+          {"name": "Silvio Micali", "role": "founder and protocol designer", "source_url": "https://dev.algorand.co/getting-started/why-algorand/"}
+        ],
+        "entity": "Algorand Foundation stewards ecosystem and governance; Algorand Technologies develops core protocol software.",
+        "key_events": [
+          {"date": "2019-06-19", "type": "foundation_launch", "description": "The Foundation launched mainnet.", "source_url": "https://dev.algorand.co/getting-started/why-algorand/"},
+          {"date": "2025-07", "type": "governance_transition", "description": "The xGov platform began a new phase for community funding decisions.", "source_url": "https://governance.algorand.foundation/"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Provide fast-finality, low-cost, permissionless infrastructure for payments, tokenized assets, and applications.",
+        "positioning": "A Pure Proof-of-Stake L1 using VRF-selected committees, instant finality, native asset primitives, and low hardware requirements.",
+        "competitors": [
+          {"name": "Stellar", "relationship": "payments and asset-tokenization competitor"},
+          {"name": "Solana", "relationship": "fast low-fee L1 competitor"},
+          {"name": "Hedera", "relationship": "enterprise adoption competitor"}
+        ],
+        "narrative_arc": "Algorand's cryptographic design and reliable finality earned institutional interest, but ecosystem capital and ALGO price contracted as EVM and Solana ecosystems captured more developers and liquidity.",
+        "media_sentiment": "negative"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; archived exact-name SDN review remains open."},
+        "extraction_flags": ["stake_concentration", "foundation_dependency", "relay_network_dependency", "token_distribution", "low_fee_security_budget"],
+        "audit_status": null,
+        "risks": [
+          {"type": "stake_concentration", "detail": "Committee selection is permissionless but voting probability is proportional to online ALGO stake, so stake concentration affects consensus influence.", "source_url": "https://dev.algorand.co/concepts/protocol/overview/"},
+          {"type": "foundation_dependency", "detail": "The Foundation still stewards network programs and holds undistributed ALGO while decision-making is progressively delegated.", "source_url": "https://dev.algorand.co/getting-started/why-algorand/"},
+          {"type": "economic_sustainability", "detail": "Low transaction fees and proposer subsidies improve usage but raise questions about the long-run security budget once bonus pools decay.", "source_url": "https://specs.algorand.co/ledger/non-normative/ledger-nn-protocol-rewards"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Algorand retained $26.5M TVL and $43.6M stablecoins, but TVL was 91.69% below peak, ALGO was 97.87% below ATH, and 30-day fees were only $7.6K.",
+        "postmortem": "Strong consensus engineering and reliable finality did not create a self-reinforcing developer/liquidity moat; foundation-led incentives and low fees supported use but limited direct value capture.",
+        "why": "Algorand persists because Pure Proof of Stake offers fast finality and simple native assets with low operational requirements; it declined as distribution, tooling network effects, and application liquidity concentrated elsewhere.",
+        "success_mechanism": "VRFs privately select proposers and voting committees, ALGO stake secures certification, and Layer-1 primitives make transfers and assets cheap and atomic.",
+        "strategic_choices": [
+          "Use cryptographic sortition and stake-weighted committees rather than fixed validators.",
+          "Build native asset and atomic-transfer primitives into Layer 1.",
+          "Keep transaction fees extremely low and fund active proposer rewards.",
+          "Move ecosystem funding gradually toward xGov."
+        ],
+        "unknowns": [
+          "Current online-stake, relay, proposer, Foundation-wallet, and governance concentration.",
+          "Long-run proposer economics after bonus rewards decay.",
+          "Application and stablecoin concentration within remaining liquidity.",
+          "How much non-DeFi payment and tokenization activity translates into recurring demand."
+        ],
+        "lessons_learned": [
+          "Excellent consensus properties do not substitute for application distribution.",
+          "Low fees help adoption while weakening fee-based value capture.",
+          "Progressive governance decentralization requires transparent treasury and stake data."
+        ],
+        "could_differ": "EVM compatibility could broaden tooling access, but would compromise Algorand's native VM and protocol-specific execution advantages.",
+        "outlook": {"bull": "Payments and tokenization grow while staking rewards deepen participation.", "base": "Algorand remains technically resilient with modest activity.", "bear": "Weak fees and developer liquidity keep the chain dependent on Foundation subsidies.", "most_likely": "base"},
+        "cause_tags": ["pure_proof_of_stake", "vrf_committees", "low_fees", "foundation_dependency", "ecosystem_contraction"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 84,
+      "confidence": "high",
+      "unsourced_fields": ["capital.total_raised_usd", "capital.treasury_usd", "team.regulatory_status", "risk.audit_status", "risk.archived_sanctions_check", "risk.current_stake_and_relay_concentration", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.non_defi_usage_value"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "ICP",
+    "source_catalog": {
+      "coverage": {"title": "Chaindump top-50 chain coverage snapshot", "url": "https://chaindump.xyz/api/chains"},
+      "whitepaper": {"title": "Internet Computer technical overview", "url": "https://internetcomputer.org/whitepaper.pdf"},
+      "governance": {"title": "ICP NNS and SNS governance", "url": "https://docs.internetcomputer.org/concepts/governance/"},
+      "economics": {"title": "ICP network economics", "url": "https://docs.internetcomputer.org/concepts/network-economics/"},
+      "systems": {"title": "ICP system canisters and upgrade control", "url": "https://docs.internetcomputer.org/references/system-canisters/"},
+      "chainkey": {"title": "ICP chain-key token architecture", "url": "https://docs.internetcomputer.org/concepts/chain-fusion/chain-key-tokens/"},
+      "token": {"title": "CoinGecko Internet Computer market-data API", "url": "https://api.coingecko.com/api/v3/coins/internet-computer"},
+      "tvl": {"title": "DefiLlama ICP historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/ICP"},
+      "fees": {"title": "DefiLlama ICP fees API", "url": "https://api.llama.fi/overview/fees/ICP?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama ICP revenue API", "url": "https://api.llama.fi/overview/fees/ICP?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama ICP DEX-volume API", "url": "https://api.llama.fi/overview/dexs/ICP?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["coverage", "whitepaper", "systems"],
+      "token": ["economics", "token"],
+      "capital": ["whitepaper"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["whitepaper", "systems"],
+      "narrative": ["whitepaper", "governance", "chainkey"],
+      "risk": ["governance", "systems", "chainkey", "ofac"],
+      "synthesis": ["governance", "economics", "token", "tvl", "fees", "revenue", "volume", "stables"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "ICP",
+        "aliases": ["Internet Computer", "Internet Computer Protocol"],
+        "category": "L1",
+        "vm": "WASM",
+        "launched": "2021-05-10",
+        "launch_date_precision": "day",
+        "status": "declining",
+        "top50_rank": 49,
+        "lifecycle": [
+          {"date": "2021-05-10", "type": "launch", "description": "Internet Computer reached genesis and ICP became transferable with NNS-governed subnets and canister execution.", "source_url": "https://internetcomputer.org/whitepaper.pdf"},
+          {"date": "2022", "type": "chain_fusion", "description": "Threshold-chain-key systems enabled native canister-controlled Bitcoin and later Ethereum asset integration without a conventional custodian.", "source_url": "https://docs.internetcomputer.org/concepts/chain-fusion/chain-key-tokens/"},
+          {"date": "2024-04-10", "type": "tvl_peak", "description": "DefiLlama's reviewed series reached $110.8M TVL.", "source_url": "https://api.llama.fi/v2/historicalChainTvl/ICP"},
+          {"date": "2026-07-29", "type": "current_snapshot", "description": "ICP ranked 49th with tracked TVL 89.05% below peak and its token 99.71% below ATH.", "source_url": "https://chaindump.xyz/api/chains"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "launched",
+        "token_symbol": "ICP",
+        "gas_token": "cycles",
+        "launch_date": "2021-05-10",
+        "launch_date_precision": "day",
+        "launch_relation": "ICP governs the NNS, rewards node providers/voters, and burns into XDR-pegged cycles; developers load canisters with cycles so end users do not directly pay ICP gas.",
+        "token_cg_id": "internet-computer",
+        "token_current_usd": 2.06,
+        "token_ath_usd": 700.65,
+        "token_ath_date": "2021-05-10",
+        "price_drawdown_pct": 99.71,
+        "market_cap_usd": 1142362889,
+        "fdv_usd": 1142363019,
+        "circulating_supply": 555228207.6303306,
+        "total_supply": 555228270.7628601,
+        "max_supply": null,
+        "unlock_overhang_pct": 0,
+        "source_url": "https://api.coingecko.com/api/v3/coins/internet-computer"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": null,
+        "rounds": [],
+        "treasury_usd": null,
+        "backers_tier": "tier1",
+        "notes": "Historic DFINITY financings and token allocations predate genesis, but a reconciled primary-source total and current foundation treasury were not established in this wave."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 110842591,
+        "tvl_peak_date": "2024-04-10",
+        "tvl_current_usd": 12141935,
+        "tvl_drawdown_pct": 89.05,
+        "stablecoin_tvl_usd": 3304230.03,
+        "spot_dex_volume_24h_usd": 344696,
+        "spot_dex_volume_30d_usd": 6931542,
+        "fees_24h_usd": 1216,
+        "fees_30d_usd": 21185,
+        "revenue_24h_usd": 198,
+        "revenue_30d_usd": 2302,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/ICP",
+        "fees_source_url": "https://api.llama.fi/overview/fees/ICP?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/ICP?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/ICP?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "DefiLlama DeFi fees do not capture all cycles burned for compute, storage, bandwidth, HTTPS outcalls, or application serving."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [
+          {"name": "Dominic Williams", "role": "DFINITY founder and chief scientist", "source_url": "https://internetcomputer.org/whitepaper.pdf"}
+        ],
+        "entity": "The DFINITY Foundation is a major protocol contributor; the NNS executes network governance and controls system canisters and subnet configuration.",
+        "key_events": [
+          {"date": "2021-05-10", "type": "genesis", "description": "NNS-governed mainnet and ICP token launched.", "source_url": "https://internetcomputer.org/whitepaper.pdf"},
+          {"date": "2026", "type": "tokenomics_review", "description": "The Mission 70 proposal targeted at least a 70% inflation reduction as cycle burn grew but minting remained elevated.", "source_url": "https://internetcomputer.org/whitepapers/mission70.pdf"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Run full-stack applications, web services, DAOs, and cross-chain systems directly on a sovereign decentralized compute network.",
+        "positioning": "A subnet-based Wasm blockchain with reverse gas, chain-key cryptography, onchain protocol upgrades, and canisters that serve interactive applications.",
+        "competitors": [
+          {"name": "Ethereum", "relationship": "general-purpose smart-contract and governance competitor"},
+          {"name": "Akash", "relationship": "decentralized compute competitor"},
+          {"name": "NEAR", "relationship": "chain-abstraction and application-hosting competitor"}
+        ],
+        "narrative_arc": "ICP recovered technically from a chaotic high-valuation launch by emphasizing full-stack compute and Chain Fusion, but token inflation, governance concentration, and limited DeFi liquidity remain persistent market concerns.",
+        "media_sentiment": "mixed_negative"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; archived exact-name SDN review remains open."},
+        "extraction_flags": ["nns_governance_concentration", "subnet_trust", "node_provider_permissioning", "inflation", "chain_key_systemic_risk"],
+        "audit_status": null,
+        "risks": [
+          {"type": "governance_concentration", "detail": "NNS stake voting controls protocol upgrades, node providers, subnet membership, economics, and system canisters; liquid-democracy following can concentrate effective votes.", "source_url": "https://docs.internetcomputer.org/concepts/governance/"},
+          {"type": "system_canister_control", "detail": "NNS root, governance, registry, and lifeline canisters form a privileged upgrade hierarchy for the network's core control plane.", "source_url": "https://docs.internetcomputer.org/references/system-canisters/"},
+          {"type": "inflation", "detail": "Voting and node-provider rewards mint ICP while only cycles conversion and certain fees burn it; the project itself is pursuing a large inflation reduction.", "source_url": "https://docs.internetcomputer.org/concepts/network-economics/"},
+          {"type": "chain_key_dependency", "detail": "ck-assets remove a third-party custodian but depend on subnet threshold keys, minter canisters, origin-chain verification, and NNS control.", "source_url": "https://docs.internetcomputer.org/concepts/chain-fusion/chain-key-tokens/"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "ICP retained a $1.14B token market cap but only $12.1M tracked TVL and $6.9M 30-day DEX volume; ICP was 99.71% below its launch-day ATH.",
+        "postmortem": "The launch priced expectations far ahead of adoption. Subsequent engineering delivered reverse gas, full-stack canisters, onchain upgrades, and Chain Fusion, but token inflation and application distribution have not closed the gap.",
+        "why": "ICP remains relevant because it offers capabilities conventional chains outsource—web serving, compute, storage, governance automation, and threshold cross-chain signing—while its complexity and permissioned node onboarding constrain easy comparison and adoption.",
+        "success_mechanism": "NNS assembles nodes into subnets, canisters consume stable-cost cycles, chain-key thresholds sign for external assets, and ICP staking continuously governs upgrades.",
+        "strategic_choices": [
+          "Use reverse gas so developers fund compute and users can interact without tokens.",
+          "Govern protocol upgrades and topology through the onchain NNS.",
+          "Split execution across hardware-standardized subnets.",
+          "Use threshold chain-key cryptography rather than conventional custodial bridges."
+        ],
+        "unknowns": [
+          "Current neuron-following, voting-power, DFINITY, node-provider, and subnet concentration.",
+          "Application-level cycle burn, revenue, and user retention by major canister.",
+          "Failure and recovery guarantees for each chain-key minter and signing subnet.",
+          "Whether proposed inflation reductions preserve node capacity and governance security."
+        ],
+        "lessons_learned": [
+          "Full-stack blockchain compute creates unique capabilities and a large control plane.",
+          "Onchain governance automation can reduce fork coordination while concentrating protocol authority.",
+          "Reverse gas improves UX but obscures comparisons based on user-paid transaction fees."
+        ],
+        "could_differ": "Permissionless commodity node admission could improve openness but undermine the deterministic hardware and subnet performance model.",
+        "outlook": {"bull": "AI, full-stack apps, and Chain Fusion drive cycle burn faster than ICP issuance.", "base": "ICP remains a technically unique but economically niche compute network.", "bear": "Inflation and governance concentration outweigh application growth.", "most_likely": "base"},
+        "cause_tags": ["reverse_gas", "nns_governance", "subnets", "chain_key", "token_inflation"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 83,
+      "confidence": "high",
+      "unsourced_fields": ["capital.total_raised_usd", "capital.treasury_usd", "team.regulatory_status", "risk.audit_status", "risk.archived_sanctions_check", "risk.current_neuron_and_node_concentration", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.application_cycle_burn_breakdown"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "Soneium",
+    "source_catalog": {
+      "coverage": {"title": "Chaindump top-50 chain coverage snapshot", "url": "https://chaindump.xyz/api/chains"},
+      "launch": {"title": "Soneium mainnet launch", "url": "https://soneium.org/en/blog/soneium-mainnet-is-live"},
+      "network": {"title": "Soneium mainnet network information", "url": "https://docs.soneium.org/docs/builders/overview"},
+      "faq": {"title": "Soneium OP Stack architecture and token FAQ", "url": "https://docs.soneium.org/docs/builders/faq"},
+      "contracts": {"title": "Soneium canonical stack contracts", "url": "https://docs.soneium.org/docs/builders/contracts"},
+      "terms": {"title": "Soneium sequencer terms", "url": "https://docs.soneium.org/docs/tos/"},
+      "policy": {"title": "Soneium responsible-innovation and contract-restriction policy", "url": "https://soneium.org/en/blog/philosophy-for-responsible-innovation"},
+      "rewind": {"title": "Soneium 2025 network retrospective", "url": "https://soneium.org/en/blog/soneium-rewind-2025/"},
+      "tvl": {"title": "DefiLlama Soneium historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Soneium"},
+      "fees": {"title": "DefiLlama Soneium fees API", "url": "https://api.llama.fi/overview/fees/Soneium?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Soneium revenue API", "url": "https://api.llama.fi/overview/fees/Soneium?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Soneium DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Soneium?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["coverage", "launch", "network", "faq"],
+      "token": ["network", "faq"],
+      "capital": ["launch"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["launch", "terms"],
+      "narrative": ["launch", "rewind"],
+      "risk": ["faq", "contracts", "terms", "policy", "ofac"],
+      "synthesis": ["launch", "rewind", "tvl", "fees", "revenue", "volume", "stables"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Soneium",
+        "aliases": ["Soneium Mainnet"],
+        "category": "L2_rollup",
+        "vm": "EVM",
+        "launched": "2025-01-14",
+        "launch_date_precision": "day",
+        "status": "declining",
+        "top50_rank": 50,
+        "lifecycle": [
+          {"date": "2024-08-28", "type": "testnet_launch", "description": "Sony Block Solutions Labs opened the Minato testnet and Spark incubator.", "source_url": "https://soneium.org/en/blog/introducing-soneium-by-sony-block-solutions-labs-for-the-future-of-web3/"},
+          {"date": "2025-01-14", "type": "launch", "description": "Soneium opened its public OP Stack mainnet for creators, fans, and communities.", "source_url": "https://soneium.org/en/blog/soneium-mainnet-is-live"},
+          {"date": "2025-01-15", "type": "content_policy_intervention", "description": "Soneium acknowledged restricting official-infrastructure access to contracts alleged to infringe intellectual property.", "source_url": "https://soneium.org/en/blog/philosophy-for-responsible-innovation"},
+          {"date": "2025-05-23", "type": "tvl_peak", "description": "DefiLlama's reviewed series reached $203.2M TVL.", "source_url": "https://api.llama.fi/v2/historicalChainTvl/Soneium"},
+          {"date": "2026-07-29", "type": "current_snapshot", "description": "Soneium ranked 50th with tracked TVL 96.12% below peak.", "source_url": "https://chaindump.xyz/api/chains"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "not_launched",
+        "token_symbol": null,
+        "gas_token": "ETH",
+        "launch_date": null,
+        "launch_date_precision": "day",
+        "launch_relation": "Soneium has no disclosed native network token and uses ETH for gas. ASTR is deployed and has funded incentives but is not Soneium's gas token.",
+        "token_current_usd": null,
+        "market_cap_usd": null,
+        "fdv_usd": null,
+        "source_url": "https://docs.soneium.org/docs/builders/faq"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": null,
+        "rounds": [],
+        "treasury_usd": null,
+        "backers_tier": "corporate",
+        "notes": "Soneium is developed by a Sony Group and Startale joint venture; no standalone network financing total or current treasury was asserted from reviewed primary sources."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 203208375,
+        "tvl_peak_date": "2025-05-23",
+        "tvl_current_usd": 7884409,
+        "tvl_drawdown_pct": 96.12,
+        "stablecoin_tvl_usd": 7870591.89,
+        "spot_dex_volume_24h_usd": 551377.85,
+        "spot_dex_volume_30d_usd": 12409162.93,
+        "fees_24h_usd": 503.92,
+        "fees_30d_usd": 12979.69,
+        "revenue_24h_usd": 260.17,
+        "revenue_30d_usd": 7557.56,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Soneium",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Soneium?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Soneium?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Soneium?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "Creator, gaming, NFT, and fan activity may not appear in TVL or spot DEX volume; the 2025 retrospective's transaction count is therefore kept separate."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [],
+        "entity": "Sony Block Solutions Labs Pte. Ltd., a joint venture between Sony Group Corporation and Startale Group.",
+        "key_events": [
+          {"date": "2023-09", "type": "joint_venture", "description": "Sony and Startale established the blockchain-infrastructure venture later named Sony Block Solutions Labs.", "source_url": "https://soneium.org/en/blog/soneium-mainnet-is-live"},
+          {"date": "2025-06-03", "type": "sequencer_terms", "description": "Sony Block Solutions Labs published terms governing access to the Soneium sequencer.", "source_url": "https://docs.soneium.org/docs/tos/"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Bring Sony and partner entertainment, creator, gaming, and fan experiences onto an accessible Ethereum L2.",
+        "positioning": "A Sony/Startale-operated OP Stack chain using corporate IP distribution and Superchain compatibility to reach mainstream users.",
+        "competitors": [
+          {"name": "Base", "relationship": "consumer and creator L2 competitor"},
+          {"name": "Abstract", "relationship": "brand-led consumer L2 competitor"},
+          {"name": "Ronin", "relationship": "gaming and digital-asset distribution competitor"}
+        ],
+        "narrative_arc": "Soneium converted Sony distribution into hundreds of millions of transactions and millions of wallets in year one, but DeFi capital collapsed and early IP restrictions exposed tension between an open-chain message and corporate content policy.",
+        "media_sentiment": "mixed"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; sequencer terms impose prohibited-use controls and archived exact-name SDN review remains open."},
+        "extraction_flags": ["centralized_sequencer", "content_restriction", "upgrade_key_control", "bridge_risk", "corporate_dependency"],
+        "audit_status": null,
+        "risks": [
+          {"type": "sequencer_centralization", "detail": "Soneium's mempool is private to the sequencer and Sony Block Solutions Labs publishes contractual terms for sequencer access.", "source_url": "https://docs.soneium.org/docs/builders/faq"},
+          {"type": "content_intervention", "detail": "Soneium restricted official infrastructure access for identified contracts based on IP policy, demonstrating application-level censorship capacity even if contracts remained onchain.", "source_url": "https://soneium.org/en/blog/philosophy-for-responsible-innovation"},
+          {"type": "bridge_and_upgrade_control", "detail": "The canonical OP Stack deployment includes proxy admins, system configuration, portal, dispute games, and bridge contracts whose signers and thresholds were not reconciled here.", "source_url": "https://docs.soneium.org/docs/builders/contracts"},
+          {"type": "corporate_dependency", "detail": "Distribution and policy are closely tied to Sony and Startale strategy, brands, and infrastructure.", "source_url": "https://soneium.org/en/blog/soneium-mainnet-is-live"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Soneium reported 455M transactions and 5.3M active wallets for 2025, yet current TVL was only $7.9M—96.12% below peak—with $12.4M of 30-day DEX volume.",
+        "postmortem": "Corporate campaigns successfully produced wallets and transactions, but they did not preserve DeFi capital. Early IP restrictions also complicated the claim that Soneium is an unrestricted open network.",
+        "why": "Soneium gained usage through Sony entertainment IP, Startale execution, campaigns, LINE integration, and OP Stack compatibility; activity remained campaign- and ecosystem-led rather than a deep liquidity moat.",
+        "success_mechanism": "Sony channels creators and fans into applications, ETH gas avoids a new network-token barrier, and OP Stack reuses Ethereum tooling and settlement.",
+        "strategic_choices": [
+          "Use OP Stack and ETH gas rather than launch a bespoke L1 or network token.",
+          "Lead with creators, entertainment IP, and fan engagement.",
+          "Operate a centralized sequencer with explicit service terms.",
+          "Restrict official-infrastructure access to selected IP-infringing contracts."
+        ],
+        "unknowns": [
+          "Current sequencer, batcher, proposer, challenger, proxy-admin, and bridge control thresholds.",
+          "Repeat-user retention behind the 455M transaction and 5.3M-wallet claims.",
+          "How much peak TVL came from ASTR incentives and launch campaigns.",
+          "The practical boundary between onchain permissionlessness and official RPC/sequencer/content restrictions."
+        ],
+        "lessons_learned": [
+          "Corporate IP can generate activity without creating durable DeFi liquidity.",
+          "No native token reduces onboarding friction but limits an obvious governance path.",
+          "Infrastructure-layer content policy must be analyzed separately from smart-contract persistence."
+        ],
+        "could_differ": "A neutral sequencer and explicit onchain governance could reduce corporate-control concerns, but would weaken Sony's ability to enforce creator-protection policy.",
+        "outlook": {"bull": "Sony franchises convert millions of wallets into repeat paid creator experiences.", "base": "Soneium remains an active corporate consumer chain with shallow DeFi.", "bear": "Campaign activity fades and policy controls deter permissionless builders.", "most_likely": "base"},
+        "cause_tags": ["sony_distribution", "creator_economy", "op_stack", "content_policy", "tvl_collapse"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 84,
+      "confidence": "high",
+      "unsourced_fields": ["capital.total_raised_usd", "capital.treasury_usd", "team.named_chain_founders", "team.regulatory_status", "risk.audit_status", "risk.archived_sanctions_check", "risk.current_control_thresholds", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.repeat_user_retention"],
+      "last_reviewed": "2026-07-29"
+    }
+  }
+]
