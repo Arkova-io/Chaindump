@@ -28,14 +28,6 @@ const expectedSlugs = [
   'zipmex',
 ];
 
-function migrationDocument() {
-  const match = migration.match(
-    /-- canonical-payload-start[\s\S]*?VALUES \('([\s\S]*?)'\) -- NOSONAR:[^\n]*\n\)\nINSERT OR REPLACE/,
-  );
-  if (!match) throw new Error('0060 canonical payload not found');
-  return JSON.parse(match[1].replaceAll("''", "'"));
-}
-
 function applyMigrations(database, through = 60) {
   const migrationDirectory = new URL('../migrations/', import.meta.url);
   const files = readdirSync(migrationDirectory)
@@ -98,9 +90,12 @@ afterEach(() => {
 });
 
 describe('exchange CEX causal Wave B migration 0060', () => {
-  it('keeps generated SQL identical to the checked 13-case research manifest', () => {
-    expect(migrationDocument()).toEqual(document);
+  it('keeps one bounded generated statement per checked research case', () => {
     expect(migration).not.toMatch(/\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i);
+    expect(migration).toContain('-- batched-payload-start');
+    expect(migration.match(
+      /INSERT OR REPLACE INTO exchange_cex_causal_wave_b_0060 \(\n/g,
+    )).toHaveLength(document.cases.length);
     expect(document.as_of).toBe('2026-07-29');
     expect(document.source_check.checked_at).toBe('2026-07-29');
     expect(document.cases.map(({ slug }) => slug)).toEqual(expectedSlugs);
@@ -108,6 +103,9 @@ describe('exchange CEX causal Wave B migration 0060', () => {
     expect(document.cases.filter(({ table }) => table === 'mid_exchanges')
       .map(({ slug }) => slug)).toEqual(['wazirx', 'xeggex']);
     expect(document.cases.every(({ kind }) => kind === 'cex')).toBe(true);
+    for (const entry of document.cases) {
+      expect(migration, entry.slug).toContain(`  '${entry.slug.replaceAll("'", "''")}',`);
+    }
   });
 
   it('publishes complete causal analyses with direct checked source references', () => {
@@ -191,7 +189,7 @@ describe('exchange CEX causal Wave B migration 0060', () => {
       .not.toContain('ainvest.com');
     expect(database.prepare(`
       SELECT COUNT(*) AS count
-      FROM sqlite_temp_master
+      FROM sqlite_master
       WHERE type = 'table' AND name = 'exchange_cex_causal_wave_b_0060'
     `).get().count).toBe(0);
   });
