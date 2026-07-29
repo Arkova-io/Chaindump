@@ -1,0 +1,333 @@
+{
+  "schema": "chaindump-nft-field-v1",
+  "research_as_of": "2026-07-29",
+  "method": "Wave-3 lifecycle research uses first-party operator, steward, contract, and regulator evidence. A current operating surface can support operating continuity but never substitutes for floor price, volume, unique-holder retention, royalty revenue, treasury, or company financials. Unknowns are published rather than estimated, platform-level and collection-level economics are kept separate, and every non-terminal status must be reviewed on the stated schedule.",
+  "dossiers": [
+    {
+      "slug": "cryptopunks",
+      "name": "CryptoPunks",
+      "chain": "ethereum",
+      "category": "historical-generative-pfp",
+      "status": "thriving",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {
+          "schema": "forensic-freshness-v1",
+          "status_basis": "direct_current",
+          "status_as_of": "2026-05-08",
+          "last_verified_at": "2026-07-29",
+          "next_review_at": "2026-10-29",
+          "stale": false
+        },
+        "launched": "June 2017 — Matt Hall and John Watkinson of Larva Labs released 10,000 algorithmically generated CryptoPunks on Ethereum as free-to-claim tokens.",
+        "supply": "10,000 CryptoPunks. This fixed collection count does not imply 10,000 current owners or liquid listings.",
+        "mint_price": "Free to claim, excluding Ethereum network fees. Aggregate creator primary proceeds are therefore recorded as zero from the public claim itself; later marketplace receipts and secondary sales are separate and not calculated here.",
+        "community_history": "The steward describes a long-running holder community, community-built ERC-721 wrapping, holder commercial rights granted during Yuga stewardship, museum collecting, and continuing community participation in the work. Those facts do not establish current holder retention.",
+        "founder_engagement": "Original creators Matt Hall and John Watkinson sit on NODE's Punks Advisory Board and are credited as artist leads for NODE's 10,000 exhibition. NODE acquired the full CryptoPunks IP in May 2025 and is the current nonprofit steward.",
+        "benefits": "The core value proposition combines verifiable ownership of one of 10,000 works, holder commercial-use rights, a native marketplace, cultural programming, exhibitions, and community identity. No promise of yield or price appreciation is asserted.",
+        "business": "The present model is nonprofit IP stewardship, preservation, exhibitions, institutional relationships, licensing and maintenance of a native marketplace and API. Token ownership, marketplace operation, and ownership of the collection IP are distinct layers.",
+        "analysis": "Thriving means current stewardship and product/cultural operation: NODE published an open-source marketplace update on 2026-05-08 after adding bids, USDC purchasing, notifications and an API, while operating a dedicated exhibition. It does not establish floor price, volume, liquidity, unique-holder retention, royalties, or NODE revenue.",
+        "team": {
+          "original_creators": "Matt Hall and John Watkinson, Larva Labs",
+          "current_steward": "Infinite Node Foundation (NODE), full IP owner since May 2025",
+          "governance_boundary": "NODE's advisory board informs stewardship; it is not represented here as token-holder governance.",
+          "source_ids": ["punks-node-profile"]
+        },
+        "chronology": [
+          {"date": "2017-06", "event": "10,000 free-to-claim CryptoPunks released on Ethereum.", "source_ids": ["punks-node-profile"]},
+          {"date": "2022-03", "event": "Yuga Labs acquired the IP and granted commercial rights to holders.", "source_ids": ["punks-node-profile"]},
+          {"date": "2025-05", "event": "NODE acquired the full CryptoPunks IP and assembled an advisory board.", "source_ids": ["punks-node-profile", "punks-node-acquisition"]},
+          {"date": "2026-01", "event": "NODE opened the 10,000 exhibition in Palo Alto.", "source_ids": ["punks-exhibition"]},
+          {"date": "2026-05-08", "event": "NODE published its open-source marketplace work.", "source_ids": ["punks-marketplace"]}
+        ],
+        "market_holder_boundaries": {
+          "market": "No current floor, sales volume, bid depth, turnover, royalty receipts, or realized return is published in this dossier.",
+          "holders": "No current unique-holder count, concentration, retention, or active-community count is published.",
+          "available_evidence": "NODE documents an operating native marketplace and live marketplace-driven exhibition, which establishes functionality only.",
+          "source_ids": ["punks-node-profile", "punks-exhibition"]
+        },
+        "products_and_value_capture": {
+          "products": ["native marketplace", "marketplace API", "collection bids", "USDC purchasing", "notifications", "physical exhibition and institutional program"],
+          "capture": "Potential value capture includes marketplace and licensing activity under nonprofit stewardship, but no revenue or fee total is asserted.",
+          "source_ids": ["punks-node-profile", "punks-marketplace", "punks-engineering-index", "punks-exhibition"]
+        },
+        "why": {
+          "finding": "Durability is best explained by an unusually early onchain artifact, fixed recognizable supply, community reuse, holder licensing, and repeated stewardship/institutional investment; causality and investment performance remain unproven.",
+          "source_ids": ["punks-node-profile", "punks-exhibition"]
+        },
+        "strategic_choices": [
+          {"choice": "Free claim minimized initial price friction and distributed ownership through Ethereum wallets.", "source_ids": ["punks-node-profile"]},
+          {"choice": "A native marketplace made transfer and price proposals part of the work's onchain system.", "source_ids": ["punks-node-profile", "punks-exhibition"]},
+          {"choice": "IP stewardship moved from Larva Labs to Yuga and then to a nonprofit foundation while holder commercial rights remained a separate layer.", "source_ids": ["punks-node-profile", "punks-node-acquisition"]}
+        ],
+        "counterfactual": {
+          "finding": "Without continued marketplace maintenance, licensing clarity, and preservation programming, cultural importance could persist while practical use and community coordination weakened. This is an analytical counterfactual, not an observed failure.",
+          "source_ids": ["punks-node-profile", "punks-marketplace"]
+        },
+        "risks": [
+          {"risk": "Stewardship and IP decisions are concentrated in NODE rather than governed by token holders.", "source_ids": ["punks-node-profile"]},
+          {"risk": "A working marketplace and institutional recognition do not guarantee liquidity or price stability.", "source_ids": ["punks-node-profile", "punks-exhibition"]},
+          {"risk": "The legacy token architecture and wrappers create technical and market-scope distinctions that must not be collapsed.", "source_ids": ["punks-node-profile"]}
+        ],
+        "unknowns": [
+          "Current unique holders, concentration, floor, volume, turnover, and royalty receipts.",
+          "NODE's collection-specific operating costs and marketplace or licensing revenue.",
+          "How advisory-board recommendations translate into binding stewardship decisions."
+        ],
+        "review": {"last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "triggers": ["stewardship transfer", "marketplace shutdown or material change", "license change", "new primary financial disclosure"]},
+        "evidence": [
+          {"field": "launch", "value": "June 2017 free-to-claim Ethereum launch by Matt Hall and John Watkinson", "as_of": "2017-06-30", "basis": "operator", "source_ids": ["punks-node-profile"]},
+          {"field": "supply_or_mint", "value": "10,000 fixed works, free to claim", "as_of": "2017-06-30", "basis": "operator", "source_ids": ["punks-node-profile"]},
+          {"field": "mint_price", "value": "Free to claim excluding network fees; no collection-sale primary raise asserted", "as_of": "2017-06-30", "basis": "operator", "source_ids": ["punks-node-profile"]},
+          {"field": "lifecycle_status", "value": "thriving — current nonprofit stewardship, marketplace engineering and exhibition operation; not a market-performance label", "as_of": "2026-05-08", "basis": "analyst", "source_ids": ["punks-marketplace", "punks-exhibition"]},
+          {"field": "community_history", "value": "Long-running community, wrapper, holder licensing and institutional history without a current retention estimate", "as_of": "2026-01-31", "basis": "operator", "source_ids": ["punks-node-profile"]},
+          {"field": "founder_engagement", "value": "Creators advise NODE and led the 10,000 exhibition", "as_of": "2026-01-31", "basis": "operator", "source_ids": ["punks-node-profile", "punks-exhibition"]},
+          {"field": "benefits", "value": "Ownership, commercial-use licensing, native marketplace, identity and cultural programming without promised yield", "as_of": "2026-01-31", "basis": "operator", "source_ids": ["punks-node-profile", "punks-exhibition"]},
+          {"field": "business", "value": "Nonprofit IP stewardship, marketplace engineering, licensing, preservation and exhibitions; economics withheld", "as_of": "2026-05-08", "basis": "operator", "source_ids": ["punks-marketplace", "punks-node-profile"]},
+          {"field": "analysis", "value": "Current operation is verified; market and holder performance are not inferred", "as_of": "2026-05-08", "basis": "analyst", "source_ids": ["punks-marketplace", "punks-exhibition"]}
+        ]
+      },
+      "sources": [
+        {"id": "punks-node-profile", "title": "CryptoPunks | NODE", "url": "https://nodefoundation.com/cryptopunks", "publisher": "Infinite Node Foundation", "source_date": null, "source_date_kind": "unknown", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "punks-node-acquisition", "title": "CryptoPunks join NODE", "url": "https://nodefoundation.com/blog/punks-join-node", "publisher": "Infinite Node Foundation", "source_date": "2025-05-13", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "historical_event", "stale_after": null, "stale": false},
+        {"id": "punks-exhibition", "title": "10,000 | NODE", "url": "https://nodefoundation.com/program/10000", "publisher": "Infinite Node Foundation", "source_date": "2026-01-31", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "punks-marketplace", "title": "An Open Source CryptoPunks Marketplace", "url": "https://nodefoundation.com/blog/open-source-marketplace", "publisher": "Infinite Node Foundation", "source_date": "2026-05-08", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "punks-engineering-index", "title": "NODE Blog — CryptoPunks engineering releases", "url": "https://nodefoundation.com/blog", "publisher": "Infinite Node Foundation", "source_date": "2026-05-08", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false}
+      ]
+    },
+    {
+      "slug": "bored-ape-yacht-club",
+      "name": "Bored Ape Yacht Club",
+      "chain": "ethereum",
+      "category": "pfp-membership-ip",
+      "status": "thriving",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {"schema": "forensic-freshness-v1", "status_basis": "direct_current", "status_as_of": "2026-07-27", "last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "stale": false},
+        "launched": "BAYC began a week-long presale on 2021-04-23 and sold out on 2021-05-01.",
+        "supply": "10,000 Bored Ape NFTs. Companion collections, ApeCoin, ApeChain assets, Otherside assets, and merchandise are outside that count.",
+        "mint_price": "0.08 ETH per Bored Ape. The reviewed first-party history does not state audited aggregate primary proceeds, so no raise total is asserted.",
+        "community_history": "Yuga designed BAYC as a token-gated club, then added the Bathroom, merchandise, BAKC, MAYC, games and recurring ApeFest events. The fifth ApeFest occurred in 2025 and an official 2026 event page was live at review.",
+        "founder_engagement": "Yuga's retrospective names four founding pseudonyms—Gargamel, Gordon, Tomato and Sass—and identifies the original freelance illustration team. Current project operation is attributed to Yuga/BAYC; this dossier does not infer the present duties of each founder.",
+        "benefits": "BAYC ownership has functioned as a membership pass for token-gated events, experiences, merchandise access and holder commercial use. Benefits are program-specific and can change; ownership is not represented as equity or guaranteed yield.",
+        "business": "The model joins NFT membership and holder IP with events, merchandise, collaborations, games and Yuga's broader ecosystem. BAYC token rights, ApeCoin, ApeChain and Yuga corporate economics are separate and are not consolidated here.",
+        "analysis": "Thriving is limited to current club operation: the official ApeFest 2026 page was live on 2026-07-27 after a fifth ApeFest in 2025 and the official activation archive showed continuing programs. It does not establish floor, volume, holder retention, royalty revenue, event profitability, ApeCoin performance or Yuga finances.",
+        "team": {"founders": ["Gargamel", "Gordon", "Tomato", "Sass"], "original_art_team": ["All Seeing Seneca", "Miguel 'Mig' Prado", "Thomas Dagley", "two anonymous artists"], "current_operator": "Yuga Labs / BAYC", "source_ids": ["bayc-origin", "bayc-yuga-about"]},
+        "chronology": [
+          {"date": "2021-04-23", "event": "Presale began at 0.08 ETH; about 500 minted during the presale.", "source_ids": ["bayc-origin"]},
+          {"date": "2021-05-01", "event": "Remaining approximately 9,500 minted and the collection sold out.", "source_ids": ["bayc-origin"]},
+          {"date": "2021-10", "event": "First ApeFest delivered member events.", "source_ids": ["bayc-origin"]},
+          {"date": "2025-10", "event": "BAYC held its fifth ApeFest in Las Vegas.", "source_ids": ["bayc-apefest-2025"]},
+          {"date": "2026-07-27", "event": "Official ApeFest 2026 page advertised ticketing to open for an October 17 event.", "source_ids": ["bayc-apefest-2026"]}
+        ],
+        "market_holder_boundaries": {"market": "No current floor, volume, liquidity, royalty receipts, or realized returns.", "holders": "No current unique-owner, concentration, retention, or event-conversion rate.", "available_evidence": "Official event and activation pages prove operating programs, not secondary-market health.", "source_ids": ["bayc-apefest-2026", "bayc-activations"]},
+        "products_and_value_capture": {"products": ["token-gated club", "ApeFest", "merchandise", "holder IP and collaborations", "games and broader Yuga integrations"], "capture": "Possible channels include primary/secondary NFT economics, merchandise, events and licensing, but no collection-specific current revenue is asserted.", "source_ids": ["bayc-origin", "bayc-activations", "bayc-yuga-about"]},
+        "why": {"finding": "The strategic combination of recognizable PFP identity, explicit club access, holder use, recurring physical events and ecosystem extensions plausibly explains operational durability; the evidence does not isolate which component caused financial success.", "source_ids": ["bayc-origin", "bayc-apefest-2025", "bayc-yuga-about"]},
+        "strategic_choices": [
+          {"choice": "Price the original mint uniformly at 0.08 ETH and frame each NFT as membership rather than art alone.", "source_ids": ["bayc-origin", "bayc-yuga-about"]},
+          {"choice": "Extend membership through claims, merchandise, games and in-person events.", "source_ids": ["bayc-origin"]},
+          {"choice": "Build a broader Yuga ecosystem while retaining BAYC as a distinct collection and club identity.", "source_ids": ["bayc-yuga-about", "bayc-activations"]}
+        ],
+        "counterfactual": {"finding": "Without repeated member programming and usable IP/identity surfaces, BAYC could remain recognizable while its club proposition decayed. This analytical scenario is not a claim that current members are retained or satisfied.", "source_ids": ["bayc-origin", "bayc-apefest-2026"]},
+        "risks": [
+          {"risk": "Benefits depend on continued Yuga execution and program terms.", "source_ids": ["bayc-apefest-2026", "bayc-activations"]},
+          {"risk": "Collection, company, token, chain and metaverse economics can be incorrectly conflated.", "source_ids": ["bayc-yuga-about"]},
+          {"risk": "Current event operation does not demonstrate a liquid or appreciating NFT market.", "source_ids": ["bayc-apefest-2026"]}
+        ],
+        "unknowns": ["Current holder count and concentration.", "Current floor, volume, royalties, event economics and BAYC-attributable Yuga revenue.", "Present duties of each pseudonymous founder and audited aggregate original-mint proceeds."],
+        "review": {"last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "triggers": ["ApeFest cancellation or completion", "license or benefit changes", "stewardship transfer", "collection-specific financial disclosure"]},
+        "evidence": [
+          {"field": "launch", "value": "Presale 2021-04-23; sold out 2021-05-01", "as_of": "2021-05-01", "basis": "operator", "source_ids": ["bayc-origin"]},
+          {"field": "supply_or_mint", "value": "10,000 Bored Apes; companion assets excluded", "as_of": "2021-05-01", "basis": "operator", "source_ids": ["bayc-origin", "bayc-yuga-about"]},
+          {"field": "mint_price", "value": "0.08 ETH each; aggregate primary proceeds not stated in reviewed first-party history", "as_of": "2021-04-23", "basis": "operator", "source_ids": ["bayc-origin"]},
+          {"field": "lifecycle_status", "value": "thriving — current event and activation operation only, not market performance", "as_of": "2026-07-27", "basis": "analyst", "source_ids": ["bayc-apefest-2026", "bayc-activations"]},
+          {"field": "community_history", "value": "Token-gated club expanded through community features, companion assets and five completed ApeFests, with a 2026 event advertised", "as_of": "2026-07-27", "basis": "operator", "source_ids": ["bayc-origin", "bayc-apefest-2025", "bayc-apefest-2026"]},
+          {"field": "founder_engagement", "value": "Four pseudonymous founders and original artists documented; current individual founder duties not inferred", "as_of": "2022-03-01", "basis": "operator", "source_ids": ["bayc-origin"]},
+          {"field": "benefits", "value": "Membership, gated events, experiences, merchandise and holder IP; terms can change and no yield is promised", "as_of": "2026-07-27", "basis": "operator", "source_ids": ["bayc-origin", "bayc-apefest-2026"]},
+          {"field": "business", "value": "Membership and IP extended through events, merchandise, collaborations and broader Yuga products; current economics withheld", "as_of": "2026-07-27", "basis": "operator", "source_ids": ["bayc-activations", "bayc-yuga-about"]},
+          {"field": "analysis", "value": "Current operating continuity is verified; market, holder and financial conclusions are withheld", "as_of": "2026-07-27", "basis": "analyst", "source_ids": ["bayc-apefest-2026", "bayc-apefest-2025"]}
+        ]
+      },
+      "sources": [
+        {"id": "bayc-origin", "title": "\"Let's Make A NFT\"", "url": "https://news.yuga.com/lets-make-a-nft", "publisher": "Yuga Labs", "source_date": "2022-03-01", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "historical_event", "stale_after": null, "stale": false},
+        {"id": "bayc-yuga-about", "title": "About Yuga Labs", "url": "https://yuga.com/about/", "publisher": "Yuga Labs", "source_date": null, "source_date_kind": "unknown", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "bayc-apefest-2025", "title": "ApeFest 2025: Las Vegas", "url": "https://boredapeyachtclub.com/activations/apefest-2025-las-vegas", "publisher": "Bored Ape Yacht Club", "source_date": "2025-10-31", "source_date_kind": "event", "last_verified_at": "2026-07-29", "evidence_scope": "historical_event", "stale_after": null, "stale": false},
+        {"id": "bayc-apefest-2026", "title": "ApeFest 2026", "url": "https://www.apefest.com/", "publisher": "Bored Ape Yacht Club / Yuga Labs", "source_date": "2026-07-27", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "bayc-activations", "title": "Bored Ape Yacht Club Activations", "url": "https://boredapeyachtclub.com/activations", "publisher": "Bored Ape Yacht Club", "source_date": "2026-07-27", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false}
+      ]
+    },
+    {
+      "slug": "moonbirds",
+      "name": "Moonbirds",
+      "chain": "ethereum",
+      "category": "pfp-membership-ip",
+      "status": "middling",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {"schema": "forensic-freshness-v1", "status_basis": "direct_current", "status_as_of": "2026-07-27", "last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "stale": false},
+        "launched": "2022-04-16 — Moonbirds minted as an Ethereum PFP collection.",
+        "supply": "10,000 Moonbirds. Mythics, Oddities and fungible rewards are separate assets.",
+        "mint_price": "Unknown in the reviewed first-party collection and current-owner pages. The contract's present state is not used to reconstruct an unverified historical launch price or aggregate raise.",
+        "community_history": "PROOF described Moonbirds as access to digital and IRL community with nesting-based perks, physical/digital drops, Oddities and time-based rewards. The current Moonbirds site preserves a legacy portal and announces an Orange Cap Games chapter.",
+        "founder_engagement": "The first-party collection page identifies Justin Mezzell as artist. The reviewed primary pages do not fully identify original founders or their current duties; Orange Cap Games is the disclosed current IP owner and operator.",
+        "benefits": "Historically documented benefits include digital/IRL community access, nesting and related drops or rewards. The current site provides legacy access; eligibility, reward design and permanence are not generalized.",
+        "business": "Orange Cap Games says it owns the Moonbirds, Mythics and Oddities IP and focuses on product-led adoption. Current Moonbirds pages advertise future announcements and legacy management; no Moonbirds-specific revenue or completed new product is asserted.",
+        "analysis": "Middling reflects a live ownership transition and functioning legacy surface, but the reviewed current primary pages mainly promise future innovation. Evidence is insufficient to call the transition a recovery or to infer current floor, volume, holder retention, reward participation, revenue or community sentiment.",
+        "team": {"named_original_artist": "Justin Mezzell", "current_ip_owner": "Orange Cap Games", "founder_boundary": "Original founders and their current roles are not fully established by the reviewed first-party pages.", "source_ids": ["moonbirds-proof", "moonbirds-ocg", "moonbirds-current"]},
+        "chronology": [
+          {"date": "2022-04-16", "event": "10,000 Moonbirds minted on Ethereum.", "source_ids": ["moonbirds-proof"]},
+          {"date": "2022-2024", "event": "Nesting and community access supported physical/digital drops, Oddities and time-based rewards.", "source_ids": ["moonbirds-proof"]},
+          {"date": "2026-07-27", "event": "Current site presented an Orange Cap Games chapter and retained a legacy management portal.", "source_ids": ["moonbirds-current", "moonbirds-ocg"]}
+        ],
+        "market_holder_boundaries": {"market": "No current floor, volume, liquidity, royalties or realized return.", "holders": "No current unique holders, concentration, nesting participation or retention.", "available_evidence": "Collection size and operator functionality are documented; marketplace links and live pages are not market-health measures.", "source_ids": ["moonbirds-proof", "moonbirds-current"]},
+        "products_and_value_capture": {"products": ["Moonbirds PFPs", "nesting and legacy management", "community access", "physical/digital drops", "related Mythics and Oddities IP"], "capture": "Potential IP and product channels are described, but Moonbirds-specific revenue, fees and royalty receipts are unknown.", "source_ids": ["moonbirds-proof", "moonbirds-current", "moonbirds-ocg"]},
+        "why": {"finding": "The transition preserves the recognizable collection, IP family and legacy utility while shifting toward a product-focused owner; whether that produces renewed demand or durable community participation is unproven.", "source_ids": ["moonbirds-proof", "moonbirds-current", "moonbirds-ocg"]},
+        "strategic_choices": [
+          {"choice": "Tie community perks to time-based nesting rather than passive ownership alone.", "source_ids": ["moonbirds-proof"]},
+          {"choice": "Maintain a legacy portal while the new owner signals future product work.", "source_ids": ["moonbirds-current"]},
+          {"choice": "Consolidate Moonbirds, Mythics and Oddities IP under Orange Cap Games.", "source_ids": ["moonbirds-ocg"]}
+        ],
+        "counterfactual": {"finding": "If the legacy portal disappeared before replacement products shipped, residual utility and trust could erode during the ownership transition. The current portal reduces that transition risk but does not prove renewed adoption.", "source_ids": ["moonbirds-current", "moonbirds-ocg"]},
+        "risks": [
+          {"risk": "Current messaging emphasizes upcoming announcements rather than completed new Moonbirds products.", "source_ids": ["moonbirds-current"]},
+          {"risk": "Benefits and reward mechanisms may change under new stewardship.", "source_ids": ["moonbirds-current", "moonbirds-proof"]},
+          {"risk": "Operator ownership and a live portal do not demonstrate market or community recovery.", "source_ids": ["moonbirds-current", "moonbirds-ocg"]}
+        ],
+        "unknowns": ["Original mint price and aggregate primary proceeds from reviewed primary sources.", "Complete original founding team and current roles.", "Current holders, nesting participation, floor, volume, royalties and Moonbirds-attributable revenue.", "Timing and scope of announced Orange Cap Games products."],
+        "review": {"last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "triggers": ["new product launch", "legacy portal change", "benefit or token change", "stewardship transfer"]},
+        "evidence": [
+          {"field": "launch", "value": "2022-04-16 Ethereum mint", "as_of": "2022-04-16", "basis": "operator", "source_ids": ["moonbirds-proof"]},
+          {"field": "supply_or_mint", "value": "10,000 Moonbirds; related collections excluded", "as_of": "2022-04-16", "basis": "operator", "source_ids": ["moonbirds-proof"]},
+          {"field": "mint_price", "value": "Unknown from reviewed first-party pages; no historical reconstruction or raise estimate", "as_of": "2022-04-16", "basis": "analyst", "source_ids": ["moonbirds-proof"]},
+          {"field": "lifecycle_status", "value": "middling — live new-owner and legacy surfaces, but insufficient evidence of recovery or market health", "as_of": "2026-07-27", "basis": "analyst", "source_ids": ["moonbirds-current", "moonbirds-ocg"]},
+          {"field": "community_history", "value": "Digital/IRL access, nesting, drops and related collectibles; no current participation estimate", "as_of": "2026-07-27", "basis": "operator", "source_ids": ["moonbirds-proof", "moonbirds-current"]},
+          {"field": "founder_engagement", "value": "Justin Mezzell named as artist; OCG is current IP owner; original founders/current duties otherwise withheld", "as_of": "2026-07-27", "basis": "operator", "source_ids": ["moonbirds-proof", "moonbirds-ocg"]},
+          {"field": "benefits", "value": "Historical nesting/community benefits and a current legacy management portal; permanence not asserted", "as_of": "2026-07-27", "basis": "operator", "source_ids": ["moonbirds-proof", "moonbirds-current"]},
+          {"field": "business", "value": "IP ownership and product-led transition with no Moonbirds-specific revenue claim", "as_of": "2026-07-27", "basis": "operator", "source_ids": ["moonbirds-ocg", "moonbirds-current"]},
+          {"field": "analysis", "value": "Operating transition is verified; recovery, market and holder conclusions are withheld", "as_of": "2026-07-27", "basis": "analyst", "source_ids": ["moonbirds-current", "moonbirds-ocg"]}
+        ]
+      },
+      "sources": [
+        {"id": "moonbirds-proof", "title": "Moonbird #2026 — Moonbirds | PROOF", "url": "https://www.proof.xyz/moonbirds/2026", "publisher": "PROOF Holdings", "source_date": "2022-04-16", "source_date_kind": "event", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "moonbirds-current", "title": "Moonbirds — A New Chapter", "url": "https://www.moonbirds.com/", "publisher": "Moonbirds / Orange Cap Games", "source_date": "2026-07-27", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "moonbirds-ocg", "title": "Orange Cap Games — About Us and owned IP", "url": "https://www.orangecapgames.com/", "publisher": "Orange Cap Games", "source_date": "2026-07-27", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false}
+      ]
+    },
+    {
+      "slug": "onchainmonkey-genesis",
+      "name": "OnChainMonkey Genesis",
+      "chain": "bitcoin-ordinals-and-ethereum",
+      "category": "ordinals-migrated-pfp",
+      "status": "thriving",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {"schema": "forensic-freshness-v1", "status_basis": "direct_current", "status_as_of": "2026-07-27", "last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "stale": false},
+        "launched": "September 2021 — OnChainMonkey Genesis was created as a 10,000-item fully onchain Ethereum PFP collection in one transaction; the collection was later inscribed on Bitcoin using Ordinals.",
+        "supply": "10,000 Genesis items. At the 2026-07-27 operator-gallery snapshot, 8,425 were marked claimed on Bitcoin and 1,575 remained on Ethereum; those location counts sum to supply but are not holder counts.",
+        "mint_price": "The operator describes Genesis as a free mint. Network fees and later collection mints or secondary activity are excluded; no audited aggregate creator raise is asserted.",
+        "community_history": "Metagood attributes the collection's development to its team and community and documents a cross-chain move from the Ethereum-origin collection to Bitcoin Ordinals. Historical operator-reported wallet, revenue and profit claims are excluded from current status.",
+        "founder_engagement": "Metagood identifies cofounders Danny Yang, Bill Tai and Amanda Terry and continues to list OnChainMonkey on Bitcoin among its products.",
+        "benefits": "The documented proposition combines fully onchain generative art, provenance across Ethereum and Bitcoin, community identity, and access to an actively maintained collection/gallery ecosystem. No yield or appreciation promise is asserted.",
+        "business": "Metagood develops OnChainMonkey and Osura, with collection creation, Bitcoin inscription technology and marketplace/product operation. Genesis mint economics, later drops, Osura economics and secondary trading must remain separate.",
+        "analysis": "Thriving means operator-verified product continuity and a substantially completed Bitcoin claim/migration surface: Metagood currently lists OCM on Bitcoin and Osura as usable products, while the gallery showed 8,425 of 10,000 Genesis items claimed on Bitcoin. It does not establish floor, volume, unique holders, migration satisfaction, royalties, Osura revenue or profitability.",
+        "team": {"cofounders": ["Danny Yang", "Bill Tai", "Amanda Terry"], "operator": "Metagood / Nfinita, Inc.", "source_ids": ["ocm-about", "ocm-terms"]},
+        "chronology": [
+          {"date": "2021-09", "event": "10,000 Genesis PFPs created fully onchain on Ethereum in one transaction as a free mint.", "source_ids": ["ocm-bitcoin-history", "ocm-about"]},
+          {"date": "2023-02-08", "event": "The collection was inscribed on Bitcoin using Ordinals in a single inscription structure.", "source_ids": ["ocm-bitcoin-history"]},
+          {"date": "2026-07-27", "event": "Operator product pages remained live and the gallery reported 8,425 claimed on Bitcoin and 1,575 on Ethereum.", "source_ids": ["ocm-products", "ocm-gallery"]}
+        ],
+        "market_holder_boundaries": {"market": "No current floor, volume, bid depth, royalties or realized return.", "holders": "Gallery location counts are tokens/items, not unique wallets; no current holder count or concentration is asserted.", "available_evidence": "Operator product availability and item-location counts support continuity and migration progress only.", "source_ids": ["ocm-products", "ocm-gallery"]},
+        "products_and_value_capture": {"products": ["OCM Genesis on Bitcoin and Ethereum", "OnChainMonkey collections", "Osura Bitcoin digital-asset marketplace"], "capture": "Potential channels include collection and marketplace economics, but current Genesis-specific revenue, fees and royalties are unknown.", "source_ids": ["ocm-products", "ocm-about"]},
+        "why": {"finding": "The project differentiated through compact fully onchain creation and then made Bitcoin permanence/provenance a core strategy. The available evidence supports technical execution and continuity, not a causal claim about market success.", "source_ids": ["ocm-about", "ocm-bitcoin-history", "ocm-products"]},
+        "strategic_choices": [
+          {"choice": "Generate the original 10,000-item collection fully onchain in one Ethereum transaction.", "source_ids": ["ocm-about", "ocm-bitcoin-history"]},
+          {"choice": "Use Ordinals to move/claim Genesis items on Bitcoin while retaining explicit Ethereum/Bitcoin location state.", "source_ids": ["ocm-bitcoin-history", "ocm-gallery"]},
+          {"choice": "Pair collection stewardship with a Bitcoin-focused marketplace product.", "source_ids": ["ocm-products"]}
+        ],
+        "counterfactual": {"finding": "Without a claim path and explicit item-location accounting, the Bitcoin move could have fragmented provenance and holder expectations. The current gallery makes location visible, but does not prove every holder accepts or completes migration.", "source_ids": ["ocm-gallery", "ocm-bitcoin-history"]},
+        "risks": [
+          {"risk": "Cross-chain provenance and claim mechanics add operational and user-understanding risk.", "source_ids": ["ocm-gallery", "ocm-bitcoin-history"]},
+          {"risk": "Operator-reported item counts are not independent proof of holder satisfaction or market demand.", "source_ids": ["ocm-gallery"]},
+          {"risk": "Collection and marketplace economics are privately operated and not disclosed at dossier-level granularity.", "source_ids": ["ocm-products", "ocm-terms"]}
+        ],
+        "unknowns": ["Current unique holders, concentration, floor, volume, royalties and profitability.", "Exact network-fee burden and aggregate primary proceeds of the free Genesis mint.", "Reasons the remaining 1,575 items had not been claimed on Bitcoin at the snapshot.", "Osura revenue attributable to Genesis."],
+        "review": {"last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "triggers": ["migration count change", "claim mechanism change", "product shutdown", "new financial or holder disclosure"]},
+        "evidence": [
+          {"field": "launch", "value": "September 2021 fully onchain Ethereum collection created in one transaction", "as_of": "2021-09-30", "basis": "operator", "source_ids": ["ocm-about", "ocm-bitcoin-history"]},
+          {"field": "supply_or_mint", "value": "10,000 items; operator snapshot 8,425 on Bitcoin and 1,575 on Ethereum", "as_of": "2026-07-27", "basis": "operator", "source_ids": ["ocm-gallery", "ocm-bitcoin-history"]},
+          {"field": "mint_price", "value": "Free mint; network fees and aggregate creator economics not asserted", "as_of": "2021-09-30", "basis": "operator", "source_ids": ["ocm-bitcoin-history"]},
+          {"field": "lifecycle_status", "value": "thriving — current products and substantial Bitcoin claim progress, not market performance", "as_of": "2026-07-27", "basis": "analyst", "source_ids": ["ocm-products", "ocm-gallery"]},
+          {"field": "community_history", "value": "Community-backed Ethereum origin and Bitcoin migration; historical promotional performance figures excluded", "as_of": "2026-07-27", "basis": "operator", "source_ids": ["ocm-about", "ocm-bitcoin-history"]},
+          {"field": "founder_engagement", "value": "Danny Yang, Bill Tai and Amanda Terry identified as Metagood cofounders; OCM remains a listed product", "as_of": "2026-07-27", "basis": "operator", "source_ids": ["ocm-about", "ocm-products"]},
+          {"field": "benefits", "value": "Onchain art, cross-chain provenance, identity and active collection tooling without yield claims", "as_of": "2026-07-27", "basis": "operator", "source_ids": ["ocm-products", "ocm-gallery"]},
+          {"field": "business", "value": "Collection and Bitcoin-marketplace operation; collection-specific current economics withheld", "as_of": "2026-07-27", "basis": "operator", "source_ids": ["ocm-products", "ocm-terms"]},
+          {"field": "analysis", "value": "Product continuity and migration progress verified; market, holder and profitability conclusions withheld", "as_of": "2026-07-27", "basis": "analyst", "source_ids": ["ocm-products", "ocm-gallery"]}
+        ]
+      },
+      "sources": [
+        {"id": "ocm-about", "title": "Metagood — About Us", "url": "https://metagood.com/about-us", "publisher": "Metagood", "source_date": null, "source_date_kind": "unknown", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "ocm-bitcoin-history", "title": "OnChainMonkey becomes first 10k collection inscribed on Bitcoin by Ordinals in a single inscription", "url": "https://news.onchainmonkey.com/onchainmonkey-becomes-first-10k-nft-collection-inscribed-on-bitcoin-by-ordinals-in-a-single-inscription/", "publisher": "OnChainMonkey / Metagood", "source_date": "2023-02-08", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "historical_event", "stale_after": null, "stale": false},
+        {"id": "ocm-products", "title": "Metagood — Products", "url": "https://metagood.com/products", "publisher": "Metagood", "source_date": "2026-07-27", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "ocm-gallery", "title": "OnChainMonkey Genesis Gallery", "url": "https://onchainmonkey.com/gallery/ocm-genesis", "publisher": "OnChainMonkey / Metagood", "source_date": "2026-07-27", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "ocm-terms", "title": "OnChainMonkey Terms of Service", "url": "https://onchainmonkey.com/tos", "publisher": "Nfinita, Inc. d/b/a Metagood", "source_date": "2024-10-01", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false}
+      ]
+    },
+    {
+      "slug": "gamestop-nft-marketplace",
+      "name": "GameStop NFT Marketplace",
+      "chain": "ethereum-and-immutable-x",
+      "category": "nft-marketplace-platform",
+      "status": "dead",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {"schema": "forensic-freshness-v1", "status_basis": "terminal_event", "status_as_of": "2024-02-03", "last_verified_at": "2026-07-29", "next_review_at": "2027-01-29", "stale": false},
+        "launched": "GameStop launched beta versions of a non-custodial digital-asset wallet and peer-to-peer NFT marketplace during 2022; the marketplace launch occurred in July 2022.",
+        "supply": "Not applicable at platform level. The marketplace hosted third-party NFTs, so there is no defensible single collection supply or platform mint count in the reviewed filings.",
+        "mint_price": "Not applicable at platform level. GameStop did not sell one fixed-supply collection through a uniform primary mint, and the reviewed filings do not disclose an aggregate creator raise.",
+        "community_history": "The platform targeted NFT creators, buyers, sellers, traders and gaming integrations, but GameStop's filings do not provide a current or historical unique-user, creator, holder, retention or community-sentiment series.",
+        "founder_engagement": "This was a GameStop corporate product rather than a founder-led NFT collection. The reviewed filings do not name an individual product founder or disclose continuing NFT-marketplace leadership after wind-down.",
+        "benefits": "The beta product enabled peer-to-peer NFT purchase, sale and trade alongside a non-custodial wallet. Those services were wound down and should not be represented as current holder benefits.",
+        "business": "GameStop recognized wallet and marketplace revenue in net sales, but reported it was not material in fiscal 2022 or 2023. Separate Immutable X agreement accounting and digital-asset gains, losses or deferred income are not treated as customer marketplace revenue.",
+        "analysis": "Dead is supported by GameStop's filed terminal disclosure: both wallet and marketplace activities were wound down in fiscal 2023's fourth quarter, and the fiscal year ended 2024-02-03. The same filing says related revenue was not material. It does not prove a single cause, exact lifetime volume, user count, creator economics or losses attributable solely to the marketplace.",
+        "team": {"operator": "GameStop Corp.", "product_founder": "Not identified in reviewed SEC filings", "post_shutdown_team": "No continuing marketplace team asserted", "source_ids": ["gme-2024-10k"]},
+        "chronology": [
+          {"date": "2022-07", "event": "Beta peer-to-peer NFT marketplace launched.", "source_ids": ["gme-2024-10k"]},
+          {"date": "2022-2023", "event": "Wallet and marketplace revenue was recorded in net sales but was not material to consolidated financial statements.", "source_ids": ["gme-2024-10k"]},
+          {"date": "2023-Q4", "event": "GameStop began and completed the wind-down of wallet and marketplace activities by fiscal year-end reporting.", "source_ids": ["gme-2024-10k"]},
+          {"date": "2026-03-24", "event": "Latest annual filing reviewed describes GameStop's current business without presenting a relaunched NFT marketplace; this absence is contextual, not the terminal proof.", "source_ids": ["gme-2026-10k"]}
+        ],
+        "market_holder_boundaries": {"market": "No lifetime marketplace volume, fee take, liquidity, collection floors or creator proceeds are asserted.", "holders": "A marketplace is not a single NFT collection; no platform-level holder count is meaningful, and unique-user/creator counts were not disclosed.", "available_evidence": "SEC filings establish product scope, immaterial consolidated revenue and wind-down.", "source_ids": ["gme-2024-10k"]},
+        "products_and_value_capture": {"products": ["non-custodial wallet", "peer-to-peer NFT marketplace", "purchase, sale and trade functionality"], "capture": "Revenue was recognized in net sales but was not material; IMX agreement accounting is explicitly kept separate from marketplace customer revenue.", "source_ids": ["gme-2024-10k"]},
+        "why": {"finding": "The strongest filed evidence is that the initiative remained financially immaterial before wind-down. Regulatory uncertainty and adoption/execution risk are plausible context, but the filing does not assign a single causal reason, so causal attribution is withheld.", "source_ids": ["gme-2024-10k"]},
+        "strategic_choices": [
+          {"choice": "Launch the wallet and peer-to-peer marketplace as beta products during 2022.", "source_ids": ["gme-2024-10k"]},
+          {"choice": "Integrate digital-asset activity into the collectibles reporting category and net sales.", "source_ids": ["gme-2024-10k"]},
+          {"choice": "Wind down both connected products in fiscal 2023's fourth quarter.", "source_ids": ["gme-2024-10k"]}
+        ],
+        "counterfactual": {"finding": "A materially adopted marketplace with durable creator/buyer activity could have justified continued operation; because filed revenue remained immaterial, that threshold was not demonstrated. This is an analytical threshold, not management's quoted rationale.", "source_ids": ["gme-2024-10k"]},
+        "risks": [
+          {"risk": "Corporate disclosures aggregate results and cannot isolate marketplace unit economics.", "source_ids": ["gme-2024-10k"]},
+          {"risk": "IMX-related accounting can be mistaken for marketplace customer revenue.", "source_ids": ["gme-2024-10k"]},
+          {"risk": "A terminal platform status does not imply that every NFT formerly traded there is dead.", "source_ids": ["gme-2024-10k"]}
+        ],
+        "unknowns": ["Exact shutdown date within the reported quarter from the reviewed filing.", "Lifetime users, creators, listings, volume, fees and creator proceeds.", "Marketplace-only operating losses and product-level headcount.", "Management's ranked causal reasons for shutdown."],
+        "review": {"last_verified_at": "2026-07-29", "next_review_at": "2027-01-29", "triggers": ["GameStop announces a relaunch", "restated terminal disclosure", "new product-level financial data"]},
+        "evidence": [
+          {"field": "launch", "value": "Beta wallet and peer-to-peer NFT marketplace launched in 2022; marketplace in July", "as_of": "2022-07-31", "basis": "operator", "source_ids": ["gme-2024-10k"]},
+          {"field": "supply_or_mint", "value": "Not applicable to a multi-collection marketplace; no aggregate platform supply asserted", "as_of": "2022-07-31", "basis": "analyst", "source_ids": ["gme-2024-10k"]},
+          {"field": "mint_price", "value": "Not applicable at platform level; no uniform collection mint or aggregate creator raise asserted", "as_of": "2022-07-31", "basis": "analyst", "source_ids": ["gme-2024-10k"]},
+          {"field": "lifecycle_status", "value": "dead — wallet and marketplace activities wound down by fiscal 2023 year-end", "as_of": "2024-02-03", "basis": "operator", "source_ids": ["gme-2024-10k"]},
+          {"field": "community_history", "value": "Creator/trader product scope documented; user, creator and retention series not disclosed", "as_of": "2024-02-03", "basis": "analyst", "source_ids": ["gme-2024-10k"]},
+          {"field": "founder_engagement", "value": "Corporate GameStop product; individual product founder and post-wind-down leadership not disclosed", "as_of": "2024-02-03", "basis": "analyst", "source_ids": ["gme-2024-10k"]},
+          {"field": "benefits", "value": "Wallet and peer-to-peer purchase, sale and trade functions were terminally wound down", "as_of": "2024-02-03", "basis": "operator", "source_ids": ["gme-2024-10k"]},
+          {"field": "business", "value": "Related revenue was not material; separate digital-asset and IMX accounting not conflated", "as_of": "2024-02-03", "basis": "operator", "source_ids": ["gme-2024-10k"]},
+          {"field": "analysis", "value": "Terminal wind-down and immaterial consolidated revenue verified; exact causal and unit-economic claims withheld", "as_of": "2024-02-03", "basis": "analyst", "source_ids": ["gme-2024-10k"]}
+        ]
+      },
+      "sources": [
+        {"id": "gme-2024-10k", "title": "GameStop Corp. Form 10-K for fiscal year ended February 3, 2024", "url": "https://www.sec.gov/Archives/edgar/data/1326380/000132638024000012/gme-20240203.htm", "publisher": "U.S. Securities and Exchange Commission / GameStop Corp.", "source_date": "2024-03-26", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "terminal_outcome", "stale_after": null, "stale": false},
+        {"id": "gme-2026-10k", "title": "GameStop Corp. Form 10-K for fiscal year ended January 31, 2026", "url": "https://www.sec.gov/Archives/edgar/data/1326380/000132638026000013/gme-20260131.htm", "publisher": "U.S. Securities and Exchange Commission / GameStop Corp.", "source_date": "2026-03-24", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2027-03-31", "stale": false}
+      ]
+    }
+  ]
+}
