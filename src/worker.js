@@ -802,7 +802,14 @@ function chainDossierFreshness(meta, referenceDate = new Date().toISOString().sl
 }
 
 function newDossierCoverage() {
-  return { dimensions: new Set(), sources: new Map(), dataCompletenessPct: null, freshness: null };
+  return {
+    dimensions: new Set(),
+    sources: new Map(),
+    dataCompletenessPct: null,
+    freshness: null,
+    identityStatus: null,
+    forensicStatus: null,
+  };
 }
 
 function addFactCoverage(coverage, row) {
@@ -815,6 +822,15 @@ function addFactCoverage(coverage, row) {
     return;
   }
   if (!CHAIN_DOSSIER_DIMENSIONS.includes(row.dimension)) return;
+  const data = factJson(row.data, {});
+  if (row.dimension === 'identity' && typeof data.status === 'string') {
+    coverage.identityStatus = data.status;
+  }
+  if (row.dimension === 'synthesis') {
+    const forensic = data.forensic_analysis || {};
+    const outcome = forensic.outcome || data.outcome || {};
+    if (typeof outcome.label === 'string') coverage.forensicStatus = outcome.label;
+  }
   coverage.dimensions.add(row.dimension);
   for (const source of factJson(row.sources, [])) {
     if (source?.url && !coverage.sources.has(source.url)) coverage.sources.set(source.url, source);
@@ -829,6 +845,7 @@ function publicDossierCoverage(coverage) {
     citationCount: coverage.sources.size,
     sources: [...coverage.sources.values()].slice(0, 3),
     freshness: coverage.freshness,
+    status: coverage.forensicStatus || coverage.identityStatus || 'unknown',
   };
 }
 
@@ -1269,6 +1286,75 @@ app.post('/api/desk/propose', wrap(async (req, res) => {
       namesIndividuals, Number.isFinite(confidence) ? confidence : null, needsReview).run();
     res.json({ ok: true, dataset, slug, needs_human_review: !!needsReview });
   } catch (e) { res.status(500).json({ error: e.message }); }
+}));
+
+function researchRunStateMatches(existing, status, effectiveProposals) {
+  if (!existing || existing.status !== status) return false;
+  if (Number(existing.proposals_queued) !== effectiveProposals) return false;
+  return status === 'running'
+    ? existing.completed_at == null
+    : Boolean(existing.completed_at);
+}
+
+// Proposal-agent execution status uses the proposal credential because it
+// conveys no review or publication authority. The server owns timestamps and
+// permits only one running -> terminal transition, so retries cannot rewrite
+// historical outcomes or pretend an agent published anything.
+app.post('/api/desk/run-status', wrap(async (req, res) => {
+  if (!deskAuth(req, res, 'proposal')) return;
+  if (!ENV.DB) return res.status(503).json({ error: 'no DB' });
+  let body;
+  try { body = await req.raw.json(); } catch {
+    return res.status(400).json({ error: 'invalid JSON body' });
+  }
+  const runId = String(body.run_id || '').trim();
+  const status = String(body.status || '').trim();
+  const proposalsQueued = Number(body.proposals_queued ?? 0);
+  if (!/^[a-zA-Z0-9][a-zA-Z0-9._:-]{5,127}$/.test(runId)) {
+    return res.status(400).json({ error: 'invalid run_id' });
+  }
+  if (!['running', 'completed', 'failed'].includes(status)) {
+    return res.status(400).json({ error: 'invalid status' });
+  }
+  if (!Number.isInteger(proposalsQueued) || proposalsQueued < 0 || proposalsQueued > 10000) {
+    return res.status(400).json({ error: 'invalid proposals_queued' });
+  }
+  try {
+    const statement = status === 'running'
+      ? ENV.DB.prepare(
+        `INSERT OR IGNORE INTO research_desk_runs
+          (run_id, started_at, completed_at, status, proposals_queued)
+         VALUES (?, datetime('now'), NULL, 'running', 0)`,
+      ).bind(runId)
+      : ENV.DB.prepare(
+        `UPDATE research_desk_runs
+            SET status = ?, completed_at = datetime('now'), proposals_queued = ?
+          WHERE run_id = ? AND status = 'running'`,
+      ).bind(status, proposalsQueued, runId);
+    const result = await statement.run();
+    const changes = Number(result?.meta?.changes ?? result?.changes ?? 0);
+    const effectiveProposals = status === 'running' ? 0 : proposalsQueued;
+    if (changes === 0) {
+      const existing = await ENV.DB.prepare(
+        `SELECT status, completed_at, proposals_queued
+           FROM research_desk_runs WHERE run_id = ?`,
+      ).bind(runId).first();
+      if (!researchRunStateMatches(existing, status, effectiveProposals)) {
+        return res.status(409).json({ error: 'invalid run transition' });
+      }
+    } else if (changes !== 1) {
+      return res.status(409).json({ error: 'invalid run transition' });
+    }
+    res.json({
+      ok: true,
+      run_id: runId,
+      status,
+      proposals_queued: effectiveProposals,
+      idempotent: changes === 0,
+    });
+  } catch (error) {
+    res.status(500).json({ error: error?.message || 'run status write failed' });
+  }
 }));
 
 app.get('/api/desk/pending', wrap(async (req, res) => {
@@ -2438,6 +2524,10 @@ app.get('/api/casino/:case_id', wrap(async (req, res) => {
 // live-market snapshot: a successful cron run only identifies dossiers due for
 // review. It never promotes, rewrites, or "freshens" an analyst conclusion.
 app.get('/api/forensics-refresh-status', wrap(async (req, res) => {
+  let refresh = null;
+  let refreshError = null;
+  let proposalAgent = null;
+  let proposalAgentError = null;
   try {
     const rows = await dbQuery(
       `SELECT run_id, scheduled_at, completed_at, status,
@@ -2446,10 +2536,28 @@ app.get('/api/forensics-refresh-status', wrap(async (req, res) => {
          FROM forensic_refresh_runs
         ORDER BY run_id DESC LIMIT 1`,
     );
-    res.json({ refresh: rows[0] || null, cadence: 'six_hours', promotion_policy: 'human_review_required' });
+    refresh = rows[0] || null;
   } catch {
-    res.json({ refresh: null, cadence: 'six_hours', promotion_policy: 'human_review_required', error: 'forensic refresh status unavailable' });
+    refreshError = 'forensic refresh status unavailable';
   }
+  try {
+    const rows = await dbQuery(
+      `SELECT run_id, started_at, completed_at, status, proposals_queued
+         FROM research_desk_runs
+        ORDER BY started_at DESC, run_id DESC LIMIT 1`,
+    );
+    proposalAgent = rows[0] || null;
+  } catch {
+    proposalAgentError = 'proposal research status unavailable';
+  }
+  res.json({
+    refresh,
+    proposal_agent: proposalAgent,
+    cadence: 'six_hours',
+    promotion_policy: 'human_review_required',
+    ...(refreshError ? { error: refreshError } : {}),
+    ...(proposalAgentError ? { proposal_agent_error: proposalAgentError } : {}),
+  });
 }));
 
 // Decentralized storage / document-verification infrastructure
@@ -3722,7 +3830,15 @@ export async function forensicReviewCounts(env, today) {
         ) <= ?`,
       [today],
     ),
-    count(`SELECT COUNT(*) AS count FROM exchange_case_features`),
+    count(
+      `SELECT COUNT(*) AS count FROM (
+         SELECT slug, kind FROM dead_exchanges
+         UNION ALL
+         SELECT slug, kind FROM mid_exchanges
+         UNION ALL
+         SELECT slug, type AS kind FROM successful_exchanges
+       )`,
+    ),
     count(
       `WITH lifecycle_cases AS (
          SELECT slug, kind, 'dead' AS lifecycle, profile FROM dead_exchanges
@@ -3732,11 +3848,11 @@ export async function forensicReviewCounts(env, today) {
          SELECT slug, type AS kind, 'successful' AS lifecycle, profile FROM successful_exchanges
        )
        SELECT COUNT(*) AS count
-         FROM exchange_case_features AS feature
-         LEFT JOIN lifecycle_cases AS dossier
-           ON dossier.kind = feature.kind
-          AND dossier.slug = feature.slug
-          AND dossier.lifecycle = feature.lifecycle
+         FROM lifecycle_cases AS dossier
+         LEFT JOIN exchange_case_features AS feature
+           ON feature.kind = dossier.kind
+          AND feature.slug = dossier.slug
+          AND feature.lifecycle = dossier.lifecycle
         WHERE COALESCE(
           json_extract(dossier.profile, '$.forensic_analysis.review.next_review_at'),
           feature.next_review_at

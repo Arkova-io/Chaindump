@@ -51,7 +51,12 @@ describe('NFT / Ordinals citation-ready surface', () => {
     expect(html).toContain('function nftEvidenceHtml');
     expect(html).toContain('function nftFreshnessHtml');
     expect(html).toContain('Evidence freshness');
-    expect(html).toContain('source ${esc(sourceDate)} · verified ${esc(verified)}');
+    expect(html).toContain('source ${esc(sourceDate)} · inspected ${esc(inspected)}');
+    expect(html).toContain('source.verification_note');
+    expect(html).toContain('access ${esc(access)}');
+    expect(html).toContain('evidence_scope: source.evidence_scope');
+    expect(html).toContain('stale_after: source.stale_after');
+    expect(html).toContain("stale: typeof source.stale === 'boolean' ? source.stale : null");
     expect(html).toContain('Field-level evidence');
     expect(html).toContain('Evidence coverage:');
     expect(html).toContain('legacy dossier');

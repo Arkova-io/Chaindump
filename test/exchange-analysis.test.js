@@ -266,6 +266,7 @@ describe('summarizeExchangeCases', () => {
       })),
     ];
 
-    expect(summarizeExchangeCases(cases, 'dex').trendReadiness.currentEvidenceCases).toBe(1);
+    expect(summarizeExchangeCases(cases, 'dex', '2026-07-29').trendReadiness.currentEvidenceCases)
+      .toBe(1);
   });
 });
