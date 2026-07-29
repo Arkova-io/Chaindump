@@ -2,13 +2,13 @@
 
 Audit date: **2026-07-29**
 
-> **Implementation update — 2026-07-29.** Migrations `0015` and `0020` have
-> since promoted the first 13 board chains into complete schema-v1 dossiers:
-> Ethereum, Solana, BSC, Base, Robinhood Chain, Hyperliquid L1, Polygon,
-> Arbitrum, Tron, Monad, Avalanche, OP Mainnet, and Mantle. The counts below
-> remain the pre-promotion audit baseline so that the gap is not rewritten out
-> of history. Re-run the machine-readable audit against the deployed D1 dataset
-> before publishing a new top-50 completion percentage.
+> **Current migrated coverage — 2026-07-29.** Migrations `0015` and `0020`
+> promote 13 current-board chains into complete schema-v1 dossiers: Ethereum,
+> Solana, BSC, Base, Robinhood Chain, Hyperliquid L1, Polygon, Arbitrum, Tron,
+> Monad, Avalanche, OP Mainnet, and Mantle. The historical snapshot below is
+> retained as a baseline, but it is not the current completion percentage.
+> The remaining 37 current-board names still require a fresh dimension audit
+> before they can be counted as complete.
 
 Board snapshot: **2026-07-29T15:35:40.123Z**
 
@@ -16,7 +16,20 @@ The [machine-readable manifest](./top-50-chain-dossier-coverage-2026-07-29.json)
 records the exact live board, research surfaces, dimension gaps, and source links
 used for this audit.
 
-## What is actually covered
+## Current migrated coverage
+
+| Coverage measure | Count | Meaning |
+|---|---:|---|
+| Comparable schema-v1 dossier | 13/50 | All eight required dimensions are materialized by migrations `0015` or `0020` |
+| Partial or legacy research | 35/50 | A research surface exists but the chain is not in the 13-dossier completion cohort |
+| No production research in the historical audit | 2/50 | XDC and Fluent were absent from the pre-promotion snapshot |
+
+This is an implementation count, not a quality claim: every current dossier
+must still pass source and freshness review. The visible Blockchain Analysis UI
+separates a research dossier from live-board inclusion and shows its dimension
+and field-coverage metadata.
+
+## Historical baseline audit
 
 The production site has some analysis for almost every current top-50 chain, but
 that is not the same as having 50 comparable dossiers.
@@ -29,7 +42,7 @@ that is not the same as having 50 comparable dossiers.
 | Legacy `chain_analysis` prose | 43/50 | A current take exists; it may be only a paragraph and is not a full dossier |
 | Slim dead/mid profile | 14/50 | A curated lifecycle profile exists in one of the status-specific tables |
 
-Only **Osmosis** has all eight required dimensions: `identity`, `token`,
+The fixed pre-promotion snapshot found only **Osmosis** with all eight required dimensions: `identity`, `token`,
 `capital`, `onchain`, `team`, `narrative`, `risk`, and `synthesis`. Robinhood
 Chain and Soneium are each at 7/8. This audit checks structural presence, not the
 truth or freshness of every field, so even “comparable” still requires source
