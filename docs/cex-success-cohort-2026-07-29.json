@@ -1,0 +1,17 @@
+{
+  "title": "CEX success controls — citation-first research seed",
+  "version": "2026-07-29",
+  "methodology": {
+    "outcome_definition": "A successful CEX control is a venue with current operating evidence and material, sourced reported activity or financial scale. It is not an investment, solvency, licensing, or causal-success verdict.",
+    "metric_policy": "Issuer-reported annual platform volume, all-product volume, average daily volume, and TTM revenue are retained as separate metric classes. They are never pooled or ranked together.",
+    "token_policy": "BNB has a field-cited venue-ecosystem token record. Coinbase, Kraken, Bybit, and Bitstamp are recorded as no venue token identified in the reviewed source set, not as proof that no token could ever exist.",
+    "as_of": "2026-07-29"
+  },
+  "cases": [
+    {"slug":"coinbase","status":"successful_established","metric":{"type":"platform_trading_volume_annual","value_usd":1221000000000,"period_end":"2025-12-31"},"sources":["https://www.sec.gov/Archives/edgar/data/1679788/000167978826000015/coin-20251231.htm"]},
+    {"slug":"kraken","status":"successful_established","metric":{"type":"platform_transaction_volume_annual","value_usd":2000000000000,"period_end":"2025-12-31"},"sources":["https://blog.kraken.com/news/kraken-2025-financials"]},
+    {"slug":"binance","status":"successful_established","metric":{"type":"all_product_trading_volume_annual","value_usd":34000000000000,"period_end":"2025-12-31"},"token":{"symbol":"BNB","source":"https://academy.binance.com/en/articles/what-is-bnb"},"sources":["https://www.prnewswire.com/in/news-releases/binances-2025-end-of-year-report-trust-liquidity-and-web3-discovery-302657209.html","https://academy.binance.com/en/articles/what-is-bnb"]},
+    {"slug":"bybit","status":"successful_established","metric":{"type":"reported_average_daily_trading_volume","value_usd":36000000000,"period_end":"2024-12-31"},"sources":["https://www.bybit.com/en/press/post/bybit-unveils-2025-vision-a-user-centric-approach-to-crypto-innovation-blt02b02bc45c5a067d","https://www.bybit.com/en/press/post/fully-backed-within-72-hours-bybit-maintains-1-1-customer-assets-ratio-in-latest-proof-of-reserves-audited-report-by-hacken-bltb767a9461133831f"]},
+    {"slug":"bitstamp","status":"successful_established","metric":{"type":"net_revenue_ttm","value_usd":95000000,"period_end":"2025-04-30"},"sources":["https://investors.robinhood.com/static-files/4183f04d-6658-438d-9045-64ffa8e7402d"]}
+  ]
+}
