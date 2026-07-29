@@ -40,6 +40,26 @@ function renderers() {
   `)();
 }
 
+function exchangeCardRenderer() {
+  return new Function(`
+    const esc = (value) => String(value ?? '');
+    const state = { exchangeAnalysisExpanded: null };
+    const srcHtml = () => '';
+    const exchangeAnalysisDetails = () => '';
+    const exchangeTokenLine = () => '';
+    const exchangeMetric = () => '—';
+    const fmtUsd = (value) => String(value);
+    const exchangeLabel = (value) => String(value || '').replaceAll('_', ' ');
+    const exchangeFindingHtml = () => '';
+    const publicationDepthEvidenceHtml = () => '';
+    ${functionBlock('lifecycleLabel', 'lifecycleClass')}
+    ${functionBlock('lifecycleClass', 'exchangeLabel')}
+    ${functionBlock('publicationDepthGap', 'publicationPendingHtml')}
+    ${functionBlock('exchangeAnalysisCard', 'exchangeTrendSummary')}
+    return exchangeAnalysisCard;
+  `)();
+}
+
 const source = {
   id: 'registered-source',
   title: 'Registered source',
@@ -123,5 +143,37 @@ describe('cross-vertical publication-depth UI', () => {
 
     expect(output).toContain('Observed product architecture.');
     expect(output).not.toContain('withheld');
+  });
+
+  it('qualifies the exchange card badge while preserving the sortable indexed cohort', () => {
+    const exchangeAnalysisCard = exchangeCardRenderer();
+    const output = exchangeAnalysisCard({
+      kind: 'cex',
+      lifecycle: 'dead',
+      slug: 'pending-exchange',
+      name: 'Pending Exchange',
+      profile: {},
+      token: {},
+      sources: [],
+      venueType: 'exchange',
+      productCohort: 'centralized_exchange',
+      qualityLabel: 'partial',
+      forensicStatus: 'published',
+      metricLabel: 'metric',
+      publicationDepth: {
+        high_risk_claim_count: 2,
+        passing_high_risk_claim_count: 0,
+        unresolved_high_risk_claim_count: 2,
+        unresolved_high_risk_claims: [{
+          path: 'forensic_analysis.outcome',
+          type: 'lifecycle',
+          gaps: ['high_risk_evidence_threshold_not_met'],
+        }],
+      },
+    });
+
+    expect(output).toContain('support pending');
+    expect(output).toContain('indexed cohort: dead');
+    expect(output).not.toContain('>dead / winding down<');
   });
 });

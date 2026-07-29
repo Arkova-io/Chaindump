@@ -1483,6 +1483,12 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
 }
 function exchangeAnalysisCard(row) {
   const p = row.profile || {};
+  const outcomeGap = publicationDepthGap(
+    row.publicationDepth,
+    'forensic_analysis.outcome',
+  );
+  const verdictLabel = outcomeGap ? 'support pending' : lifecycleLabel(row.lifecycle);
+  const verdictClass = outcomeGap ? 'declining' : lifecycleClass(row.lifecycle);
   const open = state.exchangeAnalysisExpanded === `${row.kind}:${row.lifecycle}:${row.slug}`;
   const token = row.token || {};
   const sourcePreview = srcHtml(row.sources.slice(0, 3), 'Cited sources: ');
@@ -1495,6 +1501,7 @@ function exchangeAnalysisCard(row) {
   ];
   if (row.primaryChain) meta.push(row.primaryChain);
   if (row.launched) meta.push(`launched ${row.launched}`);
+  meta.push(`indexed cohort: ${row.lifecycle}`);
   meta.push(`data quality: ${row.qualityLabel}`);
   meta.push(`causal map: ${row.forensicStatus === 'published' ? 'indexed' : 'structure pending'}`);
   meta.push(`high-risk support: ${row.publicationDepth.passing_high_risk_claim_count || 0}/${row.publicationDepth.high_risk_claim_count || 0}`);
@@ -1502,7 +1509,7 @@ function exchangeAnalysisCard(row) {
   meta.push(`${row.sources.length} ${sourceLabel}`);
   const dossierLink = `/exchange/${encodeURIComponent(row.kind)}/${encodeURIComponent(row.lifecycle)}/${encodeURIComponent(row.slug)}`;
   return `<div class="gcard ${open?'open':''}" role="button" tabindex="0" data-exchange-analysis-key="${esc(`${row.kind}:${row.lifecycle}:${row.slug}`)}">
-    <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${lifecycleClass(row.lifecycle)}">${esc(lifecycleLabel(row.lifecycle))}</span></div>
+    <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${verdictClass}">${esc(verdictLabel)}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${metricContext}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
     <div class="gmeta">${meta.map(esc).join(' · ')}</div>
     ${exchangeFindingHtml(row)}
@@ -1876,19 +1883,24 @@ function casinoDetailBody(item, detail) {
 function casinoAnalysisCard(item) {
   const open = state.casinoAnalysisExpanded === item.case_id;
   const detail = state.casinoAnalysisDetails[item.case_id];
+  const depth = item.publication_depth || {};
+  const outcomeGap = publicationDepthGap(depth, 'forensic_analysis.outcome');
+  const statusLabel = outcomeGap ? 'support pending' : casinoLabel(item.status);
+  const outcomeLabel = outcomeGap
+    ? 'outcome withheld — independent support pending'
+    : casinoLabel(item.outcome_label || 'outcome unknown');
   const chains = Array.isArray(item.chains) && item.chains.length ? item.chains.join(' · ') : 'No chain scope published';
   const body = open ? casinoDetailBody(item, detail) : '';
   const sourcePreview = `<div class="analysis-src-preview"><div class="asrc">Evidence: ${esc(item.registered_source_count)} registered · ${esc(item.reachable_source_count)} reachable · ${esc(item.reviewed_source_count)} editor reviewed; open dossier for field-level links and status.</div></div>`;
-  const depth = item.publication_depth || {};
   const supportPreview = `<div class="analysis-src-preview"><div class="asrc">High-risk support: ${esc(depth.passing_high_risk_claim_count || 0)}/${esc(depth.high_risk_claim_count || 0)} meet policy · ${esc(depth.unresolved_high_risk_claim_count || 0)} pending / withheld.</div></div>`;
   // Keep the public handoff inside the research UI. The API remains the data
   // source for the lazy detail pane; a reader should never have to inspect raw
   // JSON to read a published dossier.
   const dossierLink = `/casino/${encodeURIComponent(item.case_id)}`;
   return `<div class="gcard ${open ? 'open' : ''}" role="button" tabindex="0" data-casino-case="${esc(item.case_id)}">
-    <div class="ghead"><div class="gname">${esc(item.brand_name)} <span class="gverdict ${item.status === 'active' ? 'recover' : 'declining'}">${esc(casinoLabel(item.status))}</span></div>
+    <div class="ghead"><div class="gname">${esc(item.brand_name)} <span class="gverdict ${!outcomeGap && item.status === 'active' ? 'recover' : 'declining'}">${esc(statusLabel)}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${item.reviewed_source_count}<span class="gddl">editor reviewed</span></div></div>
-    <div class="gmeta">${esc(casinoLabel(item.entity_kind))} · ${esc(casinoLabel(item.product_subtype))} · ${esc(chains)} · ${esc(casinoLabel(item.outcome_label || 'outcome unknown'))} · ${esc(item.completeness_pct)}% complete · status evidence ${esc(item.status_as_of || '—')} · last reviewed ${esc(item.last_reviewed || '—')}</div>
+    <div class="gmeta">${esc(casinoLabel(item.entity_kind))} · ${esc(casinoLabel(item.product_subtype))} · ${esc(chains)} · ${esc(outcomeLabel)} · ${esc(item.completeness_pct)}% complete · status evidence ${esc(item.status_as_of || '—')} · last reviewed ${esc(item.last_reviewed || '—')}</div>
     <div class="gbody">${esc(item.product_scope_note || 'Scoped research dossier.')}</div>
     ${supportPreview}${sourcePreview}
     ${body}<div class="gexpand">${open ? 'Hide dossier ▲' : 'Full cited dossier ▾'} · <a href="${esc(dossierLink)}" target="_blank" rel="noopener noreferrer">Open dossier →</a></div>

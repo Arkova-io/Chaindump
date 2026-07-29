@@ -38,6 +38,21 @@ function buildEvidenceRenderers() {
   `)();
 }
 
+function buildCasinoCardRenderer() {
+  return new Function(`
+    const esc = (value) => String(value ?? '');
+    const casinoLabel = (value) => String(value || '').replaceAll('_', ' ');
+    const casinoDetailBody = () => '';
+    const state = {
+      casinoAnalysisExpanded: null,
+      casinoAnalysisDetails: {},
+    };
+    ${functionBlock('publicationDepthGap', 'publicationPendingHtml')}
+    ${functionBlock('casinoAnalysisCard', 'renderCasinoAnalysis')}
+    return casinoAnalysisCard;
+  `)();
+}
+
 describe('casino evidence-state UI', () => {
   it('labels an unreviewed causal citation and withholds an unsupported causal section', () => {
     const { forensicAnalysisHtml } = buildEvidenceRenderers();
@@ -103,5 +118,41 @@ describe('casino evidence-state UI', () => {
     expect(banner).toContain('Corpus inclusion measures indexed coverage, not editorial claim support.');
     expect(section).toContain('Counterfactual withheld — independent support pending.');
     expect(section).not.toContain('SHOULD NOT RENDER');
+  });
+
+  it('withholds unsupported lifecycle and outcome labels on the collapsed card', () => {
+    const casinoAnalysisCard = buildCasinoCardRenderer();
+    const output = casinoAnalysisCard({
+      case_id: 'pending-casino',
+      brand_name: 'Pending Casino',
+      entity_kind: 'custodial_operator',
+      product_subtype: 'casino',
+      primary_domain: 'pending.example',
+      status: 'insolvent',
+      status_as_of: '2026-07-29',
+      outcome_label: 'failed',
+      completeness_pct: 80,
+      last_reviewed: '2026-07-29',
+      chains: ['Ethereum'],
+      product_scope_note: 'Neutral scoped research dossier.',
+      registered_source_count: 2,
+      reachable_source_count: 2,
+      reviewed_source_count: 0,
+      publication_depth: {
+        high_risk_claim_count: 2,
+        passing_high_risk_claim_count: 0,
+        unresolved_high_risk_claim_count: 2,
+        unresolved_high_risk_claims: [{
+          path: 'forensic_analysis.outcome',
+          type: 'lifecycle',
+          gaps: ['high_risk_evidence_threshold_not_met'],
+        }],
+      },
+    });
+
+    expect(output).toContain('support pending');
+    expect(output).toContain('outcome withheld — independent support pending');
+    expect(output).not.toContain('>insolvent<');
+    expect(output).not.toContain('· failed ·');
   });
 });
