@@ -85,10 +85,8 @@ function expectPublicationSourceState(source) {
     source_role: expect.any(String),
     evidence_reviewed: expect.any(Boolean),
   });
-  if (source.access_state === 'resolving') {
-    expect(source).toMatchObject({ resolving: true, reachable: true });
-  } else if (source.access_state === 'not_resolving') {
-    expect(source).toMatchObject({ resolving: false, reachable: false });
+  if (typeof source.resolving === 'boolean') {
+    expect(source.reachable).toBe(source.resolving);
   } else {
     expect(source).not.toHaveProperty('reachable');
   }
@@ -165,6 +163,45 @@ describe('publication-depth Wave A migration 0063', () => {
       evidence_reviewed: true,
     });
     expect(unsupportedReviewFlag.evidence_reviewed).toBe(false);
+    for (const invalidTimestamp of ['not-a-date', '2026-99-99', '2026-07-29T99:99:99Z']) {
+      const invalidReview = normalizePublicationSource({
+        id: invalidTimestamp,
+        url: 'https://independent.example/invalid-review',
+        source_tier: 'T2',
+        source_role: 'independent',
+        resolving: true,
+        evidence_reviewed: true,
+        evidence_reviewer: 'publication-depth-test',
+        evidence_reviewed_at: invalidTimestamp,
+      });
+      expect(invalidReview.evidence_reviewed, invalidTimestamp).toBe(false);
+      expect(invalidReview.evidence_reviewed_at, invalidTimestamp).toBeNull();
+    }
+
+    const forbidden = normalizePublicationSource({
+      id: 'forbidden',
+      url: 'https://independent.example/forbidden',
+      source_tier: 'T2',
+      source_role: 'independent',
+      resolving: false,
+      access_state: 'http_403',
+    });
+    expect(forbidden).toMatchObject({
+      access_state: 'http_403',
+      resolving: false,
+    });
+    const indexedOnly = normalizePublicationSource({
+      id: 'indexed-only',
+      url: 'https://independent.example/indexed-only',
+      source_tier: 'T2',
+      source_role: 'independent',
+      resolving: true,
+      access_state: 'bot_blocked_raw_fetch',
+    });
+    expect(indexedOnly).toMatchObject({
+      access_state: 'bot_blocked_raw_fetch',
+      resolving: true,
+    });
   });
 
   it('applies a role-aware high-risk source threshold', () => {
@@ -240,6 +277,58 @@ describe('publication-depth Wave A migration 0063', () => {
     expect(syndicatedSecond.independence_key).toBe('shared-project-announcement');
     expect(syndicatedAssessment.passes).toBe(false);
     expect(syndicatedAssessment.independent_t3_publisher_count).toBe(1);
+
+    const sameNewsroomRoot = normalizePublicationSource({
+      id: 'newsroom-root',
+      url: 'https://coindesk.com/evidence',
+      publisher: ' CoinDesk ',
+      source_tier: 'T3',
+      source_role: 'independent',
+      resolving: true,
+      evidence_reviewed: true,
+      evidence_reviewer: 'publication-depth-test',
+      evidence_reviewed_at: '2026-07-29T12:00:00Z',
+    });
+    const sameNewsroomSubdomain = normalizePublicationSource({
+      id: 'newsroom-subdomain',
+      url: 'https://markets.coindesk.com/other-evidence',
+      publisher: 'COINDESK MARKETS',
+      source_tier: 'T3',
+      source_role: 'independent',
+      resolving: true,
+      evidence_reviewed: true,
+      evidence_reviewer: 'publication-depth-test',
+      evidence_reviewed_at: '2026-07-29T12:00:00Z',
+    });
+    expect(sameNewsroomRoot.independence_key).toBe('coindesk.com');
+    expect(sameNewsroomSubdomain.independence_key).toBe('coindesk.com');
+    expect(assess('causal', sameNewsroomRoot, sameNewsroomSubdomain).passes).toBe(false);
+
+    const publisherCaseOne = normalizePublicationSource({
+      id: 'publisher-case-one',
+      url: null,
+      publisher: ' Independent Newsroom ',
+      source_tier: 'T3',
+      source_role: 'independent',
+      resolving: true,
+      evidence_reviewed: true,
+      evidence_reviewer: 'publication-depth-test',
+      evidence_reviewed_at: '2026-07-29T12:00:00Z',
+    });
+    const publisherCaseTwo = normalizePublicationSource({
+      id: 'publisher-case-two',
+      url: null,
+      publisher: 'independent   newsroom',
+      source_tier: 'T3',
+      source_role: 'independent',
+      resolving: true,
+      evidence_reviewed: true,
+      evidence_reviewer: 'publication-depth-test',
+      evidence_reviewed_at: '2026-07-29T12:00:00Z',
+    });
+    expect(publisherCaseOne.independence_key).toBe('independent newsroom');
+    expect(publisherCaseTwo.independence_key).toBe('independent newsroom');
+    expect(assess('causal', publisherCaseOne, publisherCaseTwo).passes).toBe(false);
 
     const authority = normalizePublicationSource({
       id: 'authority',
@@ -392,15 +481,15 @@ describe('publication-depth Wave A migration 0063', () => {
     expect(before.summary.by_vertical.nft_ordinals.dossier_count).toBe(51);
     expect(before.summary).toMatchObject({
       dossier_count: 139,
-      high_risk_claim_count: 1039,
-      unresolved_high_risk_claim_count: 959,
+      high_risk_claim_count: 1168,
+      unresolved_high_risk_claim_count: 1088,
       dossiers_with_unresolved_high_risk_claims: 137,
       dossiers_with_unmatched_source_refs: 41,
     });
     expect(after.summary).toMatchObject({
       dossier_count: 139,
-      high_risk_claim_count: 1043,
-      unresolved_high_risk_claim_count: 955,
+      high_risk_claim_count: 1172,
+      unresolved_high_risk_claim_count: 1084,
       dossiers_with_unresolved_high_risk_claims: 137,
       dossiers_with_unmatched_source_refs: 0,
     });
@@ -421,7 +510,7 @@ describe('publication-depth Wave A migration 0063', () => {
       'cex:dead:bitmex': [6, 6],
       'cex:mid:kucoin': [7, 7],
       'bc-game-curacao-small-house': [5, 1],
-      'f1-delta-time': [11, 11],
+      'f1-delta-time': [12, 12],
       'zkasino-alleged-platform': [0, 0],
     };
     for (const [id, [beforeCount, afterCount]] of Object.entries(expectedRepairs)) {
@@ -689,6 +778,21 @@ describe('publication-depth Wave A migration 0063', () => {
       for (const reference of forensicReferences(item.synthesis.forensic_analysis)) {
         expect(registered.has(reference), `${caseId}: ${reference}`).toBe(true);
       }
+      for (const observation of item.observations) {
+        if (observation.publication_support !== 'pending_independent_support') continue;
+        expect(observation.value, `${caseId}: ${observation.observation_id}`).toBeNull();
+        expect(observation.method, `${caseId}: ${observation.observation_id}`).toBeNull();
+      }
+      for (const event of item.events) {
+        if (event.publication_support !== 'pending_independent_support') continue;
+        expect(event.event_type, `${caseId}: ${event.event_id}`).toBeNull();
+        expect(event.description, `${caseId}: ${event.event_id}`).toBeNull();
+      }
+      for (const licence of item.licences) {
+        if (licence.publication_support !== 'pending_independent_support') continue;
+        expect(licence.authority, `${caseId}: ${licence.licence_observation_id}`).toBeNull();
+        expect(licence.licence_status, `${caseId}: ${licence.licence_observation_id}`).toBeNull();
+      }
       if (caseId === 'zkasino-alleged-platform') {
         expect(item.case.source_count).toBeGreaterThanOrEqual(2);
         expect(item.sources.some(({ url }) => (
@@ -723,9 +827,9 @@ describe('publication-depth Wave A migration 0063', () => {
     const nftPayload = await nftResponse.json();
     expect(nftPayload.collections).toHaveLength(51);
     expect(nftPayload.claim_support).toMatchObject({
-      high_risk_claim_count: 421,
+      high_risk_claim_count: 550,
       passing_high_risk_claim_count: 0,
-      unresolved_high_risk_claim_count: 421,
+      unresolved_high_risk_claim_count: 550,
     });
     for (const item of nftPayload.collections) {
       const sources = JSON.parse(item.sources);
@@ -795,8 +899,8 @@ describe('publication-depth Wave A migration 0063', () => {
       UPDATE casino_sources
       SET resolving = 1,
           evidence_reviewed = 1,
-          evidence_reviewer = NULL,
-          evidence_reviewed_at = NULL
+          evidence_reviewer = 'malformed-review-test',
+          evidence_reviewed_at = '2026-99-99'
       WHERE source_id = ?
     `).run(target.source_id);
 
@@ -824,7 +928,7 @@ describe('publication-depth Wave A migration 0063', () => {
     const exposed = detail.sources.find(({ id }) => id === target.source_id);
     expect(exposed).toMatchObject({
       evidence_reviewed: false,
-      evidence_reviewer: null,
+      evidence_reviewer: 'malformed-review-test',
       evidence_reviewed_at: null,
     });
     expect(detail.case.reviewed_source_count)

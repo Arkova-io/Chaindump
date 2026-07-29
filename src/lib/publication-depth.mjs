@@ -1,4 +1,5 @@
 const HTTPS_URL = /^https:\/\/\S+$/;
+const ISO_REVIEW_TIMESTAMP = /^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2}))?$/;
 
 const TIER_RANK = Object.freeze({
   T1: 1,
@@ -14,6 +15,14 @@ const HIGH_RISK_CLAIM_TYPES = new Set([
   'legal',
   'lifecycle',
   'loss',
+]);
+const NFT_NARRATIVE_FIELDS = new Set([
+  'business',
+  'community_history',
+  'community_sentiment',
+  'founder_engagement',
+  'notable_holders',
+  'social',
 ]);
 
 const AUTHORITY_HOSTS = new Set([
@@ -117,10 +126,39 @@ function explicitRole(source) {
 }
 
 function accessState(source) {
+  if (String(source.access_state || '').trim()) return String(source.access_state).trim();
   if (source.resolving === true || source.resolving === 1) return 'resolving';
   if (source.resolving === false || source.resolving === 0) return 'not_resolving';
-  if (source.access_state) return source.access_state;
   return 'not_recorded';
+}
+
+function resolvingState(source, state) {
+  if (source.resolving === true || source.resolving === 1) return true;
+  if (source.resolving === false || source.resolving === 0) return false;
+  if (state === 'resolving') return true;
+  if (state === 'not_resolving') return false;
+  return null;
+}
+
+function normalizedIndependenceKey(value) {
+  return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ') || null;
+}
+
+function independenceHost(host) {
+  for (const candidates of [
+    AUTHORITY_HOSTS,
+    TIER_TWO_INDEPENDENT_HOSTS,
+    TIER_THREE_INDEPENDENT_HOSTS,
+  ]) {
+    const policyRoot = [...candidates].find((candidate) => hostMatches(host, new Set([candidate])));
+    if (policyRoot) return policyRoot;
+  }
+  return host;
+}
+
+export function isIsoReviewTimestamp(value) {
+  const text = String(value || '').trim();
+  return ISO_REVIEW_TIMESTAMP.test(text) && !Number.isNaN(Date.parse(text));
 }
 
 function classifyByHost(source, host) {
@@ -159,17 +197,19 @@ export function normalizePublicationSource(sourceValue) {
     : declaredRole || byHost.role;
   const publisher = source.publisher || host || source.title || null;
   const state = accessState(source);
-  const explicitIndependenceGroup = String(
+  const explicitIndependenceGroup = normalizedIndependenceKey(
     source.independence_group
       || source.independence_key
       || source.evidence_origin
       || '',
-  ).trim() || null;
+  );
   const evidenceReviewer = String(source.evidence_reviewer || '').trim() || null;
-  const evidenceReviewedAt = String(source.evidence_reviewed_at || '').trim() || null;
+  const reviewTimestamp = String(source.evidence_reviewed_at || '').trim() || null;
+  const evidenceReviewedAt = isIsoReviewTimestamp(reviewTimestamp) ? reviewTimestamp : null;
   const evidenceReviewed = (
     source.evidence_reviewed === true || source.evidence_reviewed === 1
   ) && Boolean(evidenceReviewer && evidenceReviewedAt);
+  const resolving = resolvingState(source, state);
   return {
     id: source.id || source.source_id || url,
     url,
@@ -179,11 +219,15 @@ export function normalizePublicationSource(sourceValue) {
     tier,
     role,
     independence_key: role === 'independent' || role === 'authority'
-      ? (explicitIndependenceGroup || publisher || host)
+      ? (
+        explicitIndependenceGroup
+        || independenceHost(host)
+        || normalizedIndependenceKey(publisher)
+      )
       : null,
     independence_group: explicitIndependenceGroup,
     access_state: state,
-    resolving: state === 'resolving',
+    resolving,
     evidence_reviewed: evidenceReviewed,
     evidence_reviewer: evidenceReviewer,
     evidence_reviewed_at: evidenceReviewedAt,
@@ -244,6 +288,7 @@ function collectForensicClaims(analysisValue) {
 }
 
 function evidenceClaimType(evidence) {
+  if (NFT_NARRATIVE_FIELDS.has(String(evidence.field || '').toLowerCase())) return 'causal';
   const text = `${evidence.field || ''} ${evidence.value || ''}`.toLowerCase();
   if (/(legal|licen[cs]e|lawsuit|arrest|convict|charge|regulat)/.test(text)) return 'legal';
   if (/(loss|stolen|seiz|hack|exploit|victim|deposit|recovery)/.test(text)) return 'loss';
@@ -313,7 +358,9 @@ export function evaluatePublicationClaim(claim, registeredSources) {
     else resolved.push(source);
   }
   const unique = uniqueSources(resolved);
-  const accessible = unique.filter((source) => source.resolving && source.evidence_reviewed);
+  const accessible = unique.filter((source) => (
+    source.resolving === true && source.evidence_reviewed
+  ));
   const tierOneAuthority = accessible.filter((source) => (
     source.tier === 'T1' && source.role === 'authority'
   ));
@@ -389,7 +436,7 @@ function inspectDossier({ vertical, id, name, sources, claims }) {
   const riskScore = (
     unresolvedHighRisk.length * 100
     + unmatchedRefs.length * 20
-    + normalizedSources.filter((source) => !source.resolving).length * 4
+    + normalizedSources.filter((source) => source.resolving === false).length * 4
     + normalizedSources.filter((source) => source.tier === 'unknown').length * 2
   );
   return {
@@ -407,6 +454,13 @@ function inspectDossier({ vertical, id, name, sources, claims }) {
     source_tier_counts: tierCounts,
     source_role_counts: roleCounts,
     source_access_counts: sourceAccessCounts,
+    claim_support: evaluatedClaims.map((claim) => ({
+      path: claim.path,
+      type: claim.type,
+      high_risk: claim.high_risk,
+      passes: claim.passes,
+      gaps: claim.gaps,
+    })),
     unresolved_high_risk_claims: unresolvedHighRisk.map((claim) => ({
       path: claim.path,
       type: claim.type,
@@ -454,10 +508,11 @@ function compactPublicationDepth(assessment, sources) {
     unresolved_high_risk_claim_count: assessment.unresolved_high_risk_claim_count,
     unmatched_source_ref_count: assessment.unmatched_source_ref_count,
     unresolved_high_risk_claims: assessment.unresolved_high_risk_claims,
+    claim_support: assessment.claim_support,
     registered_source_count: normalizedSources.length,
-    reachable_source_count: normalizedSources.filter((source) => source.resolving).length,
+    reachable_source_count: normalizedSources.filter((source) => source.resolving === true).length,
     reviewed_source_count: normalizedSources.filter((source) => (
-      source.resolving && source.evidence_reviewed
+      source.resolving === true && source.evidence_reviewed
     )).length,
     policy_note: 'Corpus inclusion measures indexed dossier coverage, not editorial claim support. Unsupported high-risk conclusions remain pending.',
   };
@@ -703,10 +758,11 @@ export function buildPublicationDepthInventory(database, options = {}) {
     schema: 'chaindump-publication-depth-v1',
     as_of: options.asOf || null,
     policy: {
-      high_risk_claim_types: [...HIGH_RISK_CLAIM_TYPES].sort(),
-      passing_rule: 'High-risk claims require one resolving/reviewed T1 authority, one resolving/reviewed independent T1 or T2 source, or two resolving/reviewed independent T3 publishers. A primary T1 source does not satisfy the independent threshold. A T2 operator/primary source can pass only a narrow lifecycle/status claim that the operator reports about itself.',
+      high_risk_claim_types: [...HIGH_RISK_CLAIM_TYPES]
+        .sort((left, right) => left.localeCompare(right)),
+      passing_rule: 'High-risk claims require one reachable/editor-reviewed T1 authority, one reachable/editor-reviewed independent T1 or T2 source, or two reachable/editor-reviewed independent T3 evidence origins. Shared evidence_origin or independence_group values and same-newsroom host roots count once. A primary T1 source does not satisfy the independent threshold. A T2 operator/primary source can pass only a narrow lifecycle/status claim that the operator reports about itself.',
       access_rule: 'Missing resolving/access metadata is reported as not_recorded and never silently treated as accessible.',
-      review_rule: 'Access timestamps never imply editorial evidence review; evidence_reviewed must be explicit.',
+      review_rule: 'Access timestamps never imply editorial evidence review; evidence_reviewed requires explicit reviewer identity and an ISO date or timezone-qualified ISO datetime.',
       reference_rule: 'Direct URL references must also exist in the dossier source registry; unmatched refs remain explicit gaps.',
     },
     summary: summarize(dossiers),

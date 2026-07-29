@@ -53,6 +53,26 @@ function buildCasinoCardRenderer() {
   `)();
 }
 
+function buildCasinoRecordRenderers() {
+  return new Function(`
+    const esc = (value) => String(value ?? '');
+    const fmtNum = (value) => String(value);
+    const fmtUsd = (value) => String(value);
+    ${functionBlock('casinoLabel', 'casinoObservationHtml')}
+    ${functionBlock('casinoObservationHtml', 'casinoOutlookText')}
+    ${functionBlock('publicationPendingHtml', 'forensicAnalysisHtml')}
+    return { casinoObservationHtml, casinoEventHtml, casinoLicenceHtml };
+  `)();
+}
+
+function buildCasinoSynthesisGuards() {
+  return new Function(`
+    ${functionBlock('casinoOutlookUnsupported', 'casinoLessonsUnsupported')}
+    ${functionBlock('casinoLessonsUnsupported', 'casinoReviewState')}
+    return { casinoOutlookUnsupported, casinoLessonsUnsupported };
+  `)();
+}
+
 describe('casino evidence-state UI', () => {
   it('labels an unreviewed causal citation and withholds an unsupported causal section', () => {
     const { forensicAnalysisHtml } = buildEvidenceRenderers();
@@ -154,5 +174,56 @@ describe('casino evidence-state UI', () => {
     expect(output).toContain('outcome withheld — independent support pending');
     expect(output).not.toContain('>insolvent<');
     expect(output).not.toContain('· failed ·');
+  });
+
+  it('withholds unsupported observation, event, and licence records', () => {
+    const {
+      casinoObservationHtml,
+      casinoEventHtml,
+      casinoLicenceHtml,
+    } = buildCasinoRecordRenderers();
+    const pending = { publication_support: 'pending_independent_support' };
+    const output = [
+      casinoObservationHtml({
+        ...pending,
+        metric_dimension: 'loss',
+        value: 123456,
+        method: 'UNSUPPORTED METRIC METHOD',
+      }),
+      casinoEventHtml({
+        ...pending,
+        event_type: 'insolvency',
+        event_date: '2026-01-01',
+        description: 'UNSUPPORTED INSOLVENCY EVENT',
+      }),
+      casinoLicenceHtml({
+        ...pending,
+        authority: 'UNSUPPORTED REGULATOR',
+        licence_status: 'revoked',
+        activities: [],
+      }),
+    ].join('');
+
+    expect(output).not.toContain('123456');
+    expect(output).not.toContain('UNSUPPORTED METRIC METHOD');
+    expect(output).not.toContain('UNSUPPORTED INSOLVENCY EVENT');
+    expect(output).not.toContain('UNSUPPORTED REGULATOR');
+    expect(output).toContain('Metric observation withheld');
+    expect(output).toContain('Lifecycle event withheld');
+    expect(output).toContain('Licence observation withheld');
+  });
+
+  it('withholds casino outlook and lessons when their causal support is pending', () => {
+    const {
+      casinoOutlookUnsupported,
+      casinoLessonsUnsupported,
+    } = buildCasinoSynthesisGuards();
+    expect(casinoOutlookUnsupported({ path: 'forensic_analysis.outcome' })).toBe(true);
+    expect(casinoOutlookUnsupported({ path: 'forensic_analysis.why' })).toBe(true);
+    expect(casinoLessonsUnsupported({ path: 'forensic_analysis.why' })).toBe(true);
+    expect(casinoLessonsUnsupported({
+      path: 'forensic_analysis.strategic_choices[0]',
+    })).toBe(true);
+    expect(casinoLessonsUnsupported({ path: 'forensic_analysis.counterfactual' })).toBe(true);
   });
 });

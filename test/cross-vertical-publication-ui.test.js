@@ -20,11 +20,14 @@ function renderers() {
       .replaceAll("'", '&#39;');
     const safeUrl = (value) => String(value || '');
     const proseBox = (value) => '<div class="prose">' + esc(value) + '</div>';
+    const analysisText = (value) => String(value || '');
     ${functionBlock('evidenceStatusParts', 'sourceMetadataHtml')}
     ${functionBlock('sourceMetadataHtml', 'srcHtml')}
     ${functionBlock('srcHtml', 'nftEvidenceHtml')}
     ${functionBlock('exchangeFindingLabel', 'exchangeFindingHtml')}
     ${functionBlock('exchangeFindingHtml', 'exchangeTokenLine')}
+    ${functionBlock('exchangeRiskNotesHtml', 'exchangeOutlookHtml')}
+    ${functionBlock('exchangeOutlookHtml', 'exchangeAnalysisDetails')}
     ${functionBlock('publicationDepthGap', 'publicationPendingHtml')}
     ${functionBlock('publicationPendingHtml', 'forensicAnalysisHtml')}
     ${functionBlock('publicationDepthEvidenceHtml', 'publicationDepthSectionHtml')}
@@ -32,6 +35,8 @@ function renderers() {
     ${functionBlock('nftLifecycleReadHtml', 'renderNft')}
     return {
       exchangeFindingHtml,
+      exchangeOutlookHtml,
+      exchangeRiskNotesHtml,
       nftLifecycleReadHtml,
       publicationDepthEvidenceHtml,
       publicationDepthSectionHtml,
@@ -143,6 +148,20 @@ describe('cross-vertical publication-depth UI', () => {
 
     expect(output).toContain('Observed product architecture.');
     expect(output).not.toContain('withheld');
+  });
+
+  it('withholds unsupported exchange risk and outlook prose', () => {
+    const { exchangeOutlookHtml, exchangeRiskNotesHtml } = renderers();
+    const publicationDepth = depth('forensic_analysis.outcome');
+    const output = [
+      exchangeRiskNotesHtml('UNSUPPORTED EXCHANGE RISK', publicationDepth),
+      exchangeOutlookHtml('UNSUPPORTED EXCHANGE OUTLOOK', publicationDepth),
+    ].join('');
+
+    expect(output).not.toContain('UNSUPPORTED EXCHANGE RISK');
+    expect(output).not.toContain('UNSUPPORTED EXCHANGE OUTLOOK');
+    expect(output).toContain('Risk notes withheld');
+    expect(output).toContain('Outlook withheld');
   });
 
   it('qualifies the exchange card badge while preserving the sortable indexed cohort', () => {

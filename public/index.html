@@ -796,20 +796,20 @@ function evidenceStatusParts(source) {
     'reachable',
     'resolving',
     'evidence_reviewed',
-  ].some((key) => Object.prototype.hasOwnProperty.call(source, key))
+  ].some((key) => Object.hasOwn(source, key))
     || Boolean(source.source_tier || source.source_role);
   if (!hasEvidenceContract) return [];
   const truthy = (value) => value === true || value === 1 || value === '1';
   const parts = ['registered'];
   if (
-    Object.prototype.hasOwnProperty.call(source, 'reachable')
-    || Object.prototype.hasOwnProperty.call(source, 'resolving')
+    Object.hasOwn(source, 'reachable')
+    || Object.hasOwn(source, 'resolving')
   ) {
     parts.push(truthy(source.reachable ?? source.resolving) ? 'reachable' : 'not reachable');
   } else if (source.access_state) {
     parts.push(`retrieval ${String(source.access_state).replaceAll('_', ' ')}`);
   }
-  if (Object.prototype.hasOwnProperty.call(source, 'evidence_reviewed')) {
+  if (Object.hasOwn(source, 'evidence_reviewed')) {
     parts.push(truthy(source.evidence_reviewed) ? 'editor reviewed' : 'editor review pending');
   }
   if (source.source_tier) parts.push(`tier ${source.source_tier}`);
@@ -886,11 +886,11 @@ function nftEvidenceHtml(profile, sources, freshnessState, publicationDepth = nu
       return `<a href="${esc(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title || id)} ↗</a><span class="muted"> · source ${esc(sourceDate)} · inspected ${esc(inspected)} · ${verification} · access ${esc(access)} · ${esc(freshness)}${publication}${note}</span>`;
     }).filter(Boolean).join(' · ');
     if (!links) return '';
-    const value = gap
-      ? 'withheld — independent support pending'
-      : item.field === 'lifecycle_status' && freshnessState?.statusWithheld
-      ? 'unknown — evidence review required'
-      : item.value;
+    let value = item.value;
+    if (item.field === 'lifecycle_status' && freshnessState?.statusWithheld) {
+      value = 'unknown — evidence review required';
+    }
+    if (gap) value = 'withheld — independent support pending';
     const pending = gap
       ? '<div class="analysis-note" style="margin:4px 0 0 68px"><b>High-risk field conclusion withheld.</b> Registered citations remain visible below, but this value does not meet the independent-support policy.</div>'
       : '';
@@ -947,16 +947,16 @@ function sourceArray(value) {
       evidence_reviewed_at: source.evidence_reviewed_at || '',
       evidence_reviewer: source.evidence_reviewer || '',
     };
-    if (Object.prototype.hasOwnProperty.call(source, 'registered')) {
+    if (Object.hasOwn(source, 'registered')) {
       normalized.registered = source.registered === true || source.registered === 1;
     }
-    if (Object.prototype.hasOwnProperty.call(source, 'resolving')) {
+    if (Object.hasOwn(source, 'resolving')) {
       normalized.resolving = source.resolving === true || source.resolving === 1;
     }
-    if (Object.prototype.hasOwnProperty.call(source, 'reachable')) {
+    if (Object.hasOwn(source, 'reachable')) {
       normalized.reachable = source.reachable === true || source.reachable === 1;
     }
-    if (Object.prototype.hasOwnProperty.call(source, 'evidence_reviewed')) {
+    if (Object.hasOwn(source, 'evidence_reviewed')) {
       normalized.evidence_reviewed = source.evidence_reviewed === true
         || source.evidence_reviewed === 1;
     }
@@ -1404,6 +1404,23 @@ function exchangeTokenEvidence(row) {
     : ' · evidence date unknown';
   return `<div class="gfield"><span class="gfl">Token</span><a href="${esc(safeUrl(url))}" target="_blank" rel="noopener noreferrer">token source ↗</a>${asOf}</div>`;
 }
+function exchangeRiskNotesHtml(risks, depth) {
+  return risks ? publicationDepthSectionHtml(
+    'Risk notes',
+    analysisText(risks),
+    depth,
+    () => true,
+  ) : '';
+}
+function exchangeOutlookHtml(outlook, depth) {
+  return outlook ? publicationDepthSectionHtml(
+    'Outlook',
+    outlook,
+    depth,
+    (gap) => gap.path === 'forensic_analysis.outcome'
+      || gap.path === 'forensic_analysis.why',
+  ) : '';
+}
 function exchangeAnalysisDetails(row, profile, tokenLine) {
   const depth = row.publicationDepth;
   const outcomeGap = publicationDepthGap(depth, 'forensic_analysis.outcome');
@@ -1440,7 +1457,7 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
     (gap) => gap.path === 'forensic_analysis.why',
   ));
   const risks = profile.risks || profile.risk_factors;
-  if (risks) sections.push(`<div class="gsec">Risk notes · not claim-audited</div>${proseBox(analysisText(risks))}`);
+  if (risks) sections.push(exchangeRiskNotesHtml(risks, depth));
   if (profile.synthesis) sections.push(publicationDepthSectionHtml(
     'Research synthesis',
     analysisText(profile.synthesis),
@@ -1449,7 +1466,7 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
       || gap.path === 'forensic_analysis.counterfactual'
       || gap.path.startsWith('forensic_analysis.strategic_choices['),
   ));
-  if (row.outlook) sections.push(`<div class="gsec">Outlook</div>${proseBox(row.outlook)}`);
+  if (row.outlook) sections.push(exchangeOutlookHtml(row.outlook, depth));
   sections.push(forensicAnalysisHtml(row.analysis.forensic_analysis || profile.forensic_analysis, (ref) => {
     const value = typeof ref === 'string' ? ref : ref?.value;
     if (!value) return null;
@@ -1498,13 +1515,13 @@ function exchangeAnalysisCard(row) {
     row.kind.toUpperCase(),
     `venue: ${exchangeLabel(row.venueType)}`,
     exchangeLabel(row.productCohort),
-  ];
-  if (row.primaryChain) meta.push(row.primaryChain);
-  if (row.launched) meta.push(`launched ${row.launched}`);
-  meta.push(`indexed cohort: ${row.lifecycle}`);
-  meta.push(`data quality: ${row.qualityLabel}`);
-  meta.push(`causal map: ${row.forensicStatus === 'published' ? 'indexed' : 'structure pending'}`);
-  meta.push(`high-risk support: ${row.publicationDepth.passing_high_risk_claim_count || 0}/${row.publicationDepth.high_risk_claim_count || 0}`);
+    row.primaryChain,
+    row.launched ? `launched ${row.launched}` : null,
+    `indexed cohort: ${row.lifecycle}`,
+    `data quality: ${row.qualityLabel}`,
+    `causal map: ${row.forensicStatus === 'published' ? 'indexed' : 'structure pending'}`,
+    `high-risk support: ${row.publicationDepth.passing_high_risk_claim_count || 0}/${row.publicationDepth.high_risk_claim_count || 0}`,
+  ].filter(Boolean);
   const sourceLabel = row.sources.length === 1 ? 'source' : 'sources';
   meta.push(`${row.sources.length} ${sourceLabel}`);
   const dossierLink = `/exchange/${encodeURIComponent(row.kind)}/${encodeURIComponent(row.lifecycle)}/${encodeURIComponent(row.slug)}`;
@@ -1731,6 +1748,11 @@ async function loadExchangeAnalysis() {
 
 function casinoLabel(value) { return String(value || 'unknown').replaceAll('_', ' '); }
 function casinoObservationHtml(observation) {
+  if (observation.publication_support === 'pending_independent_support') {
+    return publicationPendingHtml('Metric observation', {
+      gaps: ['linked_high_risk_claim_support_pending'],
+    });
+  }
   const unit = observation.unit ? ` ${esc(observation.unit)}` : '';
   const value = observation.value == null ? '—' : `${fmtNum(observation.value)}${unit}`;
   const scope = [observation.product_scope, ...(observation.chain_scope || [])].filter(Boolean).join(' · ');
@@ -1739,8 +1761,21 @@ function casinoObservationHtml(observation) {
   return `<div class="gfield"><span class="gfl">${esc(casinoLabel(observation.metric_dimension))}</span>${value} · ${esc(observation.window_definition || 'snapshot')} · as of ${esc(observation.as_of || '—')}<div class="muted" style="margin:3px 0 0 68px">Scope: ${esc(scope || 'not published')} · ${esc(observation.method || '')}</div>${formula}${flags}</div>`;
 }
 function casinoEventHtml(event) {
+  if (event.publication_support === 'pending_independent_support') {
+    return publicationPendingHtml('Lifecycle event', {
+      gaps: ['linked_high_risk_claim_support_pending'],
+    });
+  }
   const amount = event.amount_usd == null ? '' : ` · ${fmtUsd(event.amount_usd)}`;
   return `<div class="gfield"><span class="gfl">${esc(casinoLabel(event.event_type))}</span>${esc(event.event_date || 'date unknown')} · ${esc(event.description || '')}${amount}</div>`;
+}
+function casinoLicenceHtml(licence) {
+  if (licence.publication_support === 'pending_independent_support') {
+    return publicationPendingHtml('Licence observation', {
+      gaps: ['linked_high_risk_claim_support_pending'],
+    });
+  }
+  return `<div class="gfield"><span class="gfl">Licence</span>${esc(licence.authority)} · ${esc(licence.jurisdiction)} · ${esc(licence.licence_status)} · ${esc(licence.legal_entity || 'entity not published')} · ${esc((licence.activities || []).join(', ') || 'activity not published')} · as of ${esc(licence.as_of)}</div>`;
 }
 function casinoOutlookText(outlook) {
   if (!outlook) return '';
@@ -1748,6 +1783,15 @@ function casinoOutlookText(outlook) {
   const asOf = outlook.as_of ? `As of ${outlook.as_of}. ` : '';
   const watch = Array.isArray(outlook.watch) && outlook.watch.length ? `Watch: ${outlook.watch.join(' · ')}` : '';
   return `${asOf}${watch}`.trim();
+}
+function casinoOutlookUnsupported(gap) {
+  return gap.path === 'forensic_analysis.outcome'
+    || gap.path === 'forensic_analysis.why';
+}
+function casinoLessonsUnsupported(gap) {
+  return gap.path === 'forensic_analysis.why'
+    || gap.path === 'forensic_analysis.counterfactual'
+    || gap.path.startsWith('forensic_analysis.strategic_choices[');
 }
 function casinoReviewState(item) {
   const detail = state.casinoAnalysisDetails[item.case_id];
@@ -1827,20 +1871,24 @@ function casinoDetailBody(item, detail) {
       synthesis.counterfactual,
       (gap) => gap.path === 'forensic_analysis.counterfactual',
     ],
-    ['Outlook &amp; review triggers', casinoOutlookText(synthesis.outlook), () => false],
+    [
+      'Outlook &amp; review triggers',
+      casinoOutlookText(synthesis.outlook),
+      casinoOutlookUnsupported,
+    ],
     [
       'Lessons from this case',
       Array.isArray(synthesis.lessons_learned)
         ? synthesis.lessons_learned.join(' ')
         : synthesis.lessons_learned,
-      () => false,
+      casinoLessonsUnsupported,
     ],
   ].map(([label, text, isUnsupported]) => (
     casinoDepthSectionHtml(label, text, depth, isUnsupported)
   )).join('');
   const observations = (detail.observations || []).map(casinoObservationHtml).join('') || '<div class="muted">No comparable operating metric is published in this dossier.</div>';
   const events = (detail.events || []).map(casinoEventHtml).join('') || '<div class="muted">No independently scoped lifecycle event is published in this dossier.</div>';
-  const licenceRows = (detail.licences || []).map((licence) => `<div class="gfield"><span class="gfl">Licence</span>${esc(licence.authority)} · ${esc(licence.jurisdiction)} · ${esc(licence.licence_status)} · ${esc(licence.legal_entity || 'entity not published')} · ${esc((licence.activities || []).join(', ') || 'activity not published')} · as of ${esc(licence.as_of)}</div>`).join('');
+  const licenceRows = (detail.licences || []).map(casinoLicenceHtml).join('');
   const licences = licenceRows || '<div class="muted">No licence observation is published. Do not infer global legality from this dossier.</div>';
   const claimRows = (detail.claims || []).map((claim) => {
     const pending = claim.publication_support === 'pending_independent_support';
@@ -3415,6 +3463,46 @@ const CHAIN_ICON = { ethereum:'⟠', solana:'◎', 'bitcoin-ordinals':'₿', ord
 const CHAIN_LABEL = { 'polygon-pos':'Polygon', 'binance-smart-chain':'BNB Chain', 'optimistic-ethereum':'Optimism', ordinals:'Bitcoin Ordinals', hyperevm:'HyperEVM', apechain:'ApeChain' };
 function chainLabel(c){ c=(c||'').toString(); return CHAIN_LABEL[c] || c.replace(/-/g,' ').replace(/\b\w/g, m=>m.toUpperCase()); }
 const NFT_HEAD = pageHead('NFT and Ordinals Analysis', 'A lifecycle library for NFT &amp; Ordinals collections — mint raise vs secondary, holder and founder engagement, royalty capture, and how long projects actually last.');
+function nftRiskHtml(risk, publicationDepth) {
+  if (!risk || !risk.level || risk.level === 'clean') return '';
+  let rawSources = [];
+  try {
+    rawSources = typeof risk.sources === 'string' ? JSON.parse(risk.sources) : risk.sources;
+  } catch (error) {
+    rawSources = [];
+  }
+  const registeredSources = Array.isArray(rawSources) ? rawSources.map((source, index) => {
+    const item = typeof source === 'string'
+      ? { url: source, title: `risk source ${index + 1}` }
+      : (source || {});
+    const reviewer = String(item.evidence_reviewer || '').trim();
+    const reviewedAt = String(item.evidence_reviewed_at || '').trim();
+    return {
+      ...item,
+      registered: true,
+      access_state: item.access_state || 'not_recorded',
+      evidence_reviewed: item.evidence_reviewed === true && Boolean(reviewer && reviewedAt),
+    };
+  }) : [];
+  const pending = Number(publicationDepth?.unresolved_high_risk_claim_count) || 0;
+  const count = pending ? ` ${pending} dossier high-risk claims are already pending.` : '';
+  return `<div class="analysis-note"><b>Risk-flag allegations withheld — claim-level support pending.</b>${esc(count)} The legacy flag is not part of the publication-depth evidence contract, so its allegation prose is not published here.</div>${srcHtml(registeredSources, 'Registered risk sources: ')}`;
+}
+function nftNarrativeSectionHtml(label, field, text, publicationDepth) {
+  if (!text) return '';
+  const suffix = `.${field}`;
+  const support = (publicationDepth?.claim_support || [])
+    .find((claim) => String(claim.path || '').endsWith(suffix));
+  const gap = (publicationDepth?.unresolved_high_risk_claims || [])
+    .find((claim) => String(claim.path || '').endsWith(suffix));
+  if (gap || !support || support.passes !== true) {
+    return `<div class="gsec">${label}</div>${publicationPendingHtml(
+      label,
+      gap || { gaps: ['no_claim_level_evidence_contract'] },
+    )}`;
+  }
+  return `<div class="gsec">${label}</div>${proseBox(text)}`;
+}
 function nftLifecycleMetric(profile) {
   if (profile.secondary_volume_usd != null) return fmtUsd(profile.secondary_volume_usd);
   if (profile.mint_raise_usd != null) return fmtUsd(profile.mint_raise_usd);
@@ -3577,20 +3665,20 @@ function renderNft(data){
     const mkt = mktUrl(c);
     const body = open ? `<div class="gexp">
       ${publicationDepthBanner(depth, 'NFT/Ordinals dossier inclusion')}
-      ${c.risk?riskBanner(c.risk):''}
+      ${nftRiskHtml(c.risk, depth)}
       ${mkt?`<div class="gfield"><span class="gfl">Collection</span> <a href="${esc(safeUrl(mkt))}" target="_blank" rel="noopener noreferrer">View on marketplace ↗</a></div>`:''}
       <div class="gfield"><span class="gfl">Minted</span> ${esc(p.launched||'—')}${nftSupplyText(p.supply) ? ` · ${esc(nftSupplyText(p.supply))}` : ''}</div>
       <div class="gfield"><span class="gfl">Mint→2nd</span> raised ${p.mint_raise_usd?fmtUsd(p.mint_raise_usd):'—'} → secondary ${p.secondary_volume_usd?fmtUsd(p.secondary_volume_usd):'—'}</div>
       <div class="gfield"><span class="gfl">Floor</span> now ${p.floor_current!=null?p.floor_current+' ':'—'}${p.floor_ath?`(ATH ${p.floor_ath})`:''}</div>
       <div class="gfield"><span class="gfl">Royalties</span> ${esc(p.royalties_enforced||'—')}${p.royalties_earned_usd?` · earned ${fmtUsd(p.royalties_earned_usd)}`:''}</div>
       <div class="gfield"><span class="gfl">Holders</span> ${p.holder_count?Intl.NumberFormat('en').format(p.holder_count):'—'}${p.holder_retention_pct!=null?` · ${p.holder_retention_pct}% of peak retained`:''}</div>
-      ${p.community_history?`<div class="gsec">Community history</div>${proseBox(p.community_history)}`:''}
-      ${p.community_sentiment?`<div class="gsec">Community sentiment</div>${proseBox(p.community_sentiment)}`:''}
-      ${p.notable_holders?`<div class="gsec">Notable holders</div>${proseBox(p.notable_holders)}`:''}
-      ${p.founder_engagement?`<div class="gsec">Founder engagement</div><div class="gbody">${esc(p.founder_engagement)}</div>`:''}
-      ${p.social?`<div class="gsec">Social signals</div>${proseBox(p.social)}`:''}
-      ${p.benefits?`<div class="gsec">Holder benefits / products</div>${proseBox(p.benefits)}`:''}
-      ${p.business?`<div class="gsec">Real-world business — product · distribution · strengths &amp; weaknesses</div>${proseBox(p.business)}`:''}
+      ${nftNarrativeSectionHtml('Community history', 'community_history', p.community_history, depth)}
+      ${nftNarrativeSectionHtml('Community sentiment', 'community_sentiment', p.community_sentiment, depth)}
+      ${nftNarrativeSectionHtml('Notable holders', 'notable_holders', p.notable_holders, depth)}
+      ${nftNarrativeSectionHtml('Founder engagement', 'founder_engagement', p.founder_engagement, depth)}
+      ${nftNarrativeSectionHtml('Social signals', 'social', p.social, depth)}
+      ${nftNarrativeSectionHtml('Holder benefits / products', 'benefits', p.benefits, depth)}
+      ${nftNarrativeSectionHtml('Real-world business — product · distribution · strengths &amp; weaknesses', 'business', p.business, depth)}
       ${nftLifecycleReadHtml(p, depth)}
       ${nftProfileAnalysisHtml(p, citedSources, depth)}
       ${nftFreshnessHtml(p, c.freshness)}

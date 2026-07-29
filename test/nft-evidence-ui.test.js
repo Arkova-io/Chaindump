@@ -27,6 +27,28 @@ function renderer() {
   `)();
 }
 
+function riskRenderer() {
+  return new Function(`
+    const esc = (value) => String(value ?? '');
+    const safeUrl = (value) => String(value || '');
+    ${functionBlock('evidenceStatusParts', 'sourceMetadataHtml')}
+    ${functionBlock('sourceMetadataHtml', 'srcHtml')}
+    ${functionBlock('srcHtml', 'nftEvidenceHtml')}
+    ${functionBlock('nftRiskHtml', 'nftNarrativeSectionHtml')}
+    return nftRiskHtml;
+  `)();
+}
+
+function narrativeRenderer() {
+  return new Function(`
+    const esc = (value) => String(value ?? '');
+    const proseBox = (value) => '<div class="prose">' + esc(value) + '</div>';
+    ${functionBlock('publicationPendingHtml', 'forensicAnalysisHtml')}
+    ${functionBlock('nftNarrativeSectionHtml', 'nftLifecycleMetric')}
+    return nftNarrativeSectionHtml;
+  `)();
+}
+
 describe('NFT field-evidence UI', () => {
   it('withholds an unsupported high-risk value while preserving source state', () => {
     const nftEvidenceHtml = renderer();
@@ -60,5 +82,61 @@ describe('NFT field-evidence UI', () => {
     expect(output).toContain('High-risk field conclusion withheld.');
     expect(output).toContain('registered · reachable · editor review pending');
     expect(output).toContain('Operator status');
+  });
+
+  it('withholds legacy Azuki risk allegations while preserving registered source links', () => {
+    const nftRiskHtml = riskRenderer();
+    const output = nftRiskHtml({
+      level: 'high',
+      summary: 'AZUKI UNSUPPORTED SOFT-RUG ALLEGATION',
+      evidence: 'AZUKI UNSUPPORTED LEGAL DETAIL',
+      sources: JSON.stringify([
+        'https://www.coindesk.com/business/2022/05/10/azuki-nft-founder-admits-to-abandoning-past-projects',
+      ]),
+    }, {
+      unresolved_high_risk_claim_count: 8,
+    });
+
+    expect(output).not.toContain('AZUKI UNSUPPORTED SOFT-RUG ALLEGATION');
+    expect(output).not.toContain('AZUKI UNSUPPORTED LEGAL DETAIL');
+    expect(output).toContain('Risk-flag allegations withheld');
+    expect(output).toContain('coindesk.com/business/2022/05/10/');
+    expect(output).toContain('registered · retrieval not recorded · editor review pending');
+  });
+
+  it('withholds unsupported Azuki narrative fields and uncontracted Quantum Cats prose', () => {
+    const nftNarrativeSectionHtml = narrativeRenderer();
+    const azuki = nftNarrativeSectionHtml(
+      'Community history',
+      'community_history',
+      'AZUKI TRUST-DAMAGE ALLEGATION',
+      {
+        claim_support: [{
+          path: 'evidence[3].community_history',
+          type: 'causal',
+          high_risk: true,
+          passes: false,
+        }],
+        unresolved_high_risk_claims: [{
+          path: 'evidence[3].community_history',
+          type: 'causal',
+          gaps: ['high_risk_evidence_threshold_not_met'],
+        }],
+      },
+    );
+    const quantumCats = nftNarrativeSectionHtml(
+      'Founder engagement',
+      'founder_engagement',
+      'QUANTUM CATS UNCONTRACTED FOUNDER CLAIM',
+      {
+        claim_support: [],
+        unresolved_high_risk_claims: [],
+      },
+    );
+
+    expect(azuki).not.toContain('AZUKI TRUST-DAMAGE ALLEGATION');
+    expect(azuki).toContain('Community history withheld');
+    expect(quantumCats).not.toContain('QUANTUM CATS UNCONTRACTED FOUNDER CLAIM');
+    expect(quantumCats).toContain('no claim level evidence contract');
   });
 });

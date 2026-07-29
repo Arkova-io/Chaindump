@@ -29,7 +29,7 @@ function makeDB() {
               results: [{
                 slug: 'uniswap',
                 name: 'Uniswap',
-                summary: 'Uniswap built durable distribution and liquidity across multiple chains.',
+                summary: 'UNSUPPORTED EXCHANGE SEO CONCLUSION',
                 sources: JSON.stringify([{ title: 'Uniswap docs', url: 'https://docs.uniswap.org/' }]),
                 updated_at: '2026-07-29',
               }],
@@ -40,9 +40,9 @@ function makeDB() {
               results: [{
                 case_id: 'stake-dot-com',
                 brand_name: 'Stake.com',
-                product_scope_note: 'Custodial crypto casino lifecycle research.',
-                status: 'active',
-                outcome_label: 'successful',
+                product_scope_note: 'UNSUPPORTED CASINO SEO CONCLUSION',
+                status: 'insolvent',
+                outcome_label: 'failed',
                 last_reviewed: '2026-07-29',
               }],
             };
@@ -52,9 +52,9 @@ function makeDB() {
               results: [{
                 case_id: 'stake-dot-com',
                 brand_name: 'Stake.com',
-                product_scope_note: 'Custodial crypto casino lifecycle research.',
-                status: 'active',
-                outcome_label: 'successful',
+                product_scope_note: 'UNSUPPORTED CASINO SEO CONCLUSION',
+                status: 'insolvent',
+                outcome_label: 'failed',
                 last_reviewed: '2026-07-29',
                 sources: JSON.stringify([{ title: 'Stake source', url: 'https://stake.com/policies/terms' }]),
               }],
@@ -67,7 +67,7 @@ function makeDB() {
                 name: 'Azuki',
                 chain: 'Ethereum',
                 status: 'fading',
-                profile: JSON.stringify({ analysis: 'Azuki lifecycle analysis with cited launch, community, and operating evidence.' }),
+                profile: JSON.stringify({ analysis: 'UNSUPPORTED NFT SEO CONCLUSION' }),
                 sources: JSON.stringify([{ title: 'Azuki source', url: 'https://www.coindesk.com/tag/azuki/' }]),
                 updated_at: '2026-07-29',
               }],
@@ -98,6 +98,8 @@ describe('forensic page and entity route metadata', () => {
     expect(exchangeBody).toContain('# Uniswap — DEX forensic dossier | Chaindump');
     expect(exchangeBody).toContain('https://docs.uniswap.org/');
     expect(exchangeBody).toContain('/api/exchange-analysis?kind=dex&lifecycle=successful&slug=uniswap');
+    expect(exchangeBody).toContain('indexed lifecycle dossier with per-claim support status');
+    expect(exchangeBody).not.toContain('UNSUPPORTED EXCHANGE SEO CONCLUSION');
 
     const casino = await worker.fetch(markdownRequest('/casino/stake-dot-com'), env, ctx());
     const casinoBody = await casino.text();
@@ -105,6 +107,10 @@ describe('forensic page and entity route metadata', () => {
     expect(casinoBody).toContain('# Stake.com — Web3 casino forensic dossier | Chaindump');
     expect(casinoBody).toContain('https://stake.com/policies/terms');
     expect(casinoBody).toContain('/api/casino/stake-dot-com');
+    expect(casinoBody).toContain('indexed Web3 casino lifecycle dossier with per-claim support status');
+    expect(casinoBody).not.toContain('UNSUPPORTED CASINO SEO CONCLUSION');
+    expect(casinoBody).not.toContain('failed');
+    expect(casinoBody).not.toContain('insolvent');
 
     const nft = await worker.fetch(markdownRequest('/collection/azuki'), env, ctx());
     const nftBody = await nft.text();
@@ -112,5 +118,8 @@ describe('forensic page and entity route metadata', () => {
     expect(nftBody).toContain('# Azuki — NFT lifecycle dossier | Chaindump');
     expect(nftBody).toContain('https://www.coindesk.com/tag/azuki/');
     expect(nftBody).toContain('Structured JSON: https://chaindump.xyz/api/nft?slug=azuki');
+    expect(nftBody).toContain('indexed NFT/Ordinals lifecycle dossier with per-claim support status');
+    expect(nftBody).not.toContain('UNSUPPORTED NFT SEO CONCLUSION');
+    expect(nftBody).not.toContain('fading');
   });
 });

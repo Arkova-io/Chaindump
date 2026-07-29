@@ -37,9 +37,25 @@ import {
   assessCasinoPublicationDepth,
   assessExchangePublicationDepth,
   assessNftPublicationDepth,
+  isIsoReviewTimestamp,
   normalizePublicationSource,
   summarizePublicationDepth,
 } from './lib/publication-depth.mjs';
+
+function editorialReviewSql(alias) {
+  const reviewedAt = `${alias}.evidence_reviewed_at`;
+  const dateShape = `${reviewedAt} GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'`;
+  const dateTimeShape = `substr(${reviewedAt}, 1, 19) GLOB `
+    + `'[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T`
+    + `[0-9][0-9]:[0-9][0-9]:[0-9][0-9]'`;
+  const dateTimeSuffix = `(substr(${reviewedAt}, -1) = 'Z'`
+    + ` OR substr(${reviewedAt}, -6, 1) IN ('+', '-'))`;
+  return `(${alias}.evidence_reviewed = 1`
+    + ` AND NULLIF(TRIM(${alias}.evidence_reviewer), '') IS NOT NULL`
+    + ` AND ((${dateShape} AND length(${reviewedAt}) = 10)`
+    + ` OR (${dateTimeShape} AND ${dateTimeSuffix}))`
+    + ` AND julianday(${reviewedAt}) IS NOT NULL)`;
+}
 
 function publicationSourceRecords(sourceValues) {
   if (!Array.isArray(sourceValues)) return [];
@@ -55,19 +71,17 @@ function publicationSourceRecords(sourceValues) {
       publisher: source.publisher || normalized.publisher,
       source_tier: normalized.tier,
       source_role: normalized.role,
-      independence_group: normalized.independence_key,
+      independence_group: normalized.independence_group,
+      independence_key: normalized.independence_key,
       registered: true,
       access_state: normalized.access_state,
       evidence_reviewed: normalized.evidence_reviewed,
       evidence_reviewer: normalized.evidence_reviewer,
       evidence_reviewed_at: normalized.evidence_reviewed_at,
     };
-    if (normalized.access_state === 'resolving') {
-      result.resolving = true;
-      result.reachable = true;
-    } else if (normalized.access_state === 'not_resolving') {
-      result.resolving = false;
-      result.reachable = false;
+    if (typeof normalized.resolving === 'boolean') {
+      result.resolving = normalized.resolving;
+      result.reachable = normalized.resolving;
     }
     return result;
   });
@@ -2534,6 +2548,21 @@ function parseCasinoJson(value, fallback) {
     return fallback;
   }
 }
+function casinoRecordWithPublicationSupport(item, unresolvedPaths, withheldFields) {
+  const sourceClaimIds = parseCasinoJson(item.source_claim_ids, []);
+  const pending = sourceClaimIds.length === 0 || sourceClaimIds.some((claimId) => (
+    unresolvedPaths.has(`casino_claims.${claimId}`)
+  ));
+  const result = {
+    ...item,
+    source_claim_ids: sourceClaimIds,
+    publication_support: pending ? 'pending_independent_support' : null,
+  };
+  if (pending) {
+    for (const field of withheldFields) result[field] = null;
+  }
+  return result;
+}
 function casinoCaseRow(row) {
   return {
     ...row,
@@ -2612,13 +2641,11 @@ app.get('/api/casinos', wrap(async (req, res) => {
               (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id
                 WHERE cl.case_id = c.case_id AND s.resolving = 1) AS reachable_source_count,
               (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id
-                WHERE cl.case_id = c.case_id AND s.resolving = 1 AND s.evidence_reviewed = 1
-                  AND NULLIF(TRIM(s.evidence_reviewer), '') IS NOT NULL
-                  AND NULLIF(TRIM(s.evidence_reviewed_at), '') IS NOT NULL) AS reviewed_source_count,
+                WHERE cl.case_id = c.case_id AND s.resolving = 1
+                  AND ${editorialReviewSql('s')}) AS reviewed_source_count,
               (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id
-                WHERE cl.case_id = c.case_id AND s.resolving = 1 AND s.evidence_reviewed = 1
-                  AND NULLIF(TRIM(s.evidence_reviewer), '') IS NOT NULL
-                  AND NULLIF(TRIM(s.evidence_reviewed_at), '') IS NOT NULL) AS source_count
+                WHERE cl.case_id = c.case_id AND s.resolving = 1
+                  AND ${editorialReviewSql('s')}) AS source_count
          FROM casino_cases c WHERE ${where.join(' AND ')} ORDER BY ${orderBy}`,
         binds,
       ),
@@ -2703,15 +2730,11 @@ app.get('/api/casino/:case_id', wrap(async (req, res) => {
         (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl
           JOIN casino_sources s ON s.source_id = cl.source_id
           WHERE cl.case_id = c.case_id AND s.resolving = 1
-            AND s.evidence_reviewed = 1
-            AND NULLIF(TRIM(s.evidence_reviewer), '') IS NOT NULL
-            AND NULLIF(TRIM(s.evidence_reviewed_at), '') IS NOT NULL) AS reviewed_source_count,
+            AND ${editorialReviewSql('s')}) AS reviewed_source_count,
         (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl
           JOIN casino_sources s ON s.source_id = cl.source_id
           WHERE cl.case_id = c.case_id AND s.resolving = 1
-            AND s.evidence_reviewed = 1
-            AND NULLIF(TRIM(s.evidence_reviewer), '') IS NOT NULL
-            AND NULLIF(TRIM(s.evidence_reviewed_at), '') IS NOT NULL) AS source_count
+            AND ${editorialReviewSql('s')}) AS source_count
       FROM casino_cases c
       WHERE c.case_id = ? AND c.quality_passed = 1
       LIMIT 1
@@ -2739,7 +2762,10 @@ app.get('/api/casino/:case_id', wrap(async (req, res) => {
     ]);
     const sources = [...new Map(claims.map((claim) => {
       const evidenceReviewer = String(claim.evidence_reviewer || '').trim() || null;
-      const evidenceReviewedAt = String(claim.evidence_reviewed_at || '').trim() || null;
+      const reviewTimestamp = String(claim.evidence_reviewed_at || '').trim() || null;
+      const evidenceReviewedAt = isIsoReviewTimestamp(reviewTimestamp)
+        ? reviewTimestamp
+        : null;
       const evidenceReviewed = Number(claim.evidence_reviewed) === 1
         && Boolean(evidenceReviewer && evidenceReviewedAt);
       return [claim.source_id, {
@@ -2789,11 +2815,51 @@ app.get('/api/casino/:case_id', wrap(async (req, res) => {
         ? 'pending_independent_support'
         : null,
     }));
+    const publicObservations = observations.map((item) => (
+      casinoRecordWithPublicationSupport(item, unresolvedPaths, [
+        'value',
+        'window_definition',
+        'method',
+        'formula',
+        'raw_input_ids',
+      ])
+    )).map((item) => ({
+      ...item,
+      chain_scope: parseCasinoJson(item.chain_scope, []),
+      quality_flags: parseCasinoJson(item.quality_flags, []),
+    }));
+    const publicEvents = events.map((item) => (
+      casinoRecordWithPublicationSupport(item, unresolvedPaths, [
+        'event_type',
+        'event_date',
+        'amount_usd',
+        'description',
+      ])
+    ));
+    const publicLicences = licences.map((item) => (
+      casinoRecordWithPublicationSupport(item, unresolvedPaths, [
+        'authority',
+        'licence_id',
+        'legal_entity',
+        'domains',
+        'activities',
+        'jurisdiction',
+        'licence_status',
+        'valid_from',
+        'valid_until',
+        'as_of',
+        'notes',
+      ])
+    )).map((item) => ({
+      ...item,
+      domains: parseCasinoJson(item.domains, []),
+      activities: parseCasinoJson(item.activities, []),
+    }));
     res.json({
       case: casinoCaseRow(rows[0]), claims: publicClaims, sources,
-      observations: observations.map((item) => ({ ...item, chain_scope: parseCasinoJson(item.chain_scope, []), source_claim_ids: parseCasinoJson(item.source_claim_ids, []), quality_flags: parseCasinoJson(item.quality_flags, []) })),
-      events: events.map((item) => ({ ...item, source_claim_ids: parseCasinoJson(item.source_claim_ids, []) })),
-      licences: licences.map((item) => ({ ...item, domains: parseCasinoJson(item.domains, []), activities: parseCasinoJson(item.activities, []), source_claim_ids: parseCasinoJson(item.source_claim_ids, []) })),
+      observations: publicObservations,
+      events: publicEvents,
+      licences: publicLicences,
       synthesis,
       publication_depth: publicationDepth,
     });
@@ -3623,7 +3689,7 @@ app.get('/exchange/:kind/:lifecycle/:slug', wrap(async (req, res) => {
   const label = kind === 'cex' ? 'CEX' : 'DEX';
   const title = row ? `${row.name} — ${label} forensic dossier | Chaindump` : `${label} forensic dossier — Chaindump`;
   const desc = row
-    ? ogDescription(row.summary, `${row.name} ${lifecycle} ${label} lifecycle dossier with cited evidence on Chaindump.`)
+    ? `${row.name} ${label} indexed lifecycle dossier with per-claim support status and registered evidence on Chaindump.`
     : OG_DESC_FALLBACK;
   const citations = publicSourceUrls(row?.sources);
   const ld = row ? [
@@ -3645,12 +3711,11 @@ app.get('/casino/:case_id', wrap(async (req, res) => {
   let row = null;
   try {
     row = (await dbQuery(
-      `SELECT c.case_id, c.brand_name, c.product_scope_note, c.status, c.outcome_label, c.last_reviewed,
+      `SELECT c.case_id, c.brand_name, c.last_reviewed,
               (SELECT json_group_array(json_object('title', s.title, 'url', s.canonical_url))
                  FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id
-                WHERE cl.case_id = c.case_id AND s.resolving = 1 AND s.evidence_reviewed = 1
-                  AND NULLIF(TRIM(s.evidence_reviewer), '') IS NOT NULL
-                  AND NULLIF(TRIM(s.evidence_reviewed_at), '') IS NOT NULL) AS sources
+                WHERE cl.case_id = c.case_id AND s.resolving = 1
+                  AND ${editorialReviewSql('s')}) AS sources
          FROM casino_cases c WHERE c.case_id = ? AND c.quality_passed = 1 LIMIT 1`,
       [caseId],
     ))[0] || null;
@@ -3658,7 +3723,7 @@ app.get('/casino/:case_id', wrap(async (req, res) => {
   const url = `${ORIGIN}/casino/${encodeURIComponent(caseId)}`;
   const title = row ? `${row.brand_name} — Web3 casino forensic dossier | Chaindump` : 'Web3 casino forensic dossier — Chaindump';
   const desc = row
-    ? ogDescription(row.product_scope_note, `${row.brand_name}: ${row.outcome_label || row.status || 'reviewed'} Web3 casino lifecycle dossier.`)
+    ? `${row.brand_name} indexed Web3 casino lifecycle dossier with per-claim support status and registered evidence on Chaindump.`
     : OG_DESC_FALLBACK;
   const ld = row ? [
     {
@@ -3711,28 +3776,15 @@ async function collectionPageRows(id) {
   }
 }
 
-function collectionLifecycleProfile(lifecycle) {
-  if (!lifecycle?.profile) return {};
-  try {
-    return JSON.parse(lifecycle.profile);
-  } catch (error) {
-    console.error('[collection] invalid lifecycle profile:', error instanceof Error ? error.message : error);
-    return {};
-  }
-}
-
 function collectionPageTitle(row, lifecycle) {
   if (lifecycle) return `${row.name} — NFT lifecycle dossier | Chaindump`;
   if (row) return `${row.name} — Chaindump`;
   return 'NFT Collection — Chaindump';
 }
 
-function collectionPageDescription(row, lifecycle, profile) {
+function collectionPageDescription(row, lifecycle) {
   if (lifecycle) {
-    return ogDescription(
-      profile.analysis,
-      `${row.name} (${row.chain}) — ${row.status || 'reviewed'} NFT/Ordinals lifecycle dossier with cited evidence on Chaindump.`,
-    );
+    return `${row.name} (${row.chain}) indexed NFT/Ordinals lifecycle dossier with per-claim support status and registered evidence on Chaindump.`;
   }
   if (row) return `${row.name} (${row.chain}) — live floor, market cap, 24h volume and holders on Chaindump.`;
   return OG_DESC_FALLBACK;
@@ -3771,9 +3823,8 @@ app.get('/collection/:id', wrap(async (req, res) => {
   // lifecycle dossier for this URL, so its server metadata must not describe a
   // different live-market page.
   const { row, lifecycle } = await collectionPageRows(id);
-  const lifecycleProfile = collectionLifecycleProfile(lifecycle);
   const title = collectionPageTitle(row, lifecycle);
-  const desc = collectionPageDescription(row, lifecycle, lifecycleProfile);
+  const desc = collectionPageDescription(row, lifecycle);
   const url = `${ORIGIN}/collection/${encodeURIComponent(id)}`;
   const ld = collectionPageStructuredData(row, lifecycle, desc, url);
   const apiUrl = collectionPageApiUrl(id, row, lifecycle);
