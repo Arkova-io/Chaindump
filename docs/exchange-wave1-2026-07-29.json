@@ -1,0 +1,513 @@
+{
+  "schema": "forensic-analysis-v1",
+  "as_of": "2026-07-29",
+  "generated_migration": "0032_exchange_wave1_forensic_analysis.sql",
+  "scope_note": "Wave 1 adds five evidence-gated causal maps to exchange records already present in the lifecycle corpus. GMX V1 is deliberately analyzed as the sunset GLP product, not as the still-operating GMX V2 protocol. Allegations in the Mt. Gox indictments are identified as allegations, while QuadrigaCX causal findings are attributed to Ontario Securities Commission staff.",
+  "cases": [
+    {
+      "table": "successful_exchanges",
+      "kind": "dex",
+      "slug": "curve-finance",
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "declining",
+          "summary": "Curve remains an operating, multichain exchange specialized in stable and correlated assets, but the research snapshot records about 2.03 billion dollars of 30-day DEX volume against a much higher historical peak. This classification distinguishes continued product relevance from Curve's reduced activity relative to its own history.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "https://api.llama.fi/protocol/curve-finance"
+          ]
+        },
+        "why": {
+          "summary": "Curve created durable differentiation through StableSwap's low-slippage treatment of similarly priced assets and then used vote-escrowed CRV gauges to coordinate liquidity incentives. That specialization built a defensible stablecoin venue, but it also concentrated the protocol's exposure to stablecoin confidence, gauge politics, and competition from more flexible concentrated-liquidity designs. The evidence supports these mechanisms; it does not precisely allocate Curve's volume decline among them.",
+          "confidence": "medium",
+          "source_refs": [
+            "https://docs.curve.finance/assets/files/whitepaper_stableswap-fc0bb370db9fe3a91afdde8662e78206.pdf",
+            "https://resources.curve.finance/user/vecrv/what-is-vecrv",
+            "https://api.llama.fi/protocol/curve-finance"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Specialize the AMM invariant for stable and closely correlated assets instead of competing as a general constant-product exchange.",
+            "consequence": "Curve could offer much lower slippage near equilibrium and became important infrastructure for stablecoin liquidity, while accepting concentrated exposure to assets whose pegs and correlations can fail.",
+            "confidence": "high",
+            "source_refs": [
+              "https://docs.curve.finance/assets/files/whitepaper_stableswap-fc0bb370db9fe3a91afdde8662e78206.pdf"
+            ]
+          },
+          {
+            "decision": "Use vote-escrowed CRV and gauge voting to direct emissions among liquidity pools.",
+            "consequence": "Liquidity demand became a governance marketplace in which lockers could direct incentives and receive fees, strengthening coordination but adding governance concentration and recurring incentive costs.",
+            "confidence": "high",
+            "source_refs": [
+              "https://resources.curve.finance/user/vecrv/what-is-vecrv",
+              "https://resources.curve.finance/protocol/gauge/overview"
+            ]
+          },
+          {
+            "decision": "Expand from exchange liquidity into the crvUSD overcollateralized stablecoin and lending-liquidation architecture.",
+            "consequence": "Curve added a protocol-native source of demand and revenue, but increased system complexity and introduced new oracle, collateral, liquidation, and monetary-policy dependencies.",
+            "confidence": "high",
+            "source_refs": [
+              "https://resources.curve.finance/user/introduction",
+              "https://resources.curve.finance/protocol/lending/overview"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "A broader, less specialized AMM might have reduced Curve's dependence on stablecoin cycles, but likely would have sacrificed the execution advantage that created its original product-market fit. Earlier diversification of fee-generating products and tighter governance-risk controls could plausibly have softened the decline, but this cannot be observed directly.",
+          "confidence": "low",
+          "source_refs": [
+            "https://docs.curve.finance/assets/files/whitepaper_stableswap-fc0bb370db9fe3a91afdde8662e78206.pdf",
+            "https://resources.curve.finance/user/introduction",
+            "https://api.llama.fi/protocol/curve-finance"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Thirty-day volume, TVL, fee revenue, and the share attributable to crvUSD pools.",
+            "implication": "Stable or rising fee-producing activity would support a recovery thesis; continuing contraction would show that historical liquidity depth is not translating into current order flow.",
+            "source_refs": [
+              "https://api.llama.fi/summary/dexs/curve-finance?dataType=dailyVolume"
+            ]
+          },
+          {
+            "signal": "crvUSD supply, peg behavior, bad debt, and soft-liquidation performance.",
+            "implication": "Growth with controlled liquidations would validate Curve's expansion beyond swaps; persistent peg or bad-debt problems would weaken it.",
+            "source_refs": [
+              "https://resources.curve.finance/user/introduction",
+              "https://resources.curve.finance/protocol/lending/overview"
+            ]
+          },
+          {
+            "signal": "Gauge participation and concentration of vote-escrowed governance power.",
+            "implication": "A diverse and economically productive gauge market supports incentive durability; capture or emissions detached from organic fees would undermine it.",
+            "source_refs": [
+              "https://resources.curve.finance/user/vecrv/what-is-vecrv",
+              "https://resources.curve.finance/protocol/gauge/overview"
+            ]
+          }
+        ],
+        "unknowns": [
+          "How much current Curve volume is organic rather than induced by CRV or third-party incentives?",
+          "Can crvUSD create enough durable demand to offset mature stable-swap competition without adding disproportionate tail risk?",
+          "How concentrated is effective gauge control after accounting for delegated and protocol-owned voting power?"
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "table": "successful_exchanges",
+      "kind": "dex",
+      "slug": "dydx",
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "successful",
+          "summary": "dYdX remains a functioning decentralized derivatives venue and an historically successful category builder. Its Foundation reported roughly 1.55 trillion dollars traded across all versions through 2025, 64.7 million dollars of cumulative v4 protocol fees, and a Q4 2025 volume recovery. Current snapshot activity nevertheless trails the leading perpetual venue, so success does not mean retained market leadership.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "https://www.dydx.foundation/blog/dydx-ecosystem-annual-report-2025",
+            "https://indexer.dydx.trade/v4/perpetualMarkets"
+          ]
+        },
+        "why": {
+          "summary": "dYdX established onchain perpetual-futures product-market fit with a professional order-book experience, then migrated to a sovereign Cosmos-based chain to control execution, governance, and fee distribution. That architecture improved protocol ownership of the stack and linked fees to network security, but imposed a difficult user, liquidity, token, and infrastructure migration while vertically integrated competitors accelerated.",
+          "confidence": "medium",
+          "source_refs": [
+            "https://www.dydx.foundation/blog/new-trading-pairs-permissionless-markets-on-the-dydx-chain",
+            "https://www.dydx.foundation/blog/how-staking-rewards-work-on-the-dydx-chain",
+            "https://www.dydx.foundation/blog/dydx-ecosystem-annual-report-2025"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Move the core venue from the Ethereum/StarkEx v3 system to a sovereign dYdX Chain with an order book maintained by validators.",
+            "consequence": "The community gained greater control over execution, market listing, governance, and fees, while users and liquidity had to migrate across architectures and depend on a specialized validator/indexer stack.",
+            "confidence": "high",
+            "source_refs": [
+              "https://www.dydx.foundation/blog/new-trading-pairs-permissionless-markets-on-the-dydx-chain",
+              "https://www.dydx.foundation/blog/how-validator-selection-shapes-the-dydx-chain"
+            ]
+          },
+          {
+            "decision": "Fund validator and staker rewards from protocol trading and gas fees rather than staking inflation.",
+            "consequence": "Network security became more directly tied to real usage and rewards could be paid in USDC, but security economics also became sensitive to trading-volume and fee declines.",
+            "confidence": "high",
+            "source_refs": [
+              "https://www.dydx.foundation/blog/how-staking-rewards-work-on-the-dydx-chain"
+            ]
+          },
+          {
+            "decision": "Use launch incentives and later allocate a large share of net protocol revenue to DYDX buybacks.",
+            "consequence": "Incentives helped seed chain activity and buybacks connected token demand to protocol use, but reported activity must be separated from subsidized flow and treasury policy can change through governance.",
+            "confidence": "high",
+            "source_refs": [
+              "https://www.dydx.foundation/blog/dydx-chain-launch-incentives-program-powered-by-chaos-labs-seasons-5-6-extension",
+              "https://www.dydx.foundation/blog/dydx-buybacks-a-new-model-for-token-holder-alignment"
+            ]
+          },
+          {
+            "decision": "Sunset v3 and terminate chain support for the one-way ethDYDX bridge after a fixed migration period.",
+            "consequence": "The ecosystem reduced legacy fragmentation, but 41.7 million unbridged ethDYDX remained when bridge support ended and those tokens lost effective utility.",
+            "confidence": "high",
+            "source_refs": [
+              "https://www.dydx.foundation/blog/discontinuation-of-ethdydx-bridge"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "Remaining on a hosted Ethereum scaling stack might have reduced migration friction, but would have limited control over execution and fee distribution. A longer bridge window and a more gradual dual-stack transition could have preserved more legacy holders and liquidity, although it also could have prolonged fragmentation and operating cost.",
+          "confidence": "low",
+          "source_refs": [
+            "https://www.dydx.foundation/blog/dydx-the-layer-1-token-that-powers-the-dydx-chain",
+            "https://www.dydx.foundation/blog/discontinuation-of-ethdydx-bridge",
+            "https://www.dydx.foundation/blog/dydx-ecosystem-annual-report-2025"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Quarterly volume, active traders, open interest, protocol fees, and the share not associated with incentive programs.",
+            "implication": "Growth in unsponsored repeat activity would show that the sovereign-chain thesis is retaining users; incentive-dependent or shrinking flow would weaken it.",
+            "source_refs": [
+              "https://www.dydx.foundation/blog/dydx-ecosystem-annual-report-2025",
+              "https://indexer.dydx.trade/v4/perpetualMarkets"
+            ]
+          },
+          {
+            "signal": "Validator concentration, staking participation, and USDC rewards relative to security needs.",
+            "implication": "Broad stake distribution with fee-funded security supports resilience; concentration or falling rewards could increase operational and governance risk.",
+            "source_refs": [
+              "https://www.dydx.foundation/blog/how-validator-selection-shapes-the-dydx-chain",
+              "https://www.dydx.foundation/blog/how-staking-rewards-work-on-the-dydx-chain"
+            ]
+          },
+          {
+            "signal": "Buyback execution and the ratio of buybacks to net protocol revenue.",
+            "implication": "Transparent execution would demonstrate token alignment; governance reversals or weak fee coverage would show that accrual is discretionary.",
+            "source_refs": [
+              "https://www.dydx.foundation/blog/dydx-buybacks-a-new-model-for-token-holder-alignment"
+            ]
+          }
+        ],
+        "unknowns": [
+          "What fraction of current trading would remain without rewards, market-maker support, or routing partnerships?",
+          "How much market-share loss is attributable to migration friction versus execution quality, liquidity, product breadth, or competitor incentives?",
+          "Will fee-funded validator rewards remain adequate through a prolonged low-volume period?"
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "table": "dead_exchanges",
+      "kind": "dex",
+      "slug": "gmx-v1",
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "dead",
+          "summary": "GMX V1's GLP-backed trading and liquidity product is sunset: official documentation says trading and liquidity provision are no longer supported and GLP can only be redeemed. This classification is limited to V1; GMX V2 remains a separate operating product.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "https://docs.gmx.io/docs/archived/contracts-v1/",
+            "https://docs.gmx.io/docs/category/archived/"
+          ]
+        },
+        "why": {
+          "summary": "V1's pooled GLP counterparty model delivered simple, composable liquidity but concentrated heterogeneous market and contract risk in one vault. On July 9, 2025, a disclosed vulnerability allowed about 42 million dollars of roughly 46 million dollars in Arbitrum GLP value to be withdrawn. Most funds were returned after outreach, the DAO developed a reimbursement plan, and V1 was not restarted. The incident was the immediate shutdown catalyst; prior migration toward V2 and V1's architectural limits were broader lifecycle factors.",
+          "confidence": "high",
+          "source_refs": [
+            "https://gov.gmx.io/t/discussion-resolve-the-distribution-plan-for-the-recovered-funds-from-arbitrum-glp/4678",
+            "https://gov.gmx.io/t/glp-distribution-plan-of-action/4703",
+            "https://docs.gmx.io/docs/category/archived/"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Pool LP assets into GLP and make that pool the counterparty for V1 swaps and leveraged trading.",
+            "consequence": "The model simplified passive liquidity and integrations, but pooled assets and accounting dependencies created a concentrated failure domain when a critical V1 vulnerability was exploited.",
+            "confidence": "high",
+            "source_refs": [
+              "https://docs.gmx.io/docs/archived/contracts-v1/",
+              "https://gov.gmx.io/t/discussion-resolve-the-distribution-plan-for-the-recovered-funds-from-arbitrum-glp/4678"
+            ]
+          },
+          {
+            "decision": "Keep V1 available alongside the more flexible V2 architecture until the July 2025 incident.",
+            "consequence": "Users and integrators retained legacy compatibility, but capital and third-party protocols remained exposed to an older contract system even after a successor existed.",
+            "confidence": "medium",
+            "source_refs": [
+              "https://docs.gmx.io/docs/archived/contracts-v1/",
+              "https://gov.gmx.io/t/assist-v1-glp-depositors-stuck-in-archi-finance/4521"
+            ]
+          },
+          {
+            "decision": "After the exploit, negotiate return of funds, pause V1, and use recovered assets, residual GLP, segregated fees, and DAO resources for reimbursement rather than restart the product.",
+            "consequence": "The plan materially reduced LP losses and limited renewed exposure to V1, while imposing treasury cost, manual handling for composable integrations, and claims complexity.",
+            "confidence": "high",
+            "source_refs": [
+              "https://gov.gmx.io/t/discussion-resolve-the-distribution-plan-for-the-recovered-funds-from-arbitrum-glp/4678",
+              "https://gov.gmx.io/t/glp-distribution-plan-of-action/4703",
+              "https://gov.gmx.io/t/archi-finance-security-incident-distribution/4906"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "Earlier mandatory migration and withdrawal of V1 liquidity after V2 matured would likely have reduced the capital exposed in July 2025. A narrower vault architecture or additional invariant checks might also have reduced blast radius, but the public evidence does not establish which specific pre-incident control would have prevented the disclosed exploit.",
+          "confidence": "medium",
+          "source_refs": [
+            "https://docs.gmx.io/docs/archived/contracts-v1/",
+            "https://gov.gmx.io/t/discussion-resolve-the-distribution-plan-for-the-recovered-funds-from-arbitrum-glp/4678",
+            "https://gov.gmx.io/t/archi-finance-security-incident-distribution/4906"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Unclaimed V1 distributions, unresolved third-party integrations, and remaining redeemable GLP.",
+            "implication": "Declining unresolved balances would show an orderly wind-down; persistent stranded claims would extend the incident's user impact.",
+            "source_refs": [
+              "https://gov.gmx.io/t/glp-distribution-plan-of-action/4703",
+              "https://gov.gmx.io/t/archi-finance-security-incident-distribution/4906"
+            ]
+          },
+          {
+            "signal": "Any reactivation of V1 trading or liquidity contracts.",
+            "implication": "Reactivation would invalidate the dead-product classification and require immediate security and outcome review.",
+            "source_refs": [
+              "https://docs.gmx.io/docs/category/archived/"
+            ]
+          },
+          {
+            "signal": "Public postmortem detail and security-control changes applied to GMX V2.",
+            "implication": "Specific, audited mitigations would clarify whether the incident's lessons were generalized beyond the sunset product.",
+            "source_refs": [
+              "https://gov.gmx.io/t/discussion-resolve-the-distribution-plan-for-the-recovered-funds-from-arbitrum-glp/4678"
+            ]
+          }
+        ],
+        "unknowns": [
+          "What final amount remains unclaimed or unresolved across direct GLP holders and composable third-party protocols?",
+          "Which precise control failure enabled the exploit, and which successor controls independently prevent recurrence?",
+          "How much V1 usage remained because of product preference versus migration friction or abandoned integrations?"
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "table": "dead_exchanges",
+      "kind": "cex",
+      "slug": "mt-gox",
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "dead",
+          "summary": "Mt. Gox ceased operating in 2014 after the loss of customer bitcoin and remains in court-supervised civil rehabilitation. Bitcoin and Bitcoin Cash repayments began in 2024, but the trustee's current notice extends the applicable repayment deadlines to October 31, 2026. Exchange death and creditor recovery are therefore separate lifecycle states.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "https://www.mtgox.com/?Locale=en_US",
+            "https://www.justice.gov/usao-sdny/pr/russian-nationals-charged-hacking-one-cryptocurrency-exchange-and-illicitly-operating"
+          ]
+        },
+        "why": {
+          "summary": "The strongest official account is a prolonged custody and reconciliation failure following unauthorized wallet-server access. A 2023 U.S. indictment alleges that conspirators stole at least about 647,000 bitcoin from September 2011 through at least May 2014 and laundered much of it through other exchanges. Mt. Gox continued operating until the accumulated asset deficit became unsustainable. The causal conclusion is high confidence at the system level, while individual criminal responsibility remains allegation unless adjudicated.",
+          "confidence": "high",
+          "source_refs": [
+            "https://www.justice.gov/usao-sdny/pr/russian-nationals-charged-hacking-one-cryptocurrency-exchange-and-illicitly-operating",
+            "https://www.justice.gov/usao-ndca/pr/russian-nationals-charged-hacking-one-cryptocurrency-exchange-and-illicitly-operating"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Centralize customer private keys and exchange accounting on operator-controlled infrastructure without controls capable of detecting a multi-year asset drain.",
+            "consequence": "Unauthorized server access could translate into direct customer-asset theft, while weak reconciliation allowed the venue to continue presenting balances after a large underlying deficit had developed.",
+            "confidence": "high",
+            "source_refs": [
+              "https://www.justice.gov/usao-sdny/pr/russian-nationals-charged-hacking-one-cryptocurrency-exchange-and-illicitly-operating"
+            ]
+          },
+          {
+            "decision": "Continue normal exchange operations and withdrawals after the alleged 2011 compromise instead of proving wallet solvency and isolating affected systems.",
+            "consequence": "The indictment alleges theft continued through at least May 2014, magnifying customer exposure and converting a security incident into insolvency.",
+            "confidence": "medium",
+            "source_refs": [
+              "https://www.justice.gov/usao-sdny/pr/russian-nationals-charged-hacking-one-cryptocurrency-exchange-and-illicitly-operating"
+            ]
+          },
+          {
+            "decision": "Resolve creditor claims through Japanese civil rehabilitation and distribute recovered assets through designated exchanges and custodians.",
+            "consequence": "Creditors gained a path to bitcoin, Bitcoin Cash, and cash recoveries, but legal and verification complexity extended the process for more than a decade and repayments remain incomplete.",
+            "confidence": "high",
+            "source_refs": [
+              "https://www.mtgox.com/?Locale=en_US",
+              "https://www.mtgox.com/img/pdf/20221006_announcement_en.pdf"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "Segregated cold storage, least-privilege key access, independent wallet-to-ledger reconciliation, and an immediate shutdown after unexplained deficits would likely have reduced the loss and prevented continued operation while insolvent. This is a controls-based inference; the public record does not reveal every internal decision or the exact loss avoided by each measure.",
+          "confidence": "medium",
+          "source_refs": [
+            "https://www.justice.gov/usao-sdny/pr/russian-nationals-charged-hacking-one-cryptocurrency-exchange-and-illicitly-operating",
+            "https://www.justice.gov/usao-ndca/pr/russian-nationals-charged-hacking-one-cryptocurrency-exchange-and-illicitly-operating"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Trustee notices on completed repayments and any further change to the October 31, 2026 deadlines.",
+            "implication": "Completion would move the recovery lifecycle toward closure even though the venue remains dead; another extension would document continuing resolution risk.",
+            "source_refs": [
+              "https://www.mtgox.com/?Locale=en_US"
+            ]
+          },
+          {
+            "signal": "Court outcomes or updated charges concerning the alleged hackers and laundering network.",
+            "implication": "Adjudication could raise or lower confidence in actor attribution without changing the documented custody failure or exchange outcome.",
+            "source_refs": [
+              "https://www.justice.gov/usao-sdny/pr/russian-nationals-charged-hacking-one-cryptocurrency-exchange-and-illicitly-operating"
+            ]
+          },
+          {
+            "signal": "Estate bitcoin and Bitcoin Cash still held for rehabilitation creditors.",
+            "implication": "Remaining balances and disposition determine creditor recovery and potential market impact, but not whether Mt. Gox resumes operations.",
+            "source_refs": [
+              "https://www.mtgox.com/?Locale=en_US"
+            ]
+          }
+        ],
+        "unknowns": [
+          "What final percentage of each creditor's approved claim will be paid after all elections, disputes, and costs?",
+          "How much of the loss could contemporaneous independent reconciliation have detected before insolvency?",
+          "What final judicial findings, if any, will be entered against each person charged in the 2023 indictments?"
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "table": "dead_exchanges",
+      "kind": "cex",
+      "slug": "quadrigacx",
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "dead",
+          "summary": "QuadrigaCX is a bankrupt, non-operating Canadian custodial exchange. The Ontario Securities Commission staff review concluded that the platform's collapse caused losses of at least 169 million Canadian dollars for 76,000 clients. Canadian insolvency records identify the proceeding and Ernst & Young as the court-appointed monitor/trustee.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "https://www.osc.ca/quadrigacxreport/web/files/QuadrigaCX-A-Review-by-Staff-of-the-Ontario-Securities-Commission.pdf",
+            "https://ised-isde.canada.ca/site/bureau-surintendant-faillites/fr/liste-procedures-sous-lacc/registre-lacc-quadriga-fintech-solutions-corp-whiteside-capital-corporation-and-0984750-bc-ltd"
+          ]
+        },
+        "why": {
+          "summary": "OSC staff found that founder Gerald Cotten controlled Quadriga without adequate oversight, internal controls, books, or asset segregation; created fictitious accounts and balances; used client assets to fund trading and personal spending; and operated the resulting shortfall with later deposits. The report attributes the majority of client loss to this fraud, with additional losses from trading fees, external platform losses, and a 2017 coding error. These are regulator staff findings published after Cotten's death, not a criminal conviction.",
+          "confidence": "high",
+          "source_refs": [
+            "https://www.osc.ca/quadrigacxreport/web/files/QuadrigaCX-A-Review-by-Staff-of-the-Ontario-Securities-Commission.pdf",
+            "https://www.osc.ca/quadrigacxreport/growth-of-quadriga.html"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Permit one founder to exercise effective control over wallets, accounting, trading records, and corporate decisions without meaningful independent oversight.",
+            "consequence": "No functioning separation of duties existed to prevent or promptly expose fictitious account credits, asset transfers, or conflicts between customer custody and proprietary activity.",
+            "confidence": "high",
+            "source_refs": [
+              "https://www.osc.ca/quadrigacxreport/web/files/QuadrigaCX-A-Review-by-Staff-of-the-Ontario-Securities-Commission.pdf"
+            ]
+          },
+          {
+            "decision": "Represent customer balances in an internal ledger while moving and using underlying assets without transparent segregation or verifiable custody controls.",
+            "consequence": "Customers could not test whether their balances were backed, allowing an asset deficit to grow behind a functioning trading interface.",
+            "confidence": "high",
+            "source_refs": [
+              "https://www.osc.ca/quadrigacxreport/web/files/QuadrigaCX-A-Review-by-Staff-of-the-Ontario-Securities-Commission.pdf"
+            ]
+          },
+          {
+            "decision": "Pursue growth during the 2017 crypto boom while abandoning a public-listing effort that would have required stronger financial disclosure and governance.",
+            "consequence": "The platform became Canada's largest crypto venue while Cotten consolidated control and client exposure expanded without equivalent control maturity.",
+            "confidence": "high",
+            "source_refs": [
+              "https://www.osc.ca/quadrigacxreport/growth-of-quadriga.html"
+            ]
+          },
+          {
+            "decision": "Move the failed companies into court-supervised CCAA and bankruptcy proceedings after Cotten's death.",
+            "consequence": "A monitor and trustee could recover, verify, and distribute some assets, but the exchange could not resume and creditor recovery remained only a fraction of accepted claims.",
+            "confidence": "high",
+            "source_refs": [
+              "https://ised-isde.canada.ca/site/bureau-surintendant-faillites/fr/liste-procedures-sous-lacc/registre-lacc-quadriga-fintech-solutions-corp-whiteside-capital-corporation-and-0984750-bc-ltd"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "Independent directors, dual-control wallet authorization, segregated customer assets, audited wallet-to-ledger reconciliation, and regulatory registration would likely have exposed or constrained the conduct identified by OSC staff before the deficit became fatal. No single control guarantees prevention, and Cotten's death prevents adversarial testing of the regulator's account.",
+          "confidence": "medium",
+          "source_refs": [
+            "https://www.osc.ca/quadrigacxreport/web/files/QuadrigaCX-A-Review-by-Staff-of-the-Ontario-Securities-Commission.pdf",
+            "https://www.osc.ca/quadrigacxreport/growth-of-quadriga.html"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Trustee or court notices concerning additional distributions, unresolved claims, recovered assets, or final discharge.",
+            "implication": "Further distributions would improve recovery but would not change the dead-exchange outcome; final discharge would close the legal lifecycle.",
+            "source_refs": [
+              "https://ised-isde.canada.ca/site/bureau-surintendant-faillites/fr/liste-procedures-sous-lacc/registre-lacc-quadriga-fintech-solutions-corp-whiteside-capital-corporation-and-0984750-bc-ltd"
+            ]
+          },
+          {
+            "signal": "New official asset-recovery or law-enforcement findings tied to Quadriga-controlled wallets or external exchanges.",
+            "implication": "Verified recovery could alter creditor outcomes and refine flow attribution, while unsupported wallet claims should not be incorporated.",
+            "source_refs": [
+              "https://www.osc.ca/quadrigacxreport/web/files/QuadrigaCX-A-Review-by-Staff-of-the-Ontario-Securities-Commission.pdf"
+            ]
+          },
+          {
+            "signal": "Canadian custody, registration, and segregation rules for crypto trading platforms.",
+            "implication": "Control requirements influenced by the failure indicate whether its systemic lessons have been translated into enforceable safeguards.",
+            "source_refs": [
+              "https://www.osc.ca/quadrigacxreport/web/files/QuadrigaCX-A-Review-by-Staff-of-the-Ontario-Securities-Commission.pdf"
+            ]
+          }
+        ],
+        "unknowns": [
+          "What additional assets, if any, can still be recovered and distributed through the bankruptcy estate?",
+          "Which external wallet and trading losses can be attributed with transaction-level certainty after accounting for incomplete records?",
+          "How would the factual record have changed if Cotten had been available for examination or criminal adjudication?"
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    }
+  ]
+}
