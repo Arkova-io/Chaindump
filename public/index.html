@@ -673,7 +673,7 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   xKind: 'chain', deadDexData: null, deadCexData: null, midDexData: null, midCexData: null,
   dexBoard: null, cexBoard: null, graveExExpanded: null, graveExOpenGroups: null, midExExpanded: null, midExOpenGroups: null,
   blockchainAnalysisData: null, blockchainAnalysisQuery: '', blockchainAnalysisSort: 'name', blockchainAnalysisStatus: 'all',
-  exchangeAnalysisData: null, exchangeAnalysisSummaries: {}, exchangeAnalysisErrors: [], exchangeAnalysisQuery: '',
+  exchangeAnalysisData: null, exchangeAnalysisSummaries: {}, exchangeAnalysisClaimSupport: null, exchangeAnalysisErrors: [], exchangeAnalysisQuery: '',
   exchangeAnalysisKind: 'all', exchangeAnalysisLifecycle: 'all', exchangeAnalysisSort: 'name',
   exchangeAnalysisCohort: 'all', exchangeAnalysisQuality: 'all', exchangeAnalysisForensic: 'all',
   exchangeAnalysisDir: 1, exchangeAnalysisExpanded: null,
@@ -806,6 +806,8 @@ function evidenceStatusParts(source) {
     || Object.prototype.hasOwnProperty.call(source, 'resolving')
   ) {
     parts.push(truthy(source.reachable ?? source.resolving) ? 'reachable' : 'not reachable');
+  } else if (source.access_state) {
+    parts.push(`retrieval ${String(source.access_state).replaceAll('_', ' ')}`);
   }
   if (Object.prototype.hasOwnProperty.call(source, 'evidence_reviewed')) {
     parts.push(truthy(source.evidence_reviewed) ? 'editor reviewed' : 'editor review pending');
@@ -852,30 +854,47 @@ function srcHtml(sources, label) {
 // New NFT/Ordinals dossiers use a field-level evidence ledger.  Keep the
 // older source list visible, but never imply that legacy prose has this
 // stronger provenance model.
-function nftEvidenceHtml(profile, sources, freshnessState) {
+function nftEvidenceHtml(profile, sources, freshnessState, publicationDepth = null) {
   if (!profile || profile.citation_schema !== 'field-v1' || !Array.isArray(profile.evidence)) return '';
   let all; try { all = typeof sources === 'string' ? JSON.parse(sources) : sources; } catch (e) { return ''; }
   if (!Array.isArray(all)) return '';
   const byId = new Map(all.filter(s => s && typeof s === 'object' && s.id).map(s => [s.id, s]));
-  const rows = profile.evidence.map((item) => {
+  const rows = profile.evidence.map((item, index) => {
     if (!item || !item.field || !Array.isArray(item.source_ids)) return '';
+    const gap = publicationDepthGap(
+      publicationDepth,
+      `evidence[${index}].${item.field || 'unknown'}`,
+    );
     const links = item.source_ids.map((id) => {
       const source = byId.get(id);
       if (!source || !source.url) return '';
       const sourceDate = source.source_date || 'unknown';
-      const inspected = source.checked_at || 'unknown';
+      const inspected = source.checked_at || source.accessed_at || 'unknown';
       const verified = source.last_verified_at;
-      const access = String(source.access_state || (verified ? 'verified' : 'not recorded')).replaceAll('_', ' ');
+      const access = String(
+        source.access_state || (verified ? 'verified' : 'not recorded'),
+      ).replaceAll('_', ' ');
       const verification = verified ? `verified ${esc(verified)}` : 'verification not recorded';
       const note = source.verification_note ? ` · ${esc(source.verification_note)}` : '';
+      const publicationState = evidenceStatusParts({ ...source, registered: true });
+      const publication = publicationState.length
+        ? ` · ${publicationState.map(esc).join(' · ')}`
+        : '';
       const today = new Date().toISOString().slice(0, 10);
       const stale = source.stale === true || (source.evidence_scope === 'current_state' && source.stale_after && today > source.stale_after);
       const freshness = typeof source.stale === 'boolean' ? (stale ? 'STALE' : 'fresh') : 'freshness not rated';
-      return `<a href="${esc(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title || id)} ↗</a><span class="muted"> · source ${esc(sourceDate)} · inspected ${esc(inspected)} · ${verification} · access ${esc(access)} · ${esc(freshness)}${note}</span>`;
+      return `<a href="${esc(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title || id)} ↗</a><span class="muted"> · source ${esc(sourceDate)} · inspected ${esc(inspected)} · ${verification} · access ${esc(access)} · ${esc(freshness)}${publication}${note}</span>`;
     }).filter(Boolean).join(' · ');
     if (!links) return '';
-    const value = item.field === 'lifecycle_status' && freshnessState?.statusWithheld ? 'unknown — evidence review required' : item.value;
-    return `<div class="gfield"><span class="gfl">${esc(item.field.replaceAll('_',' '))}</span> ${esc(String(value))}<span class="muted"> · as of ${esc(item.as_of || '—')} · ${esc(item.basis || 'source')}</span><div class="asrc">Cited evidence: ${links}</div></div>`;
+    const value = gap
+      ? 'withheld — independent support pending'
+      : item.field === 'lifecycle_status' && freshnessState?.statusWithheld
+      ? 'unknown — evidence review required'
+      : item.value;
+    const pending = gap
+      ? '<div class="analysis-note" style="margin:4px 0 0 68px"><b>High-risk field conclusion withheld.</b> Registered citations remain visible below, but this value does not meet the independent-support policy.</div>'
+      : '';
+    return `<div class="gfield"><span class="gfl">${esc(item.field.replaceAll('_',' '))}</span> ${esc(String(value))}<span class="muted"> · as of ${esc(item.as_of || '—')} · ${esc(item.basis || 'source')}</span>${pending}<div class="asrc">Cited evidence: ${links}</div></div>`;
   }).filter(Boolean).join('');
   return rows ? `<div class="gsec">Field-level evidence</div>${rows}` : '';
 }
@@ -1100,7 +1119,7 @@ function nftStructuredValueHtml(value, sources) {
   }
   return proseBox(String(value));
 }
-function nftProfileAnalysisHtml(profile, sources) {
+function nftProfileAnalysisHtml(profile, sources, publicationDepth = null) {
   const forensic = parsedObject(profile?.forensic_analysis);
   const hasForensic = forensic.version === 'forensic-analysis-v1' || forensic.schema === 'forensic-analysis-v1';
   const fields = [
@@ -1126,7 +1145,7 @@ function nftProfileAnalysisHtml(profile, sources) {
     return sourceArray(sources).find((item) => item.id === key || item.url === key)
       || (typeof key === 'string' && key.startsWith('https://') ? { url: key, title: 'source' } : null);
   };
-  return `${structured}${forensicAnalysisHtml(profile?.forensic_analysis, resolveRef, 'This NFT/Ordinals dossier remains visible, but its normalized causal map is pending review.')}`;
+  return `${structured}${forensicAnalysisHtml(profile?.forensic_analysis, resolveRef, 'This NFT/Ordinals dossier remains visible, but its normalized causal map is pending review.', publicationDepth)}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -1307,6 +1326,7 @@ function normalizeExchangeResearchCase(row) {
     qualityLabel: quality.label || 'limited',
     qualityIssues: Array.isArray(quality.issues) ? quality.issues : [],
     evidence: parsedObject(analysis.evidence),
+    publicationDepth: parsedObject(row.publication_depth),
     profile, analysis, sources: mergedSourceArray(sourceArray(row.sources), forensicSourceArray(forensic)), updatedAt: row.updated_at || '',
   };
 }
@@ -1334,6 +1354,16 @@ function exchangeFindingLabel(lifecycle) {
   if (lifecycle === 'successful') return 'Why it succeeded';
   if (lifecycle === 'mid') return 'Why it is stuck';
   return 'What happened';
+}
+function exchangeFindingHtml(row) {
+  if (!row?.summary) return '';
+  return publicationDepthSectionHtml(
+    exchangeFindingLabel(row.lifecycle),
+    row.summary,
+    row.publicationDepth,
+    (gap) => gap.path === 'forensic_analysis.why'
+      || gap.path === 'forensic_analysis.outcome',
+  );
 }
 function exchangeTokenLine(token) {
   const tokenSymbol = analysisText(token.symbol || '');
@@ -1375,13 +1405,17 @@ function exchangeTokenEvidence(row) {
   return `<div class="gfield"><span class="gfl">Token</span><a href="${esc(safeUrl(url))}" target="_blank" rel="noopener noreferrer">token source ↗</a>${asOf}</div>`;
 }
 function exchangeAnalysisDetails(row, profile, tokenLine) {
+  const depth = row.publicationDepth;
+  const outcomeGap = publicationDepthGap(depth, 'forensic_analysis.outcome');
   const fields = [];
   if (row.launched) fields.push(`<div class="gfield"><span class="gfl">Launched</span> ${esc(row.launched)}</div>`);
   const venueContext = [String(row.venueType).toUpperCase(), exchangeLabel(row.custodyModel || 'custody unresolved')];
   if (row.primaryChain) venueContext.push(row.primaryChain);
   fields.push(
     `<div class="gfield"><span class="gfl">Venue</span> ${venueContext.map(esc).join(' · ')}</div>`,
-    `<div class="gfield"><span class="gfl">Observed status</span> ${esc(exchangeLabel(row.status || 'unknown'))}</div>`,
+    outcomeGap
+      ? '<div class="gfield"><span class="gfl">Observed status</span>withheld · independent support pending</div>'
+      : `<div class="gfield"><span class="gfl">Observed status</span> ${esc(exchangeLabel(row.status || 'unknown'))}</div>`,
     `<div class="gfield"><span class="gfl">Product cohort</span> ${esc(exchangeLabel(row.productCohort))}</div>`,
     `<div class="gfield"><span class="gfl">Token</span> ${tokenLine}</div>`,
   );
@@ -1398,11 +1432,23 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
   if (row.operatingModel) sections.push(`<div class="gsec">Operating model</div>${proseBox(row.operatingModel)}`);
   const purpose = profile.purpose || profile.what_it_does;
   if (purpose) sections.push(`<div class="gsec">Purpose</div>${proseBox(analysisText(purpose))}`);
-  if (row.summary) sections.push(`<div class="gsec">${exchangeFindingLabel(row.lifecycle)}</div>${proseBox(row.summary)}`);
-  if (profile.success_factors) sections.push(`<div class="gsec">Success factors</div>${proseBox(analysisText(profile.success_factors))}`);
+  if (row.summary) sections.push(exchangeFindingHtml(row));
+  if (profile.success_factors) sections.push(publicationDepthSectionHtml(
+    'Success factors',
+    analysisText(profile.success_factors),
+    depth,
+    (gap) => gap.path === 'forensic_analysis.why',
+  ));
   const risks = profile.risks || profile.risk_factors;
-  if (risks) sections.push(`<div class="gsec">Risks</div>${proseBox(analysisText(risks))}`);
-  if (profile.synthesis) sections.push(`<div class="gsec">Research synthesis</div>${proseBox(analysisText(profile.synthesis))}`);
+  if (risks) sections.push(`<div class="gsec">Risk notes · not claim-audited</div>${proseBox(analysisText(risks))}`);
+  if (profile.synthesis) sections.push(publicationDepthSectionHtml(
+    'Research synthesis',
+    analysisText(profile.synthesis),
+    depth,
+    (gap) => gap.path === 'forensic_analysis.why'
+      || gap.path === 'forensic_analysis.counterfactual'
+      || gap.path.startsWith('forensic_analysis.strategic_choices['),
+  ));
   if (row.outlook) sections.push(`<div class="gsec">Outlook</div>${proseBox(row.outlook)}`);
   sections.push(forensicAnalysisHtml(row.analysis.forensic_analysis || profile.forensic_analysis, (ref) => {
     const value = typeof ref === 'string' ? ref : ref?.value;
@@ -1412,7 +1458,7 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
       const id = typeof source === 'string' ? null : source?.id;
       return url === value || id === value;
     }) || (String(value).startsWith('https://') ? { url: value, title: 'source' } : null);
-  }));
+  }, 'This exchange dossier is indexed; its normalized causal contract is pending review.', depth));
   const qualityIssueText = row.qualityIssues.length
     ? row.qualityIssues.map(exchangeLabel).join(' · ')
     : 'No recorded feature gaps';
@@ -1421,7 +1467,7 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
   const forensicReview = parsedObject(parsedObject(row.analysis.forensic_analysis || profile.forensic_analysis).review);
   const freshnessState = exchangeReviewState(row);
   const nextReviewAt = forensicReview.next_review_at || freshness.next_review_at || 'unknown';
-  return `<div class="gexp">${fields.join('')}${sections.join('')}
+  return `<div class="gexp">${publicationDepthBanner(depth, 'Exchange dossier inclusion')}${fields.join('')}${sections.join('')}
     <div class="gsec">Field evidence</div>
     ${exchangeEvidenceLinks(row, 'operating_model_source_indexes', 'Operating model')}
     ${exchangeEvidenceLinks(row, 'custody_model_source_indexes', 'Custody')}
@@ -1450,7 +1496,8 @@ function exchangeAnalysisCard(row) {
   if (row.primaryChain) meta.push(row.primaryChain);
   if (row.launched) meta.push(`launched ${row.launched}`);
   meta.push(`data quality: ${row.qualityLabel}`);
-  meta.push(`forensic dossier: ${row.forensicStatus === 'published' ? 'published' : 'pending review'}`);
+  meta.push(`causal map: ${row.forensicStatus === 'published' ? 'indexed' : 'structure pending'}`);
+  meta.push(`high-risk support: ${row.publicationDepth.passing_high_risk_claim_count || 0}/${row.publicationDepth.high_risk_claim_count || 0}`);
   const sourceLabel = row.sources.length === 1 ? 'source' : 'sources';
   meta.push(`${row.sources.length} ${sourceLabel}`);
   const dossierLink = `/exchange/${encodeURIComponent(row.kind)}/${encodeURIComponent(row.lifecycle)}/${encodeURIComponent(row.slug)}`;
@@ -1458,7 +1505,8 @@ function exchangeAnalysisCard(row) {
     <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${lifecycleClass(row.lifecycle)}">${esc(lifecycleLabel(row.lifecycle))}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${metricContext}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
     <div class="gmeta">${meta.map(esc).join(' · ')}</div>
-    ${row.summary ? `<div class="gbody">${esc(row.summary)}</div>` : ''}
+    ${exchangeFindingHtml(row)}
+    ${publicationDepthEvidenceHtml(row.publicationDepth)}
     <div class="analysis-src-preview">${sourcePreview || '<div class="asrc">No cited sources published for this row.</div>'}</div>
     ${details}<div class="gexpand">${open?'Hide dossier ▲':'Full dossier ▾'} · <a href="${esc(dossierLink)}">Open dossier →</a></div>
   </div>`;
@@ -1558,6 +1606,7 @@ function renderExchangeAnalysis() {
   const filterButton = (attr, value, label, active) => `<button type="button" class="kindbtn${active?' active':''}" ${attr}="${value}">${label}</button>`;
   const errors = state.exchangeAnalysisErrors.length
     ? `<div class="analysis-note">Some cohorts could not be loaded: ${esc(state.exchangeAnalysisErrors.join(', '))}. Available cited dossiers are shown below.</div>` : '';
+  const claimSupport = state.exchangeAnalysisClaimSupport || {};
   const cited = rows.filter((row) => row.sources.length).length;
   const cohorts = [...new Set(rows.map((row) => row.productCohort))]
     .sort((a, b) => a.localeCompare(b));
@@ -1569,8 +1618,9 @@ function renderExchangeAnalysis() {
     'Outcome and freshness bars count normalized DEX and CEX dossiers; they do not combine unlike market metrics.',
   );
   el.innerHTML = `${head}${errors}
-    <div class="gstats">${gstat(rows.filter(r=>r.kind==='dex').length, 'DEX cases')}${gstat(rows.filter(r=>r.kind==='cex').length, 'CEX cases')}${gstat(rows.filter(r=>r.forensicStatus==='published').length, 'forensic dossiers')}${gstat(rows.filter(r=>r.qualityLabel==='partial').length, 'partial')}</div>
-    <div class="analysis-note">${cited} of ${rows.length} dossiers expose citations. Comparison requires the same venue kind, product cohort, metric type, unit, and window. Spot, routed, perpetual, TVL, loss, daily, and quarterly measures are never added together.</div>
+    <div class="gstats">${gstat(rows.filter(r=>r.kind==='dex').length, 'DEX cases')}${gstat(rows.filter(r=>r.kind==='cex').length, 'CEX cases')}${gstat(rows.filter(r=>r.forensicStatus==='published').length, 'causal maps indexed')}${gstat(claimSupport.unresolved_high_risk_claim_count || 0, 'high-risk claims pending')}</div>
+    <div class="analysis-note"><b>Exchange claim-support audit: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} high-risk claims meet policy; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending / withheld.</b> “Indexed” means the dossier and causal schema exist; it does not mean the conclusions passed editorial evidence review.</div>
+    <div class="analysis-note">${cited} of ${rows.length} dossiers expose registered citations. Across them: ${esc(claimSupport.registered_source_count || 0)} registered · ${esc(claimSupport.reachable_source_count || 0)} reachable · ${esc(claimSupport.reviewed_source_count || 0)} editor reviewed. Comparison requires the same venue kind, product cohort, metric type, unit, and window. Spot, routed, perpetual, TVL, loss, daily, and quarterly measures are never added together.</div>
     ${cohortPanel}
     ${exchangeTrendSummary(state.exchangeAnalysisSummaries.dex, 'DEX')}
     ${exchangeTrendSummary(state.exchangeAnalysisSummaries.cex, 'CEX')}
@@ -1604,8 +1654,8 @@ function renderExchangeAnalysis() {
       <label class="muted" for="exchangeAnalysisForensic">Causal map</label>
       <select id="exchangeAnalysisForensic" class="analysis-select">
         <option value="all">All research states</option>
-        <option value="published"${state.exchangeAnalysisForensic==='published'?' selected':''}>Cited causal maps</option>
-        <option value="pending"${state.exchangeAnalysisForensic==='pending'?' selected':''}>Pending causal review</option>
+        <option value="published"${state.exchangeAnalysisForensic==='published'?' selected':''}>Indexed causal maps</option>
+        <option value="pending"${state.exchangeAnalysisForensic==='pending'?' selected':''}>Causal structure pending</option>
       </select>
       <span class="analysis-spacer"></span>
       <label class="muted" for="exchangeAnalysisSort">Sort</label>
@@ -1629,7 +1679,12 @@ async function fetchExchangeAnalysisKind(kind) {
   if (!response.ok) throw new Error(`${kind.toUpperCase()} analysis`);
   const payload = await response.json();
   if (payload.error) throw new Error(`${kind.toUpperCase()}: ${payload.error}`);
-  return { kind, rows: (payload.cases || []).map(normalizeExchangeResearchCase), summary: payload.summary };
+  return {
+    kind,
+    rows: (payload.cases || []).map(normalizeExchangeResearchCase),
+    summary: payload.summary,
+    claimSupport: payload.claim_support || {},
+  };
 }
 async function loadExchangeAnalysis() {
   renderExchangeAnalysis();
@@ -1638,6 +1693,30 @@ async function loadExchangeAnalysis() {
   state.exchangeAnalysisSummaries = Object.fromEntries(
     settled.flatMap((result) => result.status === 'fulfilled' ? [[result.value.kind, result.value.summary]] : [])
   );
+  state.exchangeAnalysisClaimSupport = settled.reduce((total, result) => {
+    if (result.status !== 'fulfilled') return total;
+    const support = result.value.claimSupport || {};
+    for (const key of [
+      'dossier_count',
+      'claim_count',
+      'high_risk_claim_count',
+      'passing_high_risk_claim_count',
+      'unresolved_high_risk_claim_count',
+      'registered_source_count',
+      'reachable_source_count',
+      'reviewed_source_count',
+    ]) total[key] += Number(support[key]) || 0;
+    return total;
+  }, {
+    dossier_count: 0,
+    claim_count: 0,
+    high_risk_claim_count: 0,
+    passing_high_risk_claim_count: 0,
+    unresolved_high_risk_claim_count: 0,
+    registered_source_count: 0,
+    reachable_source_count: 0,
+    reviewed_source_count: 0,
+  });
   state.exchangeAnalysisErrors = settled.flatMap((result) => result.status === 'rejected' ? [result.reason.message] : []);
   exchangeAnalysisLoaded = state.exchangeAnalysisErrors.length === 0;
   renderExchangeAnalysis();
@@ -1679,7 +1758,7 @@ function casinoEvidenceStatusHtml(source) {
     ? `<div class="muted" style="margin:3px 0 0 68px">${parts.join(' · ')}</div>`
     : '';
 }
-function casinoPublicationDepthBanner(depth) {
+function publicationDepthBanner(depth, corpusLabel = 'Corpus inclusion') {
   if (!depth) {
     return '<div class="analysis-note"><b>Claim-support audit unavailable.</b> Dossier inclusion is not proof that high-risk claims meet the independent-support threshold.</div>';
   }
@@ -1689,14 +1768,27 @@ function casinoPublicationDepthBanner(depth) {
   const status = unresolved
     ? `${unresolved} pending / withheld`
     : 'support threshold met';
-  return `<div class="analysis-note"><b>High-risk claim support: ${esc(passing)} of ${esc(total)} meet policy · ${esc(status)}.</b> Corpus inclusion measures indexed coverage, not editorial claim support. Unsupported lifecycle, causal, legal, loss, and counterfactual conclusions are withheld below.</div>`;
+  return `<div class="analysis-note"><b>High-risk claim support: ${esc(passing)} of ${esc(total)} meet policy · ${esc(status)}.</b> ${esc(corpusLabel)} measures indexed coverage, not editorial claim support. Unsupported lifecycle, causal, legal, loss, and counterfactual conclusions are withheld below.</div>`;
 }
-function casinoDepthSectionHtml(label, text, depth, isUnsupported) {
+function publicationDepthEvidenceHtml(depth) {
+  if (!depth) return '<div class="analysis-src-preview"><div class="asrc">Evidence review status unavailable.</div></div>';
+  return `<div class="analysis-src-preview"><div class="asrc">Evidence: ${esc(depth.registered_source_count || 0)} registered · ${esc(depth.reachable_source_count || 0)} reachable · ${esc(depth.reviewed_source_count || 0)} editor reviewed. High-risk support: ${esc(depth.passing_high_risk_claim_count || 0)}/${esc(depth.high_risk_claim_count || 0)} meet policy · ${esc(depth.unresolved_high_risk_claim_count || 0)} pending / withheld.</div></div>`;
+}
+function publicationDepthSectionHtml(label, text, depth, isUnsupported) {
   if (!text) return '';
-  const gap = (depth?.unresolved_high_risk_claims || []).find(isUnsupported);
+  const predicate = typeof isUnsupported === 'function'
+    ? isUnsupported
+    : () => false;
+  const gap = (depth?.unresolved_high_risk_claims || []).find(predicate);
   return `<div class="gsec">${label}</div>${gap
     ? publicationPendingHtml(label.replaceAll('&amp;', '&'), gap)
     : proseBox(text)}`;
+}
+function casinoPublicationDepthBanner(depth) {
+  return publicationDepthBanner(depth);
+}
+function casinoDepthSectionHtml(label, text, depth, isUnsupported) {
+  return publicationDepthSectionHtml(label, text, depth, isUnsupported);
 }
 function casinoDetailBody(item, detail) {
   if (detail === 'loading') return '<div class="gexp"><div class="skel">Loading cited dossier…</div></div>';
@@ -3370,22 +3462,32 @@ function nftAggregateAnalysisHtml(data) {
   const accessVerifiedThrough = analysis.evidenceWindow?.source_access_verified_through;
   const limitations = (analysis.limitations || []).map((item) => `<li>${esc(item)}</li>`).join('');
   const falsifiers = (analysis.falsifiers || []).map((item) => `<li>${esc(item)}</li>`).join('');
-  return `<div class="gsec">Cohort finding · lifecycle status through ${esc(analysis.evidenceWindow?.newest_lifecycle_status_as_of || 'unknown')}</div>
-    <div class="gbody">This is a <b>${total}-dossier</b> forensic cohort, not a market census. ${classified} cases carry a published lifecycle label after the freshness gate; ${Number(statuses.unknown || 0)} are unknown rather than being forced into a conclusion. The observed mix is ${Number(statuses.thriving || 0)} thriving, ${Number(statuses.middling || 0)} middling, ${Number(statuses.dead || 0)} dead, and ${Number(statuses.declining || 0)} declining. Those shares describe this selected library only—they are not NFT success probabilities.</div>
+  return `<div class="gsec">Cohort finding · indexed lifecycle status through ${esc(analysis.evidenceWindow?.newest_lifecycle_status_as_of || 'unknown')}</div>
+    <div class="gbody">This is a <b>${total}-dossier</b> forensic cohort, not a market census. ${classified} cases carry an indexed lifecycle label after the freshness gate; ${Number(statuses.unknown || 0)} are unknown rather than being forced into a conclusion. The observed mix is ${Number(statuses.thriving || 0)} thriving, ${Number(statuses.middling || 0)} middling, ${Number(statuses.dead || 0)} dead, and ${Number(statuses.declining || 0)} declining. Those shares describe this selected library only—they are not NFT success probabilities or independently verified outcomes.</div>
     <div class="gsec">Chain and lifecycle association</div>
     <div class="gbody">The three largest exact chain labels account for ${topThree} of ${total} dossiers. Their observed lifecycle mix is ${esc(topChainRead)}. Chain labels are retained as published, including mixed-chain cases. The page does not convert this association into a chain-caused outcome: launch timing, product, distribution, team execution, and market cycle are uncontrolled.</div>
     ${analysisDistributionHtml('Exact chain labels', chainChart)}
     <div class="gsec">Token · product · founder · community evidence</div>
     <div class="gbody">${esc(coverageLine('Normalized token/value-capture field', 'token_model'))}; ${esc(coverageLine('chain-dependence field', 'chain_dependence'))}; ${esc(coverageLine('structured product/value-capture field', 'products_and_value_capture'))}; ${esc(coverageLine('founder-engagement field', 'founder_engagement'))}; ${esc(coverageLine('community-history field', 'community_history'))}; ${esc(coverageLine('holder-benefit field', 'benefits'))}. These are documentation counts, not positive signals. In particular, token-model coverage cannot answer “did it launch a token?” until token status is a controlled field across the full cohort.</div>
     <div class="gsec">Decision depth and causal boundary</div>
-    <div class="gbody">${Number(coverage.forensic_dossiers || 0)} of ${total} dossiers have a normalized causal map containing ${Number(coverage.strategic_choices || 0)} documented strategic choices, ${Number(coverage.watch_signals || 0)} watch/falsifier signals, and ${Number(coverage.material_unknowns || 0)} explicit unknowns. Outcome confidence is ${Number(confidence.high || 0)} high and ${Number(confidence.medium || 0)} medium; “why” confidence is ${Number(whyConfidence.high || 0)} high and ${Number(whyConfidence.medium || 0)} medium. These are evidence-qualified analyst judgments, not experimental causal estimates.</div>
+    <div class="gbody">${Number(coverage.forensic_dossiers || 0)} of ${total} dossiers have a normalized causal map containing ${Number(coverage.strategic_choices || 0)} documented strategic choices, ${Number(coverage.watch_signals || 0)} watch/falsifier signals, and ${Number(coverage.material_unknowns || 0)} explicit unknowns. Schema-declared outcome confidence is ${Number(confidence.high || 0)} high and ${Number(confidence.medium || 0)} medium; schema-declared “why” confidence is ${Number(whyConfidence.high || 0)} high and ${Number(whyConfidence.medium || 0)} medium. The claim-support audit above remains controlling: unsupported conclusions are withheld in each dossier and these counts are not independent verification or experimental causal estimates.</div>
     <div class="gsec">Evidence contract and freshness</div>
-    <div class="gbody">${Number(coverage.field_cited || 0)} of ${total} dossiers pass the field-citation contract, covering ${Number(coverage.field_claims || 0)} field claims and ${Number(coverage.source_records || 0)} source records (${Number(coverage.distinct_source_urls || 0)} distinct URLs). ${Number(coverage.forensic_references_ledger_matched || 0)} of ${Number(coverage.forensic_references_total || 0)} causal references match a source ID or URL in the published ledgers; ledger matching proves linkage coverage, not successful URL access or claim truth. Current review state: ${Number(review.current || 0)} current, ${Number(review.review_due || 0)} review due, ${Number(review.withheld || 0)} stale/withheld, ${Number(review.legacy || 0)} legacy. Published lifecycle-status evidence spans ${esc(analysis.evidenceWindow?.oldest_lifecycle_status_as_of || 'unknown')} to ${esc(analysis.evidenceWindow?.newest_lifecycle_status_as_of || 'unknown')}; forensic outcome summaries span ${esc(analysis.evidenceWindow?.oldest_forensic_outcome_as_of || 'unknown')} to ${esc(analysis.evidenceWindow?.newest_forensic_outcome_as_of || 'unknown')}; lifecycle dossiers were reviewed through ${esc(analysis.evidenceWindow?.lifecycle_reviewed_through || 'unknown')}; source records were inspected through ${esc(analysis.evidenceWindow?.source_inspected_through || 'unknown')}. ${accessVerifiedThrough ? `Explicit successful source access is recorded through ${esc(accessVerifiedThrough)}.` : 'No source in this cohort records an explicit successful-access state, so an access-verified-through date is withheld.'} Recorded source access states: ${esc(sourceAccess || 'not recorded')}.</div>
+    <div class="gbody">${Number(coverage.field_cited || 0)} of ${total} dossiers pass the field-citation structure check, covering ${Number(coverage.field_claims || 0)} field claims and ${Number(coverage.source_records || 0)} source records (${Number(coverage.distinct_source_urls || 0)} distinct URLs). Field-cited is not the same as editor reviewed. ${Number(coverage.forensic_references_ledger_matched || 0)} of ${Number(coverage.forensic_references_total || 0)} causal references match a source ID or URL in the published ledgers; ledger matching proves linkage coverage, not successful URL access or claim truth. Current freshness state: ${Number(review.current || 0)} current, ${Number(review.review_due || 0)} review due, ${Number(review.withheld || 0)} stale/withheld, ${Number(review.legacy || 0)} legacy. Published lifecycle-status evidence spans ${esc(analysis.evidenceWindow?.oldest_lifecycle_status_as_of || 'unknown')} to ${esc(analysis.evidenceWindow?.newest_lifecycle_status_as_of || 'unknown')}; forensic outcome summaries span ${esc(analysis.evidenceWindow?.oldest_forensic_outcome_as_of || 'unknown')} to ${esc(analysis.evidenceWindow?.newest_forensic_outcome_as_of || 'unknown')}; lifecycle dossiers were reviewed through ${esc(analysis.evidenceWindow?.lifecycle_reviewed_through || 'unknown')}; source records were inspected through ${esc(analysis.evidenceWindow?.source_inspected_through || 'unknown')}. ${accessVerifiedThrough ? `Explicit successful source access is recorded through ${esc(accessVerifiedThrough)}.` : 'No source in this cohort records an explicit successful-access state, so an access-verified-through date is withheld.'} Recorded source access states: ${esc(sourceAccess || 'not recorded')}.</div>
     <div class="gsec">What this dataset does not yet prove</div><ul class="evlist">${limitations}</ul>
     <div class="gsec">What would change the aggregate read</div><ul class="evlist">${falsifiers}</ul>
     <div class="gsec">Cited dossier anchors</div>
     <div class="gbody">These are examples for inspection, not a substitute for the full cohort: ${anchors.join(' · ') || 'no source anchors available'}.</div>
     <div class="asrc">Aggregate evidence: <a href="/api/nft" target="_blank" rel="noopener noreferrer">open the live cohort JSON ↗</a> · every dossier below links to its field-level evidence and source ledger.</div>`;
+}
+function nftLifecycleReadHtml(profile, publicationDepth) {
+  if (!profile?.analysis) return '';
+  return publicationDepthSectionHtml(
+    'Lifecycle read',
+    profile.analysis,
+    publicationDepth,
+    (gap) => gap.path === 'forensic_analysis.outcome'
+      || gap.path === 'forensic_analysis.why',
+  );
 }
 function renderNft(data){
   const el = document.getElementById('nftview');
@@ -3395,9 +3497,10 @@ function renderNft(data){
   const a = data.agg || {};
   const n = (data.market && data.market.count) || 0;
   const m = data.market || {};
+  const claimSupport = data.claim_support || {};
   const citation = data.citationCoverage || {};
   const legacyCount = citation.legacyCount ?? data.collections.length;
-  const evidenceCoverage = `<div class="gnar muted" style="margin:0 0 14px">Evidence coverage: ${citation.fieldCitedCount||0} field-cited dossier${citation.fieldCitedCount===1?'':'s'}; ${legacyCount} legacy dossier${legacyCount===1?'':'s'} retain collection-level source lists while they are retrofitted.</div>`;
+  const evidenceCoverage = `<div class="gnar muted" style="margin:0 0 14px">Evidence coverage: ${citation.fieldCitedCount||0} dossier${citation.fieldCitedCount===1?'':'s'} use the field-citation schema; ${legacyCount} legacy dossier${legacyCount===1?'':'s'} retain collection-level source lists while they are retrofitted. Field-cited does not mean editor reviewed.</div>`;
   // Stat row hoisted out of the panel to sit under the page header, as on every
   // other view. The caveat line stays with the tiles it qualifies.
   const stats = n>50 ? `<div class="gstats">
@@ -3420,10 +3523,16 @@ function renderNft(data){
       withheld: 'stale / withheld',
       legacy: 'legacy / no field policy',
     }),
-    'Lifecycle bars cover curated case studies only. Freshness is derived from each field-cited dossier’s evidence policy; legacy source lists remain visibly separate.',
+    'Lifecycle bars show indexed classifications, not independently verified outcomes. Freshness is derived from each field-cited dossier’s evidence policy; legacy source lists remain visibly separate.',
   );
   const panel = `<div class="gpanel">
-    ${accordionHtml(`Lifecycle analysis — what the ${data.analysis?.cohort?.total ?? data.collections.length}-case data can and cannot say`, nftAggregateAnalysisHtml(data), true)}
+    ${accordionHtml(
+      `Lifecycle analysis — what the ${data.analysis?.cohort?.total ?? data.collections.length}-case data can and cannot say`,
+      `${claimSupport.unresolved_high_risk_claim_count
+        ? '<div class="analysis-note"><b>Aggregate analysis uses indexed classifications with unresolved high-risk support.</b> Unsupported dossier conclusions remain withheld below; these counts are not independently verified outcomes.</div>'
+        : ''}${nftAggregateAnalysisHtml(data)}`,
+      true,
+    )}
   </div>`;
   const caseQ = state.nftCaseQuery || '';
   const chains = [...new Set(data.collections.map((c) => c.chain).filter(Boolean))].sort((a, b) => chainLabel(a).localeCompare(chainLabel(b)));
@@ -3437,19 +3546,25 @@ function renderNft(data){
     name: (a, b) => a.name.localeCompare(b.name),
     status: (a, b) => String(a.status || '').localeCompare(String(b.status || '')) || a.name.localeCompare(b.name),
     chain: (a, b) => chainLabel(a.chain).localeCompare(chainLabel(b.chain)) || a.name.localeCompare(b.name),
-    citations: (a, b) => sourceArray(b.sources).length - sourceArray(a.sources).length || a.name.localeCompare(b.name),
+    citations: (a, b) => sourceArray(b.publication_sources || b.sources).length
+      - sourceArray(a.publication_sources || a.sources).length
+      || a.name.localeCompare(b.name),
     launched: (a, b) => String((a.profile || {}).launched || '').localeCompare(String((b.profile || {}).launched || '')) || a.name.localeCompare(b.name),
   };
   caseList = [...caseList].sort(nftSorters[state.nftCaseSort] || nftSorters.name);
   const cards = caseList.map(c => {
     const p = c.profile || {};
+    const depth = c.publication_depth || {};
+    const outcomeGap = publicationDepthGap(depth, 'forensic_analysis.outcome');
+    const citedSources = c.publication_sources || c.sources;
     const open = state.nftExpanded === c.slug;
     const icon = CHAIN_ICON[(c.chain||'').toLowerCase()] || '◆';
-    const sources = srcHtml(c.sources);
-    const sourceCount = sourceArray(c.sources).length;
-    const sourcePreview = srcHtml(sourceArray(c.sources).slice(0, 3), 'Cited sources: ') || '<div class="analysis-src-preview"><div class="asrc">No cited sources published for this case study.</div></div>';
+    const sources = srcHtml(citedSources);
+    const sourceCount = sourceArray(citedSources).length;
+    const sourcePreview = srcHtml(sourceArray(citedSources).slice(0, 3), 'Cited sources: ') || '<div class="analysis-src-preview"><div class="asrc">No cited sources published for this case study.</div></div>';
     const mkt = mktUrl(c);
     const body = open ? `<div class="gexp">
+      ${publicationDepthBanner(depth, 'NFT/Ordinals dossier inclusion')}
       ${c.risk?riskBanner(c.risk):''}
       ${mkt?`<div class="gfield"><span class="gfl">Collection</span> <a href="${esc(safeUrl(mkt))}" target="_blank" rel="noopener noreferrer">View on marketplace ↗</a></div>`:''}
       <div class="gfield"><span class="gfl">Minted</span> ${esc(p.launched||'—')}${nftSupplyText(p.supply) ? ` · ${esc(nftSupplyText(p.supply))}` : ''}</div>
@@ -3464,26 +3579,28 @@ function renderNft(data){
       ${p.social?`<div class="gsec">Social signals</div>${proseBox(p.social)}`:''}
       ${p.benefits?`<div class="gsec">Holder benefits / products</div>${proseBox(p.benefits)}`:''}
       ${p.business?`<div class="gsec">Real-world business — product · distribution · strengths &amp; weaknesses</div>${proseBox(p.business)}`:''}
-      ${p.analysis?`<div class="gsec">Lifecycle read</div>${proseBox(p.analysis)}`:''}
-      ${nftProfileAnalysisHtml(p, c.sources)}
+      ${nftLifecycleReadHtml(p, depth)}
+      ${nftProfileAnalysisHtml(p, citedSources, depth)}
       ${nftFreshnessHtml(p, c.freshness)}
-      ${nftEvidenceHtml(p, c.sources, c.freshness)}
+      ${nftEvidenceHtml(p, citedSources, c.freshness, depth)}
       ${sources}
     </div>` : '';
     return `<div class="gcard ${open?'open':''}" role="button" tabindex="0" data-slug="${esc(c.slug)}">
       <div class="ghead">
-        <div class="gname">${icon} ${esc(c.name)} <span class="gverdict ${verdictClass(c.status)}">${esc(c.status||'')}</span></div>
+        <div class="gname">${icon} ${esc(c.name)} <span class="gverdict ${outcomeGap ? 'declining' : verdictClass(c.status)}">${esc(outcomeGap ? 'support pending' : (c.status||''))}</span></div>
         <div class="gdd" style="color:var(--muted2);font-size:13px">${nftLifecycleMetric(p)}<span class="gddl">${nftLifecycleMetricLabel(p)}</span></div>
       </div>
-      <div class="gmeta">${esc(chainLabel(c.chain))}${p.launched?` · launched ${esc(p.launched)}`:''}${p.holder_retention_pct!=null?` · ${p.holder_retention_pct}% holders retained`:''} · ${sourceCount} cited source${sourceCount===1?'':'s'} · ${c.citation?.fieldCited?'field-cited':'legacy/collection-cited'}</div>
-      ${p.analysis?`<div class="gbody">${esc(String(p.analysis).slice(0, 260))}${String(p.analysis).length>260?'…':''}</div>`:''}
+      <div class="gmeta">${esc(chainLabel(c.chain))}${p.launched?` · launched ${esc(p.launched)}`:''}${p.holder_retention_pct!=null?` · ${p.holder_retention_pct}% holders retained`:''} · ${sourceCount} registered source${sourceCount===1?'':'s'} · ${c.citation?.fieldCited?'field-citation schema':'legacy/collection-cited'}${outcomeGap?` · indexed classification ${esc(c.status||'unknown')} not independently verified`:''}</div>
+      ${nftLifecycleReadHtml(p, depth)}
+      ${publicationDepthEvidenceHtml(depth)}
       <div class="analysis-src-preview">${sourcePreview}</div>
       ${body}
       <div class="gexpand">${open?'Hide details ▲':'Full lifecycle ▾'} · <a href="/collection/${encodeURIComponent(c.slug)}">Open dossier →</a></div>
     </div>`;
   }).join('');
   el.innerHTML = `${NFT_HEAD}${stats}
-  <div class="analysis-note">This index deliberately distinguishes lifecycle research from live catalog coverage. Field-cited dossiers are reviewed at claim level; legacy dossiers keep collection-level source lists until they are retrofitted.</div>
+  <div class="analysis-note"><b>NFT/Ordinals claim-support audit: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} high-risk claims meet policy; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending / withheld.</b> The index preserves rich dossiers and registered sources, but unsupported lifecycle, causal, legal, loss, and counterfactual conclusions are not presented as independently verified.</div>
+  <div class="analysis-note">Evidence status across the corpus: ${esc(claimSupport.registered_source_count || 0)} registered · ${esc(claimSupport.reachable_source_count || 0)} reachable · ${esc(claimSupport.reviewed_source_count || 0)} editor reviewed. “Reachable” records retrieval; it is not editorial review.</div>
   ${evidenceCoverage}${cohortPanel}${panel}
   <div class="toolbar"><div class="analysis-controls">
     <input id="casesearch" class="search" placeholder="Search case studies by name, chain or status…" value="${esc(caseQ)}" />

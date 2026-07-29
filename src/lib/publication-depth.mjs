@@ -159,6 +159,17 @@ export function normalizePublicationSource(sourceValue) {
     : declaredRole || byHost.role;
   const publisher = source.publisher || host || source.title || null;
   const state = accessState(source);
+  const explicitIndependenceGroup = String(
+    source.independence_group
+      || source.independence_key
+      || source.evidence_origin
+      || '',
+  ).trim() || null;
+  const evidenceReviewer = String(source.evidence_reviewer || '').trim() || null;
+  const evidenceReviewedAt = String(source.evidence_reviewed_at || '').trim() || null;
+  const evidenceReviewed = (
+    source.evidence_reviewed === true || source.evidence_reviewed === 1
+  ) && Boolean(evidenceReviewer && evidenceReviewedAt);
   return {
     id: source.id || source.source_id || url,
     url,
@@ -168,12 +179,14 @@ export function normalizePublicationSource(sourceValue) {
     tier,
     role,
     independence_key: role === 'independent' || role === 'authority'
-      ? (publisher || host)
+      ? (explicitIndependenceGroup || publisher || host)
       : null,
+    independence_group: explicitIndependenceGroup,
     access_state: state,
     resolving: state === 'resolving',
-    evidence_reviewed: source.evidence_reviewed === true
-      || source.evidence_reviewed === 1,
+    evidence_reviewed: evidenceReviewed,
+    evidence_reviewer: evidenceReviewer,
+    evidence_reviewed_at: evidenceReviewedAt,
     classification_basis: byHost.role === 'authority'
       ? 'host_policy'
       : explicitTier(source) || declaredRole
@@ -426,6 +439,11 @@ export function assessCasinoPublicationDepth({
       ...collectForensicClaims(forensicAnalysis),
     ],
   });
+  return compactPublicationDepth(assessment, sources);
+}
+
+function compactPublicationDepth(assessment, sources) {
+  const normalizedSources = asArray(sources).map(normalizePublicationSource);
   return {
     status: assessment.unresolved_high_risk_claim_count > 0
       ? 'claim_support_pending'
@@ -436,6 +454,82 @@ export function assessCasinoPublicationDepth({
     unresolved_high_risk_claim_count: assessment.unresolved_high_risk_claim_count,
     unmatched_source_ref_count: assessment.unmatched_source_ref_count,
     unresolved_high_risk_claims: assessment.unresolved_high_risk_claims,
+    registered_source_count: normalizedSources.length,
+    reachable_source_count: normalizedSources.filter((source) => source.resolving).length,
+    reviewed_source_count: normalizedSources.filter((source) => (
+      source.resolving && source.evidence_reviewed
+    )).length,
+    policy_note: 'Corpus inclusion measures indexed dossier coverage, not editorial claim support. Unsupported high-risk conclusions remain pending.',
+  };
+}
+
+export function assessExchangePublicationDepth({
+  kind,
+  lifecycle,
+  slug,
+  name,
+  sources,
+  forensicAnalysis,
+}) {
+  const assessment = inspectDossier({
+    vertical: 'exchange',
+    id: `${kind}:${lifecycle}:${slug}`,
+    name,
+    sources: asArray(sources),
+    claims: collectForensicClaims(forensicAnalysis),
+  });
+  return compactPublicationDepth(assessment, sources);
+}
+
+export function assessNftPublicationDepth({
+  slug,
+  name,
+  sources,
+  profile,
+}) {
+  const normalizedProfile = asObject(profile);
+  const assessment = inspectDossier({
+    vertical: 'nft_ordinals',
+    id: slug,
+    name,
+    sources: asArray(sources),
+    claims: [
+      ...collectForensicClaims(normalizedProfile.forensic_analysis),
+      ...collectNftEvidenceClaims(normalizedProfile),
+    ],
+  });
+  return compactPublicationDepth(assessment, sources);
+}
+
+export function summarizePublicationDepth(assessments) {
+  const rows = asArray(assessments).filter(Boolean);
+  return {
+    dossier_count: rows.length,
+    claim_count: rows.reduce((sum, row) => sum + row.claim_count, 0),
+    high_risk_claim_count: rows.reduce(
+      (sum, row) => sum + row.high_risk_claim_count,
+      0,
+    ),
+    passing_high_risk_claim_count: rows.reduce(
+      (sum, row) => sum + row.passing_high_risk_claim_count,
+      0,
+    ),
+    unresolved_high_risk_claim_count: rows.reduce(
+      (sum, row) => sum + row.unresolved_high_risk_claim_count,
+      0,
+    ),
+    registered_source_count: rows.reduce(
+      (sum, row) => sum + row.registered_source_count,
+      0,
+    ),
+    reachable_source_count: rows.reduce(
+      (sum, row) => sum + row.reachable_source_count,
+      0,
+    ),
+    reviewed_source_count: rows.reduce(
+      (sum, row) => sum + row.reviewed_source_count,
+      0,
+    ),
     policy_note: 'Corpus inclusion measures indexed dossier coverage, not editorial claim support. Unsupported high-risk conclusions remain pending.',
   };
 }
@@ -474,6 +568,8 @@ function casinoSources(database, caseId) {
       s.source_role,
       s.resolving,
       s.evidence_reviewed,
+      s.evidence_reviewed_at,
+      s.evidence_reviewer,
       s.accessed_at
     FROM casino_sources AS s
     JOIN casino_claims AS c USING (source_id)

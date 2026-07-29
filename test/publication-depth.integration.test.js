@@ -76,6 +76,28 @@ function registeredSourceKeys(sources) {
   }));
 }
 
+function expectPublicationSourceState(source) {
+  expect(source).toMatchObject({
+    url: expect.stringMatching(/^https:\/\//),
+    registered: true,
+    access_state: expect.any(String),
+    source_tier: expect.stringMatching(/^(T[1-4]|unknown)$/),
+    source_role: expect.any(String),
+    evidence_reviewed: expect.any(Boolean),
+  });
+  if (source.access_state === 'resolving') {
+    expect(source).toMatchObject({ resolving: true, reachable: true });
+  } else if (source.access_state === 'not_resolving') {
+    expect(source).toMatchObject({ resolving: false, reachable: false });
+  } else {
+    expect(source).not.toHaveProperty('reachable');
+  }
+  if (source.evidence_reviewed) {
+    expect(source.evidence_reviewer).toEqual(expect.any(String));
+    expect(source.evidence_reviewed_at).toEqual(expect.any(String));
+  }
+}
+
 function d1Adapter(database) {
   return {
     prepare(sql) {
@@ -133,6 +155,16 @@ describe('publication-depth Wave A migration 0063', () => {
       expect(evaluated.passes).toBe(false);
       expect(evaluated.gaps).toContain('no_resolving_reviewed_evidence');
     }
+    const unsupportedReviewFlag = normalizePublicationSource({
+      id: 'unsupported-review-flag',
+      url: 'https://independent.example/unsupported-review-flag',
+      publisher: 'Independent Example',
+      source_tier: 'T2',
+      source_role: 'independent',
+      resolving: true,
+      evidence_reviewed: true,
+    });
+    expect(unsupportedReviewFlag.evidence_reviewed).toBe(false);
   });
 
   it('applies a role-aware high-risk source threshold', () => {
@@ -144,6 +176,8 @@ describe('publication-depth Wave A migration 0063', () => {
       source_role: role,
       resolving: true,
       evidence_reviewed: true,
+      evidence_reviewer: 'publication-depth-test',
+      evidence_reviewed_at: '2026-07-29T12:00:00Z',
     });
     const primary = source('operator', 'T2', 'primary');
     const independent = source('independent', 'T2', 'independent');
@@ -177,6 +211,36 @@ describe('publication-depth Wave A migration 0063', () => {
     };
     expect(assess('causal', firstTierThree, samePublisher).passes).toBe(false);
 
+    const syndicatedFirst = normalizePublicationSource({
+      id: 'syndicated-tier-three-one',
+      url: 'https://syndicated-one.example/evidence',
+      publisher: 'Syndicated One',
+      source_tier: 'T3',
+      source_role: 'independent',
+      resolving: true,
+      evidence_reviewed: true,
+      evidence_reviewer: 'publication-depth-test',
+      evidence_reviewed_at: '2026-07-29T12:00:00Z',
+      evidence_origin: 'shared-project-announcement',
+    });
+    const syndicatedSecond = normalizePublicationSource({
+      id: 'syndicated-tier-three-two',
+      url: 'https://syndicated-two.example/evidence',
+      publisher: 'Syndicated Two',
+      source_tier: 'T3',
+      source_role: 'independent',
+      resolving: true,
+      evidence_reviewed: true,
+      evidence_reviewer: 'publication-depth-test',
+      evidence_reviewed_at: '2026-07-29T12:00:00Z',
+      independence_group: 'shared-project-announcement',
+    });
+    const syndicatedAssessment = assess('causal', syndicatedFirst, syndicatedSecond);
+    expect(syndicatedFirst.independence_key).toBe('shared-project-announcement');
+    expect(syndicatedSecond.independence_key).toBe('shared-project-announcement');
+    expect(syndicatedAssessment.passes).toBe(false);
+    expect(syndicatedAssessment.independent_t3_publisher_count).toBe(1);
+
     const authority = normalizePublicationSource({
       id: 'authority',
       url: 'https://www.sec.gov/example',
@@ -185,6 +249,8 @@ describe('publication-depth Wave A migration 0063', () => {
       source_role: 'independent',
       resolving: true,
       evidence_reviewed: true,
+      evidence_reviewer: 'publication-depth-test',
+      evidence_reviewed_at: '2026-07-29T12:00:00Z',
     });
     expect(authority.role).toBe('authority');
     expect(assess('legal', authority).passes).toBe(true);
@@ -532,6 +598,7 @@ describe('publication-depth Wave A migration 0063', () => {
     const worker = await freshWorker();
     const env = { DB: d1Adapter(database) };
     const exchangeCases = [];
+    const exchangeClaimSupport = [];
     for (const kind of ['dex', 'cex']) {
       const response = await worker.fetch(
         new Request(`http://localhost/api/exchange-analysis?kind=${kind}`),
@@ -539,13 +606,40 @@ describe('publication-depth Wave A migration 0063', () => {
         ctx(),
       );
       expect(response.status, kind).toBe(200);
-      exchangeCases.push(...(await response.json()).cases);
+      const payload = await response.json();
+      exchangeCases.push(...payload.cases);
+      exchangeClaimSupport.push(payload.claim_support);
     }
     expect(exchangeCases).toHaveLength(59);
+    expect(exchangeClaimSupport.reduce((total, item) => ({
+      high_risk_claim_count: total.high_risk_claim_count + item.high_risk_claim_count,
+      passing_high_risk_claim_count: total.passing_high_risk_claim_count
+        + item.passing_high_risk_claim_count,
+      unresolved_high_risk_claim_count: total.unresolved_high_risk_claim_count
+        + item.unresolved_high_risk_claim_count,
+    }), {
+      high_risk_claim_count: 0,
+      passing_high_risk_claim_count: 0,
+      unresolved_high_risk_claim_count: 0,
+    })).toEqual({
+      high_risk_claim_count: 383,
+      passing_high_risk_claim_count: 0,
+      unresolved_high_risk_claim_count: 383,
+    });
     for (const item of exchangeCases) {
       expect(item.analysis.forensic_analysis_status, item.slug).toBe('published');
+      expect(item.publication_depth, item.slug).toMatchObject({
+        status: 'claim_support_pending',
+        high_risk_claim_count: expect.any(Number),
+        passing_high_risk_claim_count: 0,
+        unresolved_high_risk_claim_count: expect.any(Number),
+        registered_source_count: expect.any(Number),
+        reachable_source_count: expect.any(Number),
+        reviewed_source_count: expect.any(Number),
+      });
       const analysis = item.analysis.forensic_analysis;
       expect(analysis, item.slug).toBeTruthy();
+      item.sources.forEach(expectPublicationSourceState);
       const registered = registeredSourceKeys(item.sources);
       for (const reference of forensicReferences(analysis)) {
         expect(registered.has(reference), `${item.slug}: ${reference}`).toBe(true);
@@ -628,10 +722,31 @@ describe('publication-depth Wave A migration 0063', () => {
     expect(nftResponse.status).toBe(200);
     const nftPayload = await nftResponse.json();
     expect(nftPayload.collections).toHaveLength(51);
+    expect(nftPayload.claim_support).toMatchObject({
+      high_risk_claim_count: 421,
+      passing_high_risk_claim_count: 0,
+      unresolved_high_risk_claim_count: 421,
+    });
     for (const item of nftPayload.collections) {
       const sources = JSON.parse(item.sources);
+      expect(item.publication_sources).toHaveLength(sources.length);
+      item.publication_sources.forEach(expectPublicationSourceState);
       const analysis = item.profile.forensic_analysis;
       expect(analysis, item.slug).toBeTruthy();
+      expect(item.publication_depth, item.slug).toMatchObject({
+        status: 'claim_support_pending',
+        high_risk_claim_count: expect.any(Number),
+        passing_high_risk_claim_count: 0,
+        unresolved_high_risk_claim_count: expect.any(Number),
+        registered_source_count: expect.any(Number),
+        reachable_source_count: expect.any(Number),
+        reviewed_source_count: expect.any(Number),
+      });
+      expect(item.source_status, item.slug).toEqual({
+        registered: item.publication_depth.registered_source_count,
+        reachable: item.publication_depth.reachable_source_count,
+        editor_reviewed: item.publication_depth.reviewed_source_count,
+      });
       expect(validateForensicAnalysis(analysis, { resolver: resolver(sources) }), item.slug)
         .toEqual({ errors: [], warnings: [], withheld_sections: [] });
       const registered = registeredSourceKeys(sources);
@@ -662,5 +777,58 @@ describe('publication-depth Wave A migration 0063', () => {
       missing_count: 1,
       missing_case_ids: ['zkasino-alleged-platform'],
     });
+  });
+
+  it('does not count or expose a casino review flag without reviewer provenance', async () => {
+    database = createCorpus();
+    const target = database.prepare(`
+      SELECT cl.case_id, cl.source_id
+      FROM casino_claims cl
+      JOIN casino_sources s ON s.source_id = cl.source_id
+      JOIN casino_cases c ON c.case_id = cl.case_id
+      WHERE c.quality_passed = 1
+      ORDER BY cl.case_id, cl.source_id
+      LIMIT 1
+    `).get();
+    expect(target).toBeTruthy();
+    database.prepare(`
+      UPDATE casino_sources
+      SET resolving = 1,
+          evidence_reviewed = 1,
+          evidence_reviewer = NULL,
+          evidence_reviewed_at = NULL
+      WHERE source_id = ?
+    `).run(target.source_id);
+
+    const worker = await freshWorker();
+    const env = { DB: d1Adapter(database) };
+    const listResponse = await worker.fetch(
+      new Request('http://localhost/api/casinos'),
+      env,
+      ctx(),
+    );
+    expect(listResponse.status).toBe(200);
+    const listPayload = await listResponse.json();
+    const listed = listPayload.cases.find(({ case_id: caseId }) => caseId === target.case_id);
+    expect(listed).toBeTruthy();
+    expect(listed.reviewed_source_count).toBe(listed.publication_depth.reviewed_source_count);
+    expect(listed.source_count).toBe(listed.publication_depth.reviewed_source_count);
+
+    const detailResponse = await worker.fetch(
+      new Request(`http://localhost/api/casino/${target.case_id}`),
+      env,
+      ctx(),
+    );
+    expect(detailResponse.status).toBe(200);
+    const detail = await detailResponse.json();
+    const exposed = detail.sources.find(({ id }) => id === target.source_id);
+    expect(exposed).toMatchObject({
+      evidence_reviewed: false,
+      evidence_reviewer: null,
+      evidence_reviewed_at: null,
+    });
+    expect(detail.case.reviewed_source_count)
+      .toBe(detail.publication_depth.reviewed_source_count);
+    expect(detail.case.source_count).toBe(detail.publication_depth.reviewed_source_count);
   });
 });

@@ -33,7 +33,45 @@ import {
   casinoPublicationCoverageSql,
   summarizeCasinoPublicationCoverage,
 } from './lib/casino-publication-cohort.js';
-import { assessCasinoPublicationDepth } from './lib/publication-depth.mjs';
+import {
+  assessCasinoPublicationDepth,
+  assessExchangePublicationDepth,
+  assessNftPublicationDepth,
+  normalizePublicationSource,
+  summarizePublicationDepth,
+} from './lib/publication-depth.mjs';
+
+function publicationSourceRecords(sourceValues) {
+  if (!Array.isArray(sourceValues)) return [];
+  return sourceValues.map((sourceValue) => {
+    const source = typeof sourceValue === 'string'
+      ? { url: sourceValue }
+      : (sourceValue || {});
+    const normalized = normalizePublicationSource(source);
+    const result = {
+      ...source,
+      id: source.id || source.source_id || normalized.id,
+      url: source.url || source.canonical_url || normalized.url,
+      publisher: source.publisher || normalized.publisher,
+      source_tier: normalized.tier,
+      source_role: normalized.role,
+      independence_group: normalized.independence_key,
+      registered: true,
+      access_state: normalized.access_state,
+      evidence_reviewed: normalized.evidence_reviewed,
+      evidence_reviewer: normalized.evidence_reviewer,
+      evidence_reviewed_at: normalized.evidence_reviewed_at,
+    };
+    if (normalized.access_state === 'resolving') {
+      result.resolving = true;
+      result.reachable = true;
+    } else if (normalized.access_state === 'not_resolving') {
+      result.resolving = false;
+      result.reachable = false;
+    }
+    return result;
+  });
+}
 
 const ENV = {};
 const app = new Hono();
@@ -1938,7 +1976,22 @@ app.get('/api/exchange-analysis', wrap(async (req, res) => {
          ON f.kind = c.kind AND f.slug = c.slug AND f.lifecycle = c.lifecycle
        WHERE c.kind = ?
        ORDER BY c.lifecycle ASC, c.name ASC`, [kind]);
-    const allCases = rows.map(normalizeExchangeCase);
+    const allCases = rows.map(normalizeExchangeCase).map((row) => {
+      const sources = publicationSourceRecords(row.sources);
+      return {
+        ...row,
+        sources,
+        publication_depth: assessExchangePublicationDepth({
+        kind: row.kind,
+        lifecycle: row.lifecycle,
+        slug: row.slug,
+        name: row.name,
+        sources,
+        forensicAnalysis: row.analysis.forensic_analysis
+          || row.profile.forensic_analysis,
+        }),
+      };
+    });
     const cases = allCases.filter((row) => (
       (!lifecycle || row.lifecycle === lifecycle)
       && (!slug || String(row.slug).toLowerCase() === slug)
@@ -1957,12 +2010,16 @@ app.get('/api/exchange-analysis', wrap(async (req, res) => {
           .sort((a, b) => a.localeCompare(b)),
       },
       summary: summarizeExchangeCases(cases, kind),
+      claim_support: summarizePublicationDepth(
+        cases.map((row) => row.publication_depth),
+      ),
     });
   } catch (e) {
     res.json({
       kind, filters, cases: [], count: 0,
       available: { productCohorts: [], qualityLabels: [] },
       summary: summarizeExchangeCases([], kind),
+      claim_support: summarizePublicationDepth([]),
       error: e.message,
     });
   }
@@ -2394,14 +2451,30 @@ app.get('/api/nft', wrap(async (req, res) => {
     const collections = rows.map((r) => {
       let p = null;
       try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {}
+      let sources = [];
+      try { sources = r.sources ? JSON.parse(r.sources) : []; } catch (e) {}
+      const publicationSources = publicationSourceRecords(sources);
       const citation = validateFieldCitedNft(p, r.sources);
       const freshness = forensicFreshness(p);
+      const publicationDepth = assessNftPublicationDepth({
+        slug: r.slug,
+        name: r.name,
+        sources: publicationSources,
+        profile: p,
+      });
       return {
         ...r,
         status: freshness?.statusWithheld ? 'unknown' : r.status,
         profile: p,
         citation: { fieldCited: p?.citation_schema === 'field-v1' && citation.valid, errors: citation.errors },
         freshness,
+        publication_sources: publicationSources,
+        publication_depth: publicationDepth,
+        source_status: {
+          registered: publicationDepth.registered_source_count,
+          reachable: publicationDepth.reachable_source_count,
+          editor_reviewed: publicationDepth.reviewed_source_count,
+        },
       };
     });
     // aggregate lifecycle stats from profiles
@@ -2431,6 +2504,9 @@ app.get('/api/nft', wrap(async (req, res) => {
     const analysis = buildNftLifecycleAnalysis(collections);
     res.json({
       collections, count: collections.length, analysis, statusCounts, market,
+      claim_support: summarizePublicationDepth(
+        collections.map((collection) => collection.publication_depth),
+      ),
       citationCoverage: { fieldCitedCount, legacyCount: collections.length - fieldCitedCount },
       agg: {
         avgLifespanDays: avg(nums('lifespan_days')),
@@ -2536,9 +2612,13 @@ app.get('/api/casinos', wrap(async (req, res) => {
               (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id
                 WHERE cl.case_id = c.case_id AND s.resolving = 1) AS reachable_source_count,
               (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id
-                WHERE cl.case_id = c.case_id AND s.resolving = 1 AND s.evidence_reviewed = 1) AS reviewed_source_count,
+                WHERE cl.case_id = c.case_id AND s.resolving = 1 AND s.evidence_reviewed = 1
+                  AND NULLIF(TRIM(s.evidence_reviewer), '') IS NOT NULL
+                  AND NULLIF(TRIM(s.evidence_reviewed_at), '') IS NOT NULL) AS reviewed_source_count,
               (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id
-                WHERE cl.case_id = c.case_id AND s.resolving = 1 AND s.evidence_reviewed = 1) AS source_count
+                WHERE cl.case_id = c.case_id AND s.resolving = 1 AND s.evidence_reviewed = 1
+                  AND NULLIF(TRIM(s.evidence_reviewer), '') IS NOT NULL
+                  AND NULLIF(TRIM(s.evidence_reviewed_at), '') IS NOT NULL) AS source_count
          FROM casino_cases c WHERE ${where.join(' AND ')} ORDER BY ${orderBy}`,
         binds,
       ),
@@ -2623,11 +2703,15 @@ app.get('/api/casino/:case_id', wrap(async (req, res) => {
         (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl
           JOIN casino_sources s ON s.source_id = cl.source_id
           WHERE cl.case_id = c.case_id AND s.resolving = 1
-            AND s.evidence_reviewed = 1) AS reviewed_source_count,
+            AND s.evidence_reviewed = 1
+            AND NULLIF(TRIM(s.evidence_reviewer), '') IS NOT NULL
+            AND NULLIF(TRIM(s.evidence_reviewed_at), '') IS NOT NULL) AS reviewed_source_count,
         (SELECT COUNT(DISTINCT cl.source_id) FROM casino_claims cl
           JOIN casino_sources s ON s.source_id = cl.source_id
           WHERE cl.case_id = c.case_id AND s.resolving = 1
-            AND s.evidence_reviewed = 1) AS source_count
+            AND s.evidence_reviewed = 1
+            AND NULLIF(TRIM(s.evidence_reviewer), '') IS NOT NULL
+            AND NULLIF(TRIM(s.evidence_reviewed_at), '') IS NOT NULL) AS source_count
       FROM casino_cases c
       WHERE c.case_id = ? AND c.quality_passed = 1
       LIMIT 1
@@ -2653,22 +2737,28 @@ app.get('/api/casino/:case_id', wrap(async (req, res) => {
       dbQuery(`SELECT * FROM casino_licences WHERE case_id = ? ORDER BY as_of DESC`, [caseId]),
       dbQuery(`SELECT * FROM casino_syntheses WHERE case_id = ? LIMIT 1`, [caseId]),
     ]);
-    const sources = [...new Map(claims.map((claim) => [claim.source_id, {
-      id: claim.source_id,
-      title: claim.title,
-      url: claim.url,
-      publisher: claim.publisher,
-      published_at: claim.published_at,
-      accessed_at: claim.accessed_at,
-      source_tier: claim.source_tier,
-      source_role: claim.source_role,
-      registered: true,
-      resolving: Number(claim.resolving) === 1,
-      reachable: Number(claim.resolving) === 1,
-      evidence_reviewed: Number(claim.evidence_reviewed) === 1,
-      evidence_reviewed_at: claim.evidence_reviewed_at,
-      evidence_reviewer: claim.evidence_reviewer,
-    }])).values()];
+    const sources = [...new Map(claims.map((claim) => {
+      const evidenceReviewer = String(claim.evidence_reviewer || '').trim() || null;
+      const evidenceReviewedAt = String(claim.evidence_reviewed_at || '').trim() || null;
+      const evidenceReviewed = Number(claim.evidence_reviewed) === 1
+        && Boolean(evidenceReviewer && evidenceReviewedAt);
+      return [claim.source_id, {
+        id: claim.source_id,
+        title: claim.title,
+        url: claim.url,
+        publisher: claim.publisher,
+        published_at: claim.published_at,
+        accessed_at: claim.accessed_at,
+        source_tier: claim.source_tier,
+        source_role: claim.source_role,
+        registered: true,
+        resolving: Number(claim.resolving) === 1,
+        reachable: Number(claim.resolving) === 1,
+        evidence_reviewed: evidenceReviewed,
+        evidence_reviewed_at: evidenceReviewedAt,
+        evidence_reviewer: evidenceReviewer,
+      }];
+    })).values()];
     let synthesis = null;
     if (syntheses[0]) {
       const outlook = parseCasinoJson(syntheses[0].outlook, {});
@@ -3558,7 +3648,9 @@ app.get('/casino/:case_id', wrap(async (req, res) => {
       `SELECT c.case_id, c.brand_name, c.product_scope_note, c.status, c.outcome_label, c.last_reviewed,
               (SELECT json_group_array(json_object('title', s.title, 'url', s.canonical_url))
                  FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id
-                WHERE cl.case_id = c.case_id AND s.resolving = 1 AND s.evidence_reviewed = 1) AS sources
+                WHERE cl.case_id = c.case_id AND s.resolving = 1 AND s.evidence_reviewed = 1
+                  AND NULLIF(TRIM(s.evidence_reviewer), '') IS NOT NULL
+                  AND NULLIF(TRIM(s.evidence_reviewed_at), '') IS NOT NULL) AS sources
          FROM casino_cases c WHERE c.case_id = ? AND c.quality_passed = 1 LIMIT 1`,
       [caseId],
     ))[0] || null;

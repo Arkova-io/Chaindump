@@ -67,7 +67,7 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('id="exchangeAnalysisCohort"');
     expect(html).toContain('id="exchangeAnalysisQuality"');
     expect(html).toContain('id="exchangeAnalysisForensic"');
-    expect(html).toContain('Cited causal maps');
+    expect(html).toContain('Indexed causal maps');
     expect(html).toContain('id="exchangeAnalysisSort"');
     expect(html).toContain('Cited sources');
   });
@@ -102,7 +102,13 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('function forensicSourceArray(contract)');
     expect(html).toContain('forensicSourceArray(forensic)');
     expect(html).toContain("forensicStatus: analysis.forensic_analysis_status || (forensic ? 'published' : 'pending')");
-    expect(html).toContain("'forensic dossiers'");
+    expect(html).toContain("'causal maps indexed'");
+    expect(html).toContain('Exchange claim-support audit:');
+    expect(html).toContain('high-risk claims meet policy');
+    expect(html).toContain('publicationDepth: parsedObject(row.publication_depth)');
+    expect(html).toContain('sections.push(exchangeFindingHtml(row))');
+    expect(html).toContain('${exchangeFindingHtml(row)}');
+    expect(html).toContain("}, 'This exchange dossier is indexed; its normalized causal contract is pending review.', depth)");
   });
 
   it('renders association rates, uncertainty, and falsifiers instead of causal-sounding trend prose', () => {
@@ -179,7 +185,7 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('Field evidence &amp; review status');
     expect(html).toContain('casinoEvidenceStatusHtml({ ...claim, registered: true');
     expect(html).toContain('High-risk claim support: ${esc(passing)} of ${esc(total)} meet policy');
-    expect(html).toContain('Corpus inclusion measures indexed coverage, not editorial claim support.');
+    expect(html).toContain("function publicationDepthBanner(depth, corpusLabel = 'Corpus inclusion')");
     expect(html).toContain('High-risk claim withheld — independent support pending.');
     expect(html).toContain('Unsupported lifecycle, causal, legal, loss, and counterfactual conclusions are withheld below.');
     expect(html).toContain('forensicAnalysisHtml(synthesis.forensic_analysis');
@@ -234,7 +240,7 @@ describe('six-hour forensic review surface', () => {
 
 describe('NFT and Ordinals Analysis data surface', () => {
   it('uses the same sortable research-index pattern as Blockchain Analysis', () => {
-    expect(html).toContain('This index deliberately distinguishes lifecycle research from live catalog coverage.');
+    expect(html).toContain('NFT/Ordinals claim-support audit:');
     expect(html).toContain('id="nftCaseStatus"');
     expect(html).toContain('id="nftCaseChain"');
     expect(html).toContain('id="nftCaseSort"');
@@ -244,11 +250,11 @@ describe('NFT and Ordinals Analysis data surface', () => {
   });
 
   it('shows collapsed citation and coverage metadata before expansion', () => {
-    expect(html).toContain('field-cited');
+    expect(html).toContain('field-citation schema');
     expect(html).toContain('Review freshness');
     expect(html).toContain('90d policy');
     expect(html).toContain('legacy/collection-cited');
-    expect(html).toContain("srcHtml(sourceArray(c.sources).slice(0, 3), 'Cited sources: ')");
+    expect(html).toContain("srcHtml(sourceArray(citedSources).slice(0, 3), 'Cited sources: ')");
     expect(html).toContain('lifecycle case stud');
     expect(html).toContain("if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(nextReviewAt || '')) return 'unknown';");
   });
@@ -264,7 +270,7 @@ describe('NFT and Ordinals Analysis data surface', () => {
   });
 
   it('renders structured NFT causal, token, and chain fields instead of leaving Wave7 JSON hidden', () => {
-    expect(html).toContain('function nftProfileAnalysisHtml(profile, sources)');
+    expect(html).toContain('function nftProfileAnalysisHtml(profile, sources, publicationDepth = null)');
     expect(html).toContain("['Token model &amp; value capture', profile?.token_model]");
     expect(html).toContain("['Chain dependence', profile?.chain_dependence]");
     expect(html).toContain("['Risk evidence', profile?.risks]");
@@ -274,6 +280,9 @@ describe('NFT and Ordinals Analysis data surface', () => {
     expect(html).toContain("['What would change our mind · legacy profile field', profile?.watch]");
     expect(html).toContain("['Material unknowns · legacy profile field', profile?.unknowns]");
     expect(html).toContain("forensicAnalysisHtml(profile?.forensic_analysis, resolveRef");
-    expect(html).toContain('${nftProfileAnalysisHtml(p, c.sources)}');
+    expect(html).toContain('${nftProfileAnalysisHtml(p, citedSources, depth)}');
+    expect(html).toContain('${nftEvidenceHtml(p, citedSources, c.freshness, depth)}');
+    expect(html.match(/\$\{nftLifecycleReadHtml\(p, depth\)\}/g)).toHaveLength(2);
+    expect(html).toContain('High-risk field conclusion withheld.');
   });
 });

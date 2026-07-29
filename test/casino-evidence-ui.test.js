@@ -29,6 +29,9 @@ function buildEvidenceRenderers() {
     ${functionBlock('publicationDepthGap', 'publicationPendingHtml')}
     ${functionBlock('publicationPendingHtml', 'forensicAnalysisHtml')}
     ${functionBlock('forensicAnalysisHtml', 'synthesisHtml')}
+    ${functionBlock('publicationDepthBanner', 'publicationDepthEvidenceHtml')}
+    ${functionBlock('publicationDepthEvidenceHtml', 'publicationDepthSectionHtml')}
+    ${functionBlock('publicationDepthSectionHtml', 'casinoPublicationDepthBanner')}
     ${functionBlock('casinoPublicationDepthBanner', 'casinoDepthSectionHtml')}
     ${functionBlock('casinoDepthSectionHtml', 'casinoDetailBody')}
     return { forensicAnalysisHtml, casinoPublicationDepthBanner, casinoDepthSectionHtml };
