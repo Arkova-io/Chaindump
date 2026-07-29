@@ -1,7 +1,12 @@
 #!/usr/bin/env node
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { basename, resolve } from 'node:path';
+import {
+  basename,
+  isAbsolute,
+  relative,
+  resolve,
+} from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { validateFieldCitedNft } from '../src/lib/nft-citation.mjs';
 import { validateForensicAnalysis } from '../src/lib/forensic-analysis.js';
@@ -10,6 +15,15 @@ const root = fileURLToPath(new URL('..', import.meta.url));
 const documentUrl = new URL('../docs/nft-source-access-remediation-wave-2026-07-29.json', import.meta.url);
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 const EXPECTED_ACCESS = { accessible: 171, bot_blocked: 21, unverified: 5, dead: 1 };
+
+function repositoryPath(requestedPath, label) {
+  const candidate = resolve(root, requestedPath);
+  const relation = relative(root, candidate);
+  if (relation.startsWith('..') || isAbsolute(relation)) {
+    throw new Error(`${label} must stay inside the repository`);
+  }
+  return candidate;
+}
 
 function parse(value, fallback) {
   if (value && typeof value === 'object') return structuredClone(value);
@@ -278,10 +292,13 @@ function baselineRows(database) {
 }
 
 function applyExistingMigrations(database, migrationId) {
-  for (const file of readdirSync(resolve(root, 'migrations'))
+  const migrationDirectory = repositoryPath('migrations', 'Migration directory');
+  for (const file of readdirSync(migrationDirectory)
     .filter((name) => /^\d{4}_.+\.sql$/.test(name) && name.slice(0, 4) < migrationId)
     .sort()) {
-    database.exec(readFileSync(resolve(root, 'migrations', file), 'utf8'));
+    database.exec(
+      readFileSync(repositoryPath(resolve(migrationDirectory, file), 'Migration path'), 'utf8'),
+    );
   }
 }
 
@@ -303,7 +320,7 @@ function main() {
   const database = new DatabaseSync(':memory:');
   applyExistingMigrations(database, migrationId);
   const sql = renderNftSourceAccessRemediationMigration(document, baselineRows(database), migrationId);
-  writeFileSync(resolve(destination), sql);
+  writeFileSync(repositoryPath(destination, 'Destination path'), sql);
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();
