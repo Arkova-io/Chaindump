@@ -3273,41 +3273,96 @@ app.get('/scam/:slug', wrap(async (req, res) => {
   ] : undefined;
   await sendPage(req, res, { title, desc, url, ld });
 }));
-app.get('/collection/:id', wrap(async (req, res) => {
-  const id = String(req.params.id || '');
-  let row = null;
-  let lifecycle = null;
-  // Curated lifecycle dossiers take precedence when a CoinGecko catalog id
-  // happens to share the same slug (Azuki is a real example). The SPA opens a
-  // lifecycle dossier for this URL, so its server metadata must not describe a
-  // different live-market page.
+
+async function collectionPageRows(id) {
   try {
-    lifecycle = (await dbQuery(
+    const lifecycle = (await dbQuery(
       `SELECT slug, name, chain, status, profile, sources, updated_at
          FROM nft_collections WHERE slug = ? LIMIT 1`,
       [id],
     ))[0] || null;
-    row = lifecycle;
-  } catch (error) {}
-  if (!row) {
-    try { if (ENV.DB) row = await ENV.DB.prepare(`SELECT name, chain FROM nft_catalog WHERE id = ?`).bind(id).first(); } catch (e) {}
+    if (lifecycle) return { row: lifecycle, lifecycle };
+  } catch (error) {
+    console.error('[collection] lifecycle lookup failed:', error instanceof Error ? error.message : error);
   }
-  const title = lifecycle
-    ? `${row.name} — NFT lifecycle dossier | Chaindump`
-    : row ? `${row.name} — Chaindump` : 'NFT Collection — Chaindump';
-  let lifecycleProfile = {};
-  try { lifecycleProfile = lifecycle?.profile ? JSON.parse(lifecycle.profile) : {}; } catch (error) {}
-  const desc = lifecycle
-    ? ogDescription(lifecycleProfile.analysis, `${row.name} (${row.chain}) — ${row.status || 'reviewed'} NFT/Ordinals lifecycle dossier with cited evidence on Chaindump.`)
-    : row ? `${row.name} (${row.chain}) — live floor, market cap, 24h volume and holders on Chaindump.` : OG_DESC_FALLBACK;
-  const url = `${ORIGIN}/collection/${encodeURIComponent(id)}`;
-  const ld = row ? [
-    { '@type': 'Dataset', '@id': url + '#dataset', name: lifecycle ? `${row.name} lifecycle evidence` : `${row.name} NFT market metrics`, description: desc, url, isPartOf: { '@id': ORIGIN + '/#site' }, publisher: { '@id': ORIGIN + '/#org' }, dateModified: lifecycle?.updated_at || undefined, citation: lifecycle ? publicSourceUrls(lifecycle.sources) : ['https://www.coingecko.com/'] },
+  if (!ENV.DB) return { row: null, lifecycle: null };
+  try {
+    const row = await ENV.DB.prepare(
+      `SELECT name, chain FROM nft_catalog WHERE id = ?`,
+    ).bind(id).first();
+    return { row, lifecycle: null };
+  } catch (error) {
+    console.error('[collection] catalog lookup failed:', error instanceof Error ? error.message : error);
+    return { row: null, lifecycle: null };
+  }
+}
+
+function collectionLifecycleProfile(lifecycle) {
+  if (!lifecycle?.profile) return {};
+  try {
+    return JSON.parse(lifecycle.profile);
+  } catch (error) {
+    console.error('[collection] invalid lifecycle profile:', error instanceof Error ? error.message : error);
+    return {};
+  }
+}
+
+function collectionPageTitle(row, lifecycle) {
+  if (lifecycle) return `${row.name} — NFT lifecycle dossier | Chaindump`;
+  if (row) return `${row.name} — Chaindump`;
+  return 'NFT Collection — Chaindump';
+}
+
+function collectionPageDescription(row, lifecycle, profile) {
+  if (lifecycle) {
+    return ogDescription(
+      profile.analysis,
+      `${row.name} (${row.chain}) — ${row.status || 'reviewed'} NFT/Ordinals lifecycle dossier with cited evidence on Chaindump.`,
+    );
+  }
+  if (row) return `${row.name} (${row.chain}) — live floor, market cap, 24h volume and holders on Chaindump.`;
+  return OG_DESC_FALLBACK;
+}
+
+function collectionPageStructuredData(row, lifecycle, desc, url) {
+  if (!row) return undefined;
+  const name = lifecycle ? `${row.name} lifecycle evidence` : `${row.name} NFT market metrics`;
+  const citation = lifecycle ? publicSourceUrls(lifecycle.sources) : ['https://www.coingecko.com/'];
+  return [
+    {
+      '@type': 'Dataset',
+      '@id': url + '#dataset',
+      name,
+      description: desc,
+      url,
+      isPartOf: { '@id': ORIGIN + '/#site' },
+      publisher: { '@id': ORIGIN + '/#org' },
+      dateModified: lifecycle?.updated_at || undefined,
+      citation,
+    },
     breadcrumb('NFT and Ordinals Analysis', `${ORIGIN}/nft-analysis`, row.name, url),
-  ] : undefined;
-  const apiUrl = lifecycle
-    ? `${ORIGIN}/api/nft?slug=${encodeURIComponent(id)}`
-    : row ? `${ORIGIN}/api/nft-collection/${encodeURIComponent(id)}` : undefined;
+  ];
+}
+
+function collectionPageApiUrl(id, row, lifecycle) {
+  if (lifecycle) return `${ORIGIN}/api/nft?slug=${encodeURIComponent(id)}`;
+  if (row) return `${ORIGIN}/api/nft-collection/${encodeURIComponent(id)}`;
+  return undefined;
+}
+
+app.get('/collection/:id', wrap(async (req, res) => {
+  const id = String(req.params.id || '');
+  // Curated lifecycle dossiers take precedence when a CoinGecko catalog id
+  // happens to share the same slug (Azuki is a real example). The SPA opens a
+  // lifecycle dossier for this URL, so its server metadata must not describe a
+  // different live-market page.
+  const { row, lifecycle } = await collectionPageRows(id);
+  const lifecycleProfile = collectionLifecycleProfile(lifecycle);
+  const title = collectionPageTitle(row, lifecycle);
+  const desc = collectionPageDescription(row, lifecycle, lifecycleProfile);
+  const url = `${ORIGIN}/collection/${encodeURIComponent(id)}`;
+  const ld = collectionPageStructuredData(row, lifecycle, desc, url);
+  const apiUrl = collectionPageApiUrl(id, row, lifecycle);
   await sendPage(req, res, { title, desc, url, ld, apiUrl });
 }));
 
