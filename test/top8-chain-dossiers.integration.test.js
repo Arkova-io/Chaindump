@@ -169,6 +169,9 @@ function makeDB(factRows) {
     },
     async all() {
       if (this.sql.includes('FROM chain_facts')) {
+        if (this.sql.includes('SELECT chain, dimension, data, sources FROM chain_facts')) {
+          return { results: factRows };
+        }
         if (!this.binds.length) return { results: factRows.map(({ chain }) => ({ chain })) };
         const wanted = String(this.binds[0]);
         return {
@@ -190,6 +193,19 @@ describe('top-eight dossiers through the production API contract', () => {
     const env = { DB: makeDB(rows) };
     const context = { waitUntil() {}, passThroughOnException() {} };
 
+    const boardResponse = await worker.fetch(new Request('http://localhost/api/chains'), env, context);
+    const board = await boardResponse.json();
+    for (const chain of TOP_EIGHT) {
+      const row = board.chains.find((candidate) => candidate.name === chain);
+      expect(row?.dossier, chain).toMatchObject({
+        dimensionCount: 8,
+        expectedDimensionCount: 8,
+      });
+      expect(row.dossier.dataCompletenessPct, chain).toBeLessThan(100);
+      expect(row.dossier.citationCount, chain).toBeGreaterThan(0);
+      expect(row.dossier.sources[0].url, chain).toMatch(/^https:\/\//);
+    }
+
     for (const chain of TOP_EIGHT) {
       const response = await worker.fetch(
         new Request(`http://localhost/api/chain/${encodeURIComponent(chain)}`),
@@ -209,5 +225,15 @@ describe('top-eight dossiers through the production API contract', () => {
         expect(body.facts[dimension].sources[0].url, `${chain}.${dimension}`).toMatch(/^https:\/\//);
       }
     }
+
+    const aliasResponse = await worker.fetch(
+      new Request('http://localhost/api/chain/BNB%20Chain'),
+      env,
+      context,
+    );
+    expect(aliasResponse.status).toBe(200);
+    const alias = await aliasResponse.json();
+    expect(alias.chain.name).toBe('BSC');
+    expect(alias.facts.identity.data.aliases).toContain('BNB Chain');
   });
 });

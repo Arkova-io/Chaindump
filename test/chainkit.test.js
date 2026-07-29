@@ -24,6 +24,7 @@ describe('norm / ALIAS (shared normalizer)', () => {
   });
   it('applies aliases', () => {
     expect(norm('BNB')).toBe('bsc');
+    expect(norm('BNB Chain')).toBe('bsc');
     expect(norm('Optimism')).toBe('opmainnet');
     expect(norm('xDai')).toBe('gnosis');
     expect(norm('zkSync Era')).toBe('zksync');

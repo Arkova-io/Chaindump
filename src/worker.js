@@ -15,6 +15,7 @@ import { cohortFor, tagVocab, parseLaunch, canonTags as canonChainTags, isTheme 
 import { SCORE_META, TIER_CRITERIA, TIERS, BOARD_SIZE, CHANGE_90D_MIN_SPAN_DAYS, scoreRows, classifyTier, baselineOk, activityIndex } from './lib/scoring.js';
 import { DEX_CATEGORIES, aggregateBreakdown, feedIsDegenerate, selectCandidates, dedupeChains, rollupDexProtocols } from './lib/llama.js';
 import { renderSsrRows } from './lib/ssr-rows.js';
+import { CHAIN_DOSSIER_DIMENSIONS } from './lib/chain-dossier.js';
 
 const ENV = {};
 const app = new Hono();
@@ -772,6 +773,62 @@ function computeSignals(r, peers) {
   return sig;
 }
 
+function factJson(value, fallback) {
+  if (!value) return fallback;
+  try { return JSON.parse(value); } catch (e) { return fallback; }
+}
+
+function newDossierCoverage() {
+  return { dimensions: new Set(), sources: new Map(), dataCompletenessPct: null };
+}
+
+function addFactCoverage(coverage, row) {
+  if (row.dimension === '_meta') {
+    const meta = factJson(row.data, {});
+    if (Number.isFinite(meta.data_completeness_pct)) {
+      coverage.dataCompletenessPct = meta.data_completeness_pct;
+    }
+    return;
+  }
+  if (!CHAIN_DOSSIER_DIMENSIONS.includes(row.dimension)) return;
+  coverage.dimensions.add(row.dimension);
+  for (const source of factJson(row.sources, [])) {
+    if (source?.url && !coverage.sources.has(source.url)) coverage.sources.set(source.url, source);
+  }
+}
+
+function publicDossierCoverage(coverage) {
+  return {
+    dimensionCount: coverage.dimensions.size,
+    expectedDimensionCount: CHAIN_DOSSIER_DIMENSIONS.length,
+    dataCompletenessPct: coverage.dataCompletenessPct,
+    citationCount: coverage.sources.size,
+    sources: [...coverage.sources.values()].slice(0, 3),
+  };
+}
+
+async function withDossierCoverage(snapshot) {
+  if (!snapshot || !Array.isArray(snapshot.chains)) return snapshot;
+  try {
+    const rows = await dbQuery('SELECT chain, dimension, data, sources FROM chain_facts');
+    const byChain = new Map();
+    for (const row of rows) {
+      const key = norm(row.chain);
+      if (!byChain.has(key)) byChain.set(key, newDossierCoverage());
+      addFactCoverage(byChain.get(key), row);
+    }
+    return {
+      ...snapshot,
+      chains: snapshot.chains.map((chain) => {
+        const coverage = byChain.get(norm(chain.name));
+        return coverage ? { ...chain, dossier: publicDossierCoverage(coverage) } : chain;
+      }),
+    };
+  } catch (e) {
+    return snapshot;
+  }
+}
+
 
 app.get('/api/chains', wrap(async (req, res) => {
   try {
@@ -788,7 +845,8 @@ app.get('/api/chains', wrap(async (req, res) => {
     // `stale: true` it promised never appeared.
     const ageMs = Date.now() - cache.ts;
     const stale = ageMs > MAX_SNAPSHOT_AGE_MS;
-    res.json({ ...cache.data, scoreMeta: SCORE_META, cachedAgeMs: ageMs, ...(stale ? { stale: true, staleReason: `snapshot is ${Math.round(ageMs / 60000)} minutes old; the refresh has not produced a usable board`, error: `snapshot is ${Math.round(ageMs / 60000)} minutes old; the refresh has not produced a usable board` } : {}) });
+    const published = await withDossierCoverage(cache.data);
+    res.json({ ...published, scoreMeta: SCORE_META, cachedAgeMs: ageMs, ...(stale ? { stale: true, staleReason: `snapshot is ${Math.round(ageMs / 60000)} minutes old; the refresh has not produced a usable board`, error: `snapshot is ${Math.round(ageMs / 60000)} minutes old; the refresh has not produced a usable board` } : {}) });
   } catch (e) {
     console.error('snapshot error:', e.message);
     if (cache.data) {

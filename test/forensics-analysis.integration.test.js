@@ -33,6 +33,15 @@ describe('Forensics analysis navigation', () => {
     expect(html).toMatch(/KNOWN_VIEWS\s*=\s*\[[^\]]*'casino-analysis'/);
     expect(html).toMatch(/KNOWN_VIEWS\s*=\s*\[[^\]]*'nft-analysis'/);
   });
+
+  it('surfaces and sorts same-format dossier coverage on the blockchain index', () => {
+    expect(html).toContain("row.dossier || {}");
+    expect(html).toContain('dataCompletenessPct');
+    expect(html).toContain('citationCount');
+    expect(html).toContain('value="dossier"');
+    expect(html).toContain('Dossier coverage');
+    expect(html).toContain('Open chain dossier →');
+  });
 });
 
 describe('DEX/CEX Analysis data surface', () => {
