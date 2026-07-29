@@ -412,9 +412,12 @@
   .watchrow { display:flex; align-items:baseline; gap:8px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:9px 11px; }
   .watchrow .wn { font-weight:600; font-size:13px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .watchrow .w90 { color:var(--red); font-weight:700; font-size:13px; font-variant-numeric:tabular-nums; }
+  .watchrow .w90.up { color:var(--green); }
   .watchrow .wdd { color:var(--muted2); font-size:11px; font-variant-numeric:tabular-nums; }
   .watchrow .wl { display:block; font-size:8.5px; color:var(--muted); text-transform:uppercase; }
   .watchrow .wtag { font-size:9px; color:var(--accent2); }
+  .watchrow .wspark { flex:0 0 58px; display:flex; align-items:center; justify-content:flex-end; }
+  .watchrow .wspark svg { width:58px; height:18px; display:block; }
   .watchrow.wclick { cursor:pointer; transition:border-color .12s, background .12s; }
   .watchrow.wclick:hover { border-color:var(--accent2); background:var(--surface3,var(--surface2)); }
   .watchrow.wclick.on { border-color:var(--accent2); }
@@ -2048,6 +2051,7 @@ async function load() {
     state.scoreMeta = d.scoreMeta || null; // what the activity index IS — feeds the glossary popover
     setTotals(d.totals || {}, d.usersCoverage || 0);
     render();
+    if (state.activeView === 'mid' && state.xKind === 'chain' && state.midData) renderMid(state.midData);
     loadTiers(); // non-blocking: badges appear when tiers resolve
     document.getElementById('err').innerHTML = d.stale ? `<div class="err">Showing cached data — live refresh failed: ${esc(d.error||'')}</div>` : '';
     document.getElementById('status').textContent = 'updated ' + new Date(d.updatedAt).toLocaleTimeString();
@@ -2236,6 +2240,42 @@ function MID_HEAD(kind){
   const k = kind === 'dex' || kind === 'cex' ? kind : 'chain';
   return pageHead(MID_TITLE[k], MID_SUB[k]) + kindToggle(k);
 }
+function chainMatchKey(name) {
+  return String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+}
+function midLiveWatch(data) {
+  const liveByName = new Map((state.chains || []).map((chain) => [chainMatchKey(chain.name), chain]));
+  const rows = (data.chains || []).map((profile) => {
+    const live = liveByName.get(chainMatchKey(profile.chain));
+    if (!live) return null;
+    const spark = live.tvlSpark30 && live.tvlSpark30.length > 2 ? live.tvlSpark30 : live.tvlSpark;
+    return { profile, live, spark };
+  }).filter(Boolean).sort((a, b) => (
+    Math.abs(b.live.tvlChange30d || b.live.tvlChange7d || 0)
+    - Math.abs(a.live.tvlChange30d || a.live.tvlChange7d || 0)
+  )).slice(0, 9);
+
+  if (!rows.length) {
+    const loading = state.chains.length ? 'No profiled mid-chain currently appears on the live top-50 board.' : 'Live board loading; trend chips will fill on the next refresh.';
+    return `<div class="gpanel"><div class="dsec">Live mid watch — profiled chains on the live board</div><div class="gnar muted">${loading}</div></div>`;
+  }
+
+  const chips = rows.map(({ profile, live, spark }) => {
+    const change = live.tvlChange30d != null ? live.tvlChange30d : live.tvlChange7d;
+    const changeLabel = live.tvlChange30d != null ? '30d' : '7d';
+    const changeClass = change != null && change >= 0 ? 'up' : '';
+    const group = String(profile.verdict || 'other').toLowerCase();
+    return `<div class="watchrow wclick${state.midExpanded===profile.chain?' on':''}" role="button" tabindex="0" data-mid-watch="${esc(profile.chain)}" data-mid-watch-group="${esc(group)}">
+      <span class="wn">${esc(profile.chain)}</span>
+      <span class="w90 ${changeClass}">${change == null ? '—' : (change > 0 ? '+' : '') + change.toFixed(1) + '%'}<span class="wl">${changeLabel}</span></span>
+      <span class="wdd">${fmtUsd(live.tvl)}<span class="wl">TVL</span></span>
+      <span class="wspark">${sparkline(spark, 58, 18, 2)}</span>
+      <span class="wtag">profiled ↓</span>
+    </div>`;
+  }).join('');
+
+  return `<div class="gpanel"><div class="dsec">Live mid watch — profiled chains on the live board (${rows.length})</div><div class="watchgrid">${chips}</div><div class="gnar muted" style="margin-top:8px">Live from the board — this shows whether stuck chains are drifting, recovering, or rolling over before they move categories. Click a profiled chain to open its dossier. Refreshes automatically.</div></div>`;
+}
 function renderMid(data){
   const el = document.getElementById('midview');
   state.midData = data;
@@ -2302,7 +2342,7 @@ function renderMid(data){
     ${gstat(gaps.length || '—', 'recurring gaps identified')}
     ${gstat(topGroup ? mgroups[topGroup].length : '—', topGroup ? esc(String(MID_LABEL[topGroup] || topGroup).split(' — ')[0].toLowerCase()) : 'largest cohort')}
   </div>`;
-  el.innerHTML = `${MID_HEAD('chain')}${stats}${panel}<div class="dsec" style="margin:20px 0 10px">Grouped by where they stand — ${data.chains.length} chains</div>${cards}`;
+  el.innerHTML = `${MID_HEAD('chain')}${stats}${midLiveWatch(data)}${panel}<div class="dsec" style="margin:20px 0 10px">Grouped by where they stand — ${data.chains.length} chains</div>${cards}`;
 }
 async function loadMid(){
   midLoaded = true;
@@ -2433,6 +2473,16 @@ document.getElementById('midview').addEventListener('click', (e) => {
   if (exfh) { const k=exfh.dataset.exmidgroup; state.midExOpenGroups = state.midExOpenGroups||{}; if (state.midExOpenGroups[k]) delete state.midExOpenGroups[k]; else state.midExOpenGroups[k]=true; exMidRerender(); return; }
   const excard = e.target.closest('.gcard[data-exslug]');
   if (excard) { const n = excard.dataset.exslug; const y = window.scrollY; state.midExExpanded = state.midExExpanded === n ? null : n; exMidRerender(); window.scrollTo(0, y); return; }
+  const watch = e.target.closest('.watchrow[data-mid-watch]');
+  if (watch && state.midData) {
+    const y = window.scrollY;
+    state.midOpenGroups = state.midOpenGroups || {};
+    if (watch.dataset.midWatchGroup) state.midOpenGroups[watch.dataset.midWatchGroup] = true;
+    state.midExpanded = state.midExpanded === watch.dataset.midWatch ? null : watch.dataset.midWatch;
+    renderMid(state.midData);
+    window.scrollTo(0, y);
+    return;
+  }
   const fh = e.target.closest('.folderhead');
   if (fh && state.midData) { const k=fh.dataset.midgroup; state.midOpenGroups = state.midOpenGroups||{}; if (state.midOpenGroups[k]) delete state.midOpenGroups[k]; else state.midOpenGroups[k]=true; renderMid(state.midData); return; }
   const card = e.target.closest('.gcard');
@@ -2442,6 +2492,13 @@ document.getElementById('midview').addEventListener('click', (e) => {
   state.midExpanded = state.midExpanded === name ? null : name;
   renderMid(state.midData);
   window.scrollTo(0, y);
+});
+document.getElementById('midview').addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const watch = e.target.closest('.watchrow[data-mid-watch]');
+  if (!watch) return;
+  e.preventDefault();
+  watch.click();
 });
 
 function mktUrl(c){
