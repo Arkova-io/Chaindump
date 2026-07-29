@@ -178,11 +178,13 @@
           "url": "https://defillama.com/protocol/sx-bet?events=false&fees=true&tvl=false",
           "source_tier": "B",
           "source_role": "data",
-          "independence_group": "defillama_adapter",
+          "independence_group": "sx_operator_api_via_defillama",
           "access_state": "accessible",
           "access_method": "indexed_browser_review",
+          "observation_as_of": "2026-07-29",
+          "freshness_note": "Fee and matched-volume series were current through 2026-07-29; the TVL adapter's last raw observation was 2026-03-02 and is carried forward.",
           "evidence_reviewed": true,
-          "evidence_locator": "Live 2026-07-29 snapshot separately reports SX Rollup TVL, matched-bet volume, open interest, fees and revenue; methodology notes the SX sunset and that the protocol analytics API supplies volume.",
+          "evidence_locator": "The 2026-07-29 page reports current matched-bet volume, open interest, fees and revenue and notes that the protocol analytics API supplies volume. Its displayed SX Rollup TVL is a carried-forward adapter value whose last raw observation was 2026-03-02.",
           "evidence_reviewer": "codex-research-agent",
           "evidence_reviewed_at": "2026-07-29T20:08:00-04:00"
         },
@@ -219,10 +221,10 @@
       ],
       "claims": {
         "outcome": {
-          "value": "Live peer-to-peer sports exchange with independently tracked matched volume and small fee revenue, while its token and dedicated-network architecture are in an announced 2026 sunset/deprecation transition.",
+          "value": "Live peer-to-peer sports exchange with matched volume and small fee revenue surfaced by DefiLlama from SX's public analytics API, while its token and dedicated-network architecture are in an announced 2026 sunset/deprecation transition. The third-party dashboard does not make the upstream activity feed independent.",
           "as_of": "2026-07-29",
           "source_ids": ["sx-defillama-current", "sx-terms-token-sunset", "sx-overview-current"],
-          "confidence": "high",
+          "confidence": "medium",
           "review_state": "reviewed"
         },
         "why": {
@@ -263,11 +265,11 @@
           "as_of": "2026-07-29",
           "source_ids": ["sx-terms-token-sunset", "sx-lemonde-anjouan-context"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         }
       },
       "counterevidence": [
-        "Large matched volume and small fee revenue are different dimensions and must not be conflated into profitability.",
+        "Large matched volume and small fee revenue are different dimensions and must not be conflated into profitability; the matched-volume feed is supplied by SX's public analytics API even when surfaced by DefiLlama.",
         "The Anjouan investigation is jurisdiction-wide counterevidence, not proof that SX Bet committed a violation.",
         "Announced sunset/deprecation is not completed migration; current Rollup dependence remains observable."
       ],
@@ -298,6 +300,8 @@
           "independence_group": "defillama_adapter",
           "access_state": "accessible",
           "access_method": "indexed_browser_review",
+          "observation_as_of": "2026-07-29",
+          "freshness_note": "The official DefiLlama API returned a 2026-07-29 TVL observation and fee series current through 2026-07-29.",
           "evidence_reviewed": true,
           "evidence_locator": "Live snapshot provides TVL, 30-day fees/revenue, chain distribution, and quarterly pool-profit series; negative quarters are retained rather than hidden by cumulative totals.",
           "evidence_reviewer": "codex-research-agent",
@@ -479,7 +483,7 @@
           "as_of": "2026-07-29",
           "source_ids": ["bustabit-v2-announcement", "bustabit-unlv-cash-or-crash", "bustabit-stats-current"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "strategic_choices": {
           "value": [
@@ -562,7 +566,7 @@
           "access_state": "accessible",
           "access_method": "indexed_browser_review",
           "evidence_reviewed": true,
-          "evidence_locator": "Current FAQ describes CHP as a native bonus token and USDT as the principal game currency; it does not provide a current canonical contract or supply.",
+          "evidence_locator": "Current FAQ identifies CHP as an optional ERC-20 utility for community contributions and rakeback, withdrawal-fee discounts, promotions, betting and account payments, while USDT remains the principal game currency. It does not provide a current canonical contract or supply.",
           "evidence_reviewer": "codex-research-agent",
           "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
         },
@@ -615,7 +619,7 @@
         "strategic_choices": {
           "value": [
             "Lead with online poker and later add casino and betting.",
-            "Use USDT as principal game currency and CHP primarily for bonuses.",
+            "Use USDT as principal game currency and optional CHP for community contributions, rakeback, fee discounts, promotions, and some betting/payment functions.",
             "Support several crypto funding networks inside a custodial account.",
             "Rely on a claimed Anjouan authorisation for the operating scope."
           ],
@@ -625,7 +629,7 @@
           "review_state": "partially_reviewed"
         },
         "token": {
-          "value": "CHP remains described as optional bonus utility while USDT is the game currency; current contract, supply, concentration, and realized usage remain unresolved.",
+          "value": "CHP remains described as an optional ERC-20 utility for community contributions and rakeback, withdrawal-fee discounts, promotions, betting and account payments, while USDT is the principal game currency; current contract, supply, concentration, and realized usage remain unresolved.",
           "as_of": "2026-07-29",
           "source_ids": ["coinpoker-chp-current"],
           "confidence": "medium",
@@ -643,7 +647,7 @@
           "as_of": "2026-07-29",
           "source_ids": ["coinpoker-terms-2026", "coinpoker-lemonde-anjouan-context"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         }
       },
       "counterevidence": [
@@ -809,6 +813,8 @@
           "independence_group": "defillama",
           "access_state": "accessible",
           "access_method": "browser_review",
+          "observation_as_of": "2026-07-29",
+          "freshness_note": "The official DefiLlama API returned a 2026-07-29 TVL observation and fee series current through 2026-07-29.",
           "evidence_reviewed": true,
           "evidence_locator": "Live protocol page exposes current TVL and options premium/notional activity across Optimism, Arbitrum, Base, and Polygon; live values are intentionally not frozen into this prep artifact.",
           "evidence_reviewer": "codex-research-agent",
@@ -831,16 +837,16 @@
         },
         {
           "id": "overtime-contract-architecture",
-          "title": "Overtime smart-contract architecture",
+          "title": "How Overtime Works",
           "publisher": "Overtime Docs",
-          "url": "https://docs.overtime.io/overtimes-smart-contract-architecture",
+          "url": "https://docs.overtime.io/learn-about-overtime/how-overtime-works",
           "source_tier": "D",
           "source_role": "primary",
           "independence_group": "overtime_protocol",
           "access_state": "accessible",
           "access_method": "browser_review",
           "evidence_reviewed": true,
-          "evidence_locator": "Documents Thales-derived AMM and market contract architecture.",
+          "evidence_locator": "Current documentation describes the Thales-derived AMM, fully onchain market creation and settlement, collateral-backed liquidity pools, and Chainlink data inputs.",
           "evidence_reviewer": "codex-research-agent",
           "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
         },
@@ -987,7 +993,24 @@
           "access_state": "accessible",
           "access_method": "browser_review",
           "evidence_reviewed": true,
-          "evidence_locator": "Independent analysis documents Arbitrum-hosted L3 architecture, external DAC data availability, whitelisted validators, fast confirmations, upgradeability, and operator/sequencer risks; notes the 2025-11-18 migration from Celestia to DAC.",
+          "evidence_locator": "Independent analysis labels the WINR L3 archived and no longer maintained, while documenting current transaction activity plus Arbitrum hosting, external DAC data availability, whitelisted validators, fast confirmations, upgradeability, and operator/sequencer risks; it notes the 2025-11-18 migration from Celestia to DAC.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+        },
+        {
+          "id": "winr-defillama-current",
+          "title": "WINR Protocol TVL",
+          "publisher": "DefiLlama",
+          "url": "https://defillama.com/protocol/winr-protocol?events=false&fdv=true&tvl=false",
+          "source_tier": "B",
+          "source_role": "data",
+          "independence_group": "defillama_adapter",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "observation_as_of": "2026-07-29",
+          "freshness_note": "The official DefiLlama API returned a 2026-07-29 protocol TVL observation of zero; token-market fields are not treated as product adoption.",
+          "evidence_reviewed": true,
+          "evidence_locator": "The 2026-07-29 independent protocol snapshot reports zero tracked WINR Protocol TVL. That metric does not prove the absence of every deployed game or transaction, but it directly contradicts an unqualified commercial-activity conclusion.",
           "evidence_reviewer": "codex-research-agent",
           "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
         },
@@ -1009,18 +1032,18 @@
       ],
       "claims": {
         "outcome": {
-          "value": "Technically active protocol and L3 surface with a documented shared-bankroll product, but current independent revenue, wager volume, user, and return data do not establish commercial success.",
+          "value": "Current first-party documentation presents a rebuilt shared-bankroll and AI game-creation product, but DefiLlama reports zero protocol TVL and L2BEAT labels the tracked L3 archived and no longer maintained despite observed chain transactions. A current product surface is therefore not evidence of commercial success or a healthy L3.",
           "as_of": "2026-07-29",
-          "source_ids": ["winr-docs-current", "winr-l2beat-current"],
+          "source_ids": ["winr-docs-current", "winr-l2beat-current", "winr-defillama-current"],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
         "why": {
-          "value": "A shared bankroll and creator distribution can reuse liquidity across games, while the same design concentrates game loss, contract, governance, and L3 infrastructure risk into common dependencies.",
+          "value": "A shared bankroll and creator distribution can reuse liquidity across games, while the same design concentrates game loss, contract, governance, and L3 infrastructure risk into common dependencies. The reviewed evidence does not establish that this redesign reversed the zero-TVL and archived-L3 signals.",
           "as_of": "2026-07-29",
-          "source_ids": ["winr-liquidity-docs", "winr-l2beat-current"],
+          "source_ids": ["winr-liquidity-docs", "winr-l2beat-current", "winr-defillama-current"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "strategic_choices": {
           "value": [
@@ -1042,7 +1065,7 @@
           "review_state": "partially_reviewed"
         },
         "chain_dependence": {
-          "value": "High dependence: WINR's L3 inherits Arbitrum hosting while relying on an external DAC, whitelisted proof actors, fast confirmations, and upgradeable/operator-controlled components identified by L2BEAT.",
+          "value": "High dependence: L2BEAT labels the tracked WINR L3 archived and no longer maintained; the observed architecture inherits Arbitrum hosting while relying on an external DAC, whitelisted proof actors, fast confirmations, and upgradeable/operator-controlled components.",
           "as_of": "2026-07-29",
           "source_ids": ["winr-l2beat-current"],
           "confidence": "high",
@@ -1057,7 +1080,7 @@
         }
       },
       "counterevidence": [
-        "An active L3 and current documentation do not establish casino adoption, wager quality, or economic sustainability.",
+        "Current documentation does not override DefiLlama's zero protocol TVL or L2BEAT's archived/no-longer-maintained L3 label; observed transactions alone do not establish casino adoption or economic sustainability.",
         "The 2023 commissioned audit does not cover every current contract, upgrade, operational key, or L3 dependency.",
         "Shared bankroll reuse improves capital efficiency while creating a common loss and governance surface."
       ],
@@ -1236,8 +1259,10 @@
           "independence_group": "defillama",
           "access_state": "accessible",
           "access_method": "browser_review",
+          "observation_as_of": "2026-07-29",
+          "freshness_note": "The official DefiLlama API returned 2026-07-29 observations with zero protocol TVL and zero fees over 24 hours, 7 days, and 30 days.",
           "evidence_reviewed": true,
-          "evidence_locator": "Live methodology includes BETS staking and Gamma Uniswap v4 liquidity in TVL, identifies game/P2P fee ranges and revenue allocation, and exposes current protocol economics.",
+          "evidence_locator": "The 2026-07-29 API snapshot reports zero protocol TVL and zero fees for 24 hours, 7 days, and 30 days while retaining historical cumulative fees. Methodology identifies staking/LP TVL categories, game and P2P fee ranges, and revenue allocation.",
           "evidence_reviewer": "codex-research-agent",
           "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
         },
@@ -1296,19 +1321,21 @@
           "independence_group": "bscscan",
           "access_state": "accessible",
           "access_method": "browser_review",
+          "observation_as_of": "2026-07-29",
+          "freshness_note": "The reviewed indexed explorer evidence exposed historical wager events through 2026-01-29; it did not establish July activity.",
           "evidence_reviewed": true,
-          "evidence_locator": "Reproducible explorer page shows a verified contract, current wager events, and owner/pause/admin fields on BNB Chain.",
+          "evidence_locator": "Reproducible explorer page shows a verified BNB Chain Dice contract, owner/pause/admin fields, and indexed historical wager events through 2026-01-29; it does not establish current July wagering.",
           "evidence_reviewer": "codex-research-agent",
           "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
         }
       ],
       "claims": {
         "outcome": {
-          "value": "Niche but active multichain onchain casino protocol with independently observable current contract activity and protocol economics; its scale remains modest and user quality is not established.",
+          "value": "Deployed multichain casino contracts and historical wager activity remain independently observable, but the 2026-07-29 DefiLlama snapshot reports zero protocol TVL and zero fees across 24-hour, 7-day, and 30-day windows; the reviewed BNB explorer evidence showed wagers only through 2026-01-29. Current adoption is therefore unproven.",
           "as_of": "2026-07-29",
           "source_ids": ["betswirl-defillama-current", "betswirl-bscscan-current"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "why": {
           "value": "Reusable multichain contracts, verifiable randomness, an onchain bankroll, and explicit fee distribution plausibly reduce operator opacity, while current adoption and sustainability remain only partially independently measured.",
@@ -1352,7 +1379,7 @@
         }
       },
       "counterevidence": [
-        "Open contracts and current wager events establish activity, not legality, safe governance, or durable user demand.",
+        "Open contracts and historical wager events establish deployment and past use, not current adoption, legality, safe governance, or durable user demand.",
         "The commissioned audit is scope- and date-limited and explicitly does not remove governance-key risk.",
         "DefiLlama TVL includes BETS staking and Gamma LP categories, so it is not equivalent to immediately available casino bankroll."
       ],

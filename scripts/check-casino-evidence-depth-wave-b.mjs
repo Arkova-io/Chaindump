@@ -31,9 +31,17 @@ export const REQUIRED_CLAIM_TOPICS = [
 const REVIEW_STATES = new Set(['reviewed', 'partially_reviewed', 'unresolved']);
 const CONFIDENCE_LEVELS = new Set(['low', 'medium', 'high']);
 const ACCESS_STATES = new Set(['accessible', 'blocked', 'removed', 'unknown']);
+const ACCESS_METHODS = new Set([
+  'browser_review',
+  'direct_csv_review',
+  'indexed_browser_review',
+  'pdf_review',
+  'pdf_text_review',
+]);
 const SOURCE_ROLES = new Set(['authority', 'independent', 'primary', 'data']);
 const REVIEWER = 'codex-research-agent';
 const AS_OF = '2026-07-29';
+const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
 const ISO_TIMESTAMP = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
 
 function add(errors, condition, message) {
@@ -53,10 +61,27 @@ function isSemanticIsoTimestamp(value) {
     && calendar.getUTCSeconds() === second;
 }
 
+function isSemanticIsoDate(value) {
+  const match = ISO_DATE.exec(String(value ?? ''));
+  if (!match) return false;
+  const [, year, month, day] = match.map(Number);
+  const calendar = new Date(Date.UTC(year, month - 1, day));
+  return calendar.getUTCFullYear() === year
+    && calendar.getUTCMonth() + 1 === month
+    && calendar.getUTCDate() === day;
+}
+
+function isTimestampOnAsOfDate(value) {
+  return isSemanticIsoTimestamp(value) && String(value).startsWith(`${AS_OF}T`);
+}
+
+function isTimestampAtOrBefore(value, ceiling) {
+  return isSemanticIsoTimestamp(value)
+    && isSemanticIsoTimestamp(ceiling)
+    && Date.parse(value) <= Date.parse(ceiling);
+}
+
 function hasIndependentCausalSupport(sources) {
-  const authority = sources.some((source) => (
-    source.source_tier === 'A' && source.source_role === 'authority'
-  ));
   const strongIndependent = sources.some((source) => (
     (source.source_tier === 'A' || source.source_tier === 'B')
       && source.source_role === 'independent'
@@ -67,26 +92,16 @@ function hasIndependentCausalSupport(sources) {
     ))
     .map((source) => source.independence_group)
     .filter(Boolean));
-  return authority || strongIndependent || independentTierC.size >= 2;
+  return strongIndependent || independentTierC.size >= 2;
 }
 
-export function readArtifact() {
-  return JSON.parse(readFileSync(artifactUrl, 'utf8'));
+function hasCanonicalLegalSupport(sources) {
+  return sources.some((source) => (
+    source.source_tier === 'A' && source.source_role === 'authority'
+  ));
 }
 
-export function validateArtifact(document) {
-  const errors = [];
-  const metrics = {
-    dossiers: document.cases?.length ?? 0,
-    claims: 0,
-    sources: 0,
-    reviewed_sources: 0,
-    access_debt: 0,
-    reviewed_claims: 0,
-    partially_reviewed_claims: 0,
-    unresolved_claims: 0,
-  };
-
+function validateDocumentMetadata(document, errors) {
   add(
     errors,
     document.schema === 'chaindump-casino-evidence-depth-wave-b-v1',
@@ -99,6 +114,11 @@ export function validateArtifact(document) {
     'research_as_of must be 2026-07-29',
   );
   add(errors, document.reviewer === REVIEWER, 'artifact reviewer is missing');
+  add(
+    errors,
+    isTimestampOnAsOfDate(document.reviewed_at),
+    'artifact reviewed_at must be a semantic ISO timestamp on the as_of date',
+  );
   add(
     errors,
     document.status === 'implementation-prepared-no-migration-number-assigned',
@@ -126,175 +146,266 @@ export function validateArtifact(document) {
   );
   add(errors, Array.isArray(document.cases), 'cases must be an array');
   add(errors, document.cases?.length === 10, 'artifact must contain exactly ten dossiers');
+}
+
+function validateSource({
+  source,
+  prefix,
+  dossierReviewedAt,
+  sources,
+  errors,
+  metrics,
+}) {
+  metrics.sources += 1;
+  add(errors, Boolean(source.id), `${prefix}: source id is missing`);
+  add(errors, !sources.has(source.id), `${prefix}: duplicate source ${source.id}`);
+  sources.set(source.id, source);
+  add(errors, String(source.url ?? '').startsWith('https://'), `${prefix}/${source.id}: invalid URL`);
+  add(errors, /^[A-D]$/.test(source.source_tier ?? ''), `${prefix}/${source.id}: invalid tier`);
+  add(
+    errors,
+    SOURCE_ROLES.has(source.source_role),
+    `${prefix}/${source.id}: invalid source role`,
+  );
+  add(
+    errors,
+    Boolean(source.independence_group),
+    `${prefix}/${source.id}: independence group is missing`,
+  );
+  add(
+    errors,
+    ACCESS_STATES.has(source.access_state),
+    `${prefix}/${source.id}: invalid access state`,
+  );
+  add(
+    errors,
+    ACCESS_METHODS.has(source.access_method),
+    `${prefix}/${source.id}: invalid access method`,
+  );
+  add(
+    errors,
+    !Object.hasOwn(source, 'reviewed_at'),
+    `${prefix}/${source.id}: legacy-only reviewed_at is forbidden`,
+  );
+
+  if (source.source_role === 'data') {
+    add(
+      errors,
+      isSemanticIsoDate(source.observation_as_of)
+        && source.observation_as_of <= AS_OF,
+      `${prefix}/${source.id}: data source needs a semantic observation_as_of no later than the artifact`,
+    );
+    add(
+      errors,
+      typeof source.freshness_note === 'string' && source.freshness_note.length >= 30,
+      `${prefix}/${source.id}: data source needs an explicit freshness note`,
+    );
+  }
+
+  if (source.evidence_reviewed === true) {
+    metrics.reviewed_sources += 1;
+    validateReviewedSource(source, prefix, dossierReviewedAt, errors);
+  } else {
+    metrics.access_debt += 1;
+    add(
+      errors,
+      !source.evidence_reviewer && !source.evidence_reviewed_at,
+      `${prefix}/${source.id}: unreviewed source cannot carry reviewer credit`,
+    );
+  }
+}
+
+function validateReviewedSource(source, prefix, dossierReviewedAt, errors) {
+  add(
+    errors,
+    source.access_state === 'accessible',
+    `${prefix}/${source.id}: reviewed source must be accessible`,
+  );
+  add(
+    errors,
+    typeof source.evidence_locator === 'string' && source.evidence_locator.length >= 30,
+    `${prefix}/${source.id}: reviewed source needs a field-level evidence locator`,
+  );
+  add(
+    errors,
+    source.evidence_reviewer === REVIEWER,
+    `${prefix}/${source.id}: reviewed source needs reviewer attribution`,
+  );
+  add(
+    errors,
+    isTimestampOnAsOfDate(source.evidence_reviewed_at),
+    `${prefix}/${source.id}: reviewed source needs an ISO review timestamp on the as_of date`,
+  );
+  add(
+    errors,
+    isTimestampAtOrBefore(source.evidence_reviewed_at, dossierReviewedAt),
+    `${prefix}/${source.id}: source review cannot occur after dossier review`,
+  );
+}
+
+function validateClaim({
+  topic,
+  claim,
+  prefix,
+  sources,
+  errors,
+  metrics,
+}) {
+  metrics.claims += 1;
+  const claimPrefix = `${prefix}/${topic}`;
+  add(errors, claim.as_of === AS_OF, `${claimPrefix}: as_of is stale`);
+  add(
+    errors,
+    REVIEW_STATES.has(claim.review_state),
+    `${claimPrefix}: invalid review_state`,
+  );
+  add(
+    errors,
+    CONFIDENCE_LEVELS.has(claim.confidence),
+    `${claimPrefix}: invalid confidence`,
+  );
+  add(
+    errors,
+    Array.isArray(claim.source_ids),
+    `${claimPrefix}: source_ids must be an array`,
+  );
+  add(
+    errors,
+    typeof claim.value === 'string' || Array.isArray(claim.value),
+    `${claimPrefix}: value must be text or a list`,
+  );
+  countClaimState(claim.review_state, metrics);
+  validateClaimState(claim, claimPrefix, errors);
+
+  const referencedSources = (claim.source_ids ?? []).map((sourceId) => {
+    add(errors, sources.has(sourceId), `${claimPrefix}: unregistered source ${sourceId}`);
+    return sources.get(sourceId);
+  }).filter(Boolean);
+
+  if (claim.review_state === 'reviewed') {
+    add(
+      errors,
+      referencedSources.length > 0
+        && referencedSources.every((source) => source.evidence_reviewed === true),
+      `${claimPrefix}: reviewed claim requires reviewed evidence`,
+    );
+  }
+  if (topic === 'why' && claim.review_state === 'reviewed') {
+    add(
+      errors,
+      hasIndependentCausalSupport(referencedSources),
+      `${claimPrefix}: reviewed causal claim needs tier-A/B independent evidence or two independent tier-C origins`,
+    );
+  }
+  if (topic === 'legal_or_loss' && claim.review_state === 'reviewed') {
+    add(
+      errors,
+      hasCanonicalLegalSupport(referencedSources),
+      `${claimPrefix}: reviewed legal status needs a tier-A authority record`,
+    );
+  }
+}
+
+function countClaimState(reviewState, metrics) {
+  if (reviewState === 'reviewed') metrics.reviewed_claims += 1;
+  if (reviewState === 'partially_reviewed') metrics.partially_reviewed_claims += 1;
+  if (reviewState === 'unresolved') metrics.unresolved_claims += 1;
+}
+
+function validateClaimState(claim, claimPrefix, errors) {
+  if (claim.confidence === 'high') {
+    add(
+      errors,
+      claim.review_state === 'reviewed',
+      `${claimPrefix}: high confidence requires reviewed state`,
+    );
+  }
+  if ((claim.source_ids ?? []).length === 0) {
+    add(
+      errors,
+      claim.review_state === 'unresolved',
+      `${claimPrefix}: source-free claims must remain unresolved`,
+    );
+  }
+}
+
+function validateDossier(dossier, documentReviewedAt, seenDossiers, errors, metrics) {
+  const prefix = dossier.dossier_id ?? '<missing-dossier-id>';
+  add(errors, EXPECTED_DOSSIERS.has(dossier.dossier_id), `${prefix}: unexpected dossier`);
+  add(errors, !seenDossiers.has(dossier.dossier_id), `${prefix}: duplicate dossier`);
+  seenDossiers.add(dossier.dossier_id);
+  add(errors, dossier.review?.as_of === AS_OF, `${prefix}: review as_of is stale`);
+  add(errors, dossier.review?.reviewer === REVIEWER, `${prefix}: reviewer is missing`);
+  add(
+    errors,
+    isTimestampOnAsOfDate(dossier.review?.reviewed_at),
+    `${prefix}: reviewed_at is not an ISO timestamp on the as_of date`,
+  );
+  add(
+    errors,
+    isTimestampAtOrBefore(dossier.review?.reviewed_at, documentReviewedAt),
+    `${prefix}: dossier review cannot occur after artifact review`,
+  );
+  add(
+    errors,
+    REVIEW_STATES.has(dossier.review?.state),
+    `${prefix}: invalid dossier review state`,
+  );
+  add(
+    errors,
+    Array.isArray(dossier.counterevidence) && dossier.counterevidence.length >= 2,
+    `${prefix}: needs at least two counterevidence statements`,
+  );
+  add(
+    errors,
+    Array.isArray(dossier.unknowns) && dossier.unknowns.length >= 3,
+    `${prefix}: needs at least three explicit unknowns`,
+  );
+
+  const sources = new Map();
+  for (const source of dossier.sources ?? []) {
+    validateSource({
+      source,
+      prefix,
+      dossierReviewedAt: dossier.review?.reviewed_at,
+      sources,
+      errors,
+      metrics,
+    });
+  }
+
+  const claimTopics = Object.keys(dossier.claims ?? {});
+  add(
+    errors,
+    JSON.stringify(claimTopics) === JSON.stringify(REQUIRED_CLAIM_TOPICS),
+    `${prefix}: claim topics must match the evidence contract and order`,
+  );
+  for (const [topic, claim] of Object.entries(dossier.claims ?? {})) {
+    validateClaim({ topic, claim, prefix, sources, errors, metrics });
+  }
+}
+
+export function readArtifact() {
+  return JSON.parse(readFileSync(artifactUrl, 'utf8'));
+}
+
+export function validateArtifact(document) {
+  const errors = [];
+  const metrics = {
+    dossiers: document.cases?.length ?? 0,
+    claims: 0,
+    sources: 0,
+    reviewed_sources: 0,
+    access_debt: 0,
+    reviewed_claims: 0,
+    partially_reviewed_claims: 0,
+    unresolved_claims: 0,
+  };
+  validateDocumentMetadata(document, errors);
 
   const seenDossiers = new Set();
-
   for (const dossier of document.cases ?? []) {
-    const prefix = dossier.dossier_id ?? '<missing-dossier-id>';
-    add(errors, EXPECTED_DOSSIERS.has(dossier.dossier_id), `${prefix}: unexpected dossier`);
-    add(errors, !seenDossiers.has(dossier.dossier_id), `${prefix}: duplicate dossier`);
-    seenDossiers.add(dossier.dossier_id);
-    add(errors, dossier.review?.as_of === AS_OF, `${prefix}: review as_of is stale`);
-    add(errors, dossier.review?.reviewer === REVIEWER, `${prefix}: reviewer is missing`);
-    add(
-      errors,
-      isSemanticIsoTimestamp(dossier.review?.reviewed_at),
-      `${prefix}: reviewed_at is not an ISO timestamp`,
-    );
-    add(
-      errors,
-      REVIEW_STATES.has(dossier.review?.state),
-      `${prefix}: invalid dossier review state`,
-    );
-    add(
-      errors,
-      Array.isArray(dossier.counterevidence) && dossier.counterevidence.length >= 2,
-      `${prefix}: needs at least two counterevidence statements`,
-    );
-    add(
-      errors,
-      Array.isArray(dossier.unknowns) && dossier.unknowns.length >= 3,
-      `${prefix}: needs at least three explicit unknowns`,
-    );
-
-    const sources = new Map();
-    for (const source of dossier.sources ?? []) {
-      metrics.sources += 1;
-      add(errors, Boolean(source.id), `${prefix}: source id is missing`);
-      add(errors, !sources.has(source.id), `${prefix}: duplicate source ${source.id}`);
-      sources.set(source.id, source);
-      add(errors, /^https:\/\//.test(source.url ?? ''), `${prefix}/${source.id}: invalid URL`);
-      add(errors, /^[A-D]$/.test(source.source_tier ?? ''), `${prefix}/${source.id}: invalid tier`);
-      add(
-        errors,
-        SOURCE_ROLES.has(source.source_role),
-        `${prefix}/${source.id}: invalid source role`,
-      );
-      add(
-        errors,
-        Boolean(source.independence_group),
-        `${prefix}/${source.id}: independence group is missing`,
-      );
-      add(
-        errors,
-        ACCESS_STATES.has(source.access_state),
-        `${prefix}/${source.id}: invalid access state`,
-      );
-      add(
-        errors,
-        !Object.prototype.hasOwnProperty.call(source, 'reviewed_at'),
-        `${prefix}/${source.id}: legacy-only reviewed_at is forbidden`,
-      );
-
-      if (source.evidence_reviewed === true) {
-        metrics.reviewed_sources += 1;
-        add(
-          errors,
-          source.access_state === 'accessible',
-          `${prefix}/${source.id}: reviewed source must be accessible`,
-        );
-        add(
-          errors,
-          typeof source.evidence_locator === 'string' && source.evidence_locator.length >= 30,
-          `${prefix}/${source.id}: reviewed source needs a field-level evidence locator`,
-        );
-        add(
-          errors,
-          source.evidence_reviewer === REVIEWER,
-          `${prefix}/${source.id}: reviewed source needs reviewer attribution`,
-        );
-        add(
-          errors,
-          isSemanticIsoTimestamp(source.evidence_reviewed_at),
-          `${prefix}/${source.id}: reviewed source needs an ISO review timestamp`,
-        );
-      } else {
-        metrics.access_debt += 1;
-        add(
-          errors,
-          !source.evidence_reviewer && !source.evidence_reviewed_at,
-          `${prefix}/${source.id}: unreviewed source cannot carry reviewer credit`,
-        );
-      }
-    }
-
-    const claimTopics = Object.keys(dossier.claims ?? {});
-    add(
-      errors,
-      JSON.stringify(claimTopics) === JSON.stringify(REQUIRED_CLAIM_TOPICS),
-      `${prefix}: claim topics must match the evidence contract and order`,
-    );
-
-    for (const [topic, claim] of Object.entries(dossier.claims ?? {})) {
-      metrics.claims += 1;
-      const claimPrefix = `${prefix}/${topic}`;
-      add(errors, claim.as_of === AS_OF, `${claimPrefix}: as_of is stale`);
-      add(
-        errors,
-        REVIEW_STATES.has(claim.review_state),
-        `${claimPrefix}: invalid review_state`,
-      );
-      add(
-        errors,
-        CONFIDENCE_LEVELS.has(claim.confidence),
-        `${claimPrefix}: invalid confidence`,
-      );
-      add(
-        errors,
-        Array.isArray(claim.source_ids),
-        `${claimPrefix}: source_ids must be an array`,
-      );
-      add(
-        errors,
-        typeof claim.value === 'string' || Array.isArray(claim.value),
-        `${claimPrefix}: value must be text or a list`,
-      );
-
-      if (claim.review_state === 'reviewed') metrics.reviewed_claims += 1;
-      if (claim.review_state === 'partially_reviewed') metrics.partially_reviewed_claims += 1;
-      if (claim.review_state === 'unresolved') metrics.unresolved_claims += 1;
-
-      if (claim.confidence === 'high') {
-        add(
-          errors,
-          claim.review_state === 'reviewed',
-          `${claimPrefix}: high confidence requires reviewed state`,
-        );
-      }
-      if ((claim.source_ids ?? []).length === 0) {
-        add(
-          errors,
-          claim.review_state === 'unresolved',
-          `${claimPrefix}: source-free claims must remain unresolved`,
-        );
-      }
-
-      const referencedSources = (claim.source_ids ?? []).map((sourceId) => {
-        add(
-          errors,
-          sources.has(sourceId),
-          `${claimPrefix}: unregistered source ${sourceId}`,
-        );
-        return sources.get(sourceId);
-      }).filter(Boolean);
-
-      if (claim.review_state === 'reviewed') {
-        add(
-          errors,
-          referencedSources.length > 0
-            && referencedSources.every((source) => source.evidence_reviewed === true),
-          `${claimPrefix}: reviewed claim requires reviewed evidence`,
-        );
-      }
-
-      if (topic === 'why' && claim.review_state === 'reviewed') {
-        add(
-          errors,
-          hasIndependentCausalSupport(referencedSources),
-          `${claimPrefix}: reviewed causal claim needs tier-A authority, tier-A/B independent evidence, or two independent tier-C origins`,
-        );
-      }
-    }
+    validateDossier(dossier, document.reviewed_at, seenDossiers, errors, metrics);
   }
 
   add(
