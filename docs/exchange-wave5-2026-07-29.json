@@ -39,7 +39,7 @@
             "source_refs": ["https://docs.raydium.io/introduction/what-is-raydium"]
           },
           {
-            "decision": "Retire the original OpenBook dependency for current AMM traffic and add CPMM and CLMM products.",
+            "decision": "Retire the original Serum-linked order-book dependency for current AMM traffic and add CPMM and CLMM products.",
             "consequence": "The protocol survived Serum's failure and supports more pool designs, but maintains a larger smart-contract and LP-risk surface.",
             "confidence": "high",
             "source_refs": ["https://docs.raydium.io/introduction/what-is-raydium"]

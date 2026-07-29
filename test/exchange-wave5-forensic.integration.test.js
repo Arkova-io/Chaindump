@@ -60,6 +60,31 @@ function createFixture() {
   return database;
 }
 
+function fetchExchangeRow(database, table, slug, kind) {
+  switch (table) {
+    case 'successful_exchanges':
+      return database.prepare(`
+        SELECT profile, updated_at
+        FROM successful_exchanges
+        WHERE slug = ? AND type = ?
+      `).get(slug, kind);
+    case 'mid_exchanges':
+      return database.prepare(`
+        SELECT profile, updated_at
+        FROM mid_exchanges
+        WHERE slug = ? AND kind = ?
+      `).get(slug, kind);
+    case 'dead_exchanges':
+      return database.prepare(`
+        SELECT profile, updated_at
+        FROM dead_exchanges
+        WHERE slug = ? AND kind = ?
+      `).get(slug, kind);
+    default:
+      throw new Error(`Unsupported exchange table: ${table}`);
+  }
+}
+
 function applyCorpusMigrations(database) {
   const migrationDirectory = new URL('../migrations/', import.meta.url);
   const files = readdirSync(migrationDirectory)
@@ -113,12 +138,12 @@ describe('exchange forensic Wave-5', () => {
 
     database.exec(migration);
     const afterFirstRun = Object.fromEntries(document.cases.map((entry) => {
-      const kindColumn = entry.table === 'successful_exchanges' ? 'type' : 'kind';
-      const row = database.prepare(`
-        SELECT profile, updated_at
-        FROM ${entry.table}
-        WHERE slug = ? AND ${kindColumn} = ?
-      `).get(entry.slug, entry.kind);
+      const row = fetchExchangeRow(
+        database,
+        entry.table,
+        entry.slug,
+        entry.kind,
+      );
       const profile = JSON.parse(row.profile);
       expect(profile.preserved).toBe(entry.slug);
       expect(profile.forensic_analysis).toEqual(entry.forensic_analysis);
@@ -128,12 +153,12 @@ describe('exchange forensic Wave-5', () => {
 
     database.exec(migration);
     for (const entry of document.cases) {
-      const kindColumn = entry.table === 'successful_exchanges' ? 'type' : 'kind';
-      const row = database.prepare(`
-        SELECT profile
-        FROM ${entry.table}
-        WHERE slug = ? AND ${kindColumn} = ?
-      `).get(entry.slug, entry.kind);
+      const row = fetchExchangeRow(
+        database,
+        entry.table,
+        entry.slug,
+        entry.kind,
+      );
       expect(row.profile).toBe(afterFirstRun[entry.slug]);
     }
 
