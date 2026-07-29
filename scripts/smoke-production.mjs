@@ -18,7 +18,8 @@ async function jsonAt(fetchImpl, url) {
 }
 
 function normalizeBaseUrl(baseUrl) {
-  const base = String(baseUrl || '').replace(/\/+$/, '');
+  let base = String(baseUrl || '');
+  while (base.endsWith('/')) base = base.slice(0, -1);
   if (!base) throw new Error('baseUrl is required');
   return base;
 }

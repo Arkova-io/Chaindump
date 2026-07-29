@@ -985,9 +985,11 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
   if (row.launched) fields.push(`<div class="gfield"><span class="gfl">Launched</span> ${esc(row.launched)}</div>`);
   const venueContext = [String(row.venueType).toUpperCase(), exchangeLabel(row.custodyModel || 'custody unresolved')];
   if (row.primaryChain) venueContext.push(row.primaryChain);
-  fields.push(`<div class="gfield"><span class="gfl">Venue</span> ${venueContext.map(esc).join(' · ')}</div>`);
-  fields.push(`<div class="gfield"><span class="gfl">Product cohort</span> ${esc(exchangeLabel(row.productCohort))}</div>`);
-  fields.push(`<div class="gfield"><span class="gfl">Token</span> ${tokenLine}</div>`);
+  fields.push(
+    `<div class="gfield"><span class="gfl">Venue</span> ${venueContext.map(esc).join(' · ')}</div>`,
+    `<div class="gfield"><span class="gfl">Product cohort</span> ${esc(exchangeLabel(row.productCohort))}</div>`,
+    `<div class="gfield"><span class="gfl">Token</span> ${tokenLine}</div>`,
+  );
   const metricContract = [row.metricType, row.metricUnit, exchangeLabel(row.metricWindow)];
   if (row.metricAsOf) metricContract.push(`as of ${row.metricAsOf}`);
   metricContract.push(row.metricObservedAt ? `observed ${row.metricObservedAt}` : 'observation time unknown');
