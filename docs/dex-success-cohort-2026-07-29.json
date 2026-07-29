@@ -1,0 +1,382 @@
+{
+  "title": "DEX success cohort — citation-first research seed",
+  "version": "2026-07-29",
+  "status": "research_seed_not_yet_wired_to_app",
+  "methodology": {
+    "outcome_definition": "Successful means the venue achieved durable product-market fit, material attributable trading activity, and remained operational through at least one market cycle. Current momentum is recorded separately; historical success does not imply that current volume is growing.",
+    "metric_separation": [
+      "spot_amm_or_clob_volume",
+      "aggregator_routed_volume",
+      "perpetual_notional_volume"
+    ],
+    "warning": "Never rank these three volume types in one undifferentiated column. Aggregator volume can route into an underlying AMM and therefore overlap it; perpetual notional is not spot turnover.",
+    "as_of": "2026-07-29",
+    "source_policy": "Protocol documentation or protocol-operated APIs establish architecture and token facts. DefiLlama establishes comparable spot volume and TVL. Null is used where the selected authoritative sources do not support a field."
+  },
+  "cases": [
+    {
+      "slug": "uniswap",
+      "kind": "dex",
+      "name": "Uniswap",
+      "outcome_class": "successful_established",
+      "current_momentum": "growing",
+      "launched": "2018-11",
+      "operational_model": "permissionless multi-chain spot AMM; v2 constant-product, v3 concentrated liquidity, v4 singleton and hooks",
+      "chains": ["Ethereum", "Base", "Arbitrum", "Polygon", "OP Mainnet", "Unichain", "Avalanche", "BNB Chain", "multiple additional EVM chains"],
+      "token": {
+        "launched": true,
+        "symbol": "UNI",
+        "launch_date": "2020-09-16",
+        "role": "protocol governance; genesis allocation included a retroactive user and LP distribution",
+        "source_url": "https://blog.uniswap.org/uni"
+      },
+      "metrics": {
+        "spot_volume_24h_usd": 2158254170,
+        "spot_volume_30d_usd": 50767348712,
+        "spot_volume_all_time_usd": 3776695155079,
+        "spot_tvl_usd": 3066365156,
+        "peak_daily_spot_volume_usd": 8232827599,
+        "peak_daily_spot_volume_date": "2025-01-20",
+        "as_of": "2026-07-29",
+        "source_url": "https://api.llama.fi/summary/dexs/uniswap?dataType=dailyVolume"
+      },
+      "success_factors": ["first_mover_amm", "permissionless_integrations", "multi_chain_distribution", "capital_efficiency", "developer_platform"],
+      "risks_or_counter_signals": ["fragmented_liquidity_across_versions_and_chains", "governance_token_value_capture_has_changed_over_time", "intense_router_and_dex_competition"],
+      "synthesis": "Uniswap's durable advantage is composable liquidity infrastructure rather than a single interface. Success preceded UNI by almost two years, so the token was a governance and distribution layer built on demonstrated product-market fit, not the original source of it.",
+      "sources": [
+        {"title": "Introducing UNI", "url": "https://blog.uniswap.org/uni", "publisher": "Uniswap Labs", "type": "primary"},
+        {"title": "DefiLlama Uniswap daily-volume series", "url": "https://api.llama.fi/summary/dexs/uniswap?dataType=dailyVolume", "publisher": "DefiLlama", "type": "authoritative_data"},
+        {"title": "DefiLlama Uniswap protocol TVL", "url": "https://defillama.com/protocol/uniswap", "publisher": "DefiLlama", "type": "authoritative_data"}
+      ]
+    },
+    {
+      "slug": "curve-finance",
+      "kind": "dex",
+      "name": "Curve",
+      "outcome_class": "successful_established",
+      "current_momentum": "declining",
+      "launched": "2020-01",
+      "operational_model": "multi-chain AMM optimized for stable and correlated assets; gauge-directed liquidity incentives",
+      "chains": ["Ethereum", "Arbitrum", "Base", "Polygon", "Avalanche", "OP Mainnet", "Gnosis", "multiple additional EVM chains"],
+      "token": {
+        "launched": true,
+        "symbol": "CRV",
+        "launch_date": null,
+        "role": "governance and gauge voting through vote-escrowed CRV",
+        "source_url": "https://news.curve.finance/curve-finance-the-rise-of-the-home-of-stablecoins/"
+      },
+      "metrics": {
+        "spot_volume_24h_usd": 23074964,
+        "spot_volume_30d_usd": 2034092570,
+        "spot_volume_all_time_usd": 344919333894,
+        "spot_tvl_usd": 1288396988,
+        "peak_daily_spot_volume_usd": 3518879532,
+        "peak_daily_spot_volume_date": "2022-11-10",
+        "as_of": "2026-07-29",
+        "source_url": "https://api.llama.fi/summary/dexs/curve-finance?dataType=dailyVolume"
+      },
+      "success_factors": ["specialized_stableswap_math", "deep_stablecoin_liquidity", "gauge_bribe_distribution", "multi_chain_distribution"],
+      "risks_or_counter_signals": ["daily_volume_far_below_peak", "governance_complexity", "stablecoin_and_oracle_contagion", "competition_from_concentrated_liquidity"],
+      "synthesis": "Curve won a specialized market rather than the whole AMM market. Its lesson is that purpose-built market structure plus an incentive marketplace can create durable liquidity, but current volume shows that historical category leadership can coexist with material decline.",
+      "sources": [
+        {"title": "Curve Knowledge Hub", "url": "https://docs.curve.finance/", "publisher": "Curve", "type": "primary"},
+        {"title": "Curve Finance: The Rise of the Home of Stablecoins", "url": "https://news.curve.finance/curve-finance-the-rise-of-the-home-of-stablecoins/", "publisher": "Curve", "type": "primary"},
+        {"title": "DefiLlama Curve daily-volume series", "url": "https://api.llama.fi/summary/dexs/curve-finance?dataType=dailyVolume", "publisher": "DefiLlama", "type": "authoritative_data"}
+      ]
+    },
+    {
+      "slug": "pancakeswap",
+      "kind": "dex",
+      "name": "PancakeSwap",
+      "outcome_class": "successful_established",
+      "current_momentum": "stable_to_growing",
+      "launched": "2020-09",
+      "operational_model": "multi-chain spot AMM suite with constant-product, concentrated-liquidity, stableswap, and Infinity versions",
+      "chains": ["BNB Chain", "Ethereum", "Base", "Arbitrum", "Aptos", "Solana", "Linea", "zkSync Era", "multiple additional chains"],
+      "token": {
+        "launched": true,
+        "symbol": "CAKE",
+        "launch_date": null,
+        "role": "governance, liquidity incentives, and ecosystem utility; current policy targets net deflation through product-funded burns",
+        "source_url": "https://docs.pancakeswap.finance/protocol/cake-tokenomics"
+      },
+      "metrics": {
+        "spot_volume_24h_usd": 663384016,
+        "spot_volume_30d_usd": 17632289859,
+        "spot_volume_all_time_usd": 2052762586233,
+        "spot_tvl_usd": 2033797649,
+        "peak_daily_spot_volume_usd": 12765125928,
+        "peak_daily_spot_volume_date": "2021-05-19",
+        "as_of": "2026-07-29",
+        "source_url": "https://api.llama.fi/summary/dexs/pancakeswap?dataType=dailyVolume"
+      },
+      "success_factors": ["bnb_chain_retail_distribution", "low_fee_environment", "multi_product_suite", "multi_chain_expansion", "active_token_emission_management"],
+      "risks_or_counter_signals": ["dependence_on_incentives", "brand_and_liquidity_fragmentation_across_versions", "host_chain_concentration_despite_expansion"],
+      "synthesis": "PancakeSwap shows how chain distribution can be a launch advantage without remaining a permanent constraint. CAKE helped bootstrap liquidity, but repeated tokenomics changes also show that emissions are a continuing operating liability unless fee-generating products absorb them.",
+      "sources": [
+        {"title": "CAKE Tokenomics", "url": "https://docs.pancakeswap.finance/protocol/cake-tokenomics", "publisher": "PancakeSwap", "type": "primary"},
+        {"title": "DefiLlama PancakeSwap daily-volume series", "url": "https://api.llama.fi/summary/dexs/pancakeswap?dataType=dailyVolume", "publisher": "DefiLlama", "type": "authoritative_data"},
+        {"title": "DefiLlama PancakeSwap protocol TVL", "url": "https://defillama.com/protocol/pancakeswap-amm", "publisher": "DefiLlama", "type": "authoritative_data"}
+      ]
+    },
+    {
+      "slug": "jupiter",
+      "kind": "dex",
+      "name": "Jupiter",
+      "outcome_class": "successful_established",
+      "current_momentum": "stable",
+      "launched": "2021-10",
+      "operational_model": "Solana liquidity aggregator and execution router; the broader suite also includes perpetuals, lending, launch tooling, and other products",
+      "chains": ["Solana"],
+      "token": {
+        "launched": true,
+        "symbol": "JUP",
+        "launch_date": "2024-01-31",
+        "role": "DAO governance and ecosystem coordination",
+        "source_url": "https://discuss.jup.ag/t/jup-the-genesis-post/478/1"
+      },
+      "metrics": {
+        "aggregator_routed_volume_24h_usd": 467931581,
+        "aggregator_routed_volume_30d_usd": 17658631543,
+        "aggregator_routed_volume_all_time_usd": 1262640946438,
+        "peak_daily_aggregator_volume_usd": 23824576071,
+        "peak_daily_aggregator_volume_date": "2025-01-19",
+        "tvl_usd": null,
+        "as_of": "2026-07-29",
+        "source_url": "https://api.llama.fi/summary/aggregators/jupiter?dataType=dailyVolume",
+        "comparability_note": "Routed aggregator volume can execute against Raydium, Orca, Meteora, or other liquidity and must not be added to underlying DEX volume."
+      },
+      "success_factors": ["best_execution_router", "wallet_and_app_distribution", "solana_liquidity_network_effect", "product_expansion", "community_distribution"],
+      "risks_or_counter_signals": ["volume_overlaps_underlying_venues", "single_chain_concentration", "suite_complexity", "token_value_capture_not_equivalent_to_routed_volume"],
+      "synthesis": "Jupiter's moat is order flow and routing, not owned pool liquidity. Its success is evidence that distribution and execution quality can dominate asset custody, but its volume must be modeled as flow-through rather than additive protocol liquidity.",
+      "sources": [
+        {"title": "JUP: The Genesis Post", "url": "https://discuss.jup.ag/t/jup-the-genesis-post/478/1", "publisher": "Jupiter DAO", "type": "primary"},
+        {"title": "JUP tokenomics", "url": "https://docs.jup.ag/user-docs/more/jup-token/tokenomics", "publisher": "Jupiter", "type": "primary"},
+        {"title": "DefiLlama Jupiter aggregator daily-volume series", "url": "https://api.llama.fi/summary/aggregators/jupiter?dataType=dailyVolume", "publisher": "DefiLlama", "type": "authoritative_data"}
+      ]
+    },
+    {
+      "slug": "raydium",
+      "kind": "dex",
+      "name": "Raydium",
+      "outcome_class": "successful_established",
+      "current_momentum": "declining_from_cycle_peak",
+      "launched": "2021-02",
+      "operational_model": "Solana AMM suite spanning classic AMM, constant-product, concentrated liquidity, token-launch liquidity, and a perps interface",
+      "chains": ["Solana"],
+      "token": {
+        "launched": true,
+        "symbol": "RAY",
+        "launch_date": null,
+        "role": "protocol token with fee-funded buybacks; official documentation states 12% of trading fees fund RAY buybacks",
+        "source_url": "https://docs.raydium.io/ray/ray-buybacks"
+      },
+      "metrics": {
+        "spot_volume_24h_usd": 74249521,
+        "spot_volume_30d_usd": 2414945073,
+        "spot_volume_all_time_usd": 713047894633,
+        "spot_tvl_usd": 816667896,
+        "peak_daily_spot_volume_usd": 13190492841,
+        "peak_daily_spot_volume_date": "2025-01-18",
+        "as_of": "2026-07-29",
+        "source_url": "https://api.llama.fi/summary/dexs/raydium?dataType=dailyVolume"
+      },
+      "success_factors": ["solana_native_infrastructure", "aggregator_composability", "multiple_pool_designs", "token_launch_to_secondary_liquidity_pipeline", "fee_funded_buybacks"],
+      "risks_or_counter_signals": ["single_chain_concentration", "memecoin_cycle_sensitivity", "volume_far_below_peak", "competition_from_orca_and_meteora"],
+      "synthesis": "Raydium converted chain-specific infrastructure into a distribution moat: wallets and Jupiter route into its pools even when users do not visit Raydium directly. Its sharp decline from the January 2025 volume peak also makes it a useful successful-but-cyclical case.",
+      "sources": [
+        {"title": "What is Raydium", "url": "https://docs.raydium.io/introduction/what-is-raydium", "publisher": "Raydium", "type": "primary"},
+        {"title": "RAY buybacks", "url": "https://docs.raydium.io/ray/ray-buybacks", "publisher": "Raydium", "type": "primary"},
+        {"title": "DefiLlama Raydium daily-volume series", "url": "https://api.llama.fi/summary/dexs/raydium?dataType=dailyVolume", "publisher": "DefiLlama", "type": "authoritative_data"}
+      ]
+    },
+    {
+      "slug": "aerodrome",
+      "kind": "dex",
+      "name": "Aerodrome",
+      "outcome_class": "successful_established",
+      "current_momentum": "growing",
+      "launched": "2023-08-28",
+      "operational_model": "Base-native MetaDEX combining constant-product and concentrated-liquidity AMMs with vote-directed emissions and fee distribution",
+      "chains": ["Base"],
+      "token": {
+        "launched": true,
+        "symbol": "AERO",
+        "launch_date": "2023-08-28",
+        "role": "liquidity emissions; locked veAERO directs rewards and earns exchange revenue",
+        "source_url": "https://aerodrome.finance/docs"
+      },
+      "metrics": {
+        "spot_volume_24h_usd": 436642061,
+        "spot_volume_30d_usd": 11435960924,
+        "spot_volume_all_time_usd": 409584237311,
+        "spot_tvl_usd": 283389024,
+        "peak_daily_spot_volume_usd": 1669460340,
+        "peak_daily_spot_volume_date": "2024-12-10",
+        "as_of": "2026-07-29",
+        "source_url": "https://api.llama.fi/summary/dexs/aerodrome?dataType=dailyVolume"
+      },
+      "success_factors": ["base_ecosystem_alignment", "liquidity_incentive_market", "fee_distribution_to_locked_voters", "clean_launch_without_token_sale", "chain_dominant_position"],
+      "risks_or_counter_signals": ["single_chain_concentration", "ongoing_emission_dilution", "governance_capture_and_bribe_market_risk", "planned_protocol_merge_execution_risk"],
+      "synthesis": "Aerodrome is the clearest host-chain flywheel case in the cohort: it paired Base's growth with a mechanism that pays separate actors for LP capital and liquidity direction. The token is central to the mechanism, but the durable signal is fee-producing volume per unit of emissions.",
+      "sources": [
+        {"title": "Aerodrome documentation and economics", "url": "https://aerodrome.finance/docs", "publisher": "Aerodrome Finance", "type": "primary"},
+        {"title": "Aerodrome public site", "url": "https://aerodrome.finance/", "publisher": "Aerodrome Finance", "type": "primary"},
+        {"title": "DefiLlama Aerodrome daily-volume series", "url": "https://api.llama.fi/summary/dexs/aerodrome?dataType=dailyVolume", "publisher": "DefiLlama", "type": "authoritative_data"}
+      ]
+    },
+    {
+      "slug": "hyperliquid",
+      "kind": "dex",
+      "name": "Hyperliquid",
+      "outcome_class": "successful_established",
+      "current_momentum": "growing",
+      "launched": "2023",
+      "operational_model": "app-specific Layer 1 with fully on-chain central-limit order books for perpetual futures and spot markets",
+      "chains": ["Hyperliquid L1"],
+      "token": {
+        "launched": true,
+        "symbol": "HYPE",
+        "launch_date": "2024-11-29",
+        "role": "native network token used for security, network costs, discounts, and ecosystem coordination",
+        "source_url": "https://www.hyperfoundation.org/"
+      },
+      "metrics": {
+        "perpetual_notional_volume_24h_usd": 3422241526,
+        "perpetual_open_interest_usd": 7023217425,
+        "spot_volume_24h_protocol_api_usd": 80427614,
+        "spot_volume_24h_defillama_usd": 96296488,
+        "spot_volume_30d_defillama_usd": 2674187482,
+        "spot_tvl_usd": 138702508,
+        "as_of": "2026-07-29",
+        "source_url": "https://api.hyperliquid.xyz/info",
+        "method_note": "Protocol API totals were calculated by summing dayNtlVlm across metaAndAssetCtxs and spotMetaAndAssetCtxs. The DefiLlama spot value has a different window or methodology and is retained separately rather than silently reconciled."
+      },
+      "success_factors": ["vertical_chain_exchange_integration", "low_latency_orderbook", "self_custody_with_cex_like_execution", "community_first_distribution", "fee_funded_token_buybacks"],
+      "risks_or_counter_signals": ["single_protocol_chain_concentration", "validator_and_frontend_centralization_questions", "derivatives_regulatory_risk", "perpetual_notional_not_comparable_to_spot"],
+      "synthesis": "Hyperliquid's core bet was that an exchange should own its execution environment. Its volume indicates that CEX-like order-book performance plus self-custody can create a new category, but the result should be modeled as a vertically integrated chain-and-exchange case rather than a conventional app on a neutral chain.",
+      "sources": [
+        {"title": "Hyper Foundation", "url": "https://www.hyperfoundation.org/", "publisher": "Hyper Foundation", "type": "primary"},
+        {"title": "Hyperliquid API documentation", "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint", "publisher": "Hyperliquid", "type": "primary"},
+        {"title": "Hyperliquid protocol API", "url": "https://api.hyperliquid.xyz/info", "publisher": "Hyperliquid", "type": "primary_data"},
+        {"title": "DefiLlama Hyperliquid spot daily-volume series", "url": "https://api.llama.fi/summary/dexs/hyperliquid?dataType=dailyVolume", "publisher": "DefiLlama", "type": "authoritative_data"}
+      ]
+    },
+    {
+      "slug": "dydx",
+      "kind": "dex",
+      "name": "dYdX",
+      "outcome_class": "successful_established",
+      "current_momentum": "declining",
+      "launched": "2017",
+      "operational_model": "perpetual-futures central-limit order book on the sovereign dYdX Chain; legacy v3 operated on Ethereum/StarkEx",
+      "chains": ["dYdX Chain", "Ethereum (legacy v3)"],
+      "token": {
+        "launched": true,
+        "symbol": "DYDX",
+        "launch_date": "2021-08-04",
+        "role": "governance and ecosystem incentives; the original Ethereum token became transferable in September 2021",
+        "source_url": "https://www.dydx.foundation/blog/introducing-dydx-token"
+      },
+      "metrics": {
+        "perpetual_notional_volume_24h_usd": 26732789,
+        "perpetual_open_interest_usd": 39250924,
+        "v4_tvl_usd": 80285914,
+        "legacy_v3_tvl_usd": 37864538,
+        "markets_count": 296,
+        "as_of": "2026-07-29",
+        "source_url": "https://indexer.dydx.trade/v4/perpetualMarkets",
+        "method_note": "Volume and open interest were calculated from the dYdX-operated indexer. Open interest USD equals openInterest multiplied by oraclePrice per market."
+      },
+      "success_factors": ["early_perpetual_dex_leadership", "professional_orderbook_model", "sovereign_chain_migration", "permissionless_market_expansion"],
+      "risks_or_counter_signals": ["material_share_loss_to_hyperliquid_and_other_perp_dexs", "migration_and_token_complexity", "derivatives_regulatory_risk", "current_volume_is_small_relative_to_category_leaders"],
+      "synthesis": "dYdX is a success-and-displacement case: it proved decentralized perpetual markets could reach scale, then lost leadership as faster vertically integrated competitors emerged. That makes architecture migration speed and retained order flow critical dependent variables, not footnotes.",
+      "sources": [
+        {"title": "Introducing DYDX", "url": "https://www.dydx.foundation/blog/introducing-dydx-token", "publisher": "dYdX Foundation", "type": "primary"},
+        {"title": "dYdX integration documentation", "url": "https://docs.dydx.xyz/", "publisher": "dYdX", "type": "primary"},
+        {"title": "dYdX v4 perpetual-markets indexer", "url": "https://indexer.dydx.trade/v4/perpetualMarkets", "publisher": "dYdX", "type": "primary_data"},
+        {"title": "DefiLlama dYdX v4 protocol TVL", "url": "https://defillama.com/protocol/dydx-v4", "publisher": "DefiLlama", "type": "authoritative_data"}
+      ]
+    },
+    {
+      "slug": "thorchain",
+      "kind": "dex",
+      "name": "THORChain",
+      "outcome_class": "successful_established",
+      "current_momentum": "declining_from_peak",
+      "launched": "2021-04",
+      "operational_model": "sovereign cross-chain AMM using threshold-signed vaults to swap native L1 assets without wrapped representations",
+      "chains": ["THORChain", "Bitcoin", "Ethereum", "BNB Chain", "Avalanche", "Dogecoin", "Litecoin", "Bitcoin Cash", "Base", "Solana", "XRP Ledger", "Tron", "Cosmos"],
+      "token": {
+        "launched": true,
+        "symbol": "RUNE",
+        "launch_date": null,
+        "role": "settlement asset, validator bond, liquidity pair, governance signaling, and incentives",
+        "source_url": "https://docs.thorchain.org/understanding-thorchain/rune"
+      },
+      "metrics": {
+        "spot_volume_24h_usd": 12593502,
+        "spot_volume_30d_usd": 737486475,
+        "spot_volume_all_time_usd": 124090980504,
+        "spot_tvl_usd": 54738458,
+        "peak_daily_spot_volume_usd": 1068743741,
+        "peak_daily_spot_volume_date": "2025-03-02",
+        "as_of": "2026-07-29",
+        "source_url": "https://api.llama.fi/summary/dexs/thorchain-dex?dataType=dailyVolume"
+      },
+      "success_factors": ["native_asset_cross_chain_swaps", "no_wrapped_asset_requirement", "token_integrated_economic_security", "wallet_and_aggregator_integrations"],
+      "risks_or_counter_signals": ["complex_cross_chain_attack_surface", "rune_reflexivity", "volume_far_below_peak", "vault_and_consensus_operational_risk"],
+      "synthesis": "THORChain succeeded by solving a different job than same-chain AMMs: native-asset settlement across chains. RUNE is indispensable to both routing and security, which creates utility but also couples protocol solvency, liquidity, and token value more tightly than in most application-layer DEXs.",
+      "sources": [
+        {"title": "THORChain introduction", "url": "https://docs.thorchain.org/", "publisher": "THORChain", "type": "primary"},
+        {"title": "Native cross-chain swaps", "url": "https://docs.thorchain.org/native-cross-chain-swaps", "publisher": "THORChain", "type": "primary"},
+        {"title": "RUNE roles", "url": "https://docs.thorchain.org/understanding-thorchain/rune", "publisher": "THORChain", "type": "primary"},
+        {"title": "DefiLlama THORChain daily-volume series", "url": "https://api.llama.fi/summary/dexs/thorchain-dex?dataType=dailyVolume", "publisher": "DefiLlama", "type": "authoritative_data"}
+      ]
+    },
+    {
+      "slug": "meteora",
+      "kind": "dex",
+      "name": "Meteora",
+      "outcome_class": "successful_established",
+      "current_momentum": "cyclical",
+      "launched": null,
+      "operational_model": "Solana liquidity infrastructure with dynamic concentrated-liquidity, constant-product, and bonding-curve pools for LPs and token launches",
+      "chains": ["Solana"],
+      "token": {
+        "launched": true,
+        "symbol": "MET",
+        "launch_date": null,
+        "role": null,
+        "source_url": "https://defillama.com/protocol/meteora-dlmm"
+      },
+      "metrics": {
+        "spot_volume_24h_usd": 118517674,
+        "spot_volume_30d_usd": 3563692197,
+        "spot_volume_all_time_usd": 287786443119,
+        "spot_tvl_usd": 239254950,
+        "as_of": "2026-07-29",
+        "source_url": "https://api.llama.fi/overview/dexs?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true",
+        "method_note": "Volume is the sum of DefiLlama rows parented to Meteora for DAMM v1, DLMM, and DAMM v2. Launchpad-category Dynamic Bonding Curve volume is excluded from spot DEX volume."
+      },
+      "success_factors": ["dynamic_fee_and_liquidity_design", "token_launch_infrastructure", "solana_memecoin_distribution", "multiple_pool_types", "composability_with_aggregators"],
+      "risks_or_counter_signals": ["single_chain_concentration", "memecoin_and_launch_cycle_sensitivity", "complex_lp_risk", "token_role_not_established_by_selected_primary_sources"],
+      "synthesis": "Meteora turned token launches into a liquidity-distribution funnel. The predictive question is whether volume remains after the launch cohort matures; retention, repeat issuer usage, and fee yield net of incentives matter more than launch-day turnover.",
+      "sources": [
+        {"title": "Meteora product overview", "url": "https://docs.meteora.ag/get-started/pushing-the-boundaries-of-defi", "publisher": "Meteora", "type": "primary"},
+        {"title": "Meteora protocol metrics API documentation", "url": "https://docs.meteora.ag/api-reference/dlmm/stats/protocol-overview", "publisher": "Meteora", "type": "primary"},
+        {"title": "DefiLlama DEX overview", "url": "https://api.llama.fi/overview/dexs?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true", "publisher": "DefiLlama", "type": "authoritative_data"},
+        {"title": "DefiLlama Meteora DLMM protocol TVL", "url": "https://defillama.com/protocol/meteora-dlmm", "publisher": "DefiLlama", "type": "authoritative_data"}
+      ]
+    }
+  ],
+  "recommended_model_features": {
+    "identity": ["venue_type", "chain_strategy", "launch_date", "founder_or_dao_structure"],
+    "token": ["token_launched", "token_launch_lag_days", "emissions_rate", "fee_share_or_buyback", "unlock_overhang", "governance_concentration"],
+    "traction": ["volume_24h_by_metric_type", "volume_30d_by_metric_type", "volume_drawdown_from_peak", "tvl", "volume_to_tvl", "active_traders", "repeat_trader_retention"],
+    "economics": ["fees_30d", "protocol_revenue_30d", "incentives_30d", "net_revenue_after_incentives", "token_buybacks_30d"],
+    "distribution": ["aggregator_share", "wallet_integrations", "host_chain_share", "cross_chain_count", "owned_order_flow_share"],
+    "risk": ["exploit_loss_usd", "downtime_hours", "oracle_dependency", "bridge_dependency", "admin_key_model", "regulatory_exposure"],
+    "outcome": ["current_status", "current_momentum", "peak_to_current_drawdown", "formal_wind_down", "success_duration_months"]
+  }
+}
