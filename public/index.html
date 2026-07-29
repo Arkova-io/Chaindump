@@ -833,7 +833,7 @@ function normalizeBlockchainAnalysis(live, mid, dead) {
   (mid.chains || []).forEach((row) => {
     const p = parsedObject(row.profile);
     byName.set(String(row.chain).toLowerCase(), {
-      name: row.chain, lifecycle: 'mid', coverage: 'Research dossier',
+      name: row.chain, lifecycle: 'mid', coverage: 'Legacy postmortem',
       metric: row.tvl, metricLabel: 'TVL', summary: row.why_stuck || p.situation || '',
       sources: sourceArray(row.sources), updatedAt: row.updated_at,
       dimensionCount: 0, expectedDimensionCount: 8,
@@ -844,7 +844,7 @@ function normalizeBlockchainAnalysis(live, mid, dead) {
   (dead.chains || []).forEach((row) => {
     const p = parsedObject(row.profile);
     byName.set(String(row.chain).toLowerCase(), {
-      name: row.chain, lifecycle: 'dead', coverage: 'Research dossier',
+      name: row.chain, lifecycle: 'dead', coverage: 'Legacy postmortem',
       metric: row.current_tvl, metricLabel: 'Current TVL', summary: row.why || p.postmortem || '',
       sources: sourceArray(row.sources), updatedAt: row.updated_at,
       dimensionCount: 0, expectedDimensionCount: 8,
@@ -887,6 +887,7 @@ function renderBlockchainAnalysis() {
     return a.name.localeCompare(b.name);
   });
   const researched = rows.filter((row) => row.coverage === 'Research dossier').length;
+  const legacy = rows.filter((row) => row.coverage === 'Legacy postmortem').length;
   const cards = filtered.map((row) => `<div class="gcard">
     <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${blockchainLifecycleClass(row.lifecycle)}">${esc(row.lifecycle)}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${row.metric == null ? '—' : fmtUsd(row.metric)}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
@@ -896,8 +897,8 @@ function renderBlockchainAnalysis() {
     <div class="gexpand"><a href="/chain/${encodeURIComponent(row.name)}">Open chain dossier →</a></div>
   </div>`).join('');
   el.innerHTML = `${head}
-    <div class="analysis-note">This index deliberately distinguishes live coverage from researched coverage. A chain appearing in the live top 50 is not automatically counted as analyzed.</div>
-    <div class="gstats">${gstat(rows.length, 'chains indexed')}${gstat(researched, 'research dossiers')}${gstat(rows.filter(r=>r.lifecycle==='mid').length, 'stuck / mid')}${gstat(rows.filter(r=>r.lifecycle==='dead').length, 'dead / dying')}</div>
+    <div class="analysis-note">This index distinguishes structural research dossiers, legacy postmortems, and live-only coverage. A chain appearing in the top 50 is not automatically counted as analyzed.</div>
+    <div class="gstats">${gstat(rows.length, 'chains indexed')}${gstat(researched, 'structural dossiers')}${gstat(legacy, 'legacy postmortems')}${gstat(rows.filter(r=>r.lifecycle==='dead').length, 'dead / dying')}</div>
     <div class="toolbar"><div class="analysis-controls">
       <input id="blockchainAnalysisSearch" class="search" placeholder="Search chains or lifecycle…" value="${esc(state.blockchainAnalysisQuery)}" />
       <span class="analysis-spacer"></span>
