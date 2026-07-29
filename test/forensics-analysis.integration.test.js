@@ -181,4 +181,9 @@ describe('NFT and Ordinals Analysis data surface', () => {
     expect(html).toContain("String(c.category || '').includes('platform')");
     expect(html).toContain('function nftSupplyText(supply)');
   });
+
+  it('opens a curated NFT dossier when a collection deep link is visited', () => {
+    expect(html).toContain("state.nftExpanded = decodeURIComponent(rest);");
+    expect(html).toContain("switchView('nft-analysis', false);");
+  });
 });

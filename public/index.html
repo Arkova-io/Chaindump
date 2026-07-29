@@ -4189,7 +4189,8 @@ function applyRoute(){
     state.tracesExpanded = decodeURIComponent(rest); // renderTraces opens it
     switchView('traces', false);
   } else if (seg === 'collection' && rest) {
-    switchView('nft-analysis', false); // lands on NFT analysis; server OG describes the collection
+    state.nftExpanded = decodeURIComponent(rest);
+    switchView('nft-analysis', false);
   } else if (KNOWN_VIEWS.includes(seg)) {
     switchView(seg, false);
   } else {
