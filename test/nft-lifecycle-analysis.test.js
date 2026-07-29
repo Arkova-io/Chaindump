@@ -10,6 +10,7 @@ function dossier({
   tokenModel = false,
   accessState = 'accessible',
   inspectedAt = '2026-07-29',
+  accessCheckedAt = accessState ? inspectedAt : null,
   lifecycleReviewedAt = '2026-07-29',
 }) {
   const sourceId = `${slug}-source`;
@@ -34,6 +35,7 @@ function dossier({
       ...(accessState ? { access_state: accessState } : {}),
       checked_at: inspectedAt,
       last_verified_at: inspectedAt,
+      ...(accessCheckedAt ? { access_checked_at: accessCheckedAt } : {}),
     }]),
     profile: {
       ...(tokenModel ? { token_model: { finding: 'documented', source_ids: [sourceId] } } : {}),
@@ -75,6 +77,10 @@ describe('NFT lifecycle cohort aggregate', () => {
     expect(first.coverage.material_unknowns).toBe(2);
     expect(first.coverage.watch_signals).toBe(2);
     expect(first.coverage.forensic_references_ledger_matched).toBe(first.coverage.forensic_references_total);
+    expect(first.coverage.source_records_access_confirmed).toBe(2);
+    expect(first.coverage.field_claims_access_anchored).toBe(2);
+    expect(first.coverage.forensic_sections_access_anchored)
+      .toBe(first.coverage.forensic_sections_total);
 
     const expanded = buildNftLifecycleAnalysis([
       dossier({ slug: 'alpha', status: 'thriving', tokenModel: true }),
@@ -97,9 +103,9 @@ describe('NFT lifecycle cohort aggregate', () => {
     expect(analysis.falsifiers).toHaveLength(4);
     expect(analysis.evidenceWindow.newest_lifecycle_status_as_of).toBe('2026-07-01');
     expect(analysis.evidenceWindow.newest_forensic_outcome_as_of).toBe('2026-07-28');
-    expect(analysis.evidenceWindow.source_access_verified_through).toBe('2026-07-29');
+    expect(analysis.evidenceWindow.source_access_checked_through).toBe('2026-07-29');
     expect(analysis.evidenceWindow.newest_lifecycle_status_as_of)
-      .not.toBe(analysis.evidenceWindow.source_access_verified_through);
+      .not.toBe(analysis.evidenceWindow.source_access_checked_through);
     expect(analysis.coverage.source_access_states).toEqual([{ key: 'accessible', count: 1 }]);
   });
 
@@ -114,7 +120,7 @@ describe('NFT lifecycle cohort aggregate', () => {
         lifecycleReviewedAt: '2027-02-01',
       }),
     ]);
-    expect(analysis.evidenceWindow.source_access_verified_through).toBe('2026-07-29');
+    expect(analysis.evidenceWindow.source_access_checked_through).toBe('2026-07-29');
     expect(analysis.evidenceWindow.source_inspected_through).toBe('2027-01-01');
     expect(analysis.evidenceWindow.lifecycle_reviewed_through).toBe('2027-02-01');
     expect(analysis.coverage.source_access_states).toContainEqual({
@@ -123,7 +129,7 @@ describe('NFT lifecycle cohort aggregate', () => {
     });
   });
 
-  it('accepts the repository resolving vocabulary as explicit access evidence', () => {
+  it('does not promote a resolving workflow state into completed access evidence', () => {
     const analysis = buildNftLifecycleAnalysis([
       dossier({
         slug: 'resolving',
@@ -132,11 +138,32 @@ describe('NFT lifecycle cohort aggregate', () => {
         inspectedAt: '2026-08-01',
       }),
     ]);
-    expect(analysis.evidenceWindow.source_access_verified_through).toBe('2026-08-01');
+    expect(analysis.evidenceWindow.source_access_checked_through).toBeNull();
     expect(analysis.coverage.source_access_states).toEqual([{
       key: 'resolving',
       count: 1,
     }]);
+    expect(analysis.coverage.field_claims_access_anchored).toBe(0);
+    expect(analysis.coverage.forensic_sections_access_anchored).toBe(0);
+  });
+
+  it('requires a dated successful check before an accessible source anchors claims', () => {
+    const analysis = buildNftLifecycleAnalysis([
+      dossier({
+        slug: 'undated-access',
+        status: 'thriving',
+        accessState: 'accessible',
+        accessCheckedAt: null,
+      }),
+    ]);
+    expect(analysis.coverage.source_access_states).toEqual([{
+      key: 'accessible',
+      count: 1,
+    }]);
+    expect(analysis.evidenceWindow.source_access_checked_through).toBeNull();
+    expect(analysis.coverage.field_claims_access_anchored).toBe(0);
+    expect(analysis.coverage.forensic_references_access_anchored).toBe(0);
+    expect(analysis.coverage.source_records_access_confirmed).toBe(0);
   });
 
   it('keeps the chain-chart denominator equal to the full cohort above eight labels', () => {

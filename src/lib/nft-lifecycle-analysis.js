@@ -1,12 +1,9 @@
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
-const ACCESS_VERIFIED_STATES = new Set([
-  'accessible',
-  'ok',
-  'resolved',
-  'resolving',
-  'success',
-  'verified',
-]);
+// This metric is deliberately narrower than a generic source workflow state.
+// Only a completed, successful accessibility check may anchor a published
+// claim. States such as `resolving` remain visible in the ledger but do not
+// imply that the cited material was reachable.
+const ACCESS_CONFIRMED_STATES = new Set(['accessible']);
 
 function object(value) {
   return value && typeof value === 'object' && !Array.isArray(value) ? value : {};
@@ -129,18 +126,23 @@ function createAccumulator() {
     outcomeDays: [],
     lifecycleStatusDays: [],
     sourceInspectedDays: [],
-    sourceAccessVerifiedDays: [],
+    sourceAccessCheckedDays: [],
     lifecycleReviewedDays: [],
     sourceAccessStates: {},
     distinctSourceUrls: new Set(),
     sourceRecords: 0,
+    sourceRecordsAccessConfirmed: 0,
     fieldClaims: 0,
+    fieldClaimsAccessAnchored: 0,
     forensicDossiers: 0,
     strategicChoices: 0,
     unknowns: 0,
     watchSignals: 0,
     forensicReferencesTotal: 0,
     forensicReferencesResolved: 0,
+    forensicReferencesAccessAnchored: 0,
+    forensicSectionsTotal: 0,
+    forensicSectionsAccessAnchored: 0,
   };
 }
 
@@ -153,18 +155,25 @@ function recordCohort(accumulator, collection) {
   add(accumulator.chainStatus[chain], collection.status);
 }
 
-function recordProfileCoverage(accumulator, collection, profile) {
+function hasAccessibleReference(references, accessibleSourceIndex) {
+  return references.some((reference) => accessibleSourceIndex.has(referenceIdentity(reference)));
+}
+
+function recordProfileCoverage(accumulator, collection, profile, accessibleSourceIndex) {
   for (const field of Object.keys(accumulator.coverage)) {
     if (profile[field] != null && profile[field] !== '') accumulator.coverage[field] += 1;
   }
   const evidence = Array.isArray(profile.evidence) ? profile.evidence : [];
   accumulator.fieldClaims += evidence.length;
+  accumulator.fieldClaimsAccessAnchored += evidence.filter((item) => (
+    hasAccessibleReference(Array.isArray(item?.source_ids) ? item.source_ids : [], accessibleSourceIndex)
+  )).length;
   const lifecycleEvidence = evidence.find((item) => item?.field === 'lifecycle_status');
   const lifecycleStatusAsOf = lifecycleEvidence?.as_of || collection.freshness?.statusAsOf;
   if (lifecycleStatusAsOf) accumulator.lifecycleStatusDays.push(lifecycleStatusAsOf);
 }
 
-function recordSource(accumulator, source, sourceIndex) {
+function recordSource(accumulator, source, sourceIndex, accessibleSourceIndex) {
   const identity = sourceIdentity(source);
   if (!identity) return;
   const structured = typeof source === 'object';
@@ -176,12 +185,25 @@ function recordSource(accumulator, source, sourceIndex) {
   const accessState = structured ? (source.access_state || 'not_recorded') : 'not_recorded';
   add(accumulator.sourceAccessStates, accessState);
   if (structured && source.checked_at) accumulator.sourceInspectedDays.push(source.checked_at);
-  if (!ACCESS_VERIFIED_STATES.has(accessState)) return;
-  const accessDate = source.access_verified_at || source.last_verified_at || source.checked_at;
-  if (accessDate) accumulator.sourceAccessVerifiedDays.push(accessDate);
+  const accessDate = structured ? source.access_checked_at : null;
+  if (!ACCESS_CONFIRMED_STATES.has(accessState) || !ISO_DAY.test(accessDate || '')) return;
+  accumulator.sourceRecordsAccessConfirmed += 1;
+  accessibleSourceIndex.add(identity);
+  if (structured && source.id) accessibleSourceIndex.add(source.id);
+  accumulator.sourceAccessCheckedDays.push(accessDate);
 }
 
-function recordForensic(accumulator, forensic, sourceIndex) {
+function forensicSections(forensic) {
+  return [
+    forensic.outcome,
+    forensic.why,
+    forensic.counterfactual,
+    ...(Array.isArray(forensic.strategic_choices) ? forensic.strategic_choices : []),
+    ...(Array.isArray(forensic.watch) ? forensic.watch : []),
+  ].filter(Boolean);
+}
+
+function recordForensic(accumulator, forensic, sourceIndex, accessibleSourceIndex) {
   const normalized = forensic.version === 'forensic-analysis-v1'
     || forensic.schema === 'forensic-analysis-v1';
   if (!normalized) return;
@@ -196,16 +218,28 @@ function recordForensic(accumulator, forensic, sourceIndex) {
   for (const reference of forensicReferences(forensic)) {
     accumulator.forensicReferencesTotal += 1;
     if (sourceIndex.has(referenceIdentity(reference))) accumulator.forensicReferencesResolved += 1;
+    if (accessibleSourceIndex.has(referenceIdentity(reference))) {
+      accumulator.forensicReferencesAccessAnchored += 1;
+    }
+  }
+  for (const section of forensicSections(forensic)) {
+    accumulator.forensicSectionsTotal += 1;
+    if (hasAccessibleReference(sectionReferences(section), accessibleSourceIndex)) {
+      accumulator.forensicSectionsAccessAnchored += 1;
+    }
   }
 }
 
 function recordCollection(accumulator, collection) {
   const profile = object(collection.profile);
   const sourceIndex = new Set();
+  const accessibleSourceIndex = new Set();
   recordCohort(accumulator, collection);
-  recordProfileCoverage(accumulator, collection, profile);
-  for (const source of sources(collection.sources)) recordSource(accumulator, source, sourceIndex);
-  recordForensic(accumulator, object(profile.forensic_analysis), sourceIndex);
+  for (const source of sources(collection.sources)) {
+    recordSource(accumulator, source, sourceIndex, accessibleSourceIndex);
+  }
+  recordProfileCoverage(accumulator, collection, profile, accessibleSourceIndex);
+  recordForensic(accumulator, object(profile.forensic_analysis), sourceIndex, accessibleSourceIndex);
   const reviewedAt = collection.freshness?.lastVerifiedAt;
   if (reviewedAt) accumulator.lifecycleReviewedDays.push(reviewedAt);
 }
@@ -260,13 +294,18 @@ export function buildNftLifecycleAnalysis(collections) {
       field_cited: rows.filter((row) => row.citation?.fieldCited).length,
       forensic_dossiers: accumulator.forensicDossiers,
       field_claims: accumulator.fieldClaims,
+      field_claims_access_anchored: accumulator.fieldClaimsAccessAnchored,
       source_records: accumulator.sourceRecords,
+      source_records_access_confirmed: accumulator.sourceRecordsAccessConfirmed,
       distinct_source_urls: accumulator.distinctSourceUrls.size,
       strategic_choices: accumulator.strategicChoices,
       material_unknowns: accumulator.unknowns,
       watch_signals: accumulator.watchSignals,
       forensic_references_total: accumulator.forensicReferencesTotal,
       forensic_references_ledger_matched: accumulator.forensicReferencesResolved,
+      forensic_references_access_anchored: accumulator.forensicReferencesAccessAnchored,
+      forensic_sections_total: accumulator.forensicSectionsTotal,
+      forensic_sections_access_anchored: accumulator.forensicSectionsAccessAnchored,
       source_access_states: sortedCounts(accumulator.sourceAccessStates),
       outcome_confidence: sortedCounts(accumulator.outcomeConfidence),
       why_confidence: sortedCounts(accumulator.whyConfidence),
@@ -278,7 +317,7 @@ export function buildNftLifecycleAnalysis(collections) {
       newest_forensic_outcome_as_of: latestDay(accumulator.outcomeDays),
       lifecycle_reviewed_through: latestDay(accumulator.lifecycleReviewedDays),
       source_inspected_through: latestDay(accumulator.sourceInspectedDays),
-      source_access_verified_through: latestDay(accumulator.sourceAccessVerifiedDays),
+      source_access_checked_through: latestDay(accumulator.sourceAccessCheckedDays),
     },
     evidenceAnchors: evidenceAnchors(rows, accumulator.statusCounts),
     limitations: [
