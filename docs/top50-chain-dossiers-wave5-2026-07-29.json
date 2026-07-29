@@ -1,0 +1,847 @@
+[
+  {
+    "chain": "X Layer",
+    "source_catalog": {
+      "launch": {"title": "OKX X Layer public mainnet launch", "url": "https://www.okx.com/en-gb/learn/x-layer-mainnet"},
+      "upgrade": {"title": "X Layer PP upgrade and OKB economic-model change", "url": "https://www.okx.com/en-us/help/announcement-on-the-pp-upgrade-of-x-layer-and-optimisation-of-the-okb-gas"},
+      "faq": {"title": "X Layer upgrade and OKT/OKB asset-handling FAQ", "url": "https://www.okx.com/en-us/help/x-layer-okt-okb"},
+      "status": {"title": "X Layer official service status", "url": "https://status.xlayer.tech/"},
+      "token": {"title": "CoinGecko OKB market-data API", "url": "https://api.coingecko.com/api/v3/coins/okb"},
+      "tvl": {"title": "DefiLlama X Layer historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/X%20Layer"},
+      "fees": {"title": "DefiLlama X Layer fees API", "url": "https://api.llama.fi/overview/fees/X%20Layer?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama X Layer revenue API", "url": "https://api.llama.fi/overview/fees/X%20Layer?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama X Layer DEX-volume API", "url": "https://api.llama.fi/overview/dexs/X%20Layer?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["launch", "upgrade", "status"],
+      "token": ["upgrade", "faq", "token"],
+      "capital": ["launch", "upgrade"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["launch", "upgrade"],
+      "narrative": ["launch", "upgrade", "faq"],
+      "risk": ["upgrade", "faq", "status", "ofac"],
+      "synthesis": ["launch", "upgrade", "token", "tvl", "fees", "revenue", "volume", "stables"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "X Layer",
+        "aliases": ["X LAYER", "OKX X Layer"],
+        "category": "L2_rollup",
+        "vm": "EVM",
+        "launched": "2024-04-16",
+        "launch_date_precision": "day",
+        "status": "established",
+        "lifecycle": [
+          {"date": "2024-04-16", "type": "launch", "description": "OKX opened X Layer public mainnet as a Polygon-CDK, ZK-powered EVM L2 integrated with its exchange and wallet.", "source_url": "https://www.okx.com/en-gb/learn/x-layer-mainnet"},
+          {"date": "2025-08-05", "type": "architecture_upgrade", "description": "X Layer completed its PP upgrade to the then-current Polygon CDK, targeting 5,000 TPS and negligible gas.", "source_url": "https://www.okx.com/en-us/help/announcement-on-the-pp-upgrade-of-x-layer-and-optimisation-of-the-okb-gas"},
+          {"date": "2025-08-18", "type": "token_economics", "description": "OKB minting and manual-burning functionality was removed after a one-time burn fixed supply at 21M.", "source_url": "https://www.okx.com/en-us/help/announcement-on-the-pp-upgrade-of-x-layer-and-optimisation-of-the-okb-gas"},
+          {"date": "2026-07-20", "type": "architecture_upgrade", "description": "The status log records a mainnet hard fork and op-geth end-of-support transition.", "source_url": "https://status.xlayer.tech/maintenance"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "launched",
+        "token_symbol": "OKB",
+        "gas_token": "OKB",
+        "launch_date": "2018",
+        "launch_date_precision": "year",
+        "launch_relation": "OKB predates X Layer; it became X Layer's sole native gas token and was migrated toward a fixed 21M-supply chain-native model in August 2025.",
+        "token_cg_id": "okb",
+        "token_current_usd": 84.39,
+        "token_ath_usd": 228.74,
+        "token_ath_date": "2025-10-04",
+        "price_drawdown_pct": 63.11,
+        "market_cap_usd": 1772055645,
+        "fdv_usd": 1772055645,
+        "circulating_supply": 21000000,
+        "total_supply": 21000000,
+        "max_supply": 21000000,
+        "unlock_overhang_pct": 0,
+        "source_url": "https://api.coingecko.com/api/v3/coins/okb"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": null,
+        "rounds": [],
+        "treasury_usd": null,
+        "backers_tier": "corporate",
+        "notes": "OKX launched and integrated X Layer. No standalone network financing total or current ecosystem-fund amount is asserted from reviewed primary sources."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 106980919,
+        "tvl_peak_date": "2026-07-29",
+        "tvl_current_usd": 106980919,
+        "tvl_drawdown_pct": 0,
+        "stablecoin_tvl_usd": 1992647688.91,
+        "spot_dex_volume_24h_usd": 11940600.36,
+        "spot_dex_volume_30d_usd": 1082215517.36,
+        "fees_24h_usd": 2611.04,
+        "fees_30d_usd": 101264.75,
+        "revenue_24h_usd": 93.06,
+        "revenue_30d_usd": 2595.85,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/X%20Layer",
+        "fees_source_url": "https://api.llama.fi/overview/fees/X%20Layer?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/X%20Layer?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/X%20Layer?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "Stablecoin supply is not TVL. The as-of TVL is also the observed history-series peak, so no decline is inferred."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [],
+        "entity": "OKX launched and operates key X Layer integrations; Polygon technology underpins the CDK stack.",
+        "key_events": [
+          {"date": "2024-04-16", "type": "corporate_launch", "description": "OKX launched X Layer with exchange and wallet distribution.", "source_url": "https://www.okx.com/en-gb/learn/x-layer-mainnet"},
+          {"date": "2025-08-05", "type": "architecture", "description": "OKX and Polygon-stack changes drove the PP upgrade and new DeFi, payments, and RWA focus.", "source_url": "https://www.okx.com/en-us/help/announcement-on-the-pp-upgrade-of-x-layer-and-optimisation-of-the-okb-gas"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Connect OKX exchange, wallet, and payment distribution to low-cost ZK-EVM execution for DeFi, payments, and real-world assets.",
+        "positioning": "An exchange-distributed Polygon-CDK L2 with OKB as fixed-supply gas and deep stablecoin float.",
+        "competitors": [
+          {"name": "Base", "relationship": "exchange-distributed L2 competitor"},
+          {"name": "Ink", "relationship": "exchange-to-DeFi L2 competitor"},
+          {"name": "Polygon zkEVM/CDK chains", "relationship": "shared-stack peers and liquidity competitors"}
+        ],
+        "narrative_arc": "X Layer moved from a broad OKX zkEVM to a payments, RWA, and DeFi-focused chain while consolidating OKTChain utility and OKB supply onto X Layer.",
+        "media_sentiment": "mixed_positive"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; an archived exact-name SDN review remains an explicit gap."},
+        "extraction_flags": ["corporate_dependency", "sequencer_centralization", "bridge_risk", "exchange_distribution", "token_consolidation"],
+        "audit_status": null,
+        "risks": [
+          {"type": "corporate_dependency", "detail": "Exchange, wallet, Pay, withdrawal, and token-migration distribution are tightly coupled to OKX systems and policy.", "source_url": "https://www.okx.com/en-us/help/announcement-on-the-pp-upgrade-of-x-layer-and-optimisation-of-the-okb-gas"},
+          {"type": "upgrade_risk", "detail": "Frequent client, hard-fork, and Polygon-stack transitions create coordination and compatibility risk.", "source_url": "https://status.xlayer.tech/maintenance"},
+          {"type": "token_concentration", "detail": "The OKB burn fixed supply but did not establish holder, governance, or sequencer-control dispersion in reviewed materials.", "source_url": "https://www.okx.com/en-us/help/x-layer-okt-okb"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "X Layer reports a new TVL high of $107.0M, $1.08B in 30-day DEX volume, and nearly $2.0B stablecoin supply while direct chain revenue remains small.",
+        "postmortem": null,
+        "why": "X Layer gained activity because OKX could route exchange, wallet, stablecoin, and payment users into a low-cost compatible chain, then consolidated OKB and retired overlapping OKTChain utility.",
+        "success_mechanism": "Corporate distribution and stablecoin rails create transactions; the CDK supplies EVM compatibility and proofs; fixed-supply OKB captures gas demand.",
+        "strategic_choices": [
+          "Use Polygon CDK rather than invent a proprietary VM.",
+          "Make OKB the sole gas and native token and retire overlapping OKTChain.",
+          "Refocus the chain on DeFi, payments, and RWAs with direct OKX product integration."
+        ],
+        "unknowns": [
+          "Current sequencer, prover, upgrade-key, bridge, and application-TVL concentration.",
+          "How much stablecoin float and DEX volume is organic versus routed through OKX incentives.",
+          "Whether OKB gas demand produces material value capture when fees are intentionally negligible."
+        ],
+        "lessons_learned": [
+          "Exchange distribution can create rapid liquidity and routing advantages.",
+          "Token consolidation simplifies identity but increases dependence on one corporate ecosystem.",
+          "High stablecoin supply and volume do not imply proportionate chain revenue."
+        ],
+        "could_differ": "Keeping OKTChain and Ethereum OKB in parallel would preserve optionality but fragment liquidity, identity, and maintenance.",
+        "outlook": {"bull": "OKX Pay and exchange routing make X Layer a major settlement venue.", "base": "X Layer remains active and corporate-dependent with thin fee capture.", "bear": "Activity follows incentives or OKX policy elsewhere and stack upgrades create instability.", "most_likely": "base"},
+        "cause_tags": ["exchange_distribution", "polygon_cdk", "payments", "token_consolidation", "corporate_dependency"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 84,
+      "confidence": "high",
+      "unsourced_fields": ["capital.total_raised_usd", "capital.treasury_usd", "team.named_chain_founders", "team.regulatory_status", "risk.audit_status", "risk.archived_sanctions_check", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.control_and_activity_concentration"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "Gnosis",
+    "source_catalog": {
+      "history": {"title": "Ten years of Gnosis", "url": "https://www.gnosis.io/blog/ten-years-of-gnosis-from-prediction-markets-to-a-user-owned-open-finance-revolution"},
+      "overview": {"title": "What is Gnosis Chain", "url": "https://www.gnosis.io/blog/what-is-gnosis-chain"},
+      "merger": {"title": "GnosisDAO and Gnosis Chain merger history", "url": "https://www.gnosis.io/blog/gnosisdao-gnosis-chain"},
+      "merge": {"title": "Gnosis Chain proof-of-stake merge", "url": "https://docs.gnosischain.com/about/specs/consensus/"},
+      "bridge": {"title": "Gnosis Chain bridge management", "url": "https://docs.gnosischain.com/bridges/management/"},
+      "bridge_events": {"title": "Gnosis Chain bridge governance decisions", "url": "https://docs.gnosischain.com/bridges/management/decisions"},
+      "token": {"title": "CoinGecko Gnosis market-data API", "url": "https://api.coingecko.com/api/v3/coins/gnosis"},
+      "tvl": {"title": "DefiLlama Gnosis historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Gnosis"},
+      "fees": {"title": "DefiLlama Gnosis fees API", "url": "https://api.llama.fi/overview/fees/Gnosis?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Gnosis revenue API", "url": "https://api.llama.fi/overview/fees/Gnosis?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Gnosis DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Gnosis?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["history", "merger", "merge"],
+      "token": ["overview", "merge", "token"],
+      "capital": ["history", "merger"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["history", "merger"],
+      "narrative": ["history", "overview", "merger"],
+      "risk": ["bridge", "bridge_events", "merge", "ofac"],
+      "synthesis": ["history", "overview", "bridge_events", "token", "tvl", "fees", "revenue", "volume"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Gnosis",
+        "aliases": ["Gnosis Chain", "xDai Chain"],
+        "category": "sidechain",
+        "vm": "EVM",
+        "launched": "2018",
+        "launch_date_precision": "year",
+        "status": "established",
+        "lifecycle": [
+          {"date": "2018", "type": "launch", "description": "The xDai execution chain began operating with stablecoin-denominated gas.", "source_url": "https://forum.gnosis.io/t/gip-16-gnosis-chain-xdai-gnosis-merge/1904"},
+          {"date": "2021-12", "type": "merger", "description": "xDai and Gnosis communities approved their merger into Gnosis Chain.", "source_url": "https://www.gnosis.io/blog/ten-years-of-gnosis-from-prediction-markets-to-a-user-owned-open-finance-revolution"},
+          {"date": "2022-12-08", "type": "consensus_upgrade", "description": "Gnosis execution merged with its Beacon Chain, replacing delegated proof-of-stake/POSDAO with permissionless proof of stake.", "source_url": "https://docs.gnosischain.com/about/specs/consensus/"},
+          {"date": "2026-06-03", "type": "bridge_incident_response", "description": "Canonical-bridge outflows were unfrozen after a precautionary halt related to the Gnosis Pay Delay Module hack.", "source_url": "https://docs.gnosischain.com/bridges/management/decisions"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "launched",
+        "token_symbol": "GNO",
+        "gas_token": "xDAI",
+        "launch_date": "2017",
+        "launch_date_precision": "year",
+        "launch_relation": "GNO predates Gnosis Chain and secures proof-of-stake validators and DAO governance; xDAI, backed through the DAI bridge model, pays execution gas.",
+        "token_cg_id": "gnosis",
+        "token_current_usd": 106.89,
+        "token_ath_usd": 644.2,
+        "token_ath_date": "2021-11-08",
+        "price_drawdown_pct": 83.41,
+        "market_cap_usd": 282166752,
+        "fdv_usd": 320693963,
+        "circulating_supply": 2639589,
+        "total_supply": 3000000,
+        "max_supply": 3000000,
+        "unlock_overhang_pct": 12.01,
+        "source_url": "https://api.coingecko.com/api/v3/coins/gnosis"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": null,
+        "rounds": [],
+        "treasury_usd": null,
+        "historical_treasury_disclosure": "Gnosis reported a large ETH/GNO treasury and launched a $40M GnosisVC fund, but this dossier does not mark those assets to the as-of date.",
+        "backers_tier": "none_unknown",
+        "notes": "Historic token-auction proceeds and current DAO treasury require a reconciled primary ledger analysis before asserting a financing or treasury total."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 291424311,
+        "tvl_peak_date": "2024-12-17",
+        "tvl_current_usd": 100040045,
+        "tvl_drawdown_pct": 65.67,
+        "stablecoin_tvl_usd": 15526478.02,
+        "spot_dex_volume_24h_usd": 4359853.49,
+        "spot_dex_volume_30d_usd": 159174774.45,
+        "fees_24h_usd": 15104.39,
+        "fees_30d_usd": 449597.5,
+        "revenue_24h_usd": 709.42,
+        "revenue_30d_usd": 25492.68,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Gnosis",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Gnosis?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Gnosis?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Gnosis?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "The xDAI gas asset, bridged stablecoins, tracked DeFi TVL, and stablecoin circulating supply are distinct accounting categories."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [
+          {"name": "Martin Köppelmann", "role": "Gnosis co-founder", "prior": "prediction markets and Ethereum ecosystem development", "source_url": "https://www.gnosis.io/blog/ten-years-of-gnosis-from-prediction-markets-to-a-user-owned-open-finance-revolution"},
+          {"name": "Stefan George", "role": "Gnosis co-founder", "prior": "prediction-market and smart-contract engineering", "source_url": "https://docs.gnosischain.com/updates/archive/2021/xdai-gnosis-merger-ama"}
+        ],
+        "entity": "GnosisDAO governs the ecosystem and treasury; Gnosis Chain is operated by a permissionless validator set, with separate bridge-governor and bridge-validator groups.",
+        "key_events": [
+          {"date": "2015", "type": "formation", "description": "Gnosis began as an Ethereum prediction-market project.", "source_url": "https://www.gnosis.io/blog/gnosisdao-gnosis-chain"},
+          {"date": "2020", "type": "dao_transition", "description": "GnosisDAO launched and assumed strategic governance.", "source_url": "https://www.gnosis.io/blog/ten-years-of-gnosis-from-prediction-markets-to-a-user-owned-open-finance-revolution"},
+          {"date": "2021-12", "type": "chain_merger", "description": "The xDai/Gnosis merger created the present chain identity.", "source_url": "https://www.gnosis.io/blog/ten-years-of-gnosis-from-prediction-markets-to-a-user-owned-open-finance-revolution"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Provide credibly neutral, low-cost EVM execution with stable xDAI gas and a large home-staker validator set for open-finance and payment applications.",
+        "positioning": "An Ethereum-like proof-of-stake sidechain differentiated by stable gas, DAO ownership, payments, Safe/CoW roots, and home staking.",
+        "competitors": [
+          {"name": "Polygon PoS", "relationship": "low-cost EVM sidechain competitor"},
+          {"name": "Ethereum L2s", "relationship": "security and liquidity alternatives"},
+          {"name": "Celo", "relationship": "payments-oriented EVM network competitor"}
+        ],
+        "narrative_arc": "Gnosis evolved from prediction markets into Ethereum infrastructure, merged with xDai, and centered a user-owned open-finance stack around stable gas and broad validation.",
+        "media_sentiment": "positive"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [
+          {"date": "2026-05", "type": "ecosystem_module_compromise", "loss_usd": null, "detail": "A Gnosis Pay Delay Module hack prompted precautionary canonical-bridge outflow freezes; this is not labeled a consensus exploit.", "source_url": "https://docs.gnosischain.com/bridges/management/decisions"},
+          {"date": "2026-06", "type": "validator_key_compromise", "loss_usd": null, "detail": "Compromised CoW and Hopr operational keys required canonical-bridge validator rotation.", "source_url": "https://docs.gnosischain.com/bridges/management/decisions"}
+        ],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; an archived exact-name SDN review remains an explicit gap."},
+        "extraction_flags": ["bridge_multisig", "validator_key_risk", "sidechain_security", "dual_token_model", "dao_governance"],
+        "audit_status": "Canonical bridges advertise audits and a bug bounty, but a complete current chain-wide audit inventory is not reconciled.",
+        "risks": [
+          {"type": "bridge_control", "detail": "Canonical xDAI and OmniBridge operations retain governor and validator threshold trust assumptions.", "source_url": "https://docs.gnosischain.com/bridges/management/"},
+          {"type": "key_compromise", "detail": "Multiple 2026 validator-key rotations show that independent operators can introduce bridge risk even without consensus failure.", "source_url": "https://docs.gnosischain.com/bridges/management/decisions"},
+          {"type": "economic_model", "detail": "GNO secures consensus while xDAI pays gas, so execution demand does not directly create GNO-denominated fee demand.", "source_url": "https://docs.gnosischain.com/about/specs/consensus/"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Gnosis retains $100.0M TVL and $159.2M in 30-day DEX volume, with TVL 65.7% below peak; 2026 bridge-key incidents required active governance response.",
+        "postmortem": "Recent bridge controls contained ecosystem and operator-key exposure, but demonstrate that the canonical bridge remains a separate trusted system despite permissionless chain consensus.",
+        "why": "Gnosis endures because stable gas, home-staker validation, DAO capital, and deeply used Ethereum infrastructure products give it a coherent open-finance niche beyond raw blockspace.",
+        "success_mechanism": "xDAI lowers payment friction; GNO staking secures consensus; GnosisDAO, Safe, CoW, and payment products provide applications and distribution.",
+        "strategic_choices": [
+          "Merge xDai execution with GNO-secured beacon consensus.",
+          "Keep xDAI as stable gas while using GNO for staking and governance.",
+          "Prioritize community validation and open-finance products over general L1 marketing."
+        ],
+        "unknowns": [
+          "Current validator-client, home-staker, bridge-signer, and application-TVL concentration.",
+          "A reconciled current GnosisDAO treasury and chain-development spending history.",
+          "Whether Hashi or other trust-minimized bridge upgrades materially reduce multisig dependence."
+        ],
+        "lessons_learned": [
+          "Permissionless consensus does not make canonical bridges trustless.",
+          "Stable gas improves UX but separates transaction demand from staking-token demand.",
+          "Operational-key rotation and bridge freezes are important lifecycle evidence, not footnotes."
+        ],
+        "could_differ": "Using GNO for gas would tighten value capture but sacrifice the predictable stable-fee experience.",
+        "outlook": {"bull": "Gnosis payments and open-finance products convert stable gas and home staking into durable growth.", "base": "Gnosis remains resilient and useful, with bridge trust and modest liquidity.", "bear": "Bridge or governance failures erode confidence faster than app adoption grows.", "most_likely": "base"},
+        "cause_tags": ["stable_gas", "home_staking", "dao_governance", "bridge_trust", "open_finance"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 85,
+      "confidence": "high",
+      "unsourced_fields": ["capital.total_raised_usd", "capital.current_treasury_usd", "team.regulatory_status", "risk.complete_audit_inventory", "risk.archived_sanctions_check", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.current_validator_and_bridge_concentration"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "Stellar",
+    "source_catalog": {
+      "launch": {"title": "Stellar first-year launch retrospective", "url": "https://stellar.org/blog/foundation-news/first-year"},
+      "networks": {"title": "Stellar public network documentation", "url": "https://developers.stellar.org/docs/networks"},
+      "lumens": {"title": "Stellar lumen supply documentation", "url": "https://developers.stellar.org/docs/learn/fundamentals/lumens"},
+      "scp": {"title": "Stellar Consensus Protocol overview", "url": "https://developers.stellar.org/docs/learn/fundamentals/stellar-consensus-protocol"},
+      "soroban": {"title": "Soroban smart contracts mainnet launch", "url": "https://stellar.org/press/smart-contracts-launch-on-stellar"},
+      "halt": {"title": "Stellar May 2019 network-halt report", "url": "https://stellar.org/blog/developers/may-15th-network-halt"},
+      "archival": {"title": "Stellar October 2025 state-archival postmortem", "url": "https://stellar.org/blog/foundation-news/state-archival-issue-post-mortem"},
+      "token": {"title": "CoinGecko Stellar market-data API", "url": "https://api.coingecko.com/api/v3/coins/stellar"},
+      "tvl": {"title": "DefiLlama Stellar historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Stellar"},
+      "fees": {"title": "DefiLlama Stellar fees API", "url": "https://api.llama.fi/overview/fees/Stellar?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Stellar revenue API", "url": "https://api.llama.fi/overview/fees/Stellar?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Stellar DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Stellar?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["launch", "networks", "soroban"],
+      "token": ["lumens", "token"],
+      "capital": ["soroban", "lumens"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["launch"],
+      "narrative": ["networks", "soroban", "scp"],
+      "risk": ["scp", "halt", "archival", "ofac"],
+      "synthesis": ["lumens", "scp", "soroban", "halt", "archival", "token", "tvl", "fees", "revenue", "volume"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Stellar",
+        "aliases": ["Stellar Public Network", "Pubnet", "XLM"],
+        "category": "L1",
+        "vm": "WASM",
+        "launched": "2015-09",
+        "launch_date_precision": "month",
+        "status": "established",
+        "lifecycle": [
+          {"date": "2014", "type": "formation", "description": "Stellar and the nonprofit Stellar Development Foundation launched with Jed McCaleb and Joyce Kim.", "source_url": "https://stellar.org/blog/foundation-news/first-year"},
+          {"date": "2015-09", "type": "launch", "description": "The present Stellar public network launched under the Stellar Consensus Protocol; its passphrase records September 2015.", "source_url": "https://developers.stellar.org/docs/networks"},
+          {"date": "2019-05-15", "type": "liveness_incident", "description": "Validator quorum configuration caused a 67-minute network halt without fork or fund loss.", "source_url": "https://stellar.org/blog/developers/may-15th-network-halt"},
+          {"date": "2024-03-19", "type": "smart_contract_launch", "description": "Soroban became user-ready on mainnet after the Protocol 20 phased rollout.", "source_url": "https://stellar.org/press/smart-contracts-launch-on-stellar"},
+          {"date": "2025-10-09", "type": "state_incident", "description": "A Protocol 23 archival bug was found after corrupting 478 entries; 84 required downstream mitigations after repair.", "source_url": "https://stellar.org/blog/foundation-news/state-archival-issue-post-mortem"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "launched",
+        "token_symbol": "XLM",
+        "gas_token": "XLM",
+        "launch_date": "2015-09",
+        "launch_date_precision": "month",
+        "launch_relation": "The present-network lumens launched with the 2015 SCP network; 100B original supply was later reduced through burns and inflation was disabled.",
+        "token_cg_id": "stellar",
+        "token_current_usd": 0.171006,
+        "token_ath_usd": 0.875563,
+        "token_ath_date": "2018-01-03",
+        "price_drawdown_pct": 80.47,
+        "market_cap_usd": 5852587654,
+        "fdv_usd": 8550484986,
+        "circulating_supply": 34224940552.84132,
+        "total_supply": 50001786839.91247,
+        "max_supply": null,
+        "unlock_overhang_pct": 31.55,
+        "source_url": "https://api.coingecko.com/api/v3/coins/stellar"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": null,
+        "rounds": [],
+        "treasury_usd": null,
+        "sdf_mandate_xlm": 15563517195.78948,
+        "soroban_adoption_fund_usd": 100000000,
+        "backers_tier": "none_unknown",
+        "notes": "SDF's XLM mandate and $100M Soroban adoption commitment are ecosystem resources, not reconciled venture financing or a marked-to-market treasury."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 243985238,
+        "tvl_peak_date": "2026-06-19",
+        "tvl_current_usd": 215066357,
+        "tvl_drawdown_pct": 11.85,
+        "stablecoin_tvl_usd": 937804196.41,
+        "spot_dex_volume_24h_usd": 574397,
+        "spot_dex_volume_30d_usd": 47107596,
+        "fees_24h_usd": 136063.35,
+        "fees_30d_usd": 2886785.15,
+        "revenue_24h_usd": 10462.35,
+        "revenue_30d_usd": 208252.15,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Stellar",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Stellar?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Stellar?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Stellar?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "Stellar's payment and asset-issuance activity is broader than DeFi TVL and tracked spot DEX volume; stablecoin supply is reported separately."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [
+          {"name": "Jed McCaleb", "role": "co-founder", "prior": "Ripple open-source technology development", "source_url": "https://stellar.org/blog/foundation-news/introducing-stellar"},
+          {"name": "Joyce Kim", "role": "co-founder and founding executive director", "prior": "law and venture capital", "source_url": "https://stellar.org/blog/foundation-news/first-year"},
+          {"name": "David Mazières", "role": "chief scientist and SCP designer", "prior": "Stanford computer-science professor and security researcher", "source_url": "https://stellar.org/blog/foundation-news/introducing-stellar"}
+        ],
+        "entity": "Stellar Development Foundation is a US nonprofit supporting open-source development and ecosystem growth; independent validators select quorums and approve upgrades.",
+        "key_events": [
+          {"date": "2014", "type": "foundation", "description": "SDF and Stellar launched.", "source_url": "https://stellar.org/blog/foundation-news/first-year"},
+          {"date": "2015", "type": "protocol", "description": "David Mazières published SCP and the network relaunched on it.", "source_url": "https://stellar.org/blog/foundation-news/first-year"}
+        ],
+        "regulatory_status": "SDF is a US nonprofit; this is organizational status, not a regulatory classification of XLM."
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Connect financial institutions and users through fast asset issuance, payments, foreign-exchange paths, and Soroban smart contracts.",
+        "positioning": "A payments-first L1 with native asset primitives, federated Byzantine consensus, institutional rails, and a newer WASM smart-contract layer.",
+        "competitors": [
+          {"name": "XRP Ledger", "relationship": "cross-border payment and asset-issuance competitor"},
+          {"name": "Solana", "relationship": "payments and stablecoin settlement competitor"},
+          {"name": "Celo", "relationship": "financial-inclusion and stablecoin-payments competitor"}
+        ],
+        "narrative_arc": "Stellar spent a decade optimizing payments and asset issuance, then added Soroban to broaden into programmable finance without replacing its original ledger primitives.",
+        "media_sentiment": "positive"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [
+          {"date": "2019-05-15", "type": "liveness", "loss_usd": null, "detail": "The network halted 67 minutes when fragile quorum configuration lost sufficient overlap; safety held and no fork occurred.", "source_url": "https://stellar.org/blog/developers/may-15th-network-halt"},
+          {"date": "2025-09-04", "type": "state_corruption", "loss_usd": null, "detail": "A Protocol 23 archival bug corrupted 478 entries before detection; most were repaired, while 84 required protocol or issuer mitigation.", "source_url": "https://stellar.org/blog/foundation-news/state-archival-issue-post-mortem"}
+        ],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; an archived exact-name SDN review remains an explicit gap."},
+        "extraction_flags": ["quorum_configuration", "sdf_resource_concentration", "smart_contract_state_complexity", "issuer_risk", "token_supply_overhang"],
+        "audit_status": null,
+        "risks": [
+          {"type": "liveness", "detail": "SCP prioritizes safety over liveness; poor quorum selection or insufficient intersection can halt consensus.", "source_url": "https://developers.stellar.org/docs/learn/fundamentals/stellar-consensus-protocol"},
+          {"type": "state_management", "detail": "The 2025 Soroban archival incident shows that new smart-contract storage machinery can corrupt application state without halting base payments.", "source_url": "https://stellar.org/blog/foundation-news/state-archival-issue-post-mortem"},
+          {"type": "issuer_and_anchor", "detail": "Issued assets and offchain redemption depend on anchors or issuers even when settlement is on Stellar.", "source_url": "https://developers.stellar.org/docs/networks"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Stellar carries $937.8M stablecoin supply, $215.1M DeFi TVL, and $2.89M in 30-day fees, while Soroban expands programmability and recent archival bugs expose a newer state-risk surface.",
+        "postmortem": "The 2019 halt validated SCP's safety-over-liveness design; the 2025 archival event instead showed that ledger progress can continue while a storage feature corrupts limited application state.",
+        "why": "Stellar persists because payments, issuance, anchors, and institutional distribution were first-class before DeFi, while Soroban added programmability without discarding proven settlement rails.",
+        "success_mechanism": "Low-cost XLM-funded accounts and fees, native asset exchange, SCP finality, anchor integrations, and WASM contracts support payment and programmable-finance workflows.",
+        "strategic_choices": [
+          "Use federated Byzantine agreement instead of proof of work or stake.",
+          "Prioritize payments and asset issuance before general smart contracts.",
+          "Add Soroban as a WASM contract system through a phased validator-approved rollout."
+        ],
+        "unknowns": [
+          "Current Tier-1 quorum, infrastructure-provider, issuer, and stablecoin concentration.",
+          "How much SDF-held XLM will enter circulation and under what mandate schedule.",
+          "Whether post-incident archival verification catches future state corruption before application impact."
+        ],
+        "lessons_learned": [
+          "Consensus safety, liveness, and application-state correctness are separate properties.",
+          "Payments-chain health is understated by DeFi TVL alone.",
+          "Phased feature rollout limits but does not eliminate novel storage risk."
+        ],
+        "could_differ": "Launching Turing-complete contracts earlier could have captured more DeFi, but would have increased attack and state-growth surface before the payment rail matured.",
+        "outlook": {"bull": "Soroban converts institutional payment distribution into durable programmable finance.", "base": "Stellar remains a major payment and stablecoin rail with moderate DeFi growth.", "bear": "Quorum concentration, issuer dependence, or state bugs limit application trust.", "most_likely": "base"},
+        "cause_tags": ["payments", "asset_issuance", "scp", "soroban", "state_archival"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 89,
+      "confidence": "high",
+      "unsourced_fields": ["capital.total_raised_usd", "capital.current_treasury_usd", "risk.audit_status", "risk.archived_sanctions_check", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.current_quorum_and_issuer_concentration"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "Flare",
+    "source_catalog": {
+      "launch": {"title": "Flare mainnet launch details", "url": "https://flare.network/news/flare-launch-details"},
+      "live": {"title": "Flare public token distribution and live launch", "url": "https://flare.network/news/live"},
+      "flr": {"title": "Flare FLR supply and utility documentation", "url": "https://dev.flare.network/support/flr"},
+      "tokenomics": {"title": "Flare early-backer tokenomics update", "url": "https://flare.network/news/backer-agreement-tokenomics"},
+      "fip16": {"title": "FIP.16 tokenomics restructuring", "url": "https://proposals.flare.network/FIP/FIP_16.html"},
+      "whitepaper": {"title": "Flare network and FLR whitepaper", "url": "https://flare.network/wp-content/uploads/Flare-White-Paper-v2.pdf"},
+      "audit": {"title": "OpenZeppelin FAssets security-model audit", "url": "https://dev.flare.network/assets/files/20260128-OpenZeppelin-FAssets-484601fddc2f576c1c7df3a80869b36c.pdf"},
+      "token": {"title": "CoinGecko Flare market-data API", "url": "https://api.coingecko.com/api/v3/coins/flare-networks"},
+      "tvl": {"title": "DefiLlama Flare historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Flare"},
+      "fees": {"title": "DefiLlama Flare fees API", "url": "https://api.llama.fi/overview/fees/Flare?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Flare revenue API", "url": "https://api.llama.fi/overview/fees/Flare?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Flare DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Flare?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["launch", "live", "fip16"],
+      "token": ["flr", "tokenomics", "fip16", "token"],
+      "capital": ["tokenomics"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["live", "launch"],
+      "narrative": ["live", "whitepaper", "fip16"],
+      "risk": ["launch", "audit", "whitepaper", "ofac"],
+      "synthesis": ["live", "flr", "fip16", "audit", "token", "tvl", "fees", "revenue", "volume"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Flare",
+        "aliases": ["Flare Network", "FLR"],
+        "category": "L1",
+        "vm": "EVM",
+        "launched": "2022-07-14",
+        "launch_date_precision": "day",
+        "status": "established",
+        "lifecycle": [
+          {"date": "2022-07-14", "type": "launch", "description": "Flare mainnet genesis began in observation mode with Foundation-operated validation and rollback risk.", "source_url": "https://dev.flare.network/support/flr"},
+          {"date": "2023-01-09", "type": "token_launch", "description": "Public FLR distribution began after the network passed its decentralization threshold.", "source_url": "https://flare.network/news/live"},
+          {"date": "2026-01-30", "type": "distribution_completion", "description": "The 36-month FlareDrop distribution concluded.", "source_url": "https://dev.flare.network/support/flr"},
+          {"date": "2026-04-24", "type": "token_economics", "description": "Governance accepted FIP.16 to reduce inflation and route ecosystem income toward supply reduction and growth.", "source_url": "https://proposals.flare.network/FIP/FIP_16.html"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "launched",
+        "token_symbol": "FLR",
+        "gas_token": "FLR",
+        "launch_date": "2023-01-09",
+        "launch_date_precision": "day",
+        "launch_relation": "FLR balances existed at genesis, but the public TDE followed decentralization in January 2023; the final scheduled FlareDrop ended in January 2026.",
+        "token_cg_id": "flare-networks",
+        "token_current_usd": 0.006248,
+        "token_ath_usd": 0.150073,
+        "token_ath_date": "2023-01-09",
+        "price_drawdown_pct": 95.84,
+        "market_cap_usd": 543271925,
+        "fdv_usd": 663861178,
+        "circulating_supply": 86958136191.8717,
+        "total_supply": 106260106357.2542,
+        "max_supply": null,
+        "unlock_overhang_pct": 18.16,
+        "source_url": "https://api.coingecko.com/api/v3/coins/flare-networks"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": null,
+        "rounds": [],
+        "treasury_usd": null,
+        "backers_tier": "mixed",
+        "notes": "Primary sources name early backers and token allocations but do not reconcile cash proceeds across all rounds. Backer-token reinvestment commitments are not financing totals."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 218090724,
+        "tvl_peak_date": "2026-01-06",
+        "tvl_current_usd": 113361285,
+        "tvl_drawdown_pct": 48.02,
+        "stablecoin_tvl_usd": 47726555.84,
+        "spot_dex_volume_24h_usd": 2797559.1,
+        "spot_dex_volume_30d_usd": 151630427.61,
+        "fees_24h_usd": 11396.15,
+        "fees_30d_usd": 445555.17,
+        "revenue_24h_usd": 1037.69,
+        "revenue_30d_usd": 45012.81,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Flare",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Flare?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Flare?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Flare?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "Metrics cover tracked chain activity, not offchain value referenced by Flare data protocols or all FAsset collateral."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [
+          {"name": "Hugo Philion", "role": "co-founder and chief executive", "prior": "distributed data and interoperability development", "source_url": "https://flare.network/news/live"}
+        ],
+        "entity": "Flare Foundation supports protocol development and governance; Flare Labs builds ecosystem protocols, with validators and data providers participating in network operation.",
+        "key_events": [
+          {"date": "2022-07-14", "type": "genesis", "description": "The Foundation initially operated validation during observation mode.", "source_url": "https://flare.network/news/flare-launch-details"},
+          {"date": "2023-01-09", "type": "decentralization", "description": "Public distribution began after external validation passed the launch threshold.", "source_url": "https://flare.network/news/live"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Make external blockchain and internet data available natively to EVM contracts through network-secured oracles, data acquisition, and FAssets.",
+        "positioning": "A data-centric EVM L1 combining FTSO price feeds, the Flare Data Connector, and cross-chain asset protocols.",
+        "competitors": [
+          {"name": "Chainlink", "relationship": "oracle and cross-chain data competitor"},
+          {"name": "LayerZero", "relationship": "cross-chain messaging competitor"},
+          {"name": "Avalanche", "relationship": "EVM L1 and institutional-asset competitor"}
+        ],
+        "narrative_arc": "Flare moved from a long XRP-holder distribution to a data-protocol L1, completed token distribution, launched deeper asset protocols, and then reworked token economics to restore FLR value capture.",
+        "media_sentiment": "mixed"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; an archived exact-name SDN review remains an explicit gap."},
+        "extraction_flags": ["oracle_dependency", "cross_chain_collateral", "governance_control", "token_supply", "value_capture_rework"],
+        "audit_status": "Validator and FAssets reviews are public, including a 2026 OpenZeppelin trust-model audit; a complete current ecosystem audit inventory is not asserted.",
+        "risks": [
+          {"type": "oracle_and_data", "detail": "FAssets and data applications depend on timely, manipulation-resistant FTSO and external-state acquisition.", "source_url": "https://dev.flare.network/assets/files/20260128-OpenZeppelin-FAssets-484601fddc2f576c1c7df3a80869b36c.pdf"},
+          {"type": "governance_control", "detail": "The FAssets audit identifies exclusive governance control of foundational address-update mechanisms as a trust assumption.", "source_url": "https://dev.flare.network/assets/files/20260128-OpenZeppelin-FAssets-484601fddc2f576c1c7df3a80869b36c.pdf"},
+          {"type": "value_capture", "detail": "FIP.16 explicitly responds to earlier design choices that reduced FLR's ecosystem role, proving value capture was not automatic.", "source_url": "https://proposals.flare.network/FIP/FIP_16.html"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Flare holds $113.4M TVL and $151.6M in 30-day DEX volume, while FLR is 95.8% below its launch-day high and governance is actively rebuilding token value capture.",
+        "postmortem": null,
+        "why": "Flare remains relevant because it embeds oracle and external-state services into the L1 rather than requiring every application to assemble a separate data and bridge stack.",
+        "success_mechanism": "Validators, FTSO providers, and data-connector participants supply external data; FAssets and applications create demand; FIP.16 routes income toward ecosystem and supply reduction.",
+        "strategic_choices": [
+          "Build an EVM L1 around native data protocols.",
+          "Delay public token distribution until validation decentralized beyond Foundation control.",
+          "Use governance to revise inflation and income routing when FLR value capture weakened."
+        ],
+        "unknowns": [
+          "Current validator, FTSO-provider, FAsset-agent, collateral, and application-TVL concentration.",
+          "The realized cash financing and current Foundation treasury.",
+          "Whether FIP.16 income mechanisms produce material recurring FLR demand after implementation."
+        ],
+        "lessons_learned": [
+          "Token distribution, network genesis, and decentralization thresholds are separate lifecycle events.",
+          "Native data reduces integration friction but concentrates oracle and governance risk in the base layer.",
+          "Protocol activity does not guarantee native-token value capture without explicit routing."
+        ],
+        "could_differ": "Keeping oracle services application-level would simplify base-layer trust, but sacrifice Flare's main distribution and composability advantage.",
+        "outlook": {"bull": "FAssets and native data become widely used and FIP.16 creates sustainable FLR-linked income.", "base": "Flare keeps a meaningful data-and-DeFi niche with modest token capture.", "bear": "Oracle, collateral, or governance failures overwhelm usage and token reforms.", "most_likely": "base"},
+        "cause_tags": ["data_l1", "ftso", "fassets", "tokenomics_reform", "oracle_risk"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 86,
+      "confidence": "high",
+      "unsourced_fields": ["capital.total_raised_usd", "capital.treasury_usd", "team.additional_founders", "team.regulatory_status", "risk.complete_audit_inventory", "risk.archived_sanctions_check", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.current_data_provider_and_collateral_concentration"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "Cronos",
+    "source_catalog": {
+      "launch": {"title": "Cronos EVM mainnet beta launch", "url": "https://blog.cronos.org/p/cronos-mainnet-beta-is-now-live-def60afb5148"},
+      "labs": {"title": "Cronos Labs and ecosystem fund", "url": "https://blog.cronos.org/p/introducing-cronos-labs-3b78a1aae0b7"},
+      "zkevm": {"title": "Cronos zkEVM alpha mainnet launch", "url": "https://blog.cronos.org/p/cronos-zkevm-launches-its-alpha-mainnet"},
+      "pivot": {"title": "Cronos Labs vertically integrated product pivot", "url": "https://blog.cronos.org/p/cronos-labs-names-ryan-wyatt-as-ceo"},
+      "upgrade": {"title": "Cronos EVM v1.2 coordinated upgrade", "url": "https://blog.cronos.org/p/cronos-mainnet-v12-upgrade-announcing"},
+      "token": {"title": "CoinGecko Cronos market-data API", "url": "https://api.coingecko.com/api/v3/coins/crypto-com-chain"},
+      "tvl": {"title": "DefiLlama Cronos historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Cronos"},
+      "fees": {"title": "DefiLlama Cronos fees API", "url": "https://api.llama.fi/overview/fees/Cronos?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Cronos revenue API", "url": "https://api.llama.fi/overview/fees/Cronos?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Cronos DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Cronos?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["launch", "zkevm", "pivot"],
+      "token": ["launch", "labs", "token"],
+      "capital": ["labs"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["labs", "pivot"],
+      "narrative": ["launch", "labs", "zkevm", "pivot"],
+      "risk": ["launch", "upgrade", "zkevm", "ofac"],
+      "synthesis": ["launch", "pivot", "zkevm", "tvl", "fees", "revenue", "volume", "stables"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Cronos",
+        "aliases": ["Cronos EVM", "Cronos Mainnet Beta"],
+        "category": "L1",
+        "vm": "EVM",
+        "launched": "2021-11-08",
+        "launch_date_precision": "day",
+        "status": "pivoting",
+        "lifecycle": [
+          {"date": "2021-11-08", "type": "launch", "description": "Cronos EVM mainnet beta launched as a Cosmos-SDK EVM chain with CRO gas and IBC connectivity.", "source_url": "https://blog.cronos.org/p/cronos-mainnet-beta-is-now-live-def60afb5148"},
+          {"date": "2022-02", "type": "rebrand", "description": "Crypto.org Coin and the ecosystem rebranded around Cronos and CRO.", "source_url": "https://blog.cronos.org/p/introducing-cronos-labs-3b78a1aae0b7"},
+          {"date": "2024-08-15", "type": "sibling_chain_launch", "description": "Cronos zkEVM launched as a separate Ethereum L2 using zkCRO gas; it is not collapsed into this Cronos EVM dossier.", "source_url": "https://blog.cronos.org/p/cronos-zkevm-launches-its-alpha-mainnet"},
+          {"date": "2025-12-15", "type": "strategy_pivot", "description": "Cronos Labs announced a shift from generic L1 blockspace toward vertically integrated first-party financial applications and CRO buy-and-burn economics.", "source_url": "https://blog.cronos.org/p/cronos-labs-names-ryan-wyatt-as-ceo"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "launched",
+        "token_symbol": "CRO",
+        "gas_token": "CRO",
+        "launch_date": "2018",
+        "launch_date_precision": "year",
+        "launch_relation": "CRO predates Cronos EVM and serves multiple Crypto.com/Cronos networks; it pays Cronos EVM gas, while sibling Cronos zkEVM uses liquid-staked zkCRO.",
+        "token_cg_id": "crypto-com-chain",
+        "token_current_usd": null,
+        "token_ath_usd": null,
+        "token_ath_date": null,
+        "price_drawdown_pct": null,
+        "market_cap_usd": null,
+        "fdv_usd": null,
+        "circulating_supply": null,
+        "total_supply": null,
+        "max_supply": null,
+        "unlock_overhang_pct": null,
+        "source_url": "https://api.coingecko.com/api/v3/coins/crypto-com-chain"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": null,
+        "rounds": [],
+        "ecosystem_fund_usd": 100000000,
+        "treasury_usd": null,
+        "backers_tier": "corporate",
+        "notes": "Cronos Labs disclosed a $100M accelerator/ecosystem fund. That commitment is not counted as chain financing or current liquid treasury."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 3220325493,
+        "tvl_peak_date": "2022-04-05",
+        "tvl_current_usd": 255346505,
+        "tvl_drawdown_pct": 92.07,
+        "stablecoin_tvl_usd": 179532478.07,
+        "spot_dex_volume_24h_usd": 764382.36,
+        "spot_dex_volume_30d_usd": 41181061.35,
+        "fees_24h_usd": 17976.11,
+        "fees_30d_usd": 678186.35,
+        "revenue_24h_usd": 3270.24,
+        "revenue_30d_usd": 137544.9,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Cronos",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Cronos?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Cronos?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Cronos?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "These metrics cover Cronos EVM only and must not be combined with Cronos POS or Cronos zkEVM."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [],
+        "entity": "Cronos Labs develops and grows the Cronos ecosystem in partnership with Crypto.com distribution; independent validators operate the Cosmos-SDK network.",
+        "key_events": [
+          {"date": "2022-04-20", "type": "organization", "description": "Particle B rebranded as Cronos Labs and continued the $100M ecosystem program.", "source_url": "https://blog.cronos.org/p/introducing-cronos-labs-3b78a1aae0b7"},
+          {"date": "2025-12-15", "type": "leadership", "description": "Ryan Wyatt became Cronos Labs CEO and announced the vertically integrated product strategy.", "source_url": "https://blog.cronos.org/p/cronos-labs-names-ryan-wyatt-as-ceo"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Bring Crypto.com users into self-custodial EVM DeFi and gaming through a Cosmos-SDK chain, bridges, and first-party applications.",
+        "positioning": "Cronos EVM is the Cosmos-SDK EVM L1 in a three-chain Cronos family alongside Cronos POS and Cronos zkEVM; strategy is shifting toward Crypto.com-distributed financial products.",
+        "competitors": [
+          {"name": "BSC", "relationship": "exchange-distributed EVM L1 competitor"},
+          {"name": "Base", "relationship": "exchange-distributed EVM execution competitor"},
+          {"name": "Ink", "relationship": "CeFi-to-DeFi chain competitor"}
+        ],
+        "narrative_arc": "Cronos rapidly bootstrapped DeFi through Crypto.com and IBC, lost most peak TVL, expanded into a separate zkEVM, and then rebooted around owned apps and direct CRO value capture.",
+        "media_sentiment": "mixed"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; an archived exact-name SDN review remains an explicit gap."},
+        "extraction_flags": ["corporate_distribution", "validator_coordination", "bridge_risk", "multi_chain_fragmentation", "tvl_drawdown"],
+        "audit_status": null,
+        "risks": [
+          {"type": "validator_coordination", "detail": "Scheduled binary upgrades pause the chain until enough validators update, exposing liveness to coordinated operations.", "source_url": "https://blog.cronos.org/p/cronos-mainnet-v12-upgrade-announcing"},
+          {"type": "bridge_and_ibc", "detail": "Cronos relies on IBC and bridges for CRO and external assets, creating cross-chain implementation and liquidity risk.", "source_url": "https://blog.cronos.org/p/cronos-mainnet-beta-is-now-live-def60afb5148"},
+          {"type": "fragmentation", "detail": "Cronos EVM, POS, and zkEVM have distinct security, gas, and liquidity domains that branding can obscure.", "source_url": "https://blog.cronos.org/p/cronos-zkevm-launches-its-alpha-mainnet"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Cronos EVM retains $255.3M TVL and $179.5M stablecoin supply but is 92.1% below its 2022 TVL peak, motivating a pivot from generic blockspace toward owned financial products.",
+        "postmortem": null,
+        "why": "Cronos reached scale because Crypto.com distribution and CRO rails lowered onboarding friction, but undifferentiated EVM DeFi did not preserve peak liquidity.",
+        "success_mechanism": "Crypto.com can route users and assets into Cronos; IBC and EVM compatibility attract apps; first-party products may send fees toward CRO buy-and-burn.",
+        "strategic_choices": [
+          "Build a Cosmos-SDK EVM chain with IBC and CRO gas.",
+          "Operate Cronos POS and zkEVM as distinct sibling networks rather than one chain.",
+          "Pivot toward vertically integrated, revenue-generating first-party applications."
+        ],
+        "unknowns": [
+          "Current validator, application-TVL, bridge, and Crypto.com-routing concentration.",
+          "Current CRO supply, market metrics, treasury holdings, and exact buy-and-burn implementation.",
+          "Whether first-party applications rebuild durable TVL without crowding out independent builders."
+        ],
+        "lessons_learned": [
+          "Exchange distribution accelerates launch but does not make generic blockspace defensible.",
+          "Sibling chains must be measured separately to avoid mixing gas, security, and activity.",
+          "A 92% TVL drawdown can coexist with a still-material ecosystem and motivate strategy change."
+        ],
+        "could_differ": "Staying a neutral general-purpose L1 might preserve builder neutrality, but would leave Cronos competing on increasingly commoditized EVM blockspace.",
+        "outlook": {"bull": "First-party apps and Crypto.com distribution rebuild usage with explicit CRO value capture.", "base": "Cronos remains a material but below-peak exchange ecosystem while the pivot develops.", "bear": "Liquidity fragments across sibling chains and owned apps fail to reverse decline.", "most_likely": "base"},
+        "cause_tags": ["exchange_distribution", "cosmos_evm", "multi_chain_family", "tvl_drawdown", "vertical_integration"],
+        "confidence": "medium"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 76,
+      "confidence": "medium",
+      "unsourced_fields": ["token.current_market_metrics", "token.current_supply", "capital.total_raised_usd", "capital.treasury_usd", "team.named_chain_founders", "team.regulatory_status", "risk.audit_status", "risk.archived_sanctions_check", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.current_validator_and_routing_concentration"],
+      "last_reviewed": "2026-07-29"
+    }
+  }
+]

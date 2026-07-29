@@ -1,0 +1,313 @@
+{
+  "schema": "chaindump-nft-field-v1",
+  "research_as_of": "2026-07-29",
+  "method": "Wave-6 applies the primary-source lifecycle standard to two PFP/IP brands, a token-and-game NFT ecosystem, an expanding Bitcoin Ordinals land standard and a live multichain marketplace. Current operator pages prove operation, not market strength. Collection counts are separated from derivative series; protocol issuance is separated from fixed supply; platform inventory is not supply; displayed marketplace telemetry is labeled rather than independently audited; and roadmap language is not treated as delivered utility.",
+  "dossiers": [
+    {
+      "slug": "world-of-women",
+      "name": "World of Women",
+      "chain": "ethereum",
+      "category": "women-led-pfp-ip",
+      "status": "middling",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {"schema": "forensic-freshness-v1", "status_basis": "direct_current", "status_as_of": "2026-07-28", "last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "stale": false},
+        "launched": "World of Women's original Ethereum collection launched in 2021 and sold out within hours according to its current history. The reviewed first-party page does not give a day or universal mint price, so neither is invented.",
+        "supply": "10,000 original World of Women avatars. The later WoW Galaxy series has 22,222 avatars and is analytically separate; related ArtDrops, Tezos works, profiles and event assets are not added to original supply.",
+        "mint_price": "The current official history says the first collection sold out within hours but does not state the original unit price, allocation breakdown or audited aggregate proceeds. All three remain withheld.",
+        "community_history": "WoW expanded into WoW Galaxy, ArtDrops, Artfest, global events and a member product called Patio. Its official history also labels 2025 as a pivot with a rebuilt team and 2026 as a new era, evidence of continuity and transition rather than proof of strong holder retention.",
+        "founder_engagement": "The current site identifies Vi Powils as CEO but does not provide a complete original-founder and current-executive roster. This dossier therefore separates current leadership from the original artistic authorship and does not infer Yam Karkai's present operating role from historical reputation.",
+        "benefits": "Current community products include identity profiles, badges, collection display, discovery, event access and a Salon customization feature. Planned points and perks are labeled coming soon and are not represented as delivered or permanent.",
+        "business": "WoW presents collections, events, partnerships and community technology as its operating model. Current revenue, licensing economics, event profitability, creator royalties and NFT-holder cash flows are undisclosed.",
+        "analysis": "Middling means the organization, Patio and community/event surfaces remain live after an explicit 2025 team rebuild, while current primary evidence does not establish strong NFT demand, holder retention or completed delivery of future perks. It does not establish floor, volume, liquidity, revenue or profitability.",
+        "team": {"current_ceo": "Vi Powils", "original_authorship_boundary": "The current reviewed pages do not provide a complete original creator roster or define each historical contributor's present role.", "transition": "Official history describes a 2025 pivot and team rebuild.", "source_ids": ["wow-about", "wow-home", "wow-patio"]},
+        "chronology": [
+          {"date": "2021", "event": "The original 10,000-avatar collection launched and sold out within hours.", "source_ids": ["wow-about", "wow-home"]},
+          {"date": "2022", "event": "WoW Galaxy expanded the family with 22,222 separate avatars.", "source_ids": ["wow-about", "wow-home"]},
+          {"date": "2025", "event": "The organization describes a pivot and rebuild with a new team.", "source_ids": ["wow-about"]},
+          {"date": "2026-07-28", "event": "The official collection, community and Patio member surfaces remained online.", "source_ids": ["wow-home", "wow-community", "wow-patio"]}
+        ],
+        "market_holder_boundaries": {"market": "No current independently verified floor, volume, bids, liquidity, royalty or return series.", "holders": "No current unique-owner, concentration or retention count; Patio profiles and event participants are not NFT-holder telemetry.", "available_evidence": "Fixed original supply, current products and event history prove continuity, not market quality.", "source_ids": ["wow-home", "wow-community", "wow-patio"]},
+        "products_and_value_capture": {"products": ["10,000 original avatars", "WoW Galaxy", "Patio profiles and discovery", "Salon customization", "events and partnerships"], "capture": "Collection, partnership and event channels are visible, but revenue, margin, royalties and holder economics are withheld.", "source_ids": ["wow-home", "wow-about", "wow-patio"]},
+        "why": {"finding": "Representation, global events and member identity tooling provide a community thesis beyond static PFP ownership. The explicit rebuild indicates adaptation but also execution risk; available evidence cannot isolate effects on demand.", "source_ids": ["wow-about", "wow-patio", "wow-community"]},
+        "strategic_choices": [
+          {"choice": "Anchor the brand in a fixed 10,000-avatar original collection while expanding through a separate 22,222-avatar Galaxy series.", "source_ids": ["wow-home"]},
+          {"choice": "Extend ownership into profiles, discovery, customization and events through Patio.", "source_ids": ["wow-patio"]},
+          {"choice": "Rebuild the team in 2025 and frame 2026 as a new operating era.", "source_ids": ["wow-about"]}
+        ],
+        "counterfactual": {"finding": "Without continuing community products or events, the original collection would retain provenance but lose much of its operating social layer. Patio and the rebuild reduce abandonment risk without proving adoption or profitability.", "source_ids": ["wow-about", "wow-patio"]},
+        "risks": [
+          {"risk": "A team rebuild can change priorities, promised benefits and execution capacity.", "source_ids": ["wow-about"]},
+          {"risk": "Multiple collections and related assets can blur original-supply and holder-benefit scope.", "source_ids": ["wow-home", "wow-patio"]},
+          {"risk": "Coming-soon points and perks may be delayed, revised or never delivered.", "source_ids": ["wow-patio"]}
+        ],
+        "unknowns": ["Original mint price, allocation and aggregate proceeds.", "Complete original and current team roster, ownership and financing.", "Current unique owners, concentration, floor, volume and liquidity.", "Current revenue, costs, royalties, Patio usage and event economics."],
+        "review": {"last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "triggers": ["Patio roadmap delivery", "leadership change", "collection or license change", "new primary holder or financial disclosure"]},
+        "evidence": [
+          {"field": "launch", "value": "Original collection launched in 2021; exact day withheld", "as_of": "2021-12-31", "basis": "operator", "source_ids": ["wow-about"]},
+          {"field": "supply_or_mint", "value": "10,000 original avatars; 22,222 Galaxy avatars excluded from original supply", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["wow-home"]},
+          {"field": "mint_price", "value": "Sellout reported; original unit price, allocation and proceeds withheld", "as_of": "2021-12-31", "basis": "operator", "source_ids": ["wow-about"]},
+          {"field": "lifecycle_status", "value": "middling — current products after documented team rebuild; strong market and retention not established", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["wow-about", "wow-patio", "wow-community"]},
+          {"field": "community_history", "value": "Collections, events and member tooling continue; active-holder retention withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["wow-about", "wow-community", "wow-patio"]},
+          {"field": "founder_engagement", "value": "Current CEO identified; complete original and current role map withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["wow-about"]},
+          {"field": "benefits", "value": "Profiles, badges, collection display, customization and events; future points not treated as delivered", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["wow-patio"]},
+          {"field": "business", "value": "Collections, community products, events and partnerships; current economics withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["wow-home", "wow-about"]},
+          {"field": "analysis", "value": "Operating continuity and transition verified; market, holder and financial conclusions withheld", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["wow-about", "wow-patio"]}
+        ]
+      },
+      "sources": [
+        {"id": "wow-home", "title": "World of Women — official collections", "url": "https://www.worldofwomen.xyz/", "publisher": "World of Women", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "wow-about", "title": "About World of Women — milestones and current leadership", "url": "https://www.worldofwomen.xyz/about", "publisher": "World of Women", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "wow-community", "title": "World of Women Community", "url": "https://www.worldofwomen.xyz/community", "publisher": "World of Women", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "wow-patio", "title": "Patio by World of Women", "url": "https://patio.worldofwomen.xyz/", "publisher": "World of Women", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false}
+      ]
+    },
+    {
+      "slug": "cool-cats",
+      "name": "Cool Cats",
+      "chain": "ethereum",
+      "category": "pfp-character-gaming-ip",
+      "status": "thriving",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {"schema": "forensic-freshness-v1", "status_basis": "direct_current", "status_as_of": "2026-07-28", "last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "stale": false},
+        "launched": "Cool Cats' original collection launched in 2021. Its current site describes five years of building but the reviewed first-party pages do not establish an exact mint day, so only the year is published.",
+        "supply": "9,999 original Cool Cats. Cool Pets, Shadow Wolves, SideKX, Explorers and Polygon wearables are separate assets and are not added to original supply.",
+        "mint_price": "The reviewed current and historical first-party pages do not state the original Cool Cats mint price, allocation or audited aggregate proceeds. Current displayed floor data is secondary-market telemetry and not a mint-price substitute.",
+        "community_history": "The project expanded from PFPs into Cooltopia, pets, avatars, merchandise, partnerships and games. It sunset the prior website Cooltopia and $MILK loop in July 2023, then continued with new avatar and mini-app products; this is a product transition, not uninterrupted utility.",
+        "founder_engagement": "The artist Clon identifies himself as creator and founder and assumed strategic and day-to-day leadership in 2023 after the prior CEO stepped down. The current reviewed pages do not provide a complete co-founder or executive roster.",
+        "benefits": "The current site advertises mini-app boosts, quests, IP rights, 3D avatars, Discord access, partner-game assets, MocaProof rewards and potential future airdrops. Coming-soon 3D Cooltopia and future airdrops are not treated as delivered guarantees.",
+        "business": "Cool Cats combines NFT collections, apps, games, character media, licensing, partnerships and physical products. Current collection-specific revenue, costs, royalty enforcement and profitability are undisclosed.",
+        "analysis": "Thriving means a current mini-app, live holder products, current legal terms and continued founder-led character development. It does not establish floor accuracy, liquidity, unique-holder retention, active-player quality, royalty revenue or profitability.",
+        "team": {"creator_founder": "Clon", "operator": "Cool Cats Group LLC", "leadership_transition": "Clon assumed strategic and day-to-day leadership in 2023 after Stephen stepped down as CEO.", "roster_boundary": "Complete co-founder, board and current executive rosters are not asserted.", "source_ids": ["cats-leadership", "cats-home", "cats-terms"]},
+        "chronology": [
+          {"date": "2021", "event": "The 9,999 original Cool Cats launched on Ethereum.", "source_ids": ["cats-home", "cats-terms"]},
+          {"date": "2023-07-27", "event": "The prior Cooltopia website experience and $MILK utility loop were sunset.", "source_ids": ["cats-sunset"]},
+          {"date": "2023", "event": "Clon assumed expanded strategic and operating leadership and the avatar-system beta launched.", "source_ids": ["cats-leadership", "cats-avatar"]},
+          {"date": "2026-07-28", "event": "The current Cooltopia mini-app, holder-perk catalog, games and character-media surfaces remained live.", "source_ids": ["cats-home"]}
+        ],
+        "market_holder_boundaries": {"market": "No independently verified current floor, volume, bid depth, liquidity, royalty or return series; site figures are labeled illustrative and sourced live from OpenSea.", "holders": "No independently verified unique-holder or retention series; player counts include product users and are not NFT owners.", "available_evidence": "Fixed supply and live products establish operation, not market quality.", "source_ids": ["cats-home"]},
+        "products_and_value_capture": {"products": ["9,999 PFPs", "Cooltopia mini-app", "3D avatars and wearables", "partner-game items", "character media and physical products"], "capture": "Digital and physical channels are visible, but current revenue, margins, royalties and NFT-owner economics are withheld.", "source_ids": ["cats-home", "cats-avatar", "cats-terms"]},
+        "why": {"finding": "Founder-led character IP and repeated product transitions have sustained an operating brand. The 2023 sunset shows that specific token utilities can end even while the broader IP continues.", "source_ids": ["cats-leadership", "cats-sunset", "cats-home"]},
+        "strategic_choices": [
+          {"choice": "Build a character brand and licensing ecosystem around a fixed 9,999-item original collection.", "source_ids": ["cats-home", "cats-strategy"]},
+          {"choice": "Sunset the former Cooltopia/$MILK loop and shift into avatars, games and a mini-app.", "source_ids": ["cats-sunset", "cats-avatar", "cats-home"]},
+          {"choice": "Put creator Clon in direct strategic and operational leadership.", "source_ids": ["cats-leadership"]}
+        ],
+        "counterfactual": {"finding": "Without new products after the 2023 sunset, the collection could have become a legacy PFP with discontinued utility. Current apps and media avoid that outcome, while adoption and economics remain unproven.", "source_ids": ["cats-sunset", "cats-home"]},
+        "risks": [
+          {"risk": "Past utility sunset demonstrates that current perks can be changed or withdrawn.", "source_ids": ["cats-sunset", "cats-terms"]},
+          {"risk": "Future airdrops and 3D-world access are roadmap language, not guaranteed delivery.", "source_ids": ["cats-home"]},
+          {"risk": "Multiple related assets and products can dilute scope and make player metrics incomparable with original holders.", "source_ids": ["cats-home", "cats-avatar"]}
+        ],
+        "unknowns": ["Original mint price, allocation and aggregate proceeds.", "Complete current executive roster, ownership and financing.", "Independently verified current holders, floor, volume and liquidity.", "Mini-app active users, NFT-holder conversion, revenue, costs and royalties."],
+        "review": {"last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "triggers": ["mini-app or 3D-world change", "leadership change", "holder-rights revision", "new audited usage or financial disclosure"]},
+        "evidence": [
+          {"field": "launch", "value": "Original collection launched in 2021; exact day withheld", "as_of": "2021-12-31", "basis": "operator", "source_ids": ["cats-home", "cats-terms"]},
+          {"field": "supply_or_mint", "value": "9,999 original Cool Cats; related collections and wearables excluded", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["cats-home"]},
+          {"field": "mint_price", "value": "Original price, allocation and proceeds withheld; displayed floor is not mint price", "as_of": "2021-12-31", "basis": "operator", "source_ids": ["cats-home"]},
+          {"field": "lifecycle_status", "value": "thriving — current app, holder products and founder-led operations verified; not market performance", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["cats-home", "cats-terms"]},
+          {"field": "community_history", "value": "Utility sunset and subsequent product transition documented; holder retention withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["cats-sunset", "cats-avatar", "cats-home"]},
+          {"field": "founder_engagement", "value": "Clon remains creator/founder and assumed direct operating leadership", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["cats-leadership", "cats-home"]},
+          {"field": "benefits", "value": "Current app, avatars, IP and partner perks separated from roadmap promises", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["cats-home", "cats-avatar"]},
+          {"field": "business", "value": "Collections, apps, licensing, media and physical products; current economics withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["cats-home", "cats-strategy"]},
+          {"field": "analysis", "value": "Current operation verified; market, holder, player-quality and financial conclusions withheld", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["cats-home", "cats-terms"]}
+        ]
+      },
+      "sources": [
+        {"id": "cats-home", "title": "Cool Cats — current collection and product home", "url": "https://coolcats.com/", "publisher": "Cool Cats", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "cats-leadership", "title": "Cool Cats Leadership Announcement", "url": "https://coolcats.com/news/cool-cats-leadership-announcement", "publisher": "Cool Cats", "source_date": "2023-09-19", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "historical_event", "stale_after": null, "stale": false},
+        {"id": "cats-sunset", "title": "Cool Cats Newsletter — Cooltopia and MILK sunsetting", "url": "https://coolcats.com/news/cool-cats-newsletter-june-recap", "publisher": "Cool Cats", "source_date": "2023-07-01", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "historical_event", "stale_after": null, "stale": false},
+        {"id": "cats-avatar", "title": "Cool Cats Avatar System Beta", "url": "https://coolcats.com/news/cool-cats-avatar-system", "publisher": "Cool Cats", "source_date": "2023-10-16", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "cats-strategy", "title": "Cool Cats Strategic Direction", "url": "https://coolcats.com/news/cool-cats-strategic-direction", "publisher": "Cool Cats", "source_date": "2023-02-02", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "historical_event", "stale_after": null, "stale": false},
+        {"id": "cats-terms", "title": "Cool Cats Terms and Conditions", "url": "https://coolcats.com/terms-and-conditions", "publisher": "Cool Cats Group LLC", "source_date": "2025-12-05", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false}
+      ]
+    },
+    {
+      "slug": "cyberkongz",
+      "name": "CyberKongz",
+      "chain": "ethereum-polygon-ronin",
+      "category": "multi-collection-token-gaming-ip",
+      "status": "thriving",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {"schema": "forensic-freshness-v1", "status_basis": "direct_current", "status_as_of": "2026-07-28", "last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "stale": false},
+        "launched": "CyberKongz Genesis launched on March 3, 2021. Baby Kongz followed April 17, VX August 15 and Genkai July 27, 2023; the dossier treats these as a family, not one homogeneous collection.",
+        "supply": "Family supply is series-specific: 1,000 Genesis, 4,000 Baby, 15,000 VX and 20,000 Genkai. The current terms' 5,000 two-dimensional plus 15,000 three-dimensional definition excludes Genkai, illustrating why no single unqualified family total is published.",
+        "mint_price": "No universal family mint. Official Genkai materials identify a 0.25 ETH starting unlock fee tied to vesting, not a Genesis mint price; reviewed first-party pages do not disclose Genesis price or audited family-wide proceeds.",
+        "community_history": "CyberKongz expanded from Genesis into $BANANA, breeding, 3D avatars, onchain games, Genkai, physical products and $KONG. The project says $BANANA's 10-per-day Genesis yield ended August 18, 2025 and transitioned toward seasonal $KONG rewards.",
+        "founder_engagement": "Official Genkai material identifies Myoo as founder and artist. CyberKongz LLC is the legal operator named in current terms; a full leadership and ownership roster is not disclosed.",
+        "benefits": "Products include holder licensing, Play & Kollect, Adventure Run, avatar wearables, Genkai narrative, community access and current $KONG staking/reward programs. Criteria and distributions remain team-managed and no return is guaranteed.",
+        "business": "The ecosystem spans multiple NFT series, tokens, games, partnerships, physical goods and community access. Current project-level revenue, costs, treasury balances, royalty enforcement and profit are undisclosed.",
+        "analysis": "Thriving means current collections, shop, token system and game/legal surfaces remained operational after the $BANANA-to-$KONG transition. It does not establish floor, liquidity, holder retention, game engagement quality, token value or profitability.",
+        "team": {"founder_artist": "Myoo", "legal_operator": "CyberKongz LLC", "jurisdiction": "Saint Kitts and Nevis", "roster_boundary": "Complete executives, beneficial ownership and artist roster are not disclosed in reviewed sources.", "source_ids": ["kong-genkai", "kong-terms", "kong-current"]},
+        "chronology": [
+          {"date": "2021-03-03", "event": "The 1,000-item Genesis collection launched.", "source_ids": ["kong-collections"]},
+          {"date": "2021-04-17", "event": "The 4,000 Baby Kongz collection followed through the breeding concept.", "source_ids": ["kong-collections"]},
+          {"date": "2023-07-27", "event": "The 20,000-item Genkai collection launched as the first PFP series on Ronin.", "source_ids": ["kong-collections", "kong-genkai"]},
+          {"date": "2025-08-18", "event": "The scheduled daily $BANANA yield ended as the ecosystem transitioned toward $KONG.", "source_ids": ["kong-whitepaper"]},
+          {"date": "2026-07-28", "event": "Current collection, $KONG, game and shop surfaces remained online.", "source_ids": ["kong-current", "kong-token", "kong-shop"]}
+        ],
+        "market_holder_boundaries": {"market": "No independently verified current family floor, volume, bids, liquidity, token value, royalty or return series.", "holders": "No independently verified current unique-holder or retention count; operator community and holder figures span multiple collections.", "available_evidence": "Series supplies, current products and token mechanics establish operation, not market quality.", "source_ids": ["kong-current", "kong-collections", "kong-token"]},
+        "products_and_value_capture": {"products": ["four NFT collections", "$KONG token and staking", "Play & Kollect and Adventure Run", "Genkai narrative", "physical and digital shop goods"], "capture": "Sale, token, shop and partnership channels exist, but current project revenue, margins and NFT-holder economics are withheld.", "source_ids": ["kong-current", "kong-whitepaper", "kong-shop", "kong-terms"]},
+        "why": {"finding": "Multiple interoperable assets, games and token mechanics create repeated participation loops. The $BANANA transition shows active redesign but also dependency on discretionary team-managed rewards.", "source_ids": ["kong-about", "kong-whitepaper", "kong-token"]},
+        "strategic_choices": [
+          {"choice": "Expand from scarce Genesis avatars into separate Baby, VX and Genkai collections with explicit scopes.", "source_ids": ["kong-collections"]},
+          {"choice": "Pair NFTs with fungible-token utility, then replace scheduled $BANANA yield with $KONG seasonal distribution.", "source_ids": ["kong-whitepaper", "kong-token"]},
+          {"choice": "Build games, customizable avatars, physical goods and cross-chain collections around the IP.", "source_ids": ["kong-about", "kong-terms", "kong-shop"]}
+        ],
+        "counterfactual": {"finding": "Without current products after ending $BANANA yield, utility expectations could have collapsed into legacy claims. $KONG and continuing products preserve operation while adding execution, token and regulatory complexity.", "source_ids": ["kong-whitepaper", "kong-current"]},
+        "risks": [
+          {"risk": "Team-managed seasonal rewards can change qualification, timing and allocations.", "source_ids": ["kong-whitepaper", "kong-token"]},
+          {"risk": "Four collection scopes and three chains create bridge, compatibility and benefit-allocation complexity.", "source_ids": ["kong-collections", "kong-terms"]},
+          {"risk": "Token, game and licensed-IP utility depends on operator-controlled interfaces and terms.", "source_ids": ["kong-terms", "kong-whitepaper"]}
+        ],
+        "unknowns": ["Genesis mint price, series allocations and audited aggregate proceeds.", "Complete leadership, beneficial ownership and financing.", "Independent current holders, concentration, market liquidity and royalties by series.", "Current game users, token participation, treasury balances, revenue and costs."],
+        "review": {"last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "triggers": ["$KONG distribution change", "game or collection shutdown", "license revision", "new audited holder or financial disclosure"]},
+        "evidence": [
+          {"field": "launch", "value": "Genesis launched 2021-03-03; later series have separate dates", "as_of": "2021-03-03", "basis": "operator", "source_ids": ["kong-collections"]},
+          {"field": "supply_or_mint", "value": "1,000 Genesis, 4,000 Baby, 15,000 VX and 20,000 Genkai; no unqualified family total", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["kong-collections", "kong-genkai"]},
+          {"field": "mint_price", "value": "No universal family mint; Genesis price and aggregate proceeds withheld", "as_of": "2023-07-27", "basis": "operator", "source_ids": ["kong-genkai", "kong-collections"]},
+          {"field": "lifecycle_status", "value": "thriving — current collections, token, games and shop verified; not market performance", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["kong-current", "kong-token", "kong-shop"]},
+          {"field": "community_history", "value": "Multi-product expansion and token transition documented; retention withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["kong-about", "kong-whitepaper", "kong-current"]},
+          {"field": "founder_engagement", "value": "Myoo identified as founder/artist; CyberKongz LLC is operator; complete roster withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["kong-genkai", "kong-terms"]},
+          {"field": "benefits", "value": "Games, avatars, licensing, community and team-managed token rewards without return promises", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["kong-terms", "kong-token"]},
+          {"field": "business", "value": "Collections, tokens, games, shop and partnerships; current economics withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["kong-current", "kong-shop"]},
+          {"field": "analysis", "value": "Operating continuity verified; market, holder, token and financial conclusions withheld", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["kong-current", "kong-whitepaper"]}
+        ]
+      },
+      "sources": [
+        {"id": "kong-current", "title": "CyberKongz — current ecosystem home", "url": "https://www.cyberkongz.com/", "publisher": "CyberKongz", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "kong-about", "title": "About CyberKongz", "url": "https://www.cyberkongz.com/about", "publisher": "CyberKongz", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "kong-collections", "title": "CyberKongz Collections", "url": "https://www.cyberkongz.com/collections", "publisher": "CyberKongz", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "kong-genkai", "title": "CyberKongz Genkai", "url": "https://genkai.cyberkongz.com/", "publisher": "CyberKongz", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "kong-whitepaper", "title": "$KONG Whitepaper", "url": "https://www.cyberkongz.com/kong-whitepaper", "publisher": "CyberKongz", "source_date": "2025-08-18", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "kong-token", "title": "$KONG current product page", "url": "https://www.cyberkongz.com/kong", "publisher": "CyberKongz", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "kong-terms", "title": "CyberKongz Terms of Service", "url": "https://www.cyberkongz.com/terms-of-service", "publisher": "CyberKongz LLC", "source_date": "2023-11-13", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "kong-shop", "title": "CyberKongz Shop", "url": "https://shop.cyberkongz.com/", "publisher": "CyberKongz", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false}
+      ]
+    },
+    {
+      "slug": "bitmap",
+      "name": "Bitmap",
+      "chain": "bitcoin-ordinals",
+      "category": "expanding-ordinals-land-standard",
+      "status": "middling",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {"schema": "forensic-freshness-v1", "status_basis": "direct_current", "status_as_of": "2026-07-28", "last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "stale": false},
+        "launched": "Bitmap emerged in 2023 as an Ordinals convention for claiming Bitcoin block space. The current living whitepaper does not publish a single formal launch day, so no exact date is asserted.",
+        "supply": "Expanding rather than fixed: at most one valid district claim can correspond to each Bitcoin block height under the first-valid-inscription rule, and new claimable districts arise as Bitcoin produces blocks. Parcels can be separately inscribed and must not be added as equivalent districts.",
+        "mint_price": "No protocol-wide sale price or creator raise. A claimant pays Bitcoin inscription and network fees to inscribe `{block-height}.bitmap`; fees vary with transaction conditions and do not accrue as a disclosed Bitmap primary sale.",
+        "community_history": "Bitmap developed as an open consensus ruleset and living whitepaper for districts, parcels and buildable interpretations. Updated documentation proves continuing standards work, not active owner retention, product usage or consensus across every indexer.",
+        "founder_engagement": "The official materials attribute the theory to the pseudonym Bitoshi Blockamoto. They do not disclose a legal identity, company, complete maintainer roster or enforceable central administrator.",
+        "benefits": "A valid district inscription is recognized by adherents as the claim for a Bitcoin block's mapped space; developers may render terrain, attach child parcels and build experiences. These are consensus-layer possibilities, not guaranteed legal property, platform access or revenue.",
+        "business": "Bitmap is presented as an open standard rather than a centralized collection sale. Indexers, marketplaces and applications may build businesses around it, but no protocol revenue, royalty, treasury or holder cash flow is disclosed.",
+        "analysis": "Middling means the living documentation remained recently updated and the ruleset continues to specify ownership and building, while current first-party evidence does not establish broad application use, consistent indexing, holder retention or market health. It does not establish floor, volume, liquidity or revenue.",
+        "team": {"attributed_theorist": "Bitoshi Blockamoto (pseudonym)", "governance_boundary": "Consensus depends on adopters and indexers applying a public ruleset rather than a disclosed legal administrator.", "roster_boundary": "Legal identity and complete maintainers are undisclosed.", "source_ids": ["bitmap-intro", "bitmap-method", "bitmap-current"]},
+        "chronology": [
+          {"date": "2023", "event": "Bitmap emerged as an Ordinals convention for first-valid block-height district claims.", "source_ids": ["bitmap-current", "bitmap-theory"]},
+          {"date": "2024", "event": "The living whitepaper documented the TRIP framework spanning theory, ruleset, index and product.", "source_ids": ["bitmap-method"]},
+          {"date": "2025", "event": "District and parcel layers were documented with explicit parent-child and detachment behavior.", "source_ids": ["bitmap-theory"]},
+          {"date": "2026-07-28", "event": "Bitmap 101 and the living whitepaper remained online with the landing documentation updated within the prior month.", "source_ids": ["bitmap-current", "bitmap-whitepaper"]}
+        ],
+        "market_holder_boundaries": {"market": "No current floor, volume, bids, liquidity, inscription-cost series, royalty or realized-return data.", "holders": "No current unique district owners, concentration, retention or parcel-owner count; block heights and inscriptions are not holders.", "available_evidence": "Current public rules and expanding issuance establish mechanism continuity, not adoption or market quality.", "source_ids": ["bitmap-current", "bitmap-theory", "bitmap-method"]},
+        "products_and_value_capture": {"products": ["district claims", "parcel child inscriptions", "spatial mapping rules", "indexer framework", "developer-rendered experiences"], "capture": "Claimants pay Bitcoin fees; third parties may monetize products, but protocol revenue and owner cash flow are withheld.", "source_ids": ["bitmap-theory", "bitmap-method"]},
+        "why": {"finding": "Tying districts to existing Bitcoin blocks gives the map a shared deterministic substrate. Utility still depends on social consensus, accurate indexers and applications that choose to interpret the rules.", "source_ids": ["bitmap-intro", "bitmap-method", "bitmap-theory"]},
+        "strategic_choices": [
+          {"choice": "Use first-valid `{block-height}.bitmap` inscriptions rather than a centrally minted fixed collection.", "source_ids": ["bitmap-current", "bitmap-theory"]},
+          {"choice": "Represent blocks as districts and transactions as detachable child parcels.", "source_ids": ["bitmap-theory"]},
+          {"choice": "Separate theory, ruleset, index and product so multiple applications can share a ground truth.", "source_ids": ["bitmap-method"]}
+        ],
+        "counterfactual": {"finding": "Without repeatable public indexing, competing parsers could fork recognized ownership. Without applications, valid claims could persist as inscriptions but lack practical spatial utility.", "source_ids": ["bitmap-method"]},
+        "risks": [
+          {"risk": "Social consensus rather than Bitcoin protocol consensus determines which Bitmap rules and claims applications recognize.", "source_ids": ["bitmap-current", "bitmap-method"]},
+          {"risk": "Indexer disagreement or ruleset changes can fork provenance and product behavior.", "source_ids": ["bitmap-method"]},
+          {"risk": "Expanding district supply and separately inscribed parcels complicate scarcity and valuation comparisons.", "source_ids": ["bitmap-abstract", "bitmap-theory"]}
+        ],
+        "unknowns": ["Exact formal launch day and complete maintainer history.", "Current valid district count, unique owners, concentration and parcel count.", "Current floor, volume, liquidity and average inscription cost.", "Active applications, users, indexer agreement and ecosystem revenue."],
+        "review": {"last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "triggers": ["ruleset revision", "indexer disagreement", "new product launch", "new primary holder or usage disclosure"]},
+        "evidence": [
+          {"field": "launch", "value": "Protocol emerged in 2023; exact formal day withheld", "as_of": "2023-12-31", "basis": "operator", "source_ids": ["bitmap-current", "bitmap-theory"]},
+          {"field": "supply_or_mint", "value": "Expanding district opportunity tied to Bitcoin block heights; parcels separate", "as_of": "2026-07-28", "basis": "onchain", "source_ids": ["bitmap-abstract", "bitmap-theory"]},
+          {"field": "mint_price", "value": "No centralized sale; variable Bitcoin inscription and network fees", "as_of": "2026-07-28", "basis": "onchain", "source_ids": ["bitmap-current", "bitmap-theory"]},
+          {"field": "lifecycle_status", "value": "middling — current living ruleset verified; application adoption and market health not established", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["bitmap-current", "bitmap-whitepaper", "bitmap-method"]},
+          {"field": "community_history", "value": "Living open-standard development continues; adopter retention withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["bitmap-current", "bitmap-whitepaper"]},
+          {"field": "founder_engagement", "value": "Theory attributed to pseudonymous Bitoshi Blockamoto; legal identity and roster withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["bitmap-intro", "bitmap-current"]},
+          {"field": "benefits", "value": "Consensus land claims and developer interpretation without legal-property or revenue guarantees", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["bitmap-theory", "bitmap-method"]},
+          {"field": "business", "value": "Open standard with third-party products; protocol revenue and owner cash flow withheld", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["bitmap-method"]},
+          {"field": "analysis", "value": "Ruleset continuity verified; market, holder, indexer-agreement and usage conclusions withheld", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["bitmap-current", "bitmap-method"]}
+        ]
+      },
+      "sources": [
+        {"id": "bitmap-current", "title": "Bitmap 101", "url": "https://gitbook.bitmap.land/", "publisher": "Bitmap", "source_date": "2026-06-28", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "bitmap-whitepaper", "title": "Bitmap Theory Whitepaper", "url": "https://gitbook.bitmap.land/bitmap-theory-whitepaper", "publisher": "Bitmap", "source_date": "2026-03-28", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "bitmap-abstract", "title": "Bitmap Theory — Abstract", "url": "https://gitbook.bitmap.land/bitmap-theory-whitepaper/abstract", "publisher": "Bitmap", "source_date": "2026-03-28", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "bitmap-intro", "title": "Bitmap Theory — Introduction", "url": "https://gitbook.bitmap.land/bitmap-theory-whitepaper/introduction", "publisher": "Bitmap", "source_date": "2025-11-28", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "bitmap-method", "title": "Bitmap Theory — Methodology", "url": "https://gitbook.bitmap.land/bitmap-theory-whitepaper/methodology", "publisher": "Bitmap", "source_date": "2026-01-28", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false},
+        {"id": "bitmap-theory", "title": "Bitmap Theory — District and Parcel rules", "url": "https://gitbook.bitmap.land/bitmap-theory-whitepaper/theory", "publisher": "Bitmap", "source_date": "2026-02-28", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "mechanism", "stale_after": null, "stale": false}
+      ]
+    },
+    {
+      "slug": "opensea-marketplace",
+      "name": "OpenSea",
+      "chain": "multichain",
+      "category": "noncustodial-nft-token-marketplace",
+      "status": "thriving",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {"schema": "forensic-freshness-v1", "status_basis": "direct_current", "status_as_of": "2026-07-28", "last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "stale": false},
+        "launched": "Devin Finzer and Alex Atallah launched OpenSea in 2017 as an open NFT marketplace. OS2 entered public release in May 2025 and broadened the product into multichain NFT and token trading.",
+        "supply": "Not applicable: OpenSea is a marketplace and portal spanning millions of collections and assets, not one collection. Operator counts of collections and NFTs are platform inventory metrics, not minted supply, current listings, owners or users.",
+        "mint_price": "Not applicable platform-wide. Creators and collections choose prices and sale mechanics, while secondary assets are seller-listed; no defensible universal mint price or aggregate creator raise exists.",
+        "community_history": "OpenSea grew from a 2017 NFT marketplace into Pro, Studio and OS2, which replaced the legacy experience and added token trading across chains. Current support documentation shows ongoing operation but feature availability can differ between product versions.",
+        "founder_engagement": "Devin Finzer remains CEO and co-founder; Alex Atallah is listed as co-founder and board member. The current leadership page also names functional executives, while OpenSea is legally operated by Ozone Networks, Inc.",
+        "benefits": "Users can discover, buy, sell and mint NFTs and swap tokens through self-custodial wallets across supported chains. Aggregation, cross-chain purchase and rewards features depend on current interfaces, terms, chains and third-party liquidity.",
+        "business": "OpenSea provides marketplace, creator, aggregation and token-swap products. Operator cumulative volume is historical gross activity, not revenue; current fee revenue, costs, rebates, token economics and profitability are undisclosed.",
+        "analysis": "Thriving means the current platform, support system, leadership and post-beta OS2 experience remained live with NFTs and token swaps. It does not establish current NFT market share, organic volume, active traders, fee revenue, liquidity quality or profitability.",
+        "team": {"cofounders": ["Devin Finzer", "Alex Atallah"], "current_ceo": "Devin Finzer", "legal_operator": "Ozone Networks, Inc. d/b/a OpenSea", "product_transition": "OS2 replaced the legacy experience and expanded beyond NFTs.", "source_ids": ["opensea-about", "opensea-terms", "opensea-os2"]},
+        "chronology": [
+          {"date": "2017", "event": "Devin Finzer and Alex Atallah launched OpenSea.", "source_ids": ["opensea-about"]},
+          {"date": "2023", "event": "OpenSea launched Pro and Studio products for traders and creators.", "source_ids": ["opensea-about"]},
+          {"date": "2025-05-29", "event": "OS2 exited beta and replaced the legacy experience with NFT and token trading across 19 chains.", "source_ids": ["opensea-public"]},
+          {"date": "2026-07-28", "event": "Current marketplace, token-swap, leadership and support surfaces remained operational.", "source_ids": ["opensea-about", "opensea-welcome"]}
+        ],
+        "market_holder_boundaries": {"market": "No independently verified current NFT volume, market share, fee revenue, wash-adjusted activity, bid depth or profitability series.", "holders": "Not a collection: users, wallets, traders, collection owners and asset owners are distinct populations; operator inventory counts are not holders.", "available_evidence": "Current product operation and operator cumulative metrics establish longevity and scope, not current market quality.", "source_ids": ["opensea-about", "opensea-welcome"]},
+        "products_and_value_capture": {"products": ["NFT marketplace", "creator drops and Studio", "Pro trading", "market aggregation", "multichain token swaps", "cross-chain purchasing"], "capture": "Marketplace and swap economics exist, but current fees, rebates, revenue, costs and profitability are withheld.", "source_ids": ["opensea-os2", "opensea-public", "opensea-welcome"]},
+        "why": {"finding": "Self-custody, broad inventory and multichain aggregation created marketplace network effects. Expanding into tokens diversifies activity but makes NFT-specific health harder to infer from platform-wide metrics.", "source_ids": ["opensea-about", "opensea-os2", "opensea-welcome"]},
+        "strategic_choices": [
+          {"choice": "Launch as an open, noncustodial NFT marketplace rather than a single curated collection.", "source_ids": ["opensea-about", "opensea-welcome"]},
+          {"choice": "Build specialized Pro and Studio products before a ground-up OS2 rebuild.", "source_ids": ["opensea-about", "opensea-os2"]},
+          {"choice": "Expand OS2 into multichain token trading, aggregation and cross-chain purchasing.", "source_ids": ["opensea-os2", "opensea-public"]}
+        ],
+        "counterfactual": {"finding": "Without OS2, OpenSea could have remained tied to a narrower legacy NFT interface. The rebuild expands addressable activity while adding execution, regulatory, liquidity-provider and product-scope complexity.", "source_ids": ["opensea-os2", "opensea-public"]},
+        "risks": [
+          {"risk": "Platform-wide cumulative counts can obscure current NFT-only demand and organic activity.", "source_ids": ["opensea-about"]},
+          {"risk": "Multichain aggregation and token swaps add smart-contract, routing, chain and third-party liquidity dependencies.", "source_ids": ["opensea-os2", "opensea-welcome"]},
+          {"risk": "Terms and feature availability can change; not every legacy feature was initially available in OS2.", "source_ids": ["opensea-help-os2", "opensea-terms"]}
+        ],
+        "unknowns": ["Current NFT-only active traders, organic volume, bid depth and market share.", "Current fee schedule economics, revenue, costs and profitability.", "Current wash-trading controls, fraud losses and support outcomes.", "SEA-token timing, allocation, liabilities and effect on marketplace economics."],
+        "review": {"last_verified_at": "2026-07-29", "next_review_at": "2026-10-29", "triggers": ["fee or terms change", "chain or product shutdown", "SEA-token launch", "new audited usage or financial disclosure"]},
+        "evidence": [
+          {"field": "launch", "value": "OpenSea launched in 2017; OS2 public release 2025-05-29", "as_of": "2017-12-31", "basis": "operator", "source_ids": ["opensea-about", "opensea-public"]},
+          {"field": "supply_or_mint", "value": "Not applicable to a multichain marketplace; inventory metrics are not collection supply", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["opensea-about", "opensea-welcome"]},
+          {"field": "mint_price", "value": "Not applicable platform-wide; collection and seller pricing varies", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["opensea-welcome", "opensea-terms"]},
+          {"field": "lifecycle_status", "value": "thriving — current NFT and token products, support and leadership verified; not market performance", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["opensea-about", "opensea-welcome", "opensea-terms"]},
+          {"field": "community_history", "value": "Marketplace evolved through Pro, Studio and OS2; current trader retention withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["opensea-about", "opensea-public"]},
+          {"field": "founder_engagement", "value": "Devin Finzer remains CEO; Alex Atallah remains co-founder and board member", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["opensea-about"]},
+          {"field": "benefits", "value": "Self-custodial NFT and token activity across chains; feature and liquidity dependencies bounded", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["opensea-welcome", "opensea-os2"]},
+          {"field": "business", "value": "Marketplace, creator and swap products; current revenue and profitability withheld", "as_of": "2026-07-28", "basis": "operator", "source_ids": ["opensea-about", "opensea-public"]},
+          {"field": "analysis", "value": "Current platform operation verified; NFT market-share, organic-volume and financial conclusions withheld", "as_of": "2026-07-28", "basis": "analyst", "source_ids": ["opensea-about", "opensea-welcome"]}
+        ]
+      },
+      "sources": [
+        {"id": "opensea-about", "title": "About OpenSea", "url": "https://opensea.io/about-opensea", "publisher": "OpenSea", "source_date": "2026-07-28", "source_date_kind": "observed", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "opensea-os2", "title": "Introducing OS2", "url": "https://opensea.io/blog/articles/introducing-os2", "publisher": "OpenSea", "source_date": "2025-03-12", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "historical_event", "stale_after": null, "stale": false},
+        {"id": "opensea-public", "title": "OS2 Public Release", "url": "https://opensea.io/blog/articles/opensea-announces-os2-is-now-out-of-beta-token-trading-fully-live-across-19-chains-new-rewards-program-launches-and-community-hub-revamped", "publisher": "OpenSea", "source_date": "2025-05-29", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "historical_event", "stale_after": null, "stale": false},
+        {"id": "opensea-help-os2", "title": "What is OS2?", "url": "https://support.opensea.io/en/articles/10549920-what-is-os2-how-do-i-access-it", "publisher": "OpenSea", "source_date": "2026-07-14", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "opensea-welcome", "title": "Welcome to OpenSea", "url": "https://support.opensea.io/en/articles/8866942-welcome-to-opensea", "publisher": "OpenSea", "source_date": "2025-10-03", "source_date_kind": "published", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false},
+        {"id": "opensea-terms", "title": "OpenSea Terms of Service", "url": "https://opensea.io/tos", "publisher": "Ozone Networks, Inc.", "source_date": "2025-09-14", "source_date_kind": "updated", "last_verified_at": "2026-07-29", "evidence_scope": "current_state", "stale_after": "2026-10-29", "stale": false}
+      ]
+    }
+  ]
+}
