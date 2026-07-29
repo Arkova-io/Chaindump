@@ -145,6 +145,39 @@ async function freshWorker() {
 const ctx = () => ({ waitUntil() {}, passThroughOnException() {} });
 let database;
 
+function stubChainFeeds() {
+  const universe = migrationTouchedChains.map((name, index) => ({
+    name,
+    tvl: 1_000_000_000 - (index * 1_000_000),
+    tokenSymbol: null,
+    gecko_id: null,
+    chainId: index + 1,
+  }));
+  const overview = {
+    protocols: universe.map(({ name }, index) => ({
+      name: `Protocol${index}`,
+      category: 'Dexs',
+      breakdown24h: { [name]: { [`Protocol${index}`]: 1_000_000 - index } },
+    })),
+  };
+  const json = (value) => new Response(JSON.stringify(value), {
+    headers: { 'content-type': 'application/json' },
+  });
+  vi.stubGlobal('fetch', vi.fn(async (url) => {
+    const value = String(url);
+    if (value.includes('/v2/chains')) return json(universe);
+    if (value.includes('/overview/dexs?') || value.includes('/overview/fees?')) {
+      return json(overview);
+    }
+    if (value.includes('/overview/dexs/') || value.includes('/overview/fees/')) {
+      return json({ total24h: 1 });
+    }
+    if (value.includes('/v2/historicalChainTvl/')) return json([]);
+    if (value.includes('/stablecoinchains')) return json([]);
+    return new Response('', { status: 503 });
+  }));
+}
+
 afterEach(() => {
   database?.close();
   database = undefined;
@@ -375,6 +408,7 @@ describe('chain causal completion migration 0062', () => {
     const { document } = loadArtifacts();
     database = new DatabaseSync(':memory:');
     applyMigrations(database);
+    stubChainFeeds();
     const worker = await freshWorker();
     for (const entry of document.cases) {
       const response = await worker.fetch(
