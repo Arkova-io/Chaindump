@@ -57,8 +57,8 @@ const EXPECTED = Object.freeze({
 
 function assertSource(source, path, casino = false, allowUnavailable = false) {
   const url = casino ? source.canonical_url : source.url;
-  const tier = casino ? source.source_tier : source.source_tier;
-  const role = casino ? source.source_role : source.source_role;
+  const tier = source.source_tier;
+  const role = source.source_role;
   if (!/^https:\/\/\S+$/.test(url || '')) throw new Error(`${path}: HTTPS URL required`);
   if (!(casino ? ['A', 'B', 'C', 'D'] : ['T1', 'T2', 'T3', 'T4']).includes(tier)) {
     throw new Error(`${path}: explicit source tier required`);

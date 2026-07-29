@@ -70,7 +70,7 @@ export function summarizeCasinoPublicationCoverage(rowsValue) {
     .map(({ expected_case_id: caseId }) => caseId);
   const dates = present
     .flatMap(({ updated_at: updatedAt }) => updatedAt ? [updatedAt] : [])
-    .sort();
+    .sort((left, right) => left.localeCompare(right));
   return {
     cohort_id: CASINO_PUBLICATION_COHORT_ID,
     universe_as_of: CASINO_PUBLICATION_COHORT_AS_OF,
