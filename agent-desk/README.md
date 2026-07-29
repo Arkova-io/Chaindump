@@ -23,24 +23,34 @@ asserts fraud/crime is force-flagged for review (CLAUDE.md §1.5).
 ```bash
 npm install && npm run build
 export ANTHROPIC_API_KEY=...          # prod: GCP Secret Manager `Anthropic`
+export DESK_PROPOSAL_TOKEN=...        # proposal-only Worker credential
 node dist/index.js                     # one pass; writes to ./proposals
 ```
 
 Env: `ANTHROPIC_API_KEY` (required), `CHAINDUMP_MCP_URL` (default the live Cloud
 Run MCP), `DESK_TASK` (the pass to run), `DESK_MODEL` (default `claude-sonnet-5`),
-`DESK_MAX_TURNS`, `DESK_QUEUE_DIR`.
+`DESK_MAX_TURNS`, `DESK_QUEUE_DIR`, and `DESK_PROPOSAL_TOKEN` (proposal queue).
+`DESK_TOKEN` remains a temporary proposal-only migration fallback.
+
+`DESK_REVIEW_TOKEN` must never be present in this agent container. It belongs
+only in the human review environment and is required to list pending proposals
+or promote/reject one. It must be a distinct secret; the Worker fails closed if
+the proposal and review values match. The proposal credential cannot perform
+those operations.
 
 ## Deploy (scheduled)
 
 Runs as a **Cloud Run Job** or scheduled **GitHub Action** (NOT the Worker — the
-SDK needs a Node runtime). Point `ANTHROPIC_API_KEY` at the secret and schedule
-the pass(es) you want (scam discovery, dying-chain sweep, policy/trend refresh).
+SDK needs a Node runtime). Inject `ANTHROPIC_API_KEY` and
+`DESK_PROPOSAL_TOKEN`; do not inject `DESK_REVIEW_TOKEN`. Schedule the pass(es)
+you want (scam discovery, dying-chain sweep, policy/trend refresh).
 
 ## Status / next increments
 
 - ✅ SDK app scaffold: research loop, chain-intel MCP wiring, human-gated
   `queue_proposal`, accuracy/gating system prompt. `npm run build` clean.
-- ⏭ **Next:** wire the promotion step (review queue → D1 via the Worker's
-  authenticated write path); add the scheduler (Cloud Run Job); a first live run
+- ✅ Proposal-only authenticated write path to the Worker's durable queue. Live
+  publication remains a separate human-review action.
+- ⏭ **Next:** add the scheduler (Cloud Run Job); a first live run
   (has API cost) validated with the `agent-sdk-verifier-ts` agent; per-desk task
   variants (scam / dying-chain / policy / trend).

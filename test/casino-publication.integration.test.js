@@ -26,6 +26,11 @@ const PUBLISHED_CASE = {
   confidence: 'medium',
   unsourced_fields: '["licence","comparable_operating_metric"]',
   last_reviewed: '2026-07-29',
+  forensic_review: JSON.stringify({
+    status: 'current',
+    last_reviewed_at: '2026-07-29',
+    next_review_at: '2026-08-05',
+  }),
   quality_passed: 1,
   source_count: 3,
 };
@@ -69,6 +74,26 @@ function makeDB({ published = [PUBLISHED_CASE] } = {}) {
               }],
             };
           }
+          if (sql.includes('FROM casino_syntheses')) {
+            return {
+              results: [{
+                case_id: 'overtime',
+                outlook: JSON.stringify({
+                  classification: 'unclassified',
+                  forensic_analysis: {
+                    version: 'forensic-analysis-v1',
+                    review: {
+                      status: 'current',
+                      last_reviewed_at: '2026-07-29',
+                      next_review_at: '2026-08-05',
+                    },
+                  },
+                }),
+                lessons_learned: '[]',
+                source_claim_ids: '[]',
+              }],
+            };
+          }
           return { results: [] };
         },
       };
@@ -83,6 +108,15 @@ describe('casino publication routes', () => {
     const worker = await freshWorker();
     const response = await worker.fetch(new Request('http://localhost/api/casino/overtime'), { DB: makeDB() }, ctx());
     expect(response.status).toBe(200);
+    const body = await response.json();
+    expect(body.synthesis.forensic_analysis).toMatchObject({
+      version: 'forensic-analysis-v1',
+      review: {
+        status: 'current',
+        last_reviewed_at: '2026-07-29',
+        next_review_at: '2026-08-05',
+      },
+    });
   });
 
   it('lists only quality-passed dossiers with reviewed-source counts', async () => {
@@ -99,6 +133,7 @@ describe('casino publication routes', () => {
     expect(body.cases[0]).toMatchObject({ case_id: 'overtime', source_count: 3 });
     expect(body.cases[0].chains).toEqual(['Optimism', 'Arbitrum', 'Base']);
     expect(body.cases[0].unsourced_fields).toEqual(['licence', 'comparable_operating_metric']);
+    expect(body.cases[0].forensic_review).toMatchObject({ next_review_at: '2026-08-05' });
   });
 
   it('does not expose an unpublished candidate through the detail route', async () => {

@@ -378,7 +378,13 @@
   .tagn { width:110px; flex-shrink:0; color:var(--muted2); }
   .tagbarwrap { flex:1; background:var(--surface3); border-radius:4px; height:8px; overflow:hidden; }
   .tagbar { display:block; height:100%; background:linear-gradient(90deg,var(--red),#fb923c); border-radius:4px; }
+  .tagbar.good { background:linear-gradient(90deg,var(--green),#2dd4bf); }
+  .tagbar.warn { background:linear-gradient(90deg,var(--yellow),#f59e0b); }
+  .tagbar.info { background:linear-gradient(90deg,var(--accent2),var(--purple)); }
+  .tagbar.muted { background:linear-gradient(90deg,var(--muted),var(--muted2)); }
   .tagc { width:20px; text-align:right; color:var(--muted); font-variant-numeric:tabular-nums; }
+  .analysis-distribution { margin:12px 0 18px; }
+  .analysis-distribution .gsec { margin-top:0; }
   .gnar { font-size:12.5px; line-height:1.65; color:var(--muted2); }
   .gnar.muted { color:var(--muted); }
   .prose, .accbody, .proseclamp { font-size:12.5px; line-height:1.65; color:var(--muted2); }
@@ -673,7 +679,8 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   exchangeAnalysisDir: 1, exchangeAnalysisExpanded: null,
   casinoAnalysisData: null, casinoCoverage: null, casinoAnalysisError: '', casinoAnalysisQuery: '', casinoAnalysisSort: 'reviewed',
   casinoAnalysisStatus: 'all', casinoAnalysisKind: 'all', casinoAnalysisSubtype: 'all', casinoAnalysisToken: 'all', casinoAnalysisExpanded: null, casinoAnalysisDetails: {},
-  nftCaseSort: 'name', nftCaseStatus: 'all', nftCaseChain: 'all', forensicsRefresh: null };
+  nftCaseSort: 'name', nftCaseStatus: 'all', nftCaseChain: 'all',
+  forensicsRefresh: null, forensicsRefreshStatus: 'loading' };
 
 const fmtUsd = (n) => n == null ? '—' : (n < 0 ? '-' : '') + '$' + Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 2 }).format(Math.abs(n));
 const fmtNum = (n) => n == null ? '—' : Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(n);
@@ -695,7 +702,9 @@ const safeUrl = (u) => { const s = String(u == null ? '' : u).trim(); return /^(
 // ---------------------------------------------------------------------------
 function forensicsRefreshText() {
   const refresh = state.forensicsRefresh;
-  if (!refresh) return 'Six-hour review scan: loading evidence-governance status…';
+  if (state.forensicsRefreshStatus === 'loading') return 'Six-hour review scan: loading evidence-governance status…';
+  if (state.forensicsRefreshStatus === 'unavailable') return 'Six-hour review scan: status unavailable · human promotion required';
+  if (!refresh) return 'Six-hour review scan: no completed scan recorded · human promotion required';
   const due = Number(refresh.due_nft || 0) + Number(refresh.due_exchange || 0) + Number(refresh.due_casino || 0) + Number(refresh.due_chain || 0);
   return `Six-hour review scan: ${esc(refresh.completed_at || 'completed')} · ${esc(due)} dossier(s) due · human promotion required`;
 }
@@ -709,8 +718,10 @@ async function loadForensicsRefreshStatus() {
     const response = await fetch('/api/forensics-refresh-status');
     const payload = response.ok ? await response.json() : {};
     state.forensicsRefresh = payload.refresh || null;
+    state.forensicsRefreshStatus = response.ok ? 'loaded' : 'unavailable';
   } catch {
     state.forensicsRefresh = null;
+    state.forensicsRefreshStatus = 'unavailable';
   }
   renderForensicsRefreshStatus();
 }
@@ -777,7 +788,11 @@ function nftEvidenceHtml(profile, sources, freshnessState) {
 function nftFreshnessHtml(profile, derived) {
   const policy = profile && profile.evidence_policy;
   if (!policy || policy.schema !== 'forensic-freshness-v1') return '';
-  const state = derived?.statusWithheld ? 'STALE · status withheld' : derived?.reviewOverdue ? 'review overdue' : 'current';
+  const reviewOverdue = reviewDateIsDue(policy.next_review_at) || derived?.reviewOverdue;
+  const scheduled = /^\d{4}-\d{2}-\d{2}$/.test(policy.next_review_at || '');
+  const state = derived?.statusWithheld ? 'STALE · status withheld'
+    : reviewOverdue ? 'review overdue'
+      : scheduled ? 'current' : 'unknown · no review schedule';
   return `<div class="gfield"><span class="gfl">Evidence freshness</span> ${esc(state)}<span class="muted"> · basis ${esc(policy.status_basis || '—')} · status evidence ${esc(policy.status_as_of || '—')} · verified ${esc(policy.last_verified_at || '—')} · review by ${esc(policy.next_review_at || '—')}</span></div>`;
 }
 
@@ -832,6 +847,139 @@ function analysisButton(view, label) {
 function analysisText(value) {
   if (Array.isArray(value)) return value.map(String).join(' · ');
   return value == null ? '' : String(value);
+}
+function distributionItems(rows, getValue, labels = {}) {
+  const counts = new Map();
+  rows.forEach((row) => {
+    const key = String(getValue(row) || 'unknown');
+    counts.set(key, (counts.get(key) || 0) + 1);
+  });
+  return [...counts.entries()]
+    .map(([key, count]) => ({ key, label: labels[key] || key.replaceAll('_', ' '), count }))
+    .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+}
+function analysisDistributionHtml(title, items) {
+  const visible = items.filter((item) => Number(item.count) >= 0);
+  const total = visible.reduce((sum, item) => sum + Number(item.count || 0), 0);
+  const tone = (key) => {
+    if (/successful|thriving|current|published|research/.test(key)) return 'good';
+    if (/mid|fading|due|declining|withheld/.test(key)) return 'warn';
+    if (/unknown|legacy|live_only|pending/.test(key)) return 'muted';
+    return 'info';
+  };
+  const rows = visible.map((item) => {
+    const width = total ? Math.max(item.count ? 3 : 0, (Number(item.count || 0) / total) * 100) : 0;
+    const label = `${item.label}: ${item.count} of ${total}`;
+    return `<div class="tagrow" aria-label="${esc(label)}"><span class="tagn">${esc(item.label)}</span><span class="tagbarwrap"><span class="tagbar ${tone(item.key)}" style="width:${width.toFixed(1)}%"></span></span><span class="tagc">${esc(item.count)}</span></div>`;
+  }).join('');
+  return `<div><div class="gsec">${esc(title)} · ${total}</div><div class="taglist">${rows || '<div class="muted">No cohort data.</div>'}</div></div>`;
+}
+function analysisCohortPanel(leftTitle, leftItems, rightTitle, rightItems, note) {
+  return `<div class="gpanel analysis-distribution"><div class="gcols">${analysisDistributionHtml(leftTitle, leftItems)}${analysisDistributionHtml(rightTitle, rightItems)}</div>${note ? `<div class="gnar muted" style="margin-top:12px">${esc(note)}</div>` : ''}</div>`;
+}
+function reviewWindowState(lastReviewed, days = 90) {
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(lastReviewed || '')) return 'unknown';
+  const due = new Date(`${lastReviewed}T00:00:00.000Z`);
+  due.setUTCDate(due.getUTCDate() + days);
+  return due.toISOString().slice(0, 10) <= new Date().toISOString().slice(0, 10) ? 'review_due' : 'current';
+}
+function reviewDateIsDue(nextReviewAt) {
+  return /^\d{4}-\d{2}-\d{2}$/.test(nextReviewAt || '')
+    && nextReviewAt <= new Date().toISOString().slice(0, 10);
+}
+function forensicReviewState(review, fallback = 'unknown') {
+  const parsed = parsedObject(review);
+  const declared = parsed.freshness || parsed.status;
+  if (declared && declared !== 'current') return declared;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(parsed.next_review_at || '')) {
+    return reviewDateIsDue(parsed.next_review_at) ? 'review_due' : 'current';
+  }
+  return fallback;
+}
+function exchangeReviewState(row) {
+  const forensic = parsedObject(row.analysis?.forensic_analysis || row.profile?.forensic_analysis);
+  const review = parsedObject(forensic.review);
+  if (Object.keys(review).length) return forensicReviewState(review);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(row.freshness?.next_review_at || '')) {
+    return reviewDateIsDue(row.freshness.next_review_at) ? 'review_due' : 'current';
+  }
+  return row.freshness?.status && row.freshness.status !== 'current' ? row.freshness.status : 'unknown';
+}
+function nftReviewState(row) {
+  if (!row.freshness) return 'legacy';
+  if (row.freshness.statusWithheld) return 'withheld';
+  const policy = parsedObject(row.profile?.evidence_policy);
+  const nextReviewAt = policy.next_review_at || row.freshness.nextReviewAt;
+  if (reviewDateIsDue(nextReviewAt) || row.freshness.reviewOverdue) return 'review_due';
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(nextReviewAt || '')) return 'unknown';
+  return 'current';
+}
+function nftProfileRefHtml(value, sources) {
+  const refs = Array.isArray(value?.source_ids) ? value.source_ids
+    : Array.isArray(value?.source_refs) ? value.source_refs : [];
+  const available = sourceArray(sources);
+  const links = refs.map((ref) => {
+    const key = typeof ref === 'string' ? ref : (ref?.id || ref?.url);
+    const source = available.find((item) => item.id === key || item.url === key)
+      || (typeof key === 'string' && key.startsWith('https://') ? { url: key, title: 'source' } : null);
+    return source?.url
+      ? `<a class="ecite" href="${esc(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title || 'source')} ↗</a>`
+      : '';
+  }).filter(Boolean);
+  return links.length ? `<div class="asrc">Cited evidence: ${links.join(' · ')}</div>` : '';
+}
+function nftStructuredValueHtml(value, sources) {
+  if (value == null || value === '') return '';
+  if (Array.isArray(value)) {
+    const items = value.map((item) => {
+      if (item && typeof item === 'object') {
+        const title = item.choice || item.decision || item.risk || item.signal || item.question || item.finding || item.summary || '';
+        const detail = item.consequence || item.implication || item.mechanism || item.boundary || '';
+        return `<li>${title ? `<b>${esc(title)}</b>` : ''}${detail ? `<div class="muted">${esc(detail)}</div>` : ''}${nftProfileRefHtml(item, sources)}</li>`;
+      }
+      return `<li>${esc(String(item))}</li>`;
+    }).join('');
+    return items ? `<ul class="evlist">${items}</ul>` : '';
+  }
+  if (typeof value === 'object') {
+    const rows = Object.entries(value)
+      .filter(([key, field]) => !['source_ids', 'source_refs'].includes(key) && field != null && field !== '')
+      .map(([key, field]) => {
+        const text = Array.isArray(field) ? field.map((item) => typeof item === 'object' ? factObjectText(item) : String(item)).filter(Boolean).join(' · ')
+          : typeof field === 'object' ? (factObjectText(field) || JSON.stringify(field)) : String(field);
+        return text ? `<div class="gfield"><span class="gfl">${esc(key.replaceAll('_', ' '))}</span>${esc(text)}</div>` : '';
+      }).filter(Boolean).join('');
+    return `${rows}${nftProfileRefHtml(value, sources)}`;
+  }
+  return proseBox(String(value));
+}
+function nftProfileAnalysisHtml(profile, sources) {
+  const forensic = parsedObject(profile?.forensic_analysis);
+  const hasForensic = forensic.version === 'forensic-analysis-v1' || forensic.schema === 'forensic-analysis-v1';
+  const fields = [
+    ['Token model &amp; value capture', profile?.token_model],
+    ['Chain dependence', profile?.chain_dependence],
+    ['Risk evidence', profile?.risks],
+  ];
+  // Older dossiers may have explicit causal fields but not the reviewed shared
+  // contract. Keep those fields visible without mislabeling them as normalized.
+  if (!hasForensic) fields.push(
+    ['Why this outcome · legacy profile field', profile?.why],
+    ['Strategic choices · legacy profile field', profile?.strategic_choices],
+    ['Counterfactual · legacy profile field', profile?.counterfactual],
+    ['What would change our mind · legacy profile field', profile?.watch],
+    ['Material unknowns · legacy profile field', profile?.unknowns],
+  );
+  const structured = fields.map(([label, value]) => {
+    const body = nftStructuredValueHtml(value, sources);
+    return body ? `<div class="gsec">${label}</div>${body}` : '';
+  }).join('');
+  const resolveRef = (ref) => {
+    const key = typeof ref === 'string' ? ref : (ref?.id || ref?.url || ref?.value);
+    return sourceArray(sources).find((item) => item.id === key || item.url === key)
+      || (typeof key === 'string' && key.startsWith('https://') ? { url: key, title: 'source' } : null);
+  };
+  return `${structured}${forensicAnalysisHtml(profile?.forensic_analysis, resolveRef, 'This NFT/Ordinals dossier remains visible, but its normalized causal map is pending review.')}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -915,6 +1063,13 @@ function renderBlockchainAnalysis() {
   });
   const researched = rows.filter((row) => row.coverage === 'Research dossier').length;
   const legacy = rows.filter((row) => row.coverage === 'Legacy postmortem').length;
+  const cohortPanel = analysisCohortPanel(
+    'Lifecycle mix',
+    distributionItems(rows, (row) => row.lifecycle, { live: 'live / top 50', mid: 'stuck / mid', dead: 'dead / dying' }),
+    'Review freshness',
+    distributionItems(rows, (row) => row.freshness?.status || 'unknown', { review_due: 'review due', unknown: 'no review schedule' }),
+    'Counts use the same rows shown by this index; research freshness follows each dossier’s published review metadata.',
+  );
   const cards = filtered.map((row) => `<div class="gcard">
     <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${blockchainLifecycleClass(row.lifecycle)}">${esc(row.lifecycle)}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${row.metric == null ? '—' : fmtUsd(row.metric)}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
@@ -926,6 +1081,7 @@ function renderBlockchainAnalysis() {
   el.innerHTML = `${head}
     <div class="analysis-note">This index distinguishes structural research dossiers, legacy postmortems, and live-only coverage. A chain appearing in the top 50 is not automatically counted as analyzed.</div>
     <div class="gstats">${gstat(rows.length, 'chains indexed')}${gstat(researched, 'structural dossiers')}${gstat(legacy, 'legacy postmortems')}${gstat(rows.filter(r=>r.lifecycle==='dead').length, 'dead / dying')}</div>
+    ${cohortPanel}
     <div class="toolbar"><div class="analysis-controls">
       <input id="blockchainAnalysisSearch" class="search" placeholder="Search chains or lifecycle…" value="${esc(state.blockchainAnalysisQuery)}" />
       <span class="analysis-spacer"></span>
@@ -1100,6 +1256,9 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
     : 'No recorded feature gaps';
   const snapshotDate = row.metricAsOf || String(row.updatedAt || '').slice(0,10) || 'date unresolved';
   const freshness = row.freshness || {};
+  const forensicReview = parsedObject(parsedObject(row.analysis.forensic_analysis || profile.forensic_analysis).review);
+  const freshnessState = exchangeReviewState(row);
+  const nextReviewAt = forensicReview.next_review_at || freshness.next_review_at || 'unknown';
   return `<div class="gexp">${fields.join('')}${sections.join('')}
     <div class="gsec">Field evidence</div>
     ${exchangeEvidenceLinks(row, 'operating_model_source_indexes', 'Operating model')}
@@ -1109,7 +1268,7 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
     ${exchangeEvidenceLinks(row, 'metric_source_indexes', 'Metric')}
     <div class="gsec">Data quality</div>
     <div class="gfield"><span class="gfl">${esc(row.qualityLabel)}</span> ${esc(qualityIssueText)}</div>
-    <div class="gfield"><span class="gfl">Freshness</span>${esc(freshness.status || 'unknown')} · lifecycle evidence ${esc(freshness.lifecycle_evidence_date || 'date unknown')} · last verified ${esc(freshness.last_verified_at || 'unknown')} · next review ${esc(freshness.next_review_at || 'unknown')}</div>
+    <div class="gfield"><span class="gfl">Freshness</span>${esc(freshnessState.replaceAll('_', ' '))} · lifecycle evidence ${esc(freshness.lifecycle_evidence_date || 'date unknown')} · last verified ${esc(forensicReview.last_verified_at || forensicReview.last_reviewed_at || freshness.last_verified_at || 'unknown')} · next review ${esc(nextReviewAt)}</div>
     ${srcHtml(row.sources, 'Cited sources: ')}
     <div class="stampline">Research snapshot ${esc(snapshotDate)} · data quality ${esc(row.qualityLabel)}</div>
   </div>`;
@@ -1193,9 +1352,17 @@ function renderExchangeAnalysis() {
   const cited = rows.filter((row) => row.sources.length).length;
   const cohorts = [...new Set(rows.map((row) => row.productCohort))]
     .sort((a, b) => a.localeCompare(b));
+  const cohortPanel = analysisCohortPanel(
+    'Outcome mix',
+    distributionItems(rows, (row) => row.lifecycle, { successful: 'successful', mid: 'stuck / mid', dead: 'dead / closing' }),
+    'Causal-map freshness',
+    distributionItems(rows, exchangeReviewState, { review_due: 'review due', unknown: 'pending / unknown' }),
+    'Outcome and freshness bars count normalized DEX and CEX dossiers; they do not combine unlike market metrics.',
+  );
   el.innerHTML = `${head}${errors}
     <div class="gstats">${gstat(rows.filter(r=>r.kind==='dex').length, 'DEX cases')}${gstat(rows.filter(r=>r.kind==='cex').length, 'CEX cases')}${gstat(rows.filter(r=>r.forensicStatus==='published').length, 'forensic dossiers')}${gstat(rows.filter(r=>r.qualityLabel==='partial').length, 'partial')}</div>
     <div class="analysis-note">${cited} of ${rows.length} dossiers expose citations. Comparison requires the same venue kind, product cohort, metric type, unit, and window. Spot, routed, perpetual, TVL, loss, daily, and quarterly measures are never added together.</div>
+    ${cohortPanel}
     ${exchangeTrendSummary(state.exchangeAnalysisSummaries.dex, 'DEX')}
     ${exchangeTrendSummary(state.exchangeAnalysisSummaries.cex, 'CEX')}
     <div class="toolbar"><div class="analysis-controls">
@@ -1285,6 +1452,16 @@ function casinoOutlookText(outlook) {
   const watch = Array.isArray(outlook.watch) && outlook.watch.length ? `Watch: ${outlook.watch.join(' · ')}` : '';
   return `${asOf}${watch}`.trim();
 }
+function casinoReviewState(item) {
+  const detail = state.casinoAnalysisDetails[item.case_id];
+  const detailReview = detail && detail !== 'loading' && !detail.error
+    ? parsedObject(detail.synthesis?.forensic_analysis?.review) : {};
+  const listReview = parsedObject(item.forensic_review);
+  const review = Object.keys(detailReview).length ? detailReview : listReview;
+  return Object.keys(review).length
+    ? forensicReviewState(review, reviewWindowState(item.last_reviewed))
+    : reviewWindowState(item.last_reviewed);
+}
 function casinoDetailBody(item, detail) {
   if (detail === 'loading') return '<div class="gexp"><div class="skel">Loading cited dossier…</div></div>';
   if (detail?.error) return `<div class="gexp"><div class="muted">Couldn't load this dossier: ${esc(detail.error)}</div></div>`;
@@ -1370,19 +1547,24 @@ function renderCasinoAnalysis() {
   const kinds = [...new Set(cases.map((item) => item.entity_kind).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   const subtypes = [...new Set(cases.map((item) => item.product_subtype).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   const tokens = [...new Set(cases.map((item) => item.token_status).filter(Boolean))].sort((a, b) => a.localeCompare(b));
-  const breakdown = (label, values) => `<div class="gfield"><span class="gfl">${esc(label)}</span>${values.map(([key, count]) => `${esc(casinoLabel(key))} ${count}`).join(' · ') || '—'}</div>`;
-  const byStatus = [...new Map(statuses.map((value) => [value, cases.filter((item) => item.status === value).length]))];
-  const byOutcome = [...new Map([...new Set(cases.map((item) => item.outcome_label || 'unclassified'))].sort().map((value) => [value, cases.filter((item) => (item.outcome_label || 'unclassified') === value).length]))];
   if (!cases.length) {
     const emptyCopy = coverage.target_count ? `${esc(coverage.target_count)} candidates remain research pending and are intentionally not presented as analyses.` : 'Cases appear only after sources and claims pass the publication gate.';
     const unavailable = state.casinoAnalysisError ? '<br/><span class="muted">The public dossier service is temporarily unavailable; candidates remain withheld.</span>' : '';
     el.innerHTML = `${head}<div class="analysis-empty"><b>No casino dossiers are published yet.</b><br/>${emptyCopy}${unavailable}</div>`;
     return;
   }
+  const cohortPanel = analysisCohortPanel(
+    'Cohort evidence map · outcomes',
+    distributionItems(cases, (item) => item.outcome_label || 'unclassified'),
+    'Review freshness',
+    distributionItems(cases, casinoReviewState, { review_due: 'review due', unknown: 'review date unknown' }),
+    'Bars prefer each causal map’s explicit next-review date and use the 90-day dossier policy only when that field is absent. A current review is not evidence of profitability or legal availability.',
+  );
   el.innerHTML = `${head}
     <div class="analysis-note">Only records with reviewed primary evidence, explicit scope, status evidence, an as-of metric, no blockers, and a defined outcome rule appear here. No cross-case “largest casino” ranking is computed.</div>
     <div class="gstats">${gstat(cases.length, 'published dossiers')}${gstat(unpublished, 'candidates withheld')}${gstat(cases.filter(item=>item.token_status==='documented').length, 'documented tokens')}${gstat(cases.filter(item=>item.outcome_label==='unclassified').length, 'outcomes unclassified')}</div>
-    <div class="gcols"><div class="gbox"><div class="gsec">Cohort evidence map</div>${breakdown('Operating status', byStatus)}${breakdown('Outcome labels', byOutcome)}</div><div class="gbox"><div class="gsec">Publication rule</div><div class="muted">The index does not treat candidate inclusion, a named chain, a token, or an interface as proof of success. Open a dossier to inspect field-level sources, lifecycle events, metric scope, gaps, and review date.</div></div></div>
+    ${cohortPanel}
+    <div class="analysis-note">The index does not treat candidate inclusion, a named chain, a token, or an interface as proof of success. Open a dossier to inspect field-level sources, lifecycle events, metric scope, gaps, and review date.</div>
     <div class="toolbar"><div class="analysis-controls">
       <input id="casinoAnalysisSearch" class="search" placeholder="Search casinos, chains or findings…" value="${esc(state.casinoAnalysisQuery)}" />
       <label class="muted" for="casinoAnalysisStatus">Status</label>
@@ -2017,7 +2199,7 @@ function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is 
     counterfactual ? `<div class="gsec">What could have been different</div>${counterfactual}` : '',
     watch ? `<div class="gsec">What would change our mind</div>${watch}` : '',
     unknowns ? `<div class="gsec">Material unknowns</div>${unknowns}` : '',
-    (review?.freshness || review?.status) ? `<div class="gfield"><span class="gfl">Analysis freshness</span>${esc(review.freshness || review.status)} · verified ${esc(review.last_verified_at || review.last_reviewed_at || 'unknown')} · review ${esc(review.next_review_at || 'unknown')}</div>` : '',
+    (review?.freshness || review?.status || review?.next_review_at) ? `<div class="gfield"><span class="gfl">Analysis freshness</span>${esc(forensicReviewState(review).replaceAll('_', ' '))} · verified ${esc(review.last_verified_at || review.last_reviewed_at || 'unknown')} · review ${esc(review.next_review_at || 'unknown')}</div>` : '',
   ].filter(Boolean).join('');
   return `<div class="dsec">Forensic analysis</div><div class="anbox">${sections}</div>`;
 }
@@ -2867,6 +3049,17 @@ function renderNft(data){
       ${gstat(a.avgLifespanDays!=null?Math.round(a.avgLifespanDays/30)+' mo':'—', 'avg age · case studies')}
       ${gstat(n||'…', 'live-data collections loading')}
     </div><div class="gnar muted" style="margin:0 0 14px">Note: the stats above are across the ${data.collections.length} in-depth case studies (blue-chips + notable failures), not a market average — a broader live dataset of hundreds of collections is loading.</div>`;
+  const cohortPanel = analysisCohortPanel(
+    'Lifecycle cohort',
+    distributionItems(data.collections, (item) => item.status || 'unknown'),
+    'Evidence freshness',
+    distributionItems(data.collections, nftReviewState, {
+      review_due: 'review due',
+      withheld: 'stale / withheld',
+      legacy: 'legacy / no field policy',
+    }),
+    'Lifecycle bars cover curated case studies only. Freshness is derived from each field-cited dossier’s evidence policy; legacy source lists remain visibly separate.',
+  );
   const panel = `<div class="gpanel">
     ${data.analysis?accordion('Lifecycle analysis — what the data says', data.analysis.text, true):'<div class="gnar muted">Aggregate analysis compiling…</div>'}
   </div>`;
@@ -2910,6 +3103,7 @@ function renderNft(data){
       ${p.benefits?`<div class="gsec">Holder benefits / products</div>${proseBox(p.benefits)}`:''}
       ${p.business?`<div class="gsec">Real-world business — product · distribution · strengths &amp; weaknesses</div>${proseBox(p.business)}`:''}
       ${p.analysis?`<div class="gsec">Lifecycle read</div>${proseBox(p.analysis)}`:''}
+      ${nftProfileAnalysisHtml(p, c.sources)}
       ${nftFreshnessHtml(p, c.freshness)}
       ${nftEvidenceHtml(p, c.sources, c.freshness)}
       ${sources}
@@ -2928,7 +3122,7 @@ function renderNft(data){
   }).join('');
   el.innerHTML = `${NFT_HEAD}${stats}
   <div class="analysis-note">This index deliberately distinguishes lifecycle research from live catalog coverage. Field-cited dossiers are reviewed at claim level; legacy dossiers keep collection-level source lists until they are retrofitted.</div>
-  ${evidenceCoverage}${panel}
+  ${evidenceCoverage}${cohortPanel}${panel}
   <div class="toolbar"><div class="analysis-controls">
     <input id="casesearch" class="search" placeholder="Search case studies by name, chain or status…" value="${esc(caseQ)}" />
     <label class="muted" for="nftCaseStatus">Status</label>
