@@ -209,14 +209,18 @@ describe('NFT forensic causal wave A', () => {
       const published = payload.collections[0];
       expect(published.slug).toBe(dossier.slug);
       expect(published.citation).toEqual({ fieldCited: true, errors: [] });
-      expect(published.profile.forensic_analysis).toEqual(dossier.profile.forensic_analysis);
-      expect(validateForensicAnalysis(published.profile.forensic_analysis, {
-        resolver: resolver(JSON.parse(published.sources)),
-      }), dossier.slug).toEqual({
-        errors: [],
-        warnings: [],
-        withheld_sections: [],
+      expect(published.profile.forensic_analysis.outcome, dossier.slug).toMatchObject({
+        publication_support: 'pending_independent_support',
+        source_refs: dossier.profile.forensic_analysis.outcome.source_refs,
       });
+      expect(published.profile.forensic_analysis.why, dossier.slug).toMatchObject({
+        publication_support: 'pending_independent_support',
+        source_refs: dossier.profile.forensic_analysis.why.source_refs,
+      });
+      expect(published.profile.forensic_analysis.outcome, dossier.slug)
+        .not.toHaveProperty('summary');
+      expect(published.profile.forensic_analysis.why, dossier.slug)
+        .not.toHaveProperty('summary');
     }
   });
 });

@@ -194,9 +194,9 @@ export function normalizePublicationSource(sourceValue) {
   const byHost = classifyByHost(source, host);
   const tier = explicitTier(source) || byHost.tier;
   const declaredRole = explicitRole(source);
-  const role = byHost.role === 'authority'
-    ? 'authority'
-    : declaredRole || byHost.role;
+  let role = declaredRole || byHost.role;
+  if (byHost.role === 'authority') role = 'authority';
+  if (declaredRole === 'primary') role = 'primary';
   const publisher = source.publisher || host || source.title || null;
   const state = accessState(source);
   const explicitIndependenceGroup = normalizedIndependenceKey(
@@ -214,7 +214,9 @@ export function normalizePublicationSource(sourceValue) {
   const resolving = resolvingState(source, state);
   let classificationBasis = byHost.basis;
   if (explicitTier(source) || declaredRole) classificationBasis = 'declared_metadata';
-  if (byHost.role === 'authority') classificationBasis = 'host_policy';
+  if (byHost.role === 'authority' && declaredRole !== 'primary') {
+    classificationBasis = 'host_policy';
+  }
   return {
     id: source.id || source.source_id || url,
     url,

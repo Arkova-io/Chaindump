@@ -87,6 +87,186 @@ function publicationSourceRecords(sourceValues) {
   });
 }
 
+const PENDING_PUBLICATION_SUPPORT = 'pending_independent_support';
+const NFT_PUBLICATION_NARRATIVE_FIELDS = [
+  'analysis',
+  'benefits',
+  'business',
+  'community_history',
+  'community_sentiment',
+  'founder_engagement',
+  'notable_holders',
+  'social',
+];
+const NFT_HIGH_RISK_PROFILE_FIELDS = [
+  'analysis',
+  'chain_dependence',
+  'chronology',
+  'counterfactual',
+  'market_holder_boundaries',
+  'products_and_value_capture',
+  'risks',
+  'strategic_choices',
+  'status',
+  'team',
+  'token_model',
+  'why',
+];
+
+function publicationDepthGapAt(depth, path) {
+  return (depth?.unresolved_high_risk_claims || []).find((claim) => (
+    claim.path === path
+  )) || null;
+}
+
+function hasPublicationDepthGap(depth, predicate) {
+  return (depth?.unresolved_high_risk_claims || []).some(predicate);
+}
+
+function pendingPublicationSection(section) {
+  const result = { publication_support: PENDING_PUBLICATION_SUPPORT };
+  for (const field of ['source_refs', 'source_ids', 'evidence_refs', 'refs']) {
+    if (Array.isArray(section?.[field])) result[field] = section[field];
+  }
+  return result;
+}
+
+function publicForensicAnalysis(analysisValue, depth) {
+  if (!analysisValue || typeof analysisValue !== 'object') return null;
+  const analysis = { ...analysisValue };
+  for (const field of ['outcome', 'why', 'counterfactual']) {
+    if (publicationDepthGapAt(depth, `forensic_analysis.${field}`)) {
+      analysis[field] = pendingPublicationSection(analysisValue[field]);
+    }
+  }
+  if (Array.isArray(analysisValue.strategic_choices)) {
+    analysis.strategic_choices = analysisValue.strategic_choices.map((choice, index) => (
+      publicationDepthGapAt(depth, `forensic_analysis.strategic_choices[${index}]`)
+        ? pendingPublicationSection(choice)
+        : choice
+    ));
+  }
+  return analysis;
+}
+
+function hasPendingCausalConclusion(depth) {
+  return hasPublicationDepthGap(depth, ({ path }) => (
+    path === 'forensic_analysis.outcome'
+    || path === 'forensic_analysis.why'
+    || path === 'forensic_analysis.counterfactual'
+    || path.startsWith('forensic_analysis.strategic_choices[')
+  ));
+}
+
+function publicExchangeProfile(profileValue, depth) {
+  let profile = profileValue && typeof profileValue === 'object'
+    ? { ...profileValue }
+    : {};
+  const pending = Number(depth?.unresolved_high_risk_claim_count) > 0;
+  if (pending) {
+    const safeProfile = {};
+    for (const field of [
+      'citation_schema',
+      'evidence',
+      'evidence_policy',
+      'review',
+    ]) {
+      if (Object.hasOwn(profile, field)) safeProfile[field] = profile[field];
+    }
+    profile = safeProfile;
+  }
+  profile.forensic_analysis = publicForensicAnalysis(
+    profileValue?.forensic_analysis,
+    depth,
+  );
+  return profile;
+}
+
+function publicExchangeCase(row) {
+  const depth = row.publication_depth;
+  const outcomePending = Boolean(publicationDepthGapAt(depth, 'forensic_analysis.outcome'));
+  const whyPending = Boolean(publicationDepthGapAt(depth, 'forensic_analysis.why'));
+  const causalPending = hasPendingCausalConclusion(depth);
+  const analysis = {
+    ...row.analysis,
+    forensic_analysis: publicForensicAnalysis(
+      row.analysis?.forensic_analysis || row.profile?.forensic_analysis,
+      depth,
+    ),
+    forensic_analysis_status: causalPending
+      ? 'support_pending'
+      : row.analysis?.forensic_analysis_status,
+  };
+  return {
+    ...row,
+    status: outcomePending ? null : row.status,
+    summary: outcomePending || whyPending ? null : row.summary,
+    outlook: causalPending ? null : row.outlook,
+    profile: publicExchangeProfile(row.profile, depth),
+    analysis,
+    publication_support: {
+      status: outcomePending ? PENDING_PUBLICATION_SUPPORT : null,
+      summary: outcomePending || whyPending ? PENDING_PUBLICATION_SUPPORT : null,
+      outlook: causalPending ? PENDING_PUBLICATION_SUPPORT : null,
+    },
+  };
+}
+
+function publicNftProfile(profileValue, depth) {
+  const profile = profileValue && typeof profileValue === 'object'
+    ? { ...profileValue }
+    : {};
+  const evidence = Array.isArray(profileValue?.evidence)
+    ? profileValue.evidence.map((item) => ({ ...item }))
+    : [];
+  for (const claim of depth?.unresolved_high_risk_claims || []) {
+    const match = /^evidence\[(\d+)\]\.([a-z0-9_]+)$/i.exec(claim.path);
+    if (!match) continue;
+    const index = Number(match[1]);
+    const field = match[2];
+    if (Object.hasOwn(profile, field)) profile[field] = null;
+    if (evidence[index]) {
+      evidence[index].value = null;
+      evidence[index].publication_support = PENDING_PUBLICATION_SUPPORT;
+    }
+  }
+  for (const field of NFT_PUBLICATION_NARRATIVE_FIELDS) {
+    const support = (depth?.claim_support || []).find((claim) => (
+      String(claim.path || '').endsWith(`.${field}`)
+    ));
+    if (!support?.passes && Object.hasOwn(profile, field)) profile[field] = null;
+  }
+  if (hasPendingCausalConclusion(depth)) {
+    for (const field of NFT_HIGH_RISK_PROFILE_FIELDS) {
+      if (Object.hasOwn(profile, field)) profile[field] = null;
+    }
+  }
+  profile.evidence = evidence;
+  profile.forensic_analysis = publicForensicAnalysis(
+    profileValue?.forensic_analysis,
+    depth,
+  );
+  profile.publication_support = Object.fromEntries(
+    [...NFT_PUBLICATION_NARRATIVE_FIELDS, ...NFT_HIGH_RISK_PROFILE_FIELDS]
+      .filter((field) => Object.hasOwn(profileValue || {}, field))
+      .map((field) => [field, profile[field] == null
+        ? PENDING_PUBLICATION_SUPPORT
+        : null]),
+  );
+  return profile;
+}
+
+function publicNftRisk(riskValue) {
+  if (!riskValue) return null;
+  return {
+    level: 'review_pending',
+    summary: null,
+    evidence: null,
+    sources: riskValue.sources,
+    publication_support: PENDING_PUBLICATION_SUPPORT,
+  };
+}
+
 const ENV = {};
 const app = new Hono();
 app.use('*', async (c, next) => {
@@ -1992,19 +2172,20 @@ app.get('/api/exchange-analysis', wrap(async (req, res) => {
        ORDER BY c.lifecycle ASC, c.name ASC`, [kind]);
     const allCases = rows.map(normalizeExchangeCase).map((row) => {
       const sources = publicationSourceRecords(row.sources);
-      return {
+      const caseWithDepth = {
         ...row,
         sources,
         publication_depth: assessExchangePublicationDepth({
-        kind: row.kind,
-        lifecycle: row.lifecycle,
-        slug: row.slug,
-        name: row.name,
-        sources,
-        forensicAnalysis: row.analysis.forensic_analysis
-          || row.profile.forensic_analysis,
+          kind: row.kind,
+          lifecycle: row.lifecycle,
+          slug: row.slug,
+          name: row.name,
+          sources,
+          forensicAnalysis: row.analysis.forensic_analysis
+            || row.profile.forensic_analysis,
         }),
       };
+      return publicExchangeCase(caseWithDepth);
     });
     const cases = allCases.filter((row) => (
       (!lifecycle || row.lifecycle === lifecycle)
@@ -2039,6 +2220,59 @@ app.get('/api/exchange-analysis', wrap(async (req, res) => {
   }
 }));
 
+function parsedPublicJson(value, fallback) {
+  if (value && typeof value === 'object') return value;
+  try {
+    return value ? JSON.parse(value) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function publicLegacyExchangeRow(row, lifecycle, parseSources = false) {
+  const profile = parsedPublicJson(row.profile, {});
+  const rawSources = parsedPublicJson(row.sources, []);
+  const publicationSources = publicationSourceRecords(rawSources);
+  const depth = assessExchangePublicationDepth({
+    kind: row.kind || row.type,
+    lifecycle,
+    slug: row.slug,
+    name: row.name,
+    sources: publicationSources,
+    forensicAnalysis: profile.forensic_analysis,
+  });
+  const summaryField = {
+    dead: 'why',
+    mid: 'why_stuck',
+    successful: 'why_successful',
+  }[lifecycle];
+  const publicCase = publicExchangeCase({
+    ...row,
+    lifecycle,
+    status: row.verdict || row.status,
+    summary: row[summaryField],
+    profile,
+    sources: publicationSources,
+    analysis: {
+      forensic_analysis: profile.forensic_analysis,
+      forensic_analysis_status: profile.forensic_analysis ? 'published' : 'pending',
+    },
+    publication_depth: depth,
+  });
+  const result = {
+    ...row,
+    profile: publicCase.profile,
+    sources: parseSources ? publicationSources : row.sources,
+    outlook: publicCase.outlook,
+    publication_depth: depth,
+    publication_support: publicCase.publication_support,
+  };
+  result[summaryField] = publicCase.summary;
+  if (lifecycle === 'successful') result.status = publicCase.status;
+  else result.verdict = publicCase.status;
+  return result;
+}
+
 app.get('/api/dead-exchanges', wrap(async (req, res) => {
   const kind = req.query.kind === 'cex' ? 'cex' : 'dex';
   try {
@@ -2048,7 +2282,7 @@ app.get('/api/dead-exchanges', wrap(async (req, res) => {
       `SELECT slug, kind, venue_type, name, launched, metric_label, metric_type, metric_unit, peak_metric, current_metric, drawdown_pct, peak_date, collapse_date, why, outlook, verdict, sources, profile, updated_at
        FROM dead_exchanges WHERE kind = ? AND (venue_type = 'exchange' OR kind = 'cex')
        ORDER BY CASE WHEN kind = 'cex' THEN metric_type ELSE '' END, CASE WHEN kind = 'cex' THEN metric_unit ELSE '' END, COALESCE(peak_metric, current_metric) DESC, name ASC`, [kind]);
-    const exchanges = rows.map((r) => { let p = null; try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {} return { ...r, profile: p }; });
+    const exchanges = rows.map((row) => publicLegacyExchangeRow(row, 'dead'));
 
     const tagCounts = {}; let fraud = 0; const verdictCounts = {}; const metricGroupMap = {};
     for (const c of exchanges) {
@@ -2103,7 +2337,7 @@ app.get('/api/mid-exchanges', wrap(async (req, res) => {
       `SELECT slug, kind, venue_type, name, launched, metric_label, metric_type, metric_unit, metric, verdict, why_stuck, outlook, profile, sources, updated_at
        FROM mid_exchanges WHERE kind = ? AND (venue_type = 'exchange' OR kind = 'cex')
        ORDER BY CASE WHEN kind = 'cex' THEN metric_type ELSE '' END, CASE WHEN kind = 'cex' THEN metric_unit ELSE '' END, metric DESC, name ASC`, [kind]);
-    const exchanges = rows.map((r) => { let p = null; try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {} return { ...r, profile: p }; });
+    const exchanges = rows.map((row) => publicLegacyExchangeRow(row, 'mid'));
     const verdictCounts = {};
     const tagCounts = {};
     for (const c of exchanges) {
@@ -2144,12 +2378,9 @@ app.get('/api/successful-exchanges', wrap(async (req, res) => {
               profile, sources, updated_at
        FROM successful_exchanges WHERE ${where.join(' AND ')}
        ORDER BY metric_type ASC, metric_unit ASC, metric DESC, name ASC`, binds);
-    const exchanges = rows.map((r) => {
-      let profile = null; let sources = [];
-      try { profile = r.profile ? JSON.parse(r.profile) : null; } catch (e) {}
-      try { sources = r.sources ? JSON.parse(r.sources) : []; } catch (e) {}
-      return { ...r, profile, sources };
-    });
+    const exchanges = rows.map((row) => (
+      publicLegacyExchangeRow(row, 'successful', true)
+    ));
     const groups = new Map();
     for (const row of exchanges) {
       const metricTypeKey = row.metric_type || 'unknown';
@@ -2476,14 +2707,23 @@ app.get('/api/nft', wrap(async (req, res) => {
         sources: publicationSources,
         profile: p,
       });
+      const lifecyclePending = hasPublicationDepthGap(publicationDepth, ({ path, type }) => (
+        type === 'lifecycle' || path === 'forensic_analysis.outcome'
+      ));
       return {
         ...r,
-        status: freshness?.statusWithheld ? 'unknown' : r.status,
-        profile: p,
+        status: freshness?.statusWithheld || lifecyclePending ? 'unknown' : r.status,
+        profile: publicNftProfile(p, publicationDepth),
         citation: { fieldCited: p?.citation_schema === 'field-v1' && citation.valid, errors: citation.errors },
         freshness,
         publication_sources: publicationSources,
         publication_depth: publicationDepth,
+        publication_support: {
+          status: lifecyclePending ? PENDING_PUBLICATION_SUPPORT : null,
+          profile: publicationDepth.unresolved_high_risk_claim_count
+            ? PENDING_PUBLICATION_SUPPORT
+            : null,
+        },
         source_status: {
           registered: publicationDepth.registered_source_count,
           reachable: publicationDepth.reachable_source_count,
@@ -2498,7 +2738,7 @@ app.get('/api/nft', wrap(async (req, res) => {
     collections.forEach((c) => { const s = (c.status || 'unknown').toLowerCase(); statusCounts[s] = (statusCounts[s] || 0) + 1; });
     const riskMap = {};
     try { (await dbQuery(`SELECT entity_name, level, summary, evidence, sources FROM risk_flags WHERE entity_type='nft'`)).forEach((r) => { riskMap[r.entity_name] = r; }); } catch (e) {}
-    collections.forEach((c) => { c.risk = riskMap[c.name] || null; });
+    collections.forEach((c) => { c.risk = publicNftRisk(riskMap[c.name]); });
     // broad live-market aggregate from nft_market (hundreds of collections, real CoinGecko data)
     let market = null;
     try {
@@ -2575,6 +2815,136 @@ function casinoCaseRow(row) {
     reviewed_source_count: Number(row.reviewed_source_count ?? row.source_count) || 0,
   };
 }
+
+function unresolvedCasinoClaims(claims, depth) {
+  const unresolvedPaths = new Set(
+    (depth?.unresolved_high_risk_claims || []).map(({ path }) => path),
+  );
+  return claims.filter((claim) => (
+    unresolvedPaths.has(`casino_claims.${claim.claim_id}`)
+  ));
+}
+
+const CASINO_STATUS_CLAIM_TOKENS = new Set([
+  'active',
+  'ceased',
+  'closed',
+  'inactive',
+  'insolvent',
+  'paused',
+  'status',
+  'superseded',
+  'wind',
+]);
+const CASINO_OUTCOME_CLAIM_TOKENS = new Set([
+  'ceased',
+  'closed',
+  'failed',
+  'failure',
+  'insolvent',
+  'outcome',
+  'success',
+  'wind',
+]);
+
+function casinoClaimHasToken(claim, acceptedTokens) {
+  const tokens = `${claim.field_path || ''} ${claim.claim_id || ''}`
+    .toLowerCase()
+    .split(/[^a-z0-9]+/)
+    .filter(Boolean);
+  return tokens.some((token) => acceptedTokens.has(token));
+}
+
+function casinoCasePublicationState(claims, depth) {
+  const unresolvedClaims = unresolvedCasinoClaims(claims, depth);
+  const outcomeGap = publicationDepthGapAt(depth, 'forensic_analysis.outcome');
+  const statusPending = Boolean(outcomeGap) || unresolvedClaims.some((claim) => (
+    casinoClaimHasToken(claim, CASINO_STATUS_CLAIM_TOKENS)
+  ));
+  const outcomePending = Boolean(outcomeGap) || unresolvedClaims.some((claim) => (
+    casinoClaimHasToken(claim, CASINO_OUTCOME_CLAIM_TOKENS)
+  ));
+  return { statusPending, outcomePending };
+}
+
+function publicCasinoCase(row, claims, depth) {
+  const result = casinoCaseRow(row);
+  const { statusPending, outcomePending } = casinoCasePublicationState(claims, depth);
+  if (statusPending) {
+    result.status = null;
+    result.status_as_of = null;
+  }
+  if (outcomePending) {
+    result.outcome_label = null;
+    result.outcome_as_of = null;
+    result.outcome_rule_id = null;
+  }
+  result.publication_support = {
+    status: statusPending ? PENDING_PUBLICATION_SUPPORT : null,
+    outcome: outcomePending ? PENDING_PUBLICATION_SUPPORT : null,
+  };
+  return result;
+}
+
+function publicCasinoOutlook(outlookValue, forensicAnalysis, depth) {
+  const rawOutlook = outlookValue && typeof outlookValue === 'object'
+    ? { ...outlookValue }
+    : {};
+  const pending = Number(depth?.unresolved_high_risk_claim_count) > 0;
+  let outlook = rawOutlook;
+  if (pending) {
+    outlook = {};
+    for (const field of ['as_of', 'review']) {
+      if (Object.hasOwn(rawOutlook, field)) outlook[field] = rawOutlook[field];
+    }
+  }
+  outlook.forensic_analysis = publicForensicAnalysis(forensicAnalysis, depth);
+  outlook.publication_support = pending
+    ? PENDING_PUBLICATION_SUPPORT
+    : null;
+  return outlook;
+}
+
+function publicCasinoSynthesis(synthesis, depth) {
+  if (!synthesis) return null;
+  const anyPending = Number(depth?.unresolved_high_risk_claim_count) > 0;
+  const result = {
+    ...synthesis,
+    outlook: publicCasinoOutlook(
+      synthesis.outlook,
+      synthesis.forensic_analysis,
+      depth,
+    ),
+    forensic_analysis: publicForensicAnalysis(synthesis.forensic_analysis, depth),
+    publication_support: {
+      present_situation: anyPending
+        ? PENDING_PUBLICATION_SUPPORT
+        : null,
+      business_mechanism: anyPending ? PENDING_PUBLICATION_SUPPORT : null,
+      token_contribution: anyPending ? PENDING_PUBLICATION_SUPPORT : null,
+      chain_dependence: anyPending ? PENDING_PUBLICATION_SUPPORT : null,
+      risk_legal_posture: anyPending ? PENDING_PUBLICATION_SUPPORT : null,
+      success_failure_hypotheses: anyPending
+        ? PENDING_PUBLICATION_SUPPORT
+        : null,
+      counterfactual: anyPending ? PENDING_PUBLICATION_SUPPORT : null,
+      outlook: anyPending ? PENDING_PUBLICATION_SUPPORT : null,
+      lessons_learned: anyPending ? PENDING_PUBLICATION_SUPPORT : null,
+    },
+  };
+  if (anyPending) {
+    result.present_situation = null;
+    result.business_mechanism = null;
+    result.token_contribution = null;
+    result.chain_dependence = null;
+    result.risk_legal_posture = null;
+    result.success_failure_hypotheses = null;
+    result.counterfactual = null;
+    result.lessons_learned = [];
+  }
+  return result;
+}
+
 function casinoPublicationDepthMap(caseRows, claimRows, synthesisRows) {
   const claimsByCase = new Map();
   const sourcesByCase = new Map();
@@ -2670,11 +3040,23 @@ app.get('/api/casinos', wrap(async (req, res) => {
       `),
     ]);
     const depthByCase = casinoPublicationDepthMap(rows, depthClaims, depthSyntheses);
-    const cases = rows.map((row) => ({
-      ...casinoCaseRow(row),
-      publication_depth: depthByCase.get(row.case_id),
-    }));
-    const asOf = cases.map((item) => item.status_as_of).filter(Boolean).sort().at(-1) || null;
+    const claimsByCase = new Map();
+    for (const claim of depthClaims) {
+      if (!claimsByCase.has(claim.case_id)) claimsByCase.set(claim.case_id, []);
+      claimsByCase.get(claim.case_id).push(claim);
+    }
+    const cases = rows.map((row) => {
+      const publicationDepth = depthByCase.get(row.case_id);
+      return {
+        ...publicCasinoCase(
+          row,
+          claimsByCase.get(row.case_id) || [],
+          publicationDepth,
+        ),
+        publication_depth: publicationDepth,
+      };
+    });
+    const asOf = rows.map((item) => item.status_as_of).filter(Boolean).sort().at(-1) || null;
     const claimSupport = {
       high_risk_claim_count: cases.reduce(
         (sum, item) => sum + item.publication_depth.high_risk_claim_count,
@@ -2855,12 +3237,17 @@ app.get('/api/casino/:case_id', wrap(async (req, res) => {
       domains: parseCasinoJson(item.domains, []),
       activities: parseCasinoJson(item.activities, []),
     }));
+    const publicCase = publicCasinoCase(rows[0], claims, publicationDepth);
+    const publicSynthesis = publicCasinoSynthesis(
+      synthesis,
+      publicationDepth,
+    );
     res.json({
-      case: casinoCaseRow(rows[0]), claims: publicClaims, sources,
+      case: publicCase, claims: publicClaims, sources,
       observations: publicObservations,
       events: publicEvents,
       licences: publicLicences,
-      synthesis,
+      synthesis: publicSynthesis,
       publication_depth: publicationDepth,
     });
   } catch {

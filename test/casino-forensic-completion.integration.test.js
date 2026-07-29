@@ -195,12 +195,26 @@ describe('casino forensic completion', () => {
       const dossier = await response.json();
       expect(dossier.case.case_id).toBe(listed.case_id);
       expect(dossier.sources.length, listed.case_id).toBeGreaterThan(0);
-      expect(validateForensicAnalysis(dossier.synthesis.forensic_analysis), listed.case_id)
-        .toEqual({
-          errors: [],
-          warnings: [],
-          withheld_sections: [],
+      const forensicGaps = dossier.publication_depth.unresolved_high_risk_claims
+        .filter(({ path }) => path.startsWith('forensic_analysis.'));
+      if (!forensicGaps.length) {
+        expect(validateForensicAnalysis(dossier.synthesis.forensic_analysis), listed.case_id)
+          .toEqual({
+            errors: [],
+            warnings: [],
+            withheld_sections: [],
+          });
+        continue;
+      }
+      for (const { path } of forensicGaps) {
+        const choiceMatch = /^forensic_analysis\.strategic_choices\[(\d+)\]$/.exec(path);
+        const section = choiceMatch
+          ? dossier.synthesis.forensic_analysis.strategic_choices[Number(choiceMatch[1])]
+          : dossier.synthesis.forensic_analysis[path.replace('forensic_analysis.', '')];
+        expect(section, `${listed.case_id}: ${path}`).toMatchObject({
+          publication_support: 'pending_independent_support',
         });
+      }
     }
   });
 });

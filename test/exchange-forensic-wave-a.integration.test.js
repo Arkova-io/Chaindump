@@ -301,9 +301,18 @@ describe('exchange forensic wave A migration 0059', () => {
       const body = await response.json();
       expect(body.cases, entry.slug).toHaveLength(1);
       expect(body.cases[0].slug, entry.slug).toBe(entry.slug);
-      expect(body.cases[0].analysis.forensic_analysis_status, entry.slug).toBe('published');
-      expect(body.cases[0].analysis.forensic_analysis.outcome.label, entry.slug)
-        .toBe(entry.forensic_analysis.outcome.label);
+      expect(body.cases[0].analysis.forensic_analysis_status, entry.slug)
+        .toBe('support_pending');
+      expect(body.cases[0].analysis.forensic_analysis.outcome, entry.slug).toMatchObject({
+        publication_support: 'pending_independent_support',
+        source_refs: expect.any(Array),
+      });
+      expect(
+        body.cases[0].analysis.forensic_analysis.outcome.source_refs,
+        entry.slug,
+      ).toHaveLength(entry.forensic_analysis.outcome.source_refs.length);
+      expect(body.cases[0].analysis.forensic_analysis.outcome, entry.slug)
+        .not.toHaveProperty('label');
       expect(
         body.cases[0].analysis.forensic_analysis.outcome.source_refs
           .every(({ url }) => url.startsWith('https://')),

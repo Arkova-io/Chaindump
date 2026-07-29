@@ -343,6 +343,35 @@ describe('publication-depth Wave A migration 0063', () => {
     });
     expect(authority.role).toBe('authority');
     expect(assess('legal', authority).passes).toBe(true);
+
+    const issuerFiledDisclosure = normalizePublicationSource({
+      id: 'issuer-filed-disclosure',
+      url: 'https://www.sec.gov/Archives/edgar/data/1/issuer-s1.htm',
+      publisher: 'Issuer filing hosted by SEC EDGAR',
+      source_tier: 'T1',
+      source_role: 'primary',
+      resolving: true,
+      evidence_reviewed: true,
+      evidence_reviewer: 'publication-depth-test',
+      evidence_reviewed_at: '2026-07-29T12:00:00Z',
+    });
+    expect(issuerFiledDisclosure.role).toBe('primary');
+    expect(issuerFiledDisclosure.classification_basis).toBe('declared_metadata');
+    expect(assess('causal', issuerFiledDisclosure).passes).toBe(false);
+    expect(assess('legal', issuerFiledDisclosure).passes).toBe(false);
+
+    const secEnforcementRelease = normalizePublicationSource({
+      id: 'sec-enforcement-release',
+      url: 'https://www.sec.gov/newsroom/press-releases/example-enforcement-release',
+      publisher: 'SEC',
+      resolving: true,
+      evidence_reviewed: true,
+      evidence_reviewer: 'publication-depth-test',
+      evidence_reviewed_at: '2026-07-29T12:00:00Z',
+    });
+    expect(secEnforcementRelease.role).toBe('authority');
+    expect(secEnforcementRelease.classification_basis).toBe('host_policy');
+    expect(assess('legal', secEnforcementRelease).passes).toBe(true);
   });
 
   it('keeps its risk-first manifest and generated migration deterministic', () => {
@@ -645,7 +674,7 @@ describe('publication-depth Wave A migration 0063', () => {
       expect(response.status, slug).toBe(200);
       const payload = await response.json();
       expect(payload.cases).toHaveLength(1);
-      expect(payload.cases[0].analysis.forensic_analysis_status).toBe('published');
+      expect(payload.cases[0].analysis.forensic_analysis_status).toBe('support_pending');
       expect(payload.cases[0].sources.every((source) => source.resolving)).toBe(true);
     }
 
@@ -716,7 +745,7 @@ describe('publication-depth Wave A migration 0063', () => {
       unresolved_high_risk_claim_count: 383,
     });
     for (const item of exchangeCases) {
-      expect(item.analysis.forensic_analysis_status, item.slug).toBe('published');
+      expect(item.analysis.forensic_analysis_status, item.slug).toBe('support_pending');
       expect(item.publication_depth, item.slug).toMatchObject({
         status: 'claim_support_pending',
         high_risk_claim_count: expect.any(Number),
@@ -851,13 +880,273 @@ describe('publication-depth Wave A migration 0063', () => {
         reachable: item.publication_depth.reachable_source_count,
         editor_reviewed: item.publication_depth.reviewed_source_count,
       });
-      expect(validateForensicAnalysis(analysis, { resolver: resolver(sources) }), item.slug)
-        .toEqual({ errors: [], warnings: [], withheld_sections: [] });
+      expect(analysis.outcome, item.slug).toMatchObject({
+        publication_support: 'pending_independent_support',
+      });
+      expect(analysis.outcome, item.slug).not.toHaveProperty('summary');
+      expect(analysis.why, item.slug).toMatchObject({
+        publication_support: 'pending_independent_support',
+      });
+      expect(analysis.why, item.slug).not.toHaveProperty('summary');
       const registered = registeredSourceKeys(sources);
       for (const reference of forensicReferences(analysis)) {
         expect(registered.has(reference), `${item.slug}: ${reference}`).toBe(true);
       }
     }
+  });
+
+  it('redacts unsupported conclusions from every public machine route', async () => {
+    database = createCorpus();
+    const exchangeSentinels = {
+      dead: 'RAW_PENDING_DEAD_EXCHANGE_CAUSAL_SENTINEL',
+      mid: 'RAW_PENDING_MID_EXCHANGE_CAUSAL_SENTINEL',
+      successful: 'RAW_PENDING_SUCCESS_EXCHANGE_CAUSAL_SENTINEL',
+    };
+    database.prepare(`
+      UPDATE dead_exchanges
+      SET why = ?,
+          outlook = ?,
+          profile = json_set(
+            profile,
+            '$.risks', ?,
+            '$.synthesis', ?,
+            '$.trigger', ?,
+            '$.reserve_drop_usd', ?,
+            '$.prior_liquidity_injection', ?,
+            '$.flagged_by', ?,
+            '$.withdrawals_suspended_since', ?,
+            '$.status', ?
+          )
+      WHERE slug = 'ascendex'
+    `).run(
+      exchangeSentinels.dead,
+      exchangeSentinels.dead,
+      exchangeSentinels.dead,
+      exchangeSentinels.dead,
+      exchangeSentinels.dead,
+      exchangeSentinels.dead,
+      exchangeSentinels.dead,
+      exchangeSentinels.dead,
+      exchangeSentinels.dead,
+      exchangeSentinels.dead,
+    );
+    database.prepare(`
+      UPDATE mid_exchanges
+      SET why_stuck = ?,
+          outlook = ?,
+          profile = json_set(profile, '$.risks', ?, '$.synthesis', ?)
+      WHERE slug = 'balancer'
+    `).run(
+      exchangeSentinels.mid,
+      exchangeSentinels.mid,
+      exchangeSentinels.mid,
+      exchangeSentinels.mid,
+    );
+    database.prepare(`
+      UPDATE successful_exchanges
+      SET why_successful = ?,
+          outlook = ?,
+          profile = json_set(profile, '$.risks', ?, '$.synthesis', ?)
+      WHERE slug = 'coinbase'
+    `).run(
+      exchangeSentinels.successful,
+      exchangeSentinels.successful,
+      exchangeSentinels.successful,
+      exchangeSentinels.successful,
+    );
+
+    const nftSentinel = 'RAW_PENDING_NFT_DUPLICATE_CAUSAL_SENTINEL';
+    database.prepare(`
+      UPDATE nft_collections
+      SET profile = json_set(
+        profile,
+        '$.analysis', ?,
+        '$.why', json_object('summary', ?),
+        '$.strategic_choices', json_array(json_object('decision', ?)),
+        '$.counterfactual', json_object('summary', ?),
+        '$.risks', json_array(?),
+        '$.chronology', ?,
+        '$.team', ?,
+        '$.chain_dependence', ?,
+        '$.status', ?
+      )
+      WHERE slug = 'quantum-cats'
+    `).run(
+      nftSentinel,
+      nftSentinel,
+      nftSentinel,
+      nftSentinel,
+      nftSentinel,
+      nftSentinel,
+      nftSentinel,
+      nftSentinel,
+      nftSentinel,
+    );
+    const nftRiskSentinel = 'RAW_PENDING_NFT_RISK_FLAG_SENTINEL';
+    database.prepare(`
+      UPDATE risk_flags
+      SET summary = ?, evidence = ?
+      WHERE entity_type = 'nft' AND entity_name = 'Azuki'
+    `).run(nftRiskSentinel, nftRiskSentinel);
+
+    const casinoSentinel = 'RAW_PENDING_CASINO_SYNTHESIS_SENTINEL';
+    database.prepare(`
+      UPDATE casino_syntheses
+      SET present_situation = ?,
+          business_mechanism = ?,
+          token_contribution = ?,
+          chain_dependence = ?,
+          risk_legal_posture = ?,
+          success_failure_hypotheses = ?,
+          counterfactual = ?,
+          lessons_learned = json_array(?),
+          outlook = json_set(
+            outlook,
+            '$.classification', ?,
+            '$.product_status', ?
+          )
+      WHERE case_id = 'kingtiger-casino'
+    `).run(
+      casinoSentinel,
+      casinoSentinel,
+      casinoSentinel,
+      casinoSentinel,
+      casinoSentinel,
+      casinoSentinel,
+      casinoSentinel,
+      casinoSentinel,
+      casinoSentinel,
+      casinoSentinel,
+    );
+
+    const worker = await freshWorker();
+    const env = { DB: d1Adapter(database) };
+    for (const [kind, lifecycle, slug, sentinel] of [
+      ['cex', 'dead', 'ascendex', exchangeSentinels.dead],
+      ['dex', 'mid', 'balancer', exchangeSentinels.mid],
+      ['cex', 'successful', 'coinbase', exchangeSentinels.successful],
+    ]) {
+      const response = await worker.fetch(
+        new Request(
+          `http://localhost/api/exchange-analysis?kind=${kind}`
+            + `&lifecycle=${lifecycle}&slug=${slug}`,
+        ),
+        env,
+        ctx(),
+      );
+      const payload = await response.json();
+      expect(JSON.stringify(payload), `${lifecycle} exchange canonical route`)
+        .not.toContain(sentinel);
+      expect(payload.cases[0]).toMatchObject({
+        status: null,
+        summary: null,
+        outlook: null,
+        publication_support: {
+          status: 'pending_independent_support',
+          summary: 'pending_independent_support',
+          outlook: 'pending_independent_support',
+        },
+      });
+    }
+    for (const [route, sentinel] of [
+      ['/api/dead-exchanges?kind=cex', exchangeSentinels.dead],
+      ['/api/mid-exchanges?kind=dex', exchangeSentinels.mid],
+      ['/api/successful-exchanges?kind=cex', exchangeSentinels.successful],
+    ]) {
+      const response = await worker.fetch(new Request(`http://localhost${route}`), env, ctx());
+      expect(JSON.stringify(await response.json()), route).not.toContain(sentinel);
+    }
+
+    const nftResponse = await worker.fetch(
+      new Request('http://localhost/api/nft'),
+      env,
+      ctx(),
+    );
+    const nftPayload = await nftResponse.json();
+    expect(JSON.stringify(nftPayload)).not.toContain(nftSentinel);
+    expect(JSON.stringify(nftPayload)).not.toContain(nftRiskSentinel);
+    const quantumCats = nftPayload.collections.find(({ slug }) => slug === 'quantum-cats');
+    expect(quantumCats).toMatchObject({
+      status: 'unknown',
+      publication_support: {
+        status: 'pending_independent_support',
+        profile: 'pending_independent_support',
+      },
+    });
+    for (const field of [
+      'analysis',
+      'chain_dependence',
+      'chronology',
+      'counterfactual',
+      'risks',
+      'strategic_choices',
+      'status',
+      'team',
+      'why',
+    ]) {
+      expect(quantumCats.profile[field], field).toBeNull();
+    }
+    const azuki = nftPayload.collections.find(({ slug }) => slug === 'azuki');
+    expect(azuki.risk).toMatchObject({
+      level: 'review_pending',
+      summary: null,
+      evidence: null,
+      publication_support: 'pending_independent_support',
+    });
+
+    const casinoListResponse = await worker.fetch(
+      new Request('http://localhost/api/casinos'),
+      env,
+      ctx(),
+    );
+    const casinoList = await casinoListResponse.json();
+    expect(JSON.stringify(casinoList)).not.toContain(casinoSentinel);
+    const kingTiger = casinoList.cases.find(
+      ({ case_id: caseId }) => caseId === 'kingtiger-casino',
+    );
+    expect(kingTiger).toMatchObject({
+      status: null,
+      status_as_of: null,
+      outcome_label: null,
+      outcome_as_of: null,
+      publication_support: {
+        status: 'pending_independent_support',
+        outcome: 'pending_independent_support',
+      },
+    });
+    const bcGame = casinoList.cases.find(
+      ({ case_id: caseId }) => caseId === 'bc-game-curacao-small-house',
+    );
+    expect(bcGame).toMatchObject({
+      status: 'insolvent',
+      outcome_label: 'failed',
+      publication_support: { status: null, outcome: null },
+    });
+
+    const casinoDetailResponse = await worker.fetch(
+      new Request('http://localhost/api/casino/kingtiger-casino'),
+      env,
+      ctx(),
+    );
+    const casinoDetail = await casinoDetailResponse.json();
+    expect(JSON.stringify(casinoDetail)).not.toContain(casinoSentinel);
+    expect(casinoDetail.case).toMatchObject({
+      status: null,
+      outcome_label: null,
+    });
+    expect(casinoDetail.synthesis).toMatchObject({
+      present_situation: null,
+      business_mechanism: null,
+      token_contribution: null,
+      chain_dependence: null,
+      risk_legal_posture: null,
+      success_failure_hypotheses: null,
+      counterfactual: null,
+      lessons_learned: [],
+    });
+    expect(casinoDetail.synthesis.forensic_analysis.counterfactual).toMatchObject({
+      publication_support: 'pending_independent_support',
+    });
   });
 
   it('reports a deleted expected casino as missing without shrinking the cohort', async () => {
