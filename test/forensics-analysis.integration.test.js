@@ -43,6 +43,11 @@ describe('Forensics analysis navigation', () => {
     expect(html).toContain('Open chain dossier →');
     expect(html).toContain("coverage: 'Legacy postmortem'");
     expect(html).toContain('structural dossiers');
+  expect(html).toContain('function factObjectText(value)');
+  expect(html).toContain("['classification', 'most_likely', 'base', 'bull', 'bear', 'confidence']");
+  expect(html).toContain("<div class=\"dsub\">Why this outcome</div><div class=\"gbody\">${esc(d.why)}</div>");
+  expect(html).toContain("<div class=\"dsub\">Strategic choices</div>");
+  expect(html).toContain("<div class=\"dsub\">Material unknowns</div>");
   });
 });
 
@@ -74,6 +79,9 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('observation time unknown');
     expect(html).toContain('lifecycle evidence');
     expect(html).toContain('next review');
+    expect(html).toContain('Observed status');
+    expect(html).toContain('Deployment context');
+    expect(html).toContain('Token launch');
     expect(html).toContain("String(row.metricUnit || '').toLowerCase()");
   });
 
@@ -84,6 +92,16 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('What could have been different');
     expect(html).toContain('Material unknowns');
     expect(html).toContain('structured causal analysis has not passed the publication gate yet');
+    expect(html).toContain('function forensicSourceArray(contract)');
+    expect(html).toContain('forensicSourceArray(forensic)');
+    expect(html).toContain("forensicStatus: analysis.forensic_analysis_status || (forensic ? 'published' : 'pending')");
+    expect(html).toContain("'forensic dossiers'");
+  });
+
+  it('opens exchange dossiers through a public UI route instead of requiring API inspection', () => {
+    expect(html).toContain('const dossierLink = `/exchange/${encodeURIComponent(row.kind)}/${encodeURIComponent(row.lifecycle)}/${encodeURIComponent(row.slug)}`;');
+    expect(html).toContain("} else if (seg === 'exchange' && rest && third && fourth) {");
+    expect(html).toContain('state.exchangeAnalysisExpanded = `${decodeURIComponent(rest)}:${decodeURIComponent(third)}:${decodeURIComponent(fourth)}`;');
   });
 });
 
@@ -112,13 +130,16 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('casinoAnalysisLoaded');
   });
 
-  it('follows the Blockchain Analysis index contract with search, filters, sources, and direct dossier links', () => {
+  it('follows the Blockchain Analysis index contract with search, filters, sources, and direct UI dossier links', () => {
     expect(html).toContain('id="casinoAnalysisSearch"');
     expect(html).toContain('id="casinoAnalysisStatus"');
     expect(html).toContain('id="casinoAnalysisKind"');
     expect(html).toContain('id="casinoAnalysisSubtype"');
     expect(html).toContain('id="casinoAnalysisToken"');
     expect(html).toContain('Cited sources: ${esc(item.source_count)}');
+    expect(html).toContain('const dossierLink = `/casino/${encodeURIComponent(item.case_id)}`;');
+    expect(html).toContain("} else if (seg === 'casino' && rest) {");
+    expect(html).toContain('loadCasinoAnalysisDetail(state.casinoAnalysisExpanded);');
     expect(html).toContain('Open dossier →');
     expect(html).toContain('Open coverage ledger →');
     expect(html).toContain('publication-gated dossier${filtered.length===1');

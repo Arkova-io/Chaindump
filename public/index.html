@@ -799,6 +799,33 @@ function sourceArray(value) {
     return typeof source === 'string' ? { url } : { title: source.title || '', url };
   }).filter(Boolean);
 }
+// Published forensic conclusions carry their own source references. Surface
+// them on the collapsed research card as well as inside the expanded dossier;
+// otherwise a well-cited causal map misleadingly looks like a sparse legacy row.
+function forensicSourceArray(contract) {
+  const analysis = parsedObject(contract);
+  if (!analysis || (analysis.schema !== 'forensic-analysis-v1' && analysis.version !== 'forensic-analysis-v1')) return [];
+  const refs = [];
+  const collect = (value) => {
+    if (!value) return;
+    if (Array.isArray(value)) { value.forEach(collect); return; }
+    if (typeof value === 'string') { refs.push({ url: value }); return; }
+    const sources = value.source_refs || value.evidence_refs || [];
+    for (const source of sources) {
+      if (typeof source === 'string') refs.push({ url: source });
+      else if (source?.url) refs.push(source);
+    }
+  };
+  collect(analysis.outcome);
+  collect(analysis.why);
+  collect(analysis.counterfactual);
+  collect(analysis.strategic_choices);
+  collect(analysis.watch);
+  return sourceArray(refs);
+}
+function mergedSourceArray(...groups) {
+  return sourceArray(groups.flat());
+}
 function analysisButton(view, label) {
   return `<button type="button" class="kindbtn" data-analysis-route="${view}">${label}</button>`;
 }
@@ -939,6 +966,7 @@ async function loadBlockchainAnalysis() {
 function normalizeExchangeResearchCase(row) {
   const profile = parsedObject(row.profile);
   const analysis = parsedObject(row.analysis);
+  const forensic = analysis.forensic_analysis || profile.forensic_analysis;
   const metric = parsedObject(analysis.metric);
   const quality = parsedObject(analysis.data_quality);
   return {
@@ -957,10 +985,11 @@ function normalizeExchangeResearchCase(row) {
     custodyModel: analysis.custody_model || '',
     token: parsedObject(analysis.token),
     freshness: parsedObject(analysis.freshness),
+    forensicStatus: analysis.forensic_analysis_status || (forensic ? 'published' : 'pending'),
     qualityLabel: quality.label || 'limited',
     qualityIssues: Array.isArray(quality.issues) ? quality.issues : [],
     evidence: parsedObject(analysis.evidence),
-    profile, analysis, sources: sourceArray(row.sources), updatedAt: row.updated_at || '',
+    profile, analysis, sources: mergedSourceArray(sourceArray(row.sources), forensicSourceArray(forensic)), updatedAt: row.updated_at || '',
   };
 }
 function exchangeMetric(row) {
@@ -1034,9 +1063,13 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
   if (row.primaryChain) venueContext.push(row.primaryChain);
   fields.push(
     `<div class="gfield"><span class="gfl">Venue</span> ${venueContext.map(esc).join(' · ')}</div>`,
+    `<div class="gfield"><span class="gfl">Observed status</span> ${esc(exchangeLabel(row.status || 'unknown'))}</div>`,
     `<div class="gfield"><span class="gfl">Product cohort</span> ${esc(exchangeLabel(row.productCohort))}</div>`,
     `<div class="gfield"><span class="gfl">Token</span> ${tokenLine}</div>`,
   );
+  const deployments = Array.isArray(row.analysis?.chains) ? row.analysis.chains.filter(Boolean) : [];
+  if (deployments.length) fields.push(`<div class="gfield"><span class="gfl">Deployment context</span> ${esc(deployments.join(' · '))}</div>`);
+  if (row.token?.launch_date) fields.push(`<div class="gfield"><span class="gfl">Token launch</span> ${esc(row.token.launch_date)}</div>`);
   const metricContract = [row.metricType, row.metricUnit, exchangeLabel(row.metricWindow)];
   if (row.metricAsOf) metricContract.push(`as of ${row.metricAsOf}`);
   metricContract.push(row.metricObservedAt ? `observed ${row.metricObservedAt}` : 'observation time unknown');
@@ -1092,15 +1125,17 @@ function exchangeAnalysisCard(row) {
   if (row.primaryChain) meta.push(row.primaryChain);
   if (row.launched) meta.push(`launched ${row.launched}`);
   meta.push(`data quality: ${row.qualityLabel}`);
+  meta.push(`forensic dossier: ${row.forensicStatus === 'published' ? 'published' : 'pending review'}`);
   const sourceLabel = row.sources.length === 1 ? 'source' : 'sources';
   meta.push(`${row.sources.length} ${sourceLabel}`);
+  const dossierLink = `/exchange/${encodeURIComponent(row.kind)}/${encodeURIComponent(row.lifecycle)}/${encodeURIComponent(row.slug)}`;
   return `<div class="gcard ${open?'open':''}" role="button" tabindex="0" data-exchange-analysis-key="${esc(`${row.kind}:${row.lifecycle}:${row.slug}`)}">
     <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${lifecycleClass(row.lifecycle)}">${esc(lifecycleLabel(row.lifecycle))}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${metricContext}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
     <div class="gmeta">${meta.map(esc).join(' · ')}</div>
     ${row.summary ? `<div class="gbody">${esc(row.summary)}</div>` : ''}
     <div class="analysis-src-preview">${sourcePreview || '<div class="asrc">No cited sources published for this row.</div>'}</div>
-    ${details}<div class="gexpand">${open?'Hide dossier ▲':'Full dossier ▾'}</div>
+    ${details}<div class="gexpand">${open?'Hide dossier ▲':'Full dossier ▾'} · <a href="${esc(dossierLink)}">Open dossier →</a></div>
   </div>`;
 }
 function exchangeTrendSummary(summary, label) {
@@ -1158,7 +1193,7 @@ function renderExchangeAnalysis() {
   const cohorts = [...new Set(rows.map((row) => row.productCohort))]
     .sort((a, b) => a.localeCompare(b));
   el.innerHTML = `${head}${errors}
-    <div class="gstats">${gstat(rows.filter(r=>r.kind==='dex').length, 'DEX cases')}${gstat(rows.filter(r=>r.kind==='cex').length, 'CEX cases')}${gstat(rows.filter(r=>r.qualityLabel==='verified').length, 'verified')}${gstat(rows.filter(r=>r.qualityLabel==='partial').length, 'partial')}</div>
+    <div class="gstats">${gstat(rows.filter(r=>r.kind==='dex').length, 'DEX cases')}${gstat(rows.filter(r=>r.kind==='cex').length, 'CEX cases')}${gstat(rows.filter(r=>r.forensicStatus==='published').length, 'forensic dossiers')}${gstat(rows.filter(r=>r.qualityLabel==='partial').length, 'partial')}</div>
     <div class="analysis-note">${cited} of ${rows.length} dossiers expose citations. Comparison requires the same venue kind, product cohort, metric type, unit, and window. Spot, routed, perpetual, TVL, loss, daily, and quarterly measures are never added together.</div>
     ${exchangeTrendSummary(state.exchangeAnalysisSummaries.dex, 'DEX')}
     ${exchangeTrendSummary(state.exchangeAnalysisSummaries.cex, 'CEX')}
@@ -1296,7 +1331,10 @@ function casinoAnalysisCard(item) {
   const body = open ? casinoDetailBody(item, detail) : '';
   const sourceLabel = item.source_count === 1 ? 'reviewed source' : 'reviewed sources';
   const sourcePreview = `<div class="analysis-src-preview"><div class="asrc">Cited sources: ${esc(item.source_count)} ${sourceLabel}; open dossier for field-level links.</div></div>`;
-  const dossierLink = `/api/casino/${encodeURIComponent(item.case_id)}`;
+  // Keep the public handoff inside the research UI. The API remains the data
+  // source for the lazy detail pane; a reader should never have to inspect raw
+  // JSON to read a published dossier.
+  const dossierLink = `/casino/${encodeURIComponent(item.case_id)}`;
   return `<div class="gcard ${open ? 'open' : ''}" role="button" tabindex="0" data-casino-case="${esc(item.case_id)}">
     <div class="ghead"><div class="gname">${esc(item.brand_name)} <span class="gverdict ${item.status === 'active' ? 'recover' : 'declining'}">${esc(casinoLabel(item.status))}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${item.source_count}<span class="gddl">reviewed sources</span></div></div>
@@ -1375,17 +1413,19 @@ async function loadCasinoAnalysis() {
     state.casinoCoverage = coverage.coverage || null;
     state.casinoAnalysisError = dossiers.error || '';
     renderCasinoAnalysis();
+    if (state.casinoAnalysisExpanded && !state.casinoAnalysisDetails[state.casinoAnalysisExpanded]) {
+      loadCasinoAnalysisDetail(state.casinoAnalysisExpanded);
+    }
   } catch (error) {
     state.casinoAnalysisData = { cases: [] };
     state.casinoAnalysisError = error.message;
     renderCasinoAnalysis();
   }
 }
-async function toggleCasinoAnalysisCard(caseId) {
-  const opening = state.casinoAnalysisExpanded !== caseId;
-  state.casinoAnalysisExpanded = opening ? caseId : null;
-  if (!opening || state.casinoAnalysisDetails[caseId]) { renderCasinoAnalysis(); return; }
-  state.casinoAnalysisDetails[caseId] = 'loading'; renderCasinoAnalysis();
+async function loadCasinoAnalysisDetail(caseId) {
+  if (state.casinoAnalysisDetails[caseId]) return;
+  state.casinoAnalysisDetails[caseId] = 'loading';
+  renderCasinoAnalysis();
   try {
     const response = await fetch(`/api/casino/${encodeURIComponent(caseId)}`);
     state.casinoAnalysisDetails[caseId] = response.ok ? await response.json() : { error: `HTTP ${response.status}` };
@@ -1393,6 +1433,12 @@ async function toggleCasinoAnalysisCard(caseId) {
     state.casinoAnalysisDetails[caseId] = { error: error.message };
   }
   renderCasinoAnalysis();
+}
+async function toggleCasinoAnalysisCard(caseId) {
+  const opening = state.casinoAnalysisExpanded !== caseId;
+  state.casinoAnalysisExpanded = opening ? caseId : null;
+  if (!opening || state.casinoAnalysisDetails[caseId]) { renderCasinoAnalysis(); return; }
+  loadCasinoAnalysisDetail(caseId);
 }
 
 document.getElementById('blockchainanalysisview').addEventListener('input', (e) => {
@@ -1976,10 +2022,18 @@ function synthesisHtml(f){
   // thesis/bear/bull hid the actual postmortem from readers.
   if (d.situation) rows.push(`<div class="dsub">Current situation</div><div class="gbody">${esc(d.situation)}</div>`);
   if (d.postmortem) rows.push(`<div class="dsub">Why this outcome</div><div class="gbody">${esc(d.postmortem)}</div>`);
+  if (d.why) rows.push(`<div class="dsub">Why this outcome</div><div class="gbody">${esc(d.why)}</div>`);
   if (d.success_mechanism) rows.push(`<div class="dsub">Success mechanism</div><div class="gbody">${esc(d.success_mechanism)}</div>`);
+  if (Array.isArray(d.strategic_choices) && d.strategic_choices.length) rows.push(`<div class="dsub">Strategic choices</div><ul class="evlist">${d.strategic_choices.map((item) => `<li>${esc(typeof item === 'string' ? item : factObjectText(item))}</li>`).join('')}</ul>`);
   if (Array.isArray(d.lessons_learned) && d.lessons_learned.length) rows.push(`<div class="dsub">Lessons</div><ul class="evlist">${d.lessons_learned.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`);
   if (d.could_differ) rows.push(`<div class="dsub">What could change the read</div><div class="gbody">${esc(d.could_differ)}</div>`);
-  if (d.outlook) rows.push(`<div class="dsub">Outlook</div><div class="gbody">${esc(d.outlook)}</div>`);
+  if (d.outlook) {
+    const outlook = typeof d.outlook === 'object'
+      ? ['classification', 'most_likely', 'base', 'bull', 'bear', 'confidence']
+        .filter((key) => d.outlook[key]).map((key) => `${key.replaceAll('_', ' ')}: ${d.outlook[key]}`).join(' · ')
+      : String(d.outlook);
+    if (outlook) rows.push(`<div class="dsub">Outlook</div><div class="gbody">${esc(outlook)}</div>`);
+  }
   if (d.thesis) rows.push(`<div class="gbody">${esc(d.thesis)}</div>`);
   const ev = evidenceHtml(d.evidence, f.sources);
   if (ev) rows.push(`<div class="dsub">Evidence</div>${ev}`);
@@ -1993,6 +2047,9 @@ function synthesisHtml(f){
   }
   if (Array.isArray(d.watch) && d.watch.length) {
     rows.push(`<div class="dsub">What would change our mind</div><ul class="evlist">${d.watch.map(w=>`<li>${esc(typeof w==='string'?w:(w&&w.claim)||'')}</li>`).filter(x=>x!=='<li></li>').join('')}</ul>`);
+  }
+  if (Array.isArray(d.unknowns) && d.unknowns.length) {
+    rows.push(`<div class="dsub">Material unknowns</div><ul class="evlist">${d.unknowns.map((item) => `<li>${esc(typeof item === 'string' ? item : item?.question || factObjectText(item))}</li>`).filter((item) => item !== '<li></li>').join('')}</ul>`);
   }
   if (!rows.length) return '';
   const stamp = when ? `<span class="anwhen">as of ${esc(String(when))}</span>` : '';
@@ -2054,6 +2111,20 @@ function roundsHtml(list){
   return li ? `<ul class="evlist">${li}</ul>` : '';
 }
 
+function factObjectText(value) {
+  if (!value || typeof value !== 'object') return '';
+  if (value.date || value.type || value.description) {
+    return [value.date, value.type, value.description].filter(Boolean).join(' · ');
+  }
+  if (value.name || value.role || value.relationship || value.detail) {
+    return [value.name, value.role, value.relationship, value.detail].filter(Boolean).join(' · ');
+  }
+  if (typeof value.flagged === 'boolean' || value.status) {
+    return [value.flagged === true ? 'flagged' : value.flagged === false ? 'not flagged' : '', value.status, value.detail].filter(Boolean).join(' · ');
+  }
+  return value.claim || value.title || '';
+}
+
 function factBlockHtml(f, label){
   if (!f || !f.data || typeof f.data !== 'object') return '';
   const d = f.data;
@@ -2078,9 +2149,9 @@ function factBlockHtml(f, label){
     let txt;
     if (Array.isArray(v)) {
       txt = v.map((x) => (x && typeof x === 'object')
-        ? (x.name || x.claim || x.title || roundText(x) || '')   // never dump raw JSON at a reader
+        ? (factObjectText(x) || roundText(x) || '')
         : String(x)).filter(Boolean).join(', ');
-    } else if (typeof v === 'object') { continue; }
+    } else if (typeof v === 'object') { txt = factObjectText(v); }
     else if (typeof v === 'number' && /(_usd|_uds)$/.test(k)) txt = fmtUsd(v);   // total_raised_usd etc: $200M, not 200000000
     else txt = String(v);
     if (!txt) continue;
@@ -4180,7 +4251,7 @@ const KNOWN_VIEWS = ['live','blockchain-analysis','exchange-analysis','casino-an
 function applyRoute(){
   const parts = location.pathname.split('/').filter(Boolean);
   if (!parts.length) { switchView('live', false); return; }
-  const [seg, rest] = parts;
+  const [seg, rest, third, fourth] = parts;
   if (seg === 'chain' && rest) {
     switchView('live', false);
     const name = decodeURIComponent(rest);
@@ -4191,6 +4262,12 @@ function applyRoute(){
   } else if (seg === 'collection' && rest) {
     state.nftExpanded = decodeURIComponent(rest);
     switchView('nft-analysis', false);
+  } else if (seg === 'casino' && rest) {
+    state.casinoAnalysisExpanded = decodeURIComponent(rest);
+    switchView('casino-analysis', false);
+  } else if (seg === 'exchange' && rest && third && fourth) {
+    state.exchangeAnalysisExpanded = `${decodeURIComponent(rest)}:${decodeURIComponent(third)}:${decodeURIComponent(fourth)}`;
+    switchView('exchange-analysis', false);
   } else if (KNOWN_VIEWS.includes(seg)) {
     switchView(seg, false);
   } else {
