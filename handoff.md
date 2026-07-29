@@ -4,14 +4,15 @@
 
 - Repository: `carson-see/Chaindump`
 - Root checkout: `/Users/carson/Desktop/chain-monitor-source`
-- Root branch at latest handoff update: `codex/stuck-mid-dex-cex-ui-parity`, based on `origin/main` at `fab5a2b` after PR #48 merged.
+- Root branch at latest handoff update: `codex/nft-wave2-freshness-20260729`, based on `origin/main` at `21f1325` after PR #49 merged.
 - Root worktree before this handoff edit had only unrelated untracked files: `.claude/` and `archer-agent-config.md`.
-- Production health endpoint currently reports revision `5f7748b6e1f295d72626c9286c9e3ab20ebd79a9`, which is the merged/deployed casino cohort from PR #45.
+- Production health endpoint currently reports revision `21f132598f163383e9ddcc0810b432d1b5e33caa`, which is the merged/deployed canonical analysis UI from PR #49.
 - Goal remains active: deliver Chaindump as a production-verified, citation-backed forensic research product across blockchain, DEX/CEX, Web3 casino, NFT/Ordinals, and future Web3 verticals.
-- GitHub open PR state at latest check: no open PRs.
+- GitHub open PR state before the NFT wave 2 PR: no open PRs.
 - PR #46, #47, and #48 are merged into `main`. PR #48 added a visible `Live mid watch` panel to Stuck/Mid chains so the page uses the same live chip/sparkline pattern as Dead & Dying, matches profiled Stuck/Mid chains to the live board, and lets users click or keyboard-open the matching dossier.
-- Current local PR-in-progress: `codex/stuck-mid-dex-cex-ui-parity` standardizes the public analysis surfaces around the Blockchain Analysis contract and also adds the missing DEX/CEX Stuck/Mid UI parity. DEX/CEX mid tabs now fetch/render the same live DEX/CEX board component used by Dead & Dying. Web3 Casino Analysis now has search, status filter, collapsed source/citation state, result count, coverage-ledger link, and direct dossier links. NFT/Ordinals Analysis now has the Blockchain-style honesty note, status/chain filters, sort controls, visible collapsed source previews, field-cited vs legacy metadata, result count, and direct dossier links while keeping the live catalog clearly secondary.
-- Local validation for `codex/stuck-mid-dex-cex-ui-parity`: `npm test -- test/forensics-analysis.integration.test.js` passed with 14 tests; full `npm test` passed with 35 files / 447 tests; `npm run lint` passed; `npm run check:worker` passed; `npm run check:migrations` passed with 18 migrations OK; direct inline SPA parse passed (`Parsed 1 inline script(s)`).
+- PR #49 merged and deployed successfully. It standardizes the public analysis surfaces around the Blockchain Analysis contract and also adds the missing DEX/CEX Stuck/Mid UI parity. Production verification after deploy confirmed `/api/health` revision `21f132598f163383e9ddcc0810b432d1b5e33caa`, plus deployed HTML strings for Casino, NFT/Ordinals, Exchange, and Mid-page UI parity.
+- Current local PR-in-progress: `codex/nft-wave2-freshness-20260729`. It cherry-picks the staged NFT/Ordinals wave 2 onto current main, adds generated migration `0019_nft_freshness_wave2.sql`, and publishes 10 freshness-gated, field-cited NFT/Ordinals lifecycle dossiers.
+- Local validation for `codex/nft-wave2-freshness-20260729`: `npm run check:nft-dossiers -- docs/nft-citation-wave-2-2026-07-29.json` passed for 10 dossiers; focused freshness/NFT tests passed with 3 files / 12 tests; full `npm test` passed with 37 files / 457 tests; `npm run lint` passed; `npm run check:worker` passed; `npm run check:migrations` passed with 19 migrations OK; direct inline SPA parse passed (`Parsed 1 inline script(s)`).
 - Main deployment workflow state from the PR/CI audit: PR mergeability is not blocked, but the latest Deploy workflow was waiting on an approval/environment gate. If production has not updated, approve/resume the waiting Deploy run rather than looking for a PR merge blocker.
 
 ## Original user objective
@@ -66,6 +67,7 @@ Do not interpret "same as Blockchain Analysis" as "add random charts." The chart
 - PR #46: DEX/CEX exchange analysis normalization and Sonar cleanup, merged.
 - PR #47: current-state handoff update, merged.
 - PR #48: Stuck/Mid chain live-watch UI parity, merged.
+- PR #49: canonical forensic analysis UI standardization, merged and deployed to production at revision `21f132598f163383e9ddcc0810b432d1b5e33caa`.
 
 ## Production verification after PR #45
 
@@ -142,12 +144,13 @@ Those edits were made to address the 5 direct Sonar API findings and were commit
 
 Historical note: earlier handoff text said to wait for remote PR #46 metadata/checks to settle. That is no longer current; PR #46 is merged. Do not reopen that loop unless a new SonarCloud issue appears on current `main`.
 
-## Staged NFT/Ordinals wave 2
+## Active NFT/Ordinals wave 2
 
-- Branch: `codex/nft-wave2-staged`
-- Worktree: `/private/tmp/chaindump-nft-wave2`
-- Commit: `2510acc21c1edfd5e1ca19a9d9227b056f3f26da`
-- No PR opened yet because it must rebase after PR #46 lands and must receive the next migration number after `0018`.
+- Branch: `codex/nft-wave2-freshness-20260729`
+- Original staged commit: `2510acc21c1edfd5e1ca19a9d9227b056f3f26da`
+- Rebased/cherry-picked commit on current main: `607d747` before migration amend.
+- Assigned migration: `migrations/0019_nft_freshness_wave2.sql`.
+- Status: ready for PR after final amend/push; no direct merge until remote CI and deploy pass.
 
 Wave 2 adds/stages 10 NFT/Ordinals cases with the universal freshness contract:
 
@@ -169,14 +172,14 @@ NFT wave 2 also adds/stages:
 - Generic source-date, date-kind, last-verified, evidence-scope, stale-after/stale, next-review, status-basis, and status-as-of handling.
 - UI that visibly renders freshness basis, source date, verification date, stale state, review target, and field-level links.
 
-NFT wave 2 verification reported by the agent:
+NFT wave 2 verification:
 
-- 439/439 tests passed.
+- 457/457 tests passed locally after rebasing onto PR #49.
 - Lint passed.
 - Worker syntax passed.
-- Migration guard 17/17 passed.
+- Migration guard 19/19 passed.
 - Dossier citation/freshness check passed for 10/10 cases.
-- Generated unnumbered seed replayed cleanly after current migrations.
+- Generated migration `0019_nft_freshness_wave2.sql` replayed cleanly after current migrations.
 - Total staged NFT dossiers would become 30, with 14 field-cited and 10 freshness-gated.
 
 ## Web3 casino status
@@ -218,21 +221,16 @@ Recommended six-hour research agent design:
 
 ## Current open work
 
-- Finish and publish `codex/stuck-mid-dex-cex-ui-parity`:
-  - Create PR for the canonical analysis UI standardization branch.
-  - Confirm in a browser that Blockchain, DEX/CEX, Casino, and NFT/Ordinals analysis pages share the canonical information architecture.
-  - Commit only `public/index.html`, `test/forensics-analysis.integration.test.js`, and `handoff.md`.
-  - Push and open a PR.
-- If production has not advanced beyond the casino cohort revision, check/approve the waiting Deploy workflow gate.
+- Finish and publish `codex/nft-wave2-freshness-20260729`:
+  - Amend generated migration and handoff update into the NFT wave 2 branch.
+  - Push and open PR.
+  - Wait for remote CI and review signals.
+  - Merge only if remote checks are green, then verify production health and `/nft-analysis`.
 - Continue the original workflow; it is not done:
-  - Rebase NFT wave 2.
-  - Assign the next migration number.
-  - Open PR for NFT wave 2.
-  - Run adversarial citation/freshness review before merge.
-- Continue top-50 blockchain same-format dossier completion.
-- Continue Web3 Casino Analysis beyond the first 2 published records.
-- Continue NFT/Ordinals from 30 toward the requested 50 case studies.
-- Keep every content/data PR tied to visible UI, API, tests, migration replay, and production smoke.
+  - Continue top-50 blockchain same-format dossier completion.
+  - Continue Web3 Casino Analysis beyond the first 2 published records.
+  - Continue NFT/Ordinals from 30 toward the requested 50 case studies after wave 2 lands.
+  - Keep every content/data PR tied to visible UI, API, tests, migration replay, and production smoke.
 
 ## Local worktree notes
 

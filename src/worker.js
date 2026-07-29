@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { OFAC_FILES, ofacFileUrl, parseSanctionedFile, buildSanctionedRows } from './lib/ofac.js';
 import { NFT_LIST_URL, NFT_PER_PAGE, nftRowsFromPage, dedupeNftRows } from './lib/nft.js';
 import { validateFieldCitedNft } from './lib/nft-citation.mjs';
+import { forensicFreshness } from './lib/evidence-freshness.mjs';
 import { prefersMarkdown } from './lib/negotiate.js';
 import { renderEntityMarkdown } from './lib/entity-markdown.js';
 import { norm, resolveCategory, categoryLabel, coverageTier, relatedBlock, deriveCategory } from './lib/chainkit.js';
@@ -2176,10 +2177,13 @@ app.get('/api/nft', wrap(async (req, res) => {
       let p = null;
       try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {}
       const citation = validateFieldCitedNft(p, r.sources);
+      const freshness = forensicFreshness(p);
       return {
         ...r,
+        status: freshness?.statusWithheld ? 'unknown' : r.status,
         profile: p,
         citation: { fieldCited: p?.citation_schema === 'field-v1' && citation.valid, errors: citation.errors },
+        freshness,
       };
     });
     let analysis = null;
