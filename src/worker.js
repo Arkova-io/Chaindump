@@ -3456,24 +3456,75 @@ async function pruneOldSnapshots(env, now) {
   } catch (e) { console.error('[pruneOldSnapshots] failed:', e.message); }
 }
 
-async function forensicReviewCounts(env, today) {
+export async function forensicReviewCounts(env, today) {
   const count = async (sql, bind = []) => {
     const statement = bind.length ? env.DB.prepare(sql).bind(...bind) : env.DB.prepare(sql);
     const { results } = await statement.all();
     return Number(results?.[0]?.count || 0);
   };
   const [scannedNft, dueNft, scannedExchange, dueExchange, scannedCasino, dueCasino, scannedChain, dueChain] = await Promise.all([
-    count(`SELECT COUNT(*) AS count FROM nft_collections WHERE json_extract(profile, '$.citation_schema') = 'field-v1'`),
-    count(`SELECT COUNT(*) AS count FROM nft_collections WHERE json_extract(profile, '$.citation_schema') = 'field-v1' AND json_extract(profile, '$.evidence_policy.next_review_at') <= ?`, [today]),
+    count(`SELECT COUNT(*) AS count FROM nft_collections`),
+    count(
+      `SELECT COUNT(*) AS count
+         FROM nft_collections
+        WHERE COALESCE(
+          json_extract(profile, '$.evidence_policy.next_review_at'),
+          json_extract(profile, '$.review.next_review_at'),
+          date(substr(updated_at, 1, 10), '+90 days')
+        ) <= ?`,
+      [today],
+    ),
     count(`SELECT COUNT(*) AS count FROM exchange_case_features`),
-    count(`SELECT COUNT(*) AS count FROM exchange_case_features WHERE next_review_at <= ?`, [today]),
+    count(
+      `WITH lifecycle_cases AS (
+         SELECT slug, kind, 'dead' AS lifecycle, profile FROM dead_exchanges
+         UNION ALL
+         SELECT slug, kind, 'mid' AS lifecycle, profile FROM mid_exchanges
+         UNION ALL
+         SELECT slug, type AS kind, 'successful' AS lifecycle, profile FROM successful_exchanges
+       )
+       SELECT COUNT(*) AS count
+         FROM exchange_case_features AS feature
+         LEFT JOIN lifecycle_cases AS dossier
+           ON dossier.kind = feature.kind
+          AND dossier.slug = feature.slug
+          AND dossier.lifecycle = feature.lifecycle
+        WHERE COALESCE(
+          json_extract(dossier.profile, '$.forensic_analysis.review.next_review_at'),
+          feature.next_review_at
+        ) <= ?`,
+      [today],
+    ),
     count(`SELECT COUNT(*) AS count FROM casino_cases WHERE quality_passed = 1`),
-    count(`SELECT COUNT(*) AS count FROM casino_cases WHERE quality_passed = 1 AND last_reviewed <= date(?, '-90 days')`, [today]),
+    count(
+      `SELECT COUNT(*) AS count
+         FROM casino_cases AS casino
+         LEFT JOIN casino_syntheses AS synthesis ON synthesis.case_id = casino.case_id
+        WHERE casino.quality_passed = 1
+          AND COALESCE(
+            json_extract(synthesis.outlook, '$.forensic_analysis.review.next_review_at'),
+            date(casino.last_reviewed, '+90 days'),
+            date(substr(casino.updated_at, 1, 10), '+90 days')
+          ) <= ?`,
+      [today],
+    ),
     count(`SELECT COUNT(*) AS count FROM chain_facts WHERE dimension = '_meta'`),
-    count(`SELECT COUNT(*) AS count FROM chain_facts WHERE dimension = '_meta' AND json_extract(data, '$.last_reviewed') <= date(?, '-90 days')`, [today]),
+    count(
+      `SELECT COUNT(*) AS count
+         FROM chain_facts
+        WHERE dimension = '_meta'
+          AND COALESCE(
+            json_extract(data, '$.next_review_at'),
+            date(json_extract(data, '$.last_reviewed'), '+90 days'),
+            date(substr(updated_at, 1, 10), '+90 days')
+          ) <= ?`,
+      [today],
+    ),
   ]);
   return { scannedNft, dueNft, scannedExchange, dueExchange, scannedCasino, dueCasino, scannedChain, dueChain };
 }
+
+const FORENSIC_REVIEW_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
 async function recordForensicReviewHeartbeat(env, now) {
   if (!env.DB) return;
@@ -3496,8 +3547,36 @@ async function recordForensicReviewHeartbeat(env, now) {
   }
 }
 
+async function recordForensicReviewHeartbeatIfDue(env, now) {
+  if (!env.DB) return;
+  try {
+    const latest = await env.DB.prepare(
+      `SELECT scheduled_at
+         FROM forensic_refresh_runs
+        WHERE status = 'completed'
+        ORDER BY run_id DESC
+        LIMIT 1`,
+    ).first();
+    const lastScheduledAt = Date.parse(latest?.scheduled_at || '');
+    if (Number.isFinite(lastScheduledAt) && now - lastScheduledAt < FORENSIC_REVIEW_INTERVAL_MS) return;
+    await recordForensicReviewHeartbeat(env, now);
+  } catch (error) {
+    // A missing migration or transient D1 error must not take down live-market
+    // refreshes. The next five-minute trigger retries because no successful
+    // heartbeat timestamp was recorded.
+    console.error('[forensics-review] due check failed:', error?.message || error);
+  }
+}
+
 async function handleScheduled(event, env, ctx) {
   if (!ENV.__init) { Object.assign(ENV, env || {}); ENV.__init = true; }
+  const scheduledTime = Number(event?.scheduledTime);
+  const reviewNow = Number.isFinite(scheduledTime) && scheduledTime > 0 ? scheduledTime : Date.now();
+  // Evidence governance is independent of the volatile market-data pipeline.
+  // Run immediately in a new environment, then relative to the last successful
+  // heartbeat. This also recovers on the next five-minute tick after a missed
+  // six-hour boundary.
+  if (env.DB) await recordForensicReviewHeartbeatIfDue(env, reviewNow);
   // Read the prior blob BEFORE overwriting it, so peer hysteresis has last tick's
   // peers to compare against (otherwise the anti-churn rule is a no-op).
   let priorData = null;
@@ -3547,9 +3626,6 @@ async function handleScheduled(event, env, ctx) {
     if (tick % 288 === 0) await refreshSanctioned(env);
     // NFT collection universe changes slowly — re-index ~weekly (1-in-2016)
     if (tick % 2016 === 0) await refreshNftCatalog(env);
-    // Research freshness is different from live market data: record every six
-    // hours what requires human review, never mutate a forensic verdict here.
-    if (tick % 72 === 0) await recordForensicReviewHeartbeat(env, ts);
   }
 
   // No board this tick: leave the cache and D1 holding the last good one.
