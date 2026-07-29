@@ -2563,7 +2563,13 @@ app.get('/api/scam-graph', wrap(async (req, res) => {
   }
 }));
 
-app.get('/api/health', wrap((req, res) => res.json({ ok: true })));
+// BUILD_SHA is injected by the protected production workflow. Returning it here
+// lets the smoke check prove that the requested revision reached the Worker,
+// rather than accepting a 200 from an older deployment that also had /api/health.
+app.get('/api/health', wrap((req, res) => res.json({
+  ok: true,
+  revision: ENV.BUILD_SHA || null,
+})));
 
 // ---------------------------------------------------------------------------
 // Deep-links + shareable pages. The SPA is served for entity/view paths with
