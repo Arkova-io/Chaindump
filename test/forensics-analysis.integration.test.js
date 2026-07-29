@@ -92,6 +92,8 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('What could have been different');
     expect(html).toContain('Material unknowns');
     expect(html).toContain('structured causal analysis has not passed the publication gate yet');
+    expect(html).toContain('function forensicSourceArray(contract)');
+    expect(html).toContain('forensicSourceArray(forensic)');
   });
 
   it('opens exchange dossiers through a public UI route instead of requiring API inspection', () => {

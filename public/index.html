@@ -799,6 +799,33 @@ function sourceArray(value) {
     return typeof source === 'string' ? { url } : { title: source.title || '', url };
   }).filter(Boolean);
 }
+// Published forensic conclusions carry their own source references. Surface
+// them on the collapsed research card as well as inside the expanded dossier;
+// otherwise a well-cited causal map misleadingly looks like a sparse legacy row.
+function forensicSourceArray(contract) {
+  const analysis = parsedObject(contract);
+  if (!analysis || (analysis.schema !== 'forensic-analysis-v1' && analysis.version !== 'forensic-analysis-v1')) return [];
+  const refs = [];
+  const collect = (value) => {
+    if (!value) return;
+    if (Array.isArray(value)) { value.forEach(collect); return; }
+    if (typeof value === 'string') { refs.push({ url: value }); return; }
+    const sources = value.source_refs || value.evidence_refs || [];
+    for (const source of sources) {
+      if (typeof source === 'string') refs.push({ url: source });
+      else if (source?.url) refs.push(source);
+    }
+  };
+  collect(analysis.outcome);
+  collect(analysis.why);
+  collect(analysis.counterfactual);
+  collect(analysis.strategic_choices);
+  collect(analysis.watch);
+  return sourceArray(refs);
+}
+function mergedSourceArray(...groups) {
+  return sourceArray(groups.flat());
+}
 function analysisButton(view, label) {
   return `<button type="button" class="kindbtn" data-analysis-route="${view}">${label}</button>`;
 }
@@ -939,6 +966,7 @@ async function loadBlockchainAnalysis() {
 function normalizeExchangeResearchCase(row) {
   const profile = parsedObject(row.profile);
   const analysis = parsedObject(row.analysis);
+  const forensic = analysis.forensic_analysis || profile.forensic_analysis;
   const metric = parsedObject(analysis.metric);
   const quality = parsedObject(analysis.data_quality);
   return {
@@ -960,7 +988,7 @@ function normalizeExchangeResearchCase(row) {
     qualityLabel: quality.label || 'limited',
     qualityIssues: Array.isArray(quality.issues) ? quality.issues : [],
     evidence: parsedObject(analysis.evidence),
-    profile, analysis, sources: sourceArray(row.sources), updatedAt: row.updated_at || '',
+    profile, analysis, sources: mergedSourceArray(sourceArray(row.sources), forensicSourceArray(forensic)), updatedAt: row.updated_at || '',
   };
 }
 function exchangeMetric(row) {
