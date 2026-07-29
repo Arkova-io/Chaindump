@@ -1983,7 +1983,13 @@ function synthesisHtml(f){
   if (d.success_mechanism) rows.push(`<div class="dsub">Success mechanism</div><div class="gbody">${esc(d.success_mechanism)}</div>`);
   if (Array.isArray(d.lessons_learned) && d.lessons_learned.length) rows.push(`<div class="dsub">Lessons</div><ul class="evlist">${d.lessons_learned.map((item) => `<li>${esc(item)}</li>`).join('')}</ul>`);
   if (d.could_differ) rows.push(`<div class="dsub">What could change the read</div><div class="gbody">${esc(d.could_differ)}</div>`);
-  if (d.outlook) rows.push(`<div class="dsub">Outlook</div><div class="gbody">${esc(d.outlook)}</div>`);
+  if (d.outlook) {
+    const outlook = typeof d.outlook === 'object'
+      ? ['classification', 'most_likely', 'base', 'bull', 'bear', 'confidence']
+        .filter((key) => d.outlook[key]).map((key) => `${key.replaceAll('_', ' ')}: ${d.outlook[key]}`).join(' · ')
+      : String(d.outlook);
+    if (outlook) rows.push(`<div class="dsub">Outlook</div><div class="gbody">${esc(outlook)}</div>`);
+  }
   if (d.thesis) rows.push(`<div class="gbody">${esc(d.thesis)}</div>`);
   const ev = evidenceHtml(d.evidence, f.sources);
   if (ev) rows.push(`<div class="dsub">Evidence</div>${ev}`);
@@ -2058,6 +2064,20 @@ function roundsHtml(list){
   return li ? `<ul class="evlist">${li}</ul>` : '';
 }
 
+function factObjectText(value) {
+  if (!value || typeof value !== 'object') return '';
+  if (value.date || value.type || value.description) {
+    return [value.date, value.type, value.description].filter(Boolean).join(' · ');
+  }
+  if (value.name || value.role || value.relationship || value.detail) {
+    return [value.name, value.role, value.relationship, value.detail].filter(Boolean).join(' · ');
+  }
+  if (typeof value.flagged === 'boolean' || value.status) {
+    return [value.flagged === true ? 'flagged' : value.flagged === false ? 'not flagged' : '', value.status, value.detail].filter(Boolean).join(' · ');
+  }
+  return value.claim || value.title || '';
+}
+
 function factBlockHtml(f, label){
   if (!f || !f.data || typeof f.data !== 'object') return '';
   const d = f.data;
@@ -2082,9 +2102,9 @@ function factBlockHtml(f, label){
     let txt;
     if (Array.isArray(v)) {
       txt = v.map((x) => (x && typeof x === 'object')
-        ? (x.name || x.claim || x.title || roundText(x) || '')   // never dump raw JSON at a reader
+        ? (factObjectText(x) || roundText(x) || '')
         : String(x)).filter(Boolean).join(', ');
-    } else if (typeof v === 'object') { continue; }
+    } else if (typeof v === 'object') { txt = factObjectText(v); }
     else if (typeof v === 'number' && /(_usd|_uds)$/.test(k)) txt = fmtUsd(v);   // total_raised_usd etc: $200M, not 200000000
     else txt = String(v);
     if (!txt) continue;

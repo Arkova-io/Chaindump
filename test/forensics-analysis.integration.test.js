@@ -43,6 +43,8 @@ describe('Forensics analysis navigation', () => {
     expect(html).toContain('Open chain dossier →');
     expect(html).toContain("coverage: 'Legacy postmortem'");
     expect(html).toContain('structural dossiers');
+    expect(html).toContain('function factObjectText(value)');
+    expect(html).toContain("['classification', 'most_likely', 'base', 'bull', 'bear', 'confidence']");
   });
 });
 
