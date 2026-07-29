@@ -130,6 +130,16 @@ describe('Web3 Casino Analysis data surface', () => {
   });
 });
 
+describe('six-hour forensic review surface', () => {
+  it('shows the review cadence and links the visible status to the public API', () => {
+    expect(html).toContain('function loadForensicsRefreshStatus()');
+    expect(html).toContain("fetch('/api/forensics-refresh-status')");
+    expect(html).toContain('Six-hour review scan:');
+    expect(html).toContain('human promotion required');
+    expect(html).toContain('Open review status →');
+  });
+});
+
 describe('NFT and Ordinals Analysis data surface', () => {
   it('uses the same sortable research-index pattern as Blockchain Analysis', () => {
     expect(html).toContain('This index deliberately distinguishes lifecycle research from live catalog coverage.');

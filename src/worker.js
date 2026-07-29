@@ -2327,6 +2327,24 @@ app.get('/api/casino/:case_id', wrap(async (req, res) => {
   }
 }));
 
+// Public evidence-governance status. This is intentionally separate from the
+// live-market snapshot: a successful cron run only identifies dossiers due for
+// review. It never promotes, rewrites, or "freshens" an analyst conclusion.
+app.get('/api/forensics-refresh-status', wrap(async (req, res) => {
+  try {
+    const rows = await dbQuery(
+      `SELECT run_id, scheduled_at, completed_at, status,
+              scanned_nft, due_nft, scanned_exchange, due_exchange,
+              scanned_casino, due_casino, scanned_chain, due_chain, notes
+         FROM forensic_refresh_runs
+        ORDER BY run_id DESC LIMIT 1`,
+    );
+    res.json({ refresh: rows[0] || null, cadence: 'six_hours', promotion_policy: 'human_review_required' });
+  } catch {
+    res.json({ refresh: null, cadence: 'six_hours', promotion_policy: 'human_review_required', error: 'forensic refresh status unavailable' });
+  }
+}));
+
 // Decentralized storage / document-verification infrastructure
 app.get('/api/infra', wrap(async (req, res) => {
   try {
@@ -3379,6 +3397,46 @@ async function pruneOldSnapshots(env, now) {
   } catch (e) { console.error('[pruneOldSnapshots] failed:', e.message); }
 }
 
+async function forensicReviewCounts(env, today) {
+  const count = async (sql, bind = []) => {
+    const statement = bind.length ? env.DB.prepare(sql).bind(...bind) : env.DB.prepare(sql);
+    const { results } = await statement.all();
+    return Number(results?.[0]?.count || 0);
+  };
+  const [scannedNft, dueNft, scannedExchange, dueExchange, scannedCasino, dueCasino, scannedChain, dueChain] = await Promise.all([
+    count(`SELECT COUNT(*) AS count FROM nft_collections WHERE json_extract(profile, '$.citation_schema') = 'field-v1'`),
+    count(`SELECT COUNT(*) AS count FROM nft_collections WHERE json_extract(profile, '$.citation_schema') = 'field-v1' AND json_extract(profile, '$.evidence_policy.next_review_at') <= ?`, [today]),
+    count(`SELECT COUNT(*) AS count FROM exchange_case_features`),
+    count(`SELECT COUNT(*) AS count FROM exchange_case_features WHERE next_review_at <= ?`, [today]),
+    count(`SELECT COUNT(*) AS count FROM casino_cases WHERE quality_passed = 1`),
+    count(`SELECT COUNT(*) AS count FROM casino_cases WHERE quality_passed = 1 AND last_reviewed <= date(?, '-90 days')`, [today]),
+    count(`SELECT COUNT(*) AS count FROM chain_facts WHERE dimension = '_meta'`),
+    count(`SELECT COUNT(*) AS count FROM chain_facts WHERE dimension = '_meta' AND json_extract(data, '$.last_reviewed') <= date(?, '-90 days')`, [today]),
+  ]);
+  return { scannedNft, dueNft, scannedExchange, dueExchange, scannedCasino, dueCasino, scannedChain, dueChain };
+}
+
+async function recordForensicReviewHeartbeat(env, now) {
+  if (!env.DB) return;
+  const scheduledAt = new Date(now).toISOString();
+  const today = scheduledAt.slice(0, 10);
+  try {
+    const counts = await forensicReviewCounts(env, today);
+    await env.DB.prepare(
+      `INSERT INTO forensic_refresh_runs
+        (scheduled_at, completed_at, status, scanned_nft, due_nft, scanned_exchange, due_exchange, scanned_casino, due_casino, scanned_chain, due_chain, notes)
+       VALUES (?, ?, 'completed', ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ).bind(
+      scheduledAt, new Date().toISOString(), counts.scannedNft, counts.dueNft,
+      counts.scannedExchange, counts.dueExchange, counts.scannedCasino, counts.dueCasino,
+      counts.scannedChain, counts.dueChain,
+      'Automated six-hour review-debt scan. Lifecycle, legal, narrative, and causal changes require human promotion.',
+    ).run();
+  } catch (error) {
+    console.error('[forensics-review] heartbeat failed:', error?.message || error);
+  }
+}
+
 async function handleScheduled(event, env, ctx) {
   if (!ENV.__init) { Object.assign(ENV, env || {}); ENV.__init = true; }
   // Read the prior blob BEFORE overwriting it, so peer hysteresis has last tick's
@@ -3430,6 +3488,9 @@ async function handleScheduled(event, env, ctx) {
     if (tick % 288 === 0) await refreshSanctioned(env);
     // NFT collection universe changes slowly — re-index ~weekly (1-in-2016)
     if (tick % 2016 === 0) await refreshNftCatalog(env);
+    // Research freshness is different from live market data: record every six
+    // hours what requires human review, never mutate a forensic verdict here.
+    if (tick % 72 === 0) await recordForensicReviewHeartbeat(env, ts);
   }
 
   // No board this tick: leave the cache and D1 holding the last good one.

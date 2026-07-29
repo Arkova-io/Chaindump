@@ -673,7 +673,7 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   exchangeAnalysisDir: 1, exchangeAnalysisExpanded: null,
   casinoAnalysisData: null, casinoCoverage: null, casinoAnalysisError: '', casinoAnalysisQuery: '', casinoAnalysisSort: 'reviewed',
   casinoAnalysisStatus: 'all', casinoAnalysisKind: 'all', casinoAnalysisSubtype: 'all', casinoAnalysisToken: 'all', casinoAnalysisExpanded: null, casinoAnalysisDetails: {},
-  nftCaseSort: 'name', nftCaseStatus: 'all', nftCaseChain: 'all' };
+  nftCaseSort: 'name', nftCaseStatus: 'all', nftCaseChain: 'all', forensicsRefresh: null };
 
 const fmtUsd = (n) => n == null ? '—' : (n < 0 ? '-' : '') + '$' + Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 2 }).format(Math.abs(n));
 const fmtNum = (n) => n == null ? '—' : Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(n);
@@ -693,8 +693,29 @@ const safeUrl = (u) => { const s = String(u == null ? '' : u).trim(); return /^(
 //   .gwrap > .gcard  |  .chainfolders > .chainfolder  |  .rllist > .rlrow
 // `sub` is trusted authored copy (it may carry &amp; / <b>); `title` is escaped.
 // ---------------------------------------------------------------------------
+function forensicsRefreshText() {
+  const refresh = state.forensicsRefresh;
+  if (!refresh) return 'Six-hour review scan: loading evidence-governance status…';
+  const due = Number(refresh.due_nft || 0) + Number(refresh.due_exchange || 0) + Number(refresh.due_casino || 0) + Number(refresh.due_chain || 0);
+  return `Six-hour review scan: ${esc(refresh.completed_at || 'completed')} · ${esc(due)} dossier(s) due · human promotion required`;
+}
+function renderForensicsRefreshStatus() {
+  document.querySelectorAll('[data-forensics-refresh]').forEach((node) => {
+    node.innerHTML = `${forensicsRefreshText()} <a href="/api/forensics-refresh-status" target="_blank" rel="noopener noreferrer">Open review status →</a>`;
+  });
+}
+async function loadForensicsRefreshStatus() {
+  try {
+    const response = await fetch('/api/forensics-refresh-status');
+    const payload = response.ok ? await response.json() : {};
+    state.forensicsRefresh = payload.refresh || null;
+  } catch {
+    state.forensicsRefresh = null;
+  }
+  renderForensicsRefreshStatus();
+}
 function pageHead(title, sub){
-  return `<div class="pagehead"><div class="pagetitle">${esc(title)}</div><div class="gvintro">${sub}</div></div>`;
+  return `<div class="pagehead"><div class="pagetitle">${esc(title)}</div><div class="gvintro">${sub}</div><div class="muted" data-forensics-refresh>${forensicsRefreshText()} <a href="/api/forensics-refresh-status" target="_blank" rel="noopener noreferrer">Open review status →</a></div></div>`;
 }
 // ---------------------------------------------------------------------------
 // The kind toggle shared by the Dead & Dying / Stuck-Mid views — Chains (the
@@ -4064,7 +4085,9 @@ function pushEntity(kind, id){ const path = `/${kind}/${encodeURIComponent(id)}`
 
 load();
 applyRoute();
+loadForensicsRefreshStatus();
 setInterval(load, 30000);
+setInterval(loadForensicsRefreshStatus, 6 * 60 * 60 * 1000);
 // real-time refresh of whichever live-data tab is open (research tabs are static, skip them)
 const LIVE_REFRESH = { stables: loadStables, 'nft-analysis': loadNft, news: loadNews, markets: loadMarkets, power: loadPower };
 setInterval(() => {
