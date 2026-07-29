@@ -210,6 +210,9 @@ export function normalizePublicationSource(sourceValue) {
     source.evidence_reviewed === true || source.evidence_reviewed === 1
   ) && Boolean(evidenceReviewer && evidenceReviewedAt);
   const resolving = resolvingState(source, state);
+  let classificationBasis = byHost.basis;
+  if (explicitTier(source) || declaredRole) classificationBasis = 'declared_metadata';
+  if (byHost.role === 'authority') classificationBasis = 'host_policy';
   return {
     id: source.id || source.source_id || url,
     url,
@@ -231,11 +234,7 @@ export function normalizePublicationSource(sourceValue) {
     evidence_reviewed: evidenceReviewed,
     evidence_reviewer: evidenceReviewer,
     evidence_reviewed_at: evidenceReviewedAt,
-    classification_basis: byHost.role === 'authority'
-      ? 'host_policy'
-      : explicitTier(source) || declaredRole
-      ? 'declared_metadata'
-      : byHost.basis,
+    classification_basis: classificationBasis,
   };
 }
 

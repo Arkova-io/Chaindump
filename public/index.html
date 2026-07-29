@@ -1511,6 +1511,7 @@ function exchangeAnalysisCard(row) {
   const sourcePreview = srcHtml(row.sources.slice(0, 3), 'Cited sources: ');
   const details = open ? exchangeAnalysisDetails(row, p, exchangeTokenLine(token)) : '';
   const metricContext = row.peakMetric != null ? `Peak ${fmtUsd(row.peakMetric)} → ${exchangeMetric(row)}` : exchangeMetric(row);
+  const sourceLabel = row.sources.length === 1 ? 'source' : 'sources';
   const meta = [
     row.kind.toUpperCase(),
     `venue: ${exchangeLabel(row.venueType)}`,
@@ -1521,9 +1522,8 @@ function exchangeAnalysisCard(row) {
     `data quality: ${row.qualityLabel}`,
     `causal map: ${row.forensicStatus === 'published' ? 'indexed' : 'structure pending'}`,
     `high-risk support: ${row.publicationDepth.passing_high_risk_claim_count || 0}/${row.publicationDepth.high_risk_claim_count || 0}`,
+    `${row.sources.length} ${sourceLabel}`,
   ].filter(Boolean);
-  const sourceLabel = row.sources.length === 1 ? 'source' : 'sources';
-  meta.push(`${row.sources.length} ${sourceLabel}`);
   const dossierLink = `/exchange/${encodeURIComponent(row.kind)}/${encodeURIComponent(row.lifecycle)}/${encodeURIComponent(row.slug)}`;
   return `<div class="gcard ${open?'open':''}" role="button" tabindex="0" data-exchange-analysis-key="${esc(`${row.kind}:${row.lifecycle}:${row.slug}`)}">
     <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${verdictClass}">${esc(verdictLabel)}</span></div>
@@ -2580,19 +2580,20 @@ function publicationDepthGap(depth, path) {
 }
 function publicationPendingHtml(label, gap) {
   const reason = (gap?.gaps || []).map((value) => String(value).replaceAll('_', ' ')).join(' · ');
-  return `<div class="analysis-note"><b>${esc(label)} withheld — independent support pending.</b>${reason ? ` ${esc(reason)}.` : ''} Registered sources remain visible for review; this conclusion is not presented as independently verified.</div>`;
+  const reasonSentence = reason ? ` ${esc(reason)}.` : '';
+  return `<div class="analysis-note"><b>${esc(label)} withheld — independent support pending.</b>${reasonSentence} Registered sources remain visible for review; this conclusion is not presented as independently verified.</div>`;
 }
-function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is indexed, but its structured causal analysis is pending review.', publicationDepth = null) {
-  const a = parsedObject(contract);
-  if (!a || (a.schema !== 'forensic-analysis-v1' && a.version !== 'forensic-analysis-v1')) {
-    return `<div class="dsec">Forensic analysis</div><div class="analysis-note">${esc(pendingText)}</div>`;
-  }
-  const outcome = parsedObject(a.outcome);
-  const citedList = (items, mapper) => Array.isArray(items) && items.length
-    ? `<ul class="evlist">${items.map(mapper).filter(Boolean).join('')}</ul>` : '';
-  const whyItems = Array.isArray(a.why) ? a.why : (a.why ? [a.why] : []);
+function forensicCitedList(items, mapper) {
+  if (!Array.isArray(items) || !items.length) return '';
+  return `<ul class="evlist">${items.map(mapper).filter(Boolean).join('')}</ul>`;
+}
+function forensicWhyHtml(analysis, resolveRef, publicationDepth) {
+  let whyItems = [];
+  if (Array.isArray(analysis.why)) whyItems = analysis.why;
+  else if (analysis.why) whyItems = [analysis.why];
   const whyGap = publicationDepthGap(publicationDepth, 'forensic_analysis.why');
-  const why = whyGap ? publicationPendingHtml('Why this outcome', whyGap) : citedList(whyItems, (factor) => {
+  if (whyGap) return publicationPendingHtml('Why this outcome', whyGap);
+  return forensicCitedList(whyItems, (factor) => {
     if (!factor) return '';
     const claim = factor.claim || factor.summary;
     if (!claim) return '';
@@ -2603,7 +2604,9 @@ function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is 
       ? `<div class="muted">Alternative: ${esc(factor.alternatives.join(' · '))}</div>` : '';
     return `<li><b>${esc(exchangeLabel(factor.factor || 'other'))}:</b> ${esc(claim)}${refs}<span class="muted">${esc(basis + confidence)}</span>${alternatives}</li>`;
   });
-  const choices = citedList(a.strategic_choices, (choice, index) => {
+}
+function forensicChoicesHtml(analysis, resolveRef, publicationDepth) {
+  return forensicCitedList(analysis.strategic_choices, (choice, index) => {
     const gap = publicationDepthGap(
       publicationDepth,
       `forensic_analysis.strategic_choices[${index}]`,
@@ -2619,41 +2622,76 @@ function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is 
     const resultText = result ? `<div class="muted">Observed result: ${esc(result)}</div>` : '';
     return `<li><b>${esc(choiceText)}</b>${refs}${mechanism}${resultText}</li>`;
   });
-  const counter = parsedObject(a.counterfactual);
-  const counterText = counter?.intervention ? `${counter.intervention}${counter.mechanism ? ` — ${counter.mechanism}` : ''}` : counter?.summary;
-  const counterGap = publicationDepthGap(
-    publicationDepth,
-    'forensic_analysis.counterfactual',
-  );
-  const counterfactual = counterGap
-    ? publicationPendingHtml('Counterfactual', counterGap)
-    : counterText
-      ? `${proseBox(counterText)}${counter.limits ? `<div class="muted">Limit: ${esc(counter.limits)}</div>` : ''}`
-      : '';
-  const watch = citedList(a.watch, (item) => {
+}
+function forensicCounterfactualHtml(analysis, publicationDepth) {
+  const counter = parsedObject(analysis.counterfactual);
+  const counterGap = publicationDepthGap(publicationDepth, 'forensic_analysis.counterfactual');
+  if (counterGap) return publicationPendingHtml('Counterfactual', counterGap);
+  let counterText = counter?.summary;
+  if (counter?.intervention) {
+    counterText = counter.intervention;
+    if (counter.mechanism) counterText += ` — ${counter.mechanism}`;
+  }
+  if (!counterText) return '';
+  const limits = counter.limits ? `<div class="muted">Limit: ${esc(counter.limits)}</div>` : '';
+  return `${proseBox(counterText)}${limits}`;
+}
+function forensicWatchHtml(analysis, resolveRef) {
+  return forensicCitedList(analysis.watch, (item) => {
     if (!item?.signal) return '';
     const refs = (item.evidence_refs || item.source_refs || []).map((ref) => forensicRefHtml(ref, resolveRef)).join('');
-    return `<li>${esc(item.signal)}${item.implication ? `<div class="muted">${esc(item.implication)}</div>` : ''}${refs}</li>`;
+    const implication = item.implication ? `<div class="muted">${esc(item.implication)}</div>` : '';
+    return `<li>${esc(item.signal)}${implication}${refs}</li>`;
   });
-  const unknowns = citedList(a.unknowns, (item) => {
+}
+function forensicUnknownsHtml(analysis) {
+  return forensicCitedList(analysis.unknowns, (item) => {
     const text = typeof item === 'string' ? item : item?.question;
     if (!text) return '';
-    return `<li>${esc(text)}${item?.resolution_trigger ? `<div class="muted">Review trigger: ${esc(item.resolution_trigger)}</div>` : ''}</li>`;
+    const trigger = item?.resolution_trigger
+      ? `<div class="muted">Review trigger: ${esc(item.resolution_trigger)}</div>` : '';
+    return `<li>${esc(text)}${trigger}</li>`;
   });
-  const review = parsedObject(a.review);
-  const outcomeText = outcome.label ? `${exchangeLabel(outcome.label)}${outcome.scope ? ` · ${outcome.scope}` : ''}${outcome.summary ? ` · ${outcome.summary}` : ''}` : 'outcome withheld';
+}
+function forensicOutcomeHtml(analysis, resolveRef, publicationDepth) {
+  const outcome = parsedObject(analysis.outcome);
   const outcomeGap = publicationDepthGap(publicationDepth, 'forensic_analysis.outcome');
-  const outcomeRow = outcomeGap
-    ? publicationPendingHtml('Scoped outcome', outcomeGap)
-    : `<div class="gfield"><span class="gfl">Scoped outcome</span>${esc(outcomeText)}${(outcome.source_refs || outcome.evidence_refs || []).map((ref) => forensicRefHtml(ref, resolveRef)).join('')}</div>`;
+  if (outcomeGap) return publicationPendingHtml('Scoped outcome', outcomeGap);
+  let outcomeText = 'outcome withheld';
+  if (outcome.label) {
+    outcomeText = exchangeLabel(outcome.label);
+    if (outcome.scope) outcomeText += ` · ${outcome.scope}`;
+    if (outcome.summary) outcomeText += ` · ${outcome.summary}`;
+  }
+  const references = (outcome.source_refs || outcome.evidence_refs || [])
+    .map((ref) => forensicRefHtml(ref, resolveRef))
+    .join('');
+  return `<div class="gfield"><span class="gfl">Scoped outcome</span>${esc(outcomeText)}${references}</div>`;
+}
+function forensicReviewHtml(analysis) {
+  const review = parsedObject(analysis.review);
+  if (!(review?.freshness || review?.status || review?.next_review_at)) return '';
+  const stateLabel = forensicReviewState(review).replaceAll('_', ' ');
+  return `<div class="gfield"><span class="gfl">Analysis freshness</span>${esc(stateLabel)} · verified ${esc(review.last_verified_at || review.last_reviewed_at || 'unknown')} · review ${esc(review.next_review_at || 'unknown')}</div>`;
+}
+function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is indexed, but its structured causal analysis is pending review.', publicationDepth = null) {
+  const a = parsedObject(contract);
+  if (!a || (a.schema !== 'forensic-analysis-v1' && a.version !== 'forensic-analysis-v1')) {
+    return `<div class="dsec">Forensic analysis</div><div class="analysis-note">${esc(pendingText)}</div>`;
+  }
+  const why = forensicWhyHtml(a, resolveRef, publicationDepth);
+  const choices = forensicChoicesHtml(a, resolveRef, publicationDepth);
+  const counterfactual = forensicCounterfactualHtml(a, publicationDepth);
+  const watch = forensicWatchHtml(a, resolveRef);
+  const unknowns = forensicUnknownsHtml(a);
   const sections = [
-    outcomeRow,
+    forensicOutcomeHtml(a, resolveRef, publicationDepth),
     why ? `<div class="gsec">Why this outcome</div>${why}` : '',
     choices ? `<div class="gsec">Strategic choices</div>${choices}` : '',
     counterfactual ? `<div class="gsec">What could have been different</div>${counterfactual}` : '',
     watch ? `<div class="gsec">What would change our mind</div>${watch}` : '',
     unknowns ? `<div class="gsec">Material unknowns</div>${unknowns}` : '',
-    (review?.freshness || review?.status || review?.next_review_at) ? `<div class="gfield"><span class="gfl">Analysis freshness</span>${esc(forensicReviewState(review).replaceAll('_', ' '))} · verified ${esc(review.last_verified_at || review.last_reviewed_at || 'unknown')} · review ${esc(review.next_review_at || 'unknown')}</div>` : '',
+    forensicReviewHtml(a),
   ].filter(Boolean).join('');
   return `<div class="dsec">Forensic analysis</div><div class="anbox">${sections}</div>`;
 }

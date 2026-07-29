@@ -24,6 +24,55 @@ const expectedSlugs = [
   'zipmex',
 ];
 
+function assertCexWaveSource(entry, source, checkedAt) {
+  if (
+    !source.title
+    || !source.publisher
+    || !/^https:\/\/\S+$/.test(source.url || '')
+    || source.checked_at !== checkedAt
+  ) {
+    throw new Error(`${entry.slug}: invalid or stale public source ${JSON.stringify(source)}`);
+  }
+}
+
+function assertCexWaveForensicAnalysis(entry) {
+  const validation = validateForensicAnalysis(entry.forensic_analysis);
+  if (
+    validation.errors.length > 0
+    || validation.warnings.length > 0
+    || validation.withheld_sections.length > 0
+  ) {
+    throw new Error(`${entry.slug}: ${JSON.stringify(validation)}`);
+  }
+  const citedUrls = [
+    ...entry.forensic_analysis.outcome.source_refs,
+    ...entry.forensic_analysis.why.source_refs,
+    ...entry.forensic_analysis.strategic_choices.flatMap(({ source_refs }) => source_refs),
+    ...entry.forensic_analysis.counterfactual.source_refs,
+    ...entry.forensic_analysis.watch.flatMap(({ source_refs }) => source_refs),
+  ];
+  if (citedUrls.some((url) => !/^https:\/\/\S+$/.test(url))) {
+    throw new Error(`${entry.slug}: every source reference must be a direct HTTPS URL`);
+  }
+}
+
+function assertCexWaveEntry(entry, checkedAt) {
+  const expectedTable = ['wazirx', 'xeggex'].includes(entry.slug)
+    ? 'mid_exchanges'
+    : 'dead_exchanges';
+  if (entry.table !== expectedTable || entry.kind !== 'cex') {
+    throw new Error(`${entry.slug}: expected ${expectedTable}/cex target`);
+  }
+  if (!entry.row_patch?.why || !entry.row_patch?.outlook || !entry.row_patch?.verdict) {
+    throw new Error(`${entry.slug}: a complete row_patch is required to remove stale public claims`);
+  }
+  if (!Array.isArray(entry.sources) || entry.sources.length < 2) {
+    throw new Error(`${entry.slug}: at least two named public sources are required`);
+  }
+  entry.sources.forEach((source) => assertCexWaveSource(entry, source, checkedAt));
+  assertCexWaveForensicAnalysis(entry);
+}
+
 export function validateExchangeCexCausalWaveBManifest(document) {
   if (document.as_of !== '2026-07-29' || document.source_check?.checked_at !== '2026-07-29') {
     throw new Error('CEX Wave B requires an explicit 2026-07-29 research and source-check date');
@@ -34,50 +83,9 @@ export function validateExchangeCexCausalWaveBManifest(document) {
     throw new Error(`Unexpected CEX Wave B cohort: ${actualSlugs.join(', ')}`);
   }
 
-  for (const entry of document.cases) {
-    const expectedTable = ['wazirx', 'xeggex'].includes(entry.slug)
-      ? 'mid_exchanges'
-      : 'dead_exchanges';
-    if (entry.table !== expectedTable || entry.kind !== 'cex') {
-      throw new Error(`${entry.slug}: expected ${expectedTable}/cex target`);
-    }
-    if (!entry.row_patch?.why || !entry.row_patch?.outlook || !entry.row_patch?.verdict) {
-      throw new Error(`${entry.slug}: a complete row_patch is required to remove stale public claims`);
-    }
-    if (!Array.isArray(entry.sources) || entry.sources.length < 2) {
-      throw new Error(`${entry.slug}: at least two named public sources are required`);
-    }
-    for (const source of entry.sources) {
-      if (
-        !source.title
-        || !source.publisher
-        || !/^https:\/\/\S+$/.test(source.url || '')
-        || source.checked_at !== document.source_check.checked_at
-      ) {
-        throw new Error(`${entry.slug}: invalid or stale public source ${JSON.stringify(source)}`);
-      }
-    }
-
-    const validation = validateForensicAnalysis(entry.forensic_analysis);
-    if (
-      validation.errors.length > 0
-      || validation.warnings.length > 0
-      || validation.withheld_sections.length > 0
-    ) {
-      throw new Error(`${entry.slug}: ${JSON.stringify(validation)}`);
-    }
-
-    const citedUrls = [
-      ...entry.forensic_analysis.outcome.source_refs,
-      ...entry.forensic_analysis.why.source_refs,
-      ...entry.forensic_analysis.strategic_choices.flatMap(({ source_refs }) => source_refs),
-      ...entry.forensic_analysis.counterfactual.source_refs,
-      ...entry.forensic_analysis.watch.flatMap(({ source_refs }) => source_refs),
-    ];
-    if (citedUrls.some((url) => !/^https:\/\/\S+$/.test(url))) {
-      throw new Error(`${entry.slug}: every source reference must be a direct HTTPS URL`);
-    }
-  }
+  document.cases.forEach((entry) => (
+    assertCexWaveEntry(entry, document.source_check.checked_at)
+  ));
   return document;
 }
 

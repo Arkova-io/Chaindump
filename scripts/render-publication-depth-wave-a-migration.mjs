@@ -55,34 +55,45 @@ const EXPECTED = Object.freeze({
   ],
 });
 
-function assertSource(source, path, casino = false, allowUnavailable = false) {
+function assertSourceIdentity(source, path, casino) {
   const url = casino ? source.canonical_url : source.url;
-  const tier = source.source_tier;
-  const role = source.source_role;
+  const tiers = casino ? ['A', 'B', 'C', 'D'] : ['T1', 'T2', 'T3', 'T4'];
   if (!/^https:\/\/\S+$/.test(url || '')) throw new Error(`${path}: HTTPS URL required`);
-  if (!(casino ? ['A', 'B', 'C', 'D'] : ['T1', 'T2', 'T3', 'T4']).includes(tier)) {
+  if (!tiers.includes(source.source_tier)) {
     throw new Error(`${path}: explicit source tier required`);
   }
-  if (!['authority', 'primary', 'independent', 'aggregator', 'data'].includes(role)) {
+  if (!['authority', 'primary', 'independent', 'aggregator', 'data'].includes(source.source_role)) {
     throw new Error(`${path}: explicit source role required`);
   }
+}
+
+function assertSourceAccess(source, path, allowUnavailable) {
   const resolving = source.resolving === true || source.resolving === 1;
-  const reviewed = source.evidence_reviewed === true || source.evidence_reviewed === 1;
   if (!Object.hasOwn(source, 'evidence_reviewed')) {
     throw new Error(`${path}: editorial review state must be explicit`);
   }
   if (!allowUnavailable && !resolving) {
     throw new Error(`${path}: source must be resolving`);
   }
+  if (allowUnavailable && !resolving && !source.access_state?.trim()) {
+    throw new Error(`${path}: unavailable source requires an explicit access state`);
+  }
+}
+
+function assertSourceReview(source, path) {
+  const reviewed = source.evidence_reviewed === true || source.evidence_reviewed === 1;
   if (reviewed && (!source.evidence_reviewed_at?.trim() || !source.evidence_reviewer?.trim())) {
     throw new Error(`${path}: editorial review requires reviewer identity and review time`);
   }
   if (!reviewed && (source.evidence_reviewed_at || source.evidence_reviewer)) {
     throw new Error(`${path}: unreviewed source cannot carry editorial review provenance`);
   }
-  if (allowUnavailable && !resolving && !source.access_state?.trim()) {
-    throw new Error(`${path}: unavailable source requires an explicit access state`);
-  }
+}
+
+function assertSource(source, path, casino = false, allowUnavailable = false) {
+  assertSourceIdentity(source, path, casino);
+  assertSourceAccess(source, path, allowUnavailable);
+  assertSourceReview(source, path);
   const checkedAt = casino ? source.accessed_at : source.checked_at;
   if (checkedAt !== '2026-07-29') throw new Error(`${path}: stale verification date`);
 }
@@ -94,29 +105,20 @@ function assertIds(entries, field, expected, path) {
   }
 }
 
-export function validatePublicationDepthManifest(document) {
+function verificationIdSet(document) {
+  const results = document.source_verification?.results || [];
   if (
-    document.schema !== 'chaindump-publication-depth-wave-v1'
-    || document.generated_migration !== '0063_publication_depth_wave_a.sql'
-    || document.as_of !== '2026-07-29'
-    || document.source_verification?.checked_at !== '2026-07-29'
-  ) {
-    throw new Error('Publication-depth Wave A metadata is invalid');
-  }
-  assertIds(document.exchange_patches, 'slug', EXPECTED.exchanges, 'exchange_patches');
-  assertIds(document.casino_patches, 'case_id', EXPECTED.casinos, 'casino_patches');
-  assertIds(document.nft_patches, 'slug', EXPECTED.nfts, 'nft_patches');
-  const verificationResults = document.source_verification?.results || [];
-  const verificationIds = new Set(verificationResults.map(({ source_id: sourceId }) => sourceId));
-  if (
-    verificationResults.length !== 11
-    || verificationResults.some(({ http_status: status, final_url: url }) => (
+    results.length !== 11
+    || results.some(({ http_status: status, final_url: url }) => (
       status !== 200 || !/^https:\/\/\S+$/.test(url || '')
     ))
   ) {
     throw new Error('Publication-depth Wave A requires eleven resolving HTTP 200 verification results');
   }
+  return new Set(results.map(({ source_id: sourceId }) => sourceId));
+}
 
+function assertExchangePatches(document, verificationIds) {
   for (const [index, patch] of document.exchange_patches.entries()) {
     if (!['dead_exchanges', 'mid_exchanges'].includes(patch.table) || patch.kind !== 'cex') {
       throw new Error(`exchange_patches[${index}]: invalid target`);
@@ -131,7 +133,21 @@ export function validatePublicationDepthManifest(document) {
       throw new Error(`exchange_patches[${index}]: source verification result missing`);
     }
   }
+}
 
+function assertClaimMappings(claims, sourceIds, errorSuffix) {
+  for (const claim of claims) {
+    if (
+      !sourceIds.has(claim.source_id)
+      || claim.checked_at !== '2026-07-29'
+      || !claim.evidence_locator?.trim()
+    ) {
+      throw new Error(`${claim.claim_id}: ${errorSuffix}`);
+    }
+  }
+}
+
+function assertCasinoPatches(document, verificationIds) {
   for (const [index, patch] of document.casino_patches.entries()) {
     if (patch.sources.length < 2 || patch.claims.length < 2) {
       throw new Error(`casino_patches[${index}]: source and field-claim repairs required`);
@@ -143,14 +159,7 @@ export function validatePublicationDepthManifest(document) {
       throw new Error(`casino_patches[${index}]: source verification result missing`);
     }
     const sourceIds = new Set(patch.sources.map(({ source_id: sourceId }) => sourceId));
-    for (const claim of patch.claims) {
-      if (!sourceIds.has(claim.source_id)) {
-        throw new Error(`${claim.claim_id}: claim must reference a Wave A source`);
-      }
-      if (claim.checked_at !== '2026-07-29' || !claim.evidence_locator?.trim()) {
-        throw new Error(`${claim.claim_id}: checked field-level evidence required`);
-      }
-    }
+    assertClaimMappings(patch.claims, sourceIds, 'checked field-level evidence required');
     const analysis = patch.synthesis_patch?.outlook?.forensic_analysis;
     const validation = validateForensicAnalysis(analysis);
     if (
@@ -161,7 +170,9 @@ export function validatePublicationDepthManifest(document) {
       throw new Error(`${patch.case_id}: ${JSON.stringify(validation)}`);
     }
   }
+}
 
+function assertNftPatches(document, verificationIds) {
   for (const [index, patch] of document.nft_patches.entries()) {
     if (patch.sources.length < 2) {
       throw new Error(`nft_patches[${index}]: independent repair requires two sources`);
@@ -176,8 +187,9 @@ export function validatePublicationDepthManifest(document) {
       throw new Error(`nft_patches[${index}]: independent lifecycle source required`);
     }
   }
+}
 
-  const referenceRepairs = document.reference_repairs;
+function assertReferenceRepairMetadata(referenceRepairs) {
   if (
     referenceRepairs?.checked_at !== '2026-07-29'
     || !referenceRepairs.method?.includes('evidence_reviewed remains false')
@@ -210,6 +222,9 @@ export function validatePublicationDepthManifest(document) {
     ['zkasino-alleged-platform'],
     'reference_repairs.casino_strengthening_patches',
   );
+}
+
+function exchangeReferenceUrls(referenceRepairs) {
   const repairUrls = [];
   for (const [index, patch] of referenceRepairs.exchange_patches.entries()) {
     const expectedTable = {
@@ -235,6 +250,11 @@ export function validatePublicationDepthManifest(document) {
       repairUrls.push(source.url);
     });
   }
+  return repairUrls;
+}
+
+function casinoReferenceUrls(referenceRepairs) {
+  const repairUrls = [];
   for (const [index, patch] of referenceRepairs.casino_patches.entries()) {
     if (patch.sources.length !== 1 || patch.claims.length !== 1) {
       throw new Error(`reference_repairs.casino_patches[${index}]: one source/claim expected`);
@@ -248,16 +268,12 @@ export function validatePublicationDepthManifest(document) {
       repairUrls.push(source.canonical_url);
     });
     const sourceIds = new Set(patch.sources.map(({ source_id: sourceId }) => sourceId));
-    for (const claim of patch.claims) {
-      if (
-        !sourceIds.has(claim.source_id)
-        || claim.checked_at !== '2026-07-29'
-        || !claim.evidence_locator?.trim()
-      ) {
-        throw new Error(`${claim.claim_id}: checked source/claim mapping required`);
-      }
-    }
+    assertClaimMappings(patch.claims, sourceIds, 'checked source/claim mapping required');
   }
+  return repairUrls;
+}
+
+function assertCasinoStrengtheningPatches(referenceRepairs, verificationIds) {
   for (const [index, patch] of referenceRepairs.casino_strengthening_patches.entries()) {
     if (patch.sources.length !== 1 || patch.claims.length !== 2) {
       throw new Error(
@@ -275,15 +291,7 @@ export function validatePublicationDepthManifest(document) {
       }
     });
     const sourceIds = new Set(patch.sources.map(({ source_id: sourceId }) => sourceId));
-    for (const claim of patch.claims) {
-      if (
-        !sourceIds.has(claim.source_id)
-        || claim.checked_at !== '2026-07-29'
-        || !claim.evidence_locator?.trim()
-      ) {
-        throw new Error(`${claim.claim_id}: checked corroborating mapping required`);
-      }
-    }
+    assertClaimMappings(patch.claims, sourceIds, 'checked corroborating mapping required');
     const updateLists = Object.values(patch.analysis_updates);
     if (
       updateLists.length !== 4
@@ -295,9 +303,38 @@ export function validatePublicationDepthManifest(document) {
       throw new Error(`${patch.case_id}: two-source causal/lifecycle updates required`);
     }
   }
+}
+
+function assertReferenceRepairs(document, verificationIds) {
+  const referenceRepairs = document.reference_repairs;
+  assertReferenceRepairMetadata(referenceRepairs);
+  const repairUrls = [
+    ...exchangeReferenceUrls(referenceRepairs),
+    ...casinoReferenceUrls(referenceRepairs),
+  ];
+  assertCasinoStrengtheningPatches(referenceRepairs, verificationIds);
   if (repairUrls.length !== 179 || new Set(repairUrls).size !== 179) {
     throw new Error('Publication-depth reference repairs must contain 179 unique URLs');
   }
+}
+
+export function validatePublicationDepthManifest(document) {
+  if (
+    document.schema !== 'chaindump-publication-depth-wave-v1'
+    || document.generated_migration !== '0063_publication_depth_wave_a.sql'
+    || document.as_of !== '2026-07-29'
+    || document.source_verification?.checked_at !== '2026-07-29'
+  ) {
+    throw new Error('Publication-depth Wave A metadata is invalid');
+  }
+  assertIds(document.exchange_patches, 'slug', EXPECTED.exchanges, 'exchange_patches');
+  assertIds(document.casino_patches, 'case_id', EXPECTED.casinos, 'casino_patches');
+  assertIds(document.nft_patches, 'slug', EXPECTED.nfts, 'nft_patches');
+  const verificationIds = verificationIdSet(document);
+  assertExchangePatches(document, verificationIds);
+  assertCasinoPatches(document, verificationIds);
+  assertNftPatches(document, verificationIds);
+  assertReferenceRepairs(document, verificationIds);
   return document;
 }
 
