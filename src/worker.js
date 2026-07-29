@@ -825,6 +825,7 @@ async function withDossierCoverage(snapshot) {
       }),
     };
   } catch (e) {
+    console.warn('[dossier-coverage] chain_facts unavailable:', e.message);
     return snapshot;
   }
 }

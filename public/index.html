@@ -789,6 +789,18 @@ function normalizeBlockchainAnalysis(live, mid, dead) {
   });
   return [...byName.values()];
 }
+function blockchainLifecycleClass(lifecycle) {
+  if (lifecycle === 'dead') return 'dead';
+  if (lifecycle === 'mid') return 'declining';
+  return 'recover';
+}
+function blockchainSummary(row) {
+  if (row.summary) return `<div class="gbody">${esc(row.summary)}</div>`;
+  if (row.dimensionCount) {
+    return '<div class="gbody muted">Same-format research is published; open the dossier for lifecycle, token, capital, onchain, team, narrative, risk and synthesis evidence.</div>';
+  }
+  return '<div class="gbody muted">Live market row; a research dossier is not yet published.</div>';
+}
 function renderBlockchainAnalysis() {
   const el = document.getElementById('blockchainanalysisview');
   const head = pageHead('Blockchain Analysis', 'One sortable index for live, stuck, dying and dead chains. Research coverage is labeled separately from live market coverage.');
@@ -807,10 +819,10 @@ function renderBlockchainAnalysis() {
   });
   const researched = rows.filter((row) => row.coverage === 'Research dossier').length;
   const cards = filtered.map((row) => `<div class="gcard">
-    <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${row.lifecycle === 'dead' ? 'dead' : row.lifecycle === 'mid' ? 'declining' : 'recover'}">${esc(row.lifecycle)}</span></div>
+    <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${blockchainLifecycleClass(row.lifecycle)}">${esc(row.lifecycle)}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${row.metric == null ? '—' : fmtUsd(row.metric)}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
     <div class="gmeta">${esc(row.coverage)} · ${row.dimensionCount ? `${row.dimensionCount}/${row.expectedDimensionCount} dimensions · ` : ''}${row.dataCompletenessPct != null ? `${row.dataCompletenessPct}% field coverage · ` : ''}${row.citationCount} cited source${row.citationCount === 1 ? '' : 's'}</div>
-    ${row.summary ? `<div class="gbody">${esc(row.summary)}</div>` : row.dimensionCount ? '<div class="gbody muted">Same-format research is published; open the dossier for lifecycle, token, capital, onchain, team, narrative, risk and synthesis evidence.</div>' : '<div class="gbody muted">Live market row; a research dossier is not yet published.</div>'}
+    ${blockchainSummary(row)}
     ${srcHtml(row.sources.slice(0, 3), 'Cited sources: ')}
     <div class="gexpand"><a href="/chain/${encodeURIComponent(row.name)}">Open chain dossier →</a></div>
   </div>`).join('');

@@ -4,12 +4,23 @@
 -- structural dimension coverage separate from field-level data completeness.
 -- Idempotent: the chain_facts primary key is (chain, dimension).
 
-WITH dossier_seed(payload) AS (
-  VALUES (
+WITH json_constants AS (
+  SELECT
+    '    {' AS object_open,
+    '      "source_catalog":{' AS source_catalog_open,
+    '        "stables":{"title":"DefiLlama stablecoin supply by chain API","url":"https://stablecoins.llama.fi/stablecoinchains"},' AS stablecoin_source,
+    '        "ofac":{"title":"OFAC sanctions list data formats","url":"https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}' AS ofac_source,
+    '      "dimension_sources":{' AS dimension_sources_open,
+    '      "dimensions":{' AS dimensions_open,
+    '      },' AS section_close,
+    '    },' AS dossier_close
+),
+dossier_seed(payload) AS (
+  SELECT
     '[' ||
-    '    {' ||
+    object_open ||
     '      "chain":"Ethereum",' ||
-    '      "source_catalog":{' ||
+    source_catalog_open ||
     '        "history":{"title":"Ethereum history, founder, launch and ownership","url":"https://ethereum.org/ethereum-history-founder-and-ownership/"},' ||
     '        "launch":{"title":"Ethereum Foundation: Ethereum Launches","url":"https://blog.ethereum.org/2015/07/30/ethereum-launches"},' ||
     '        "forks":{"title":"Ethereum fork history","url":"https://ethereum.org/ethereum-forks/"},' ||
@@ -19,14 +30,14 @@ WITH dossier_seed(payload) AS (
     '        "fees":{"title":"DefiLlama Ethereum fees API","url":"https://api.llama.fi/overview/fees/Ethereum?dataType=dailyFees"},' ||
     '        "revenue":{"title":"DefiLlama Ethereum revenue API","url":"https://api.llama.fi/overview/fees/Ethereum?dataType=dailyRevenue"},' ||
     '        "volume":{"title":"DefiLlama Ethereum DEX volume API","url":"https://api.llama.fi/overview/dexs/Ethereum?dataType=dailyVolume"},' ||
-    '        "stables":{"title":"DefiLlama stablecoin supply by chain API","url":"https://stablecoins.llama.fi/stablecoinchains"},' ||
-    '        "ofac":{"title":"OFAC sanctions list data formats","url":"https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}' ||
-    '      },' ||
-    '      "dimension_sources":{' ||
+    stablecoin_source ||
+    ofac_source ||
+    section_close ||
+    dimension_sources_open ||
     '        "identity":["history","launch","forks"],"token":["history","token"],"capital":["history"],"onchain":["tvl","fees","revenue","volume","stables"],' ||
     '        "team":["history"],"narrative":["history","roadmap"],"risk":["forks","roadmap","ofac"],"synthesis":["tvl","fees","revenue","stables","roadmap"]' ||
-    '      },' ||
-    '      "dimensions":{' ||
+    section_close ||
+    dimensions_open ||
     '        "identity":{"as_of":"2026-07-29","chain":"Ethereum","aliases":["Ethereum L1","ETH"],"category":"L1","vm":"EVM","launched":"2015-07-30","status":"established","lifecycle":[{"date":"2015-07-30","type":"launch","description":"Frontier genesis created the live Ethereum network.","source_url":"https://blog.ethereum.org/2015/07/30/ethereum-launches"},{"date":"2022-09-15","type":"consensus_transition","description":"The Merge changed Ethereum consensus from proof of work to proof of stake.","source_url":"https://ethereum.org/ethereum-forks/"}]},' ||
     '        "token":{"as_of":"2026-07-29","launch_status":"launched","token_symbol":"ETH","gas_token":"ETH","launch_date":"2015-07-30","launch_relation":"allocated in genesis after the 2014 public sale","token_cg_id":"ethereum","token_current_usd":1887.83,"token_ath_usd":4946.05,"token_ath_date":"2025-08-24","price_drawdown_pct":61.83,"market_cap_usd":227831748947,"fdv_usd":227831748947,"circulating_supply":120682557.0744027,"total_supply":120682557.0744027,"max_supply":null,"source_url":"https://api.coingecko.com/api/v3/coins/ethereum"},' ||
     '        "capital":{"as_of":"2026-07-29","total_raised_usd":18000000,"rounds":[{"stage":"public ether sale","date":"2014-07","amount_usd":18000000,"amount_native":"31000 BTC","source_url":"https://ethereum.org/ethereum-history-founder-and-ownership/"}],"treasury_usd":null,"backers_tier":"mixed","notes":"The historical USD figure is approximate because proceeds were denominated in BTC."},' ||
@@ -35,12 +46,12 @@ WITH dossier_seed(payload) AS (
     '        "narrative":{"as_of":"2026-07-29","purpose":"General-purpose smart-contract settlement and data-availability layer.","positioning":"The neutral settlement layer for a rollup-centric ecosystem.","competitors":[{"name":"Solana","relationship":"high-throughput L1 execution competitor"},{"name":"BSC","relationship":"low-cost EVM L1 competitor"},{"name":"Ethereum L2s","relationship":"execution partners that can also capture fees"}],"narrative_arc":"Ethereum evolved from a world-computer L1 into a proof-of-stake, rollup-centric settlement layer while retaining the deepest TVL and stablecoin base.","media_sentiment":"mixed"},' ||
     '        "risk":{"as_of":"2026-07-29","exploits":[],"sanctions":{"flagged":false,"detail":"No chain entity designation recorded in this dossier; applications and addresses can be separately sanctioned."},"extraction_flags":["mev","staking_provider_concentration"],"audit_status":"Multiple independent clients and public security process; no single protocol-wide audit represents the network.","risks":[{"type":"rollup_value_capture","detail":"Execution migration can compress L1 fee capture."},{"type":"client_and_staking_concentration","detail":"Correlated client faults or concentrated stake can impair consensus."},{"type":"smart_contract_systemic_risk","detail":"Large application and bridge balances create ecosystem contagion risk."}]},' ||
     '        "synthesis":{"as_of":"2026-07-29","situation":"Ethereum leads the cohort in TVL, stablecoins, fees and settlement depth, but current TVL remains more than 60 percent below its 2021 peak and rollups pressure base-layer fee capture.","postmortem":null,"success_mechanism":"First-mover developer tooling, credible neutrality, liquidity depth and rollup settlement create mutually reinforcing network effects.","lessons_learned":["Developer standards can become a stronger moat than raw throughput.","A chain can scale activity while shifting revenue to execution layers.","Stablecoin depth is a distinct durability signal from token price."],"could_differ":"Failure to preserve credible neutrality or to capture value from rollups would weaken the premium attached to settlement dominance.","outlook":{"bull":"Rollup demand, staking and tokenization expand settlement revenue.","base":"Ethereum remains the dominant settlement layer while L2s capture a growing share of execution economics.","bear":"Faster chains and L2 value capture erode fees faster than blob and settlement demand grow.","most_likely":"base"},"cause_tags":["developer_network_effect","liquidity_depth","credible_neutrality","rollup_settlement"],"confidence":"high"}' ||
-    '      },' ||
+    section_close ||
     '      "meta":{"dimension_completeness_pct":100,"data_completeness_pct":88,"confidence":"high","unsourced_fields":["capital.treasury_usd","onchain.active_addresses_daily","onchain.dev_activity_monthly","onchain.tvl_concentration","team.regulatory_status"],"last_reviewed":"2026-07-29"}' ||
-    '    },' ||
-    '    {' ||
+    dossier_close ||
+    object_open ||
     '      "chain":"Solana",' ||
-    '      "source_catalog":{' ||
+    source_catalog_open ||
     '        "launch":{"title":"Solana official June newsletter: mainnet beta anniversary","url":"https://solana.com/news/june-newsletter"},' ||
     '        "whitepaper":{"title":"Solana whitepaper","url":"https://solana.com/solana-whitepaper.pdf"},' ||
     '        "capital":{"title":"Solana Labs private token sale announcement","url":"https://solana.com/news/solana-labs-completes-a-314-15m-private-token-sale-led-by-andreessen-horowitz-and-polychain-capital"},' ||
@@ -51,14 +62,14 @@ WITH dossier_seed(payload) AS (
     '        "fees":{"title":"DefiLlama Solana fees API","url":"https://api.llama.fi/overview/fees/Solana?dataType=dailyFees"},' ||
     '        "revenue":{"title":"DefiLlama Solana revenue API","url":"https://api.llama.fi/overview/fees/Solana?dataType=dailyRevenue"},' ||
     '        "volume":{"title":"DefiLlama Solana DEX volume API","url":"https://api.llama.fi/overview/dexs/Solana?dataType=dailyVolume"},' ||
-    '        "stables":{"title":"DefiLlama stablecoin supply by chain API","url":"https://stablecoins.llama.fi/stablecoinchains"},' ||
-    '        "ofac":{"title":"OFAC sanctions list data formats","url":"https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}' ||
-    '      },' ||
-    '      "dimension_sources":{' ||
+    stablecoin_source ||
+    ofac_source ||
+    section_close ||
+    dimension_sources_open ||
     '        "identity":["launch","whitepaper"],"token":["launch","token"],"capital":["seriesa","capital"],"onchain":["tvl","fees","revenue","volume","stables"],' ||
     '        "team":["whitepaper","capital"],"narrative":["whitepaper","launch"],"risk":["outage","ofac"],"synthesis":["tvl","fees","revenue","stables","outage"]' ||
-    '      },' ||
-    '      "dimensions":{' ||
+    section_close ||
+    dimensions_open ||
     '        "identity":{"as_of":"2026-07-29","chain":"Solana","aliases":["SOL"],"category":"L1","vm":"SVM","launched":"2020-03-16","status":"established","lifecycle":[{"date":"2020-03-16","type":"launch","description":"Mainnet Beta genesis began the public Solana network.","source_url":"https://solana.com/news/june-newsletter"},{"date":"2024-02-06","type":"outage","description":"A legacy-loader cache bug halted finalization for approximately five hours.","source_url":"https://solana.com/news/02-06-24-solana-mainnet-beta-outage-report"}]},' ||
     '        "token":{"as_of":"2026-07-29","launch_status":"launched","token_symbol":"SOL","gas_token":"SOL","launch_date":"2020-03-16","launch_relation":"native token at mainnet beta genesis; public auction followed in March 2020","token_cg_id":"solana","token_current_usd":72.98,"token_ath_usd":293.31,"token_ath_date":"2025-01-19","price_drawdown_pct":75.12,"market_cap_usd":42299509928,"fdv_usd":46069878069,"circulating_supply":579588203.8345851,"total_supply":631249814.119424,"max_supply":null,"source_url":"https://api.coingecko.com/api/v3/coins/solana"},' ||
     '        "capital":{"as_of":"2026-07-29","total_raised_usd":null,"rounds":[{"stage":"Series A","date":"2019-07-30","amount_usd":20000000,"lead":"Multicoin Capital","source_url":"https://medium.com/solana-labs/solana-completes-20-million-raise-led-by-multicoin-capital-3d7f939475b6"},{"stage":"private token sale","date":"2021-06-09","amount_usd":314159265,"lead":"Andreessen Horowitz and Polychain Capital","source_url":"https://solana.com/news/solana-labs-completes-a-314-15m-private-token-sale-led-by-andreessen-horowitz-and-polychain-capital"}],"treasury_usd":null,"backers_tier":"tier1","notes":"Total remains null because earlier rounds are not fully reconciled from primary sources."},' ||
@@ -67,12 +78,12 @@ WITH dossier_seed(payload) AS (
     '        "narrative":{"as_of":"2026-07-29","purpose":"High-throughput general-purpose execution for consumer, trading and financial applications.","positioning":"A monolithic high-performance chain with low latency and low fees.","competitors":[{"name":"Ethereum and L2s","relationship":"general smart-contract and payments competitor"},{"name":"Sui","relationship":"high-throughput execution competitor"},{"name":"BSC","relationship":"low-fee retail distribution competitor"}],"narrative_arc":"Solana survived repeated early outages and the FTX ecosystem shock, then rebuilt around trading, payments and consumer applications with exceptional spot liquidity.","media_sentiment":"bullish"},' ||
     '        "risk":{"as_of":"2026-07-29","exploits":[{"date":"2024-02-06","amount_usd":0,"type":"consensus outage","description":"A program-cache bug halted finalization for about five hours; the report states a coordinated validator restart restored progress.","source_url":"https://solana.com/news/02-06-24-solana-mainnet-beta-outage-report"}],"sanctions":{"flagged":false,"detail":"No chain entity designation recorded in this dossier; applications and addresses can be separately sanctioned."},"extraction_flags":["validator_hardware_barrier","client_concentration"],"audit_status":"Open-source validator clients and public incident reports; no single network-wide audit.","risks":[{"type":"liveness","detail":"Past correlated client bugs halted consensus."},{"type":"activity_concentration","detail":"Trading and token-launch cycles can dominate activity and fees."},{"type":"hardware_and_stake_concentration","detail":"High validator requirements can narrow participation."}]},' ||
     '        "synthesis":{"as_of":"2026-07-29","situation":"Solana leads this cohort in 24-hour spot DEX volume and is second in fees, but TVL remains about 64 percent below its 2025 peak and its operational history includes correlated-client outages.","postmortem":null,"success_mechanism":"Low latency, a unified execution environment, wallet distribution and dense trading liquidity reinforce one another.","lessons_learned":["Execution quality can overcome an early reliability reputation if liquidity and users return.","A single-chain composability model can outperform fragmented liquidity for trading.","Client diversity is a fundamental business metric, not only an engineering concern."],"could_differ":"A major liveness regression or sustained loss of trading activity would weaken the performance-premium thesis.","outlook":{"bull":"Payments, consumer applications and institutional trading diversify activity beyond token launches.","base":"Solana remains the highest-volume alternative L1 with cyclical but durable trading demand.","bear":"Reliability or validator concentration issues return while competitors close the latency gap.","most_likely":"base"},"cause_tags":["high_throughput","trading_liquidity","consumer_distribution","single_state_composability"],"confidence":"high"}' ||
-    '      },' ||
+    section_close ||
     '      "meta":{"dimension_completeness_pct":100,"data_completeness_pct":85,"confidence":"high","unsourced_fields":["capital.total_raised_usd","capital.treasury_usd","onchain.active_addresses_daily","onchain.dev_activity_monthly","onchain.tvl_concentration","team.regulatory_status"],"last_reviewed":"2026-07-29"}' ||
-    '    },' ||
-    '    {' ||
+    dossier_close ||
+    object_open ||
     '      "chain":"BSC",' ||
-    '      "source_catalog":{' ||
+    source_catalog_open ||
     '        "launch":{"title":"BNB Smart Chain mainnet launch","url":"https://www.bnbchain.org/en/blog/binance-smart-chain-mainnet-launch"},' ||
     '        "rebrand":{"title":"BSC is now BNB Chain","url":"https://www.bnbchain.org/en/blog/bsc-is-now-bnb-chain-the-infrastructure-for-the-metafi-universe"},' ||
     '        "incident":{"title":"BNB Chain decentralized response to the BSC Token Hub exploit","url":"https://www.bnbchain.org/en/blog/bnb-chain-a-decentralized-response"},' ||
@@ -81,14 +92,14 @@ WITH dossier_seed(payload) AS (
     '        "fees":{"title":"DefiLlama BSC fees API","url":"https://api.llama.fi/overview/fees/BSC?dataType=dailyFees"},' ||
     '        "revenue":{"title":"DefiLlama BSC revenue API","url":"https://api.llama.fi/overview/fees/BSC?dataType=dailyRevenue"},' ||
     '        "volume":{"title":"DefiLlama BSC DEX volume API","url":"https://api.llama.fi/overview/dexs/BSC?dataType=dailyVolume"},' ||
-    '        "stables":{"title":"DefiLlama stablecoin supply by chain API","url":"https://stablecoins.llama.fi/stablecoinchains"},' ||
-    '        "ofac":{"title":"OFAC sanctions list data formats","url":"https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}' ||
-    '      },' ||
-    '      "dimension_sources":{' ||
+    stablecoin_source ||
+    ofac_source ||
+    section_close ||
+    dimension_sources_open ||
     '        "identity":["launch","rebrand"],"token":["rebrand","token"],"capital":["launch","rebrand"],"onchain":["tvl","fees","revenue","volume","stables"],' ||
     '        "team":["launch","rebrand"],"narrative":["launch","rebrand"],"risk":["incident","ofac"],"synthesis":["tvl","fees","revenue","stables","incident"]' ||
-    '      },' ||
-    '      "dimensions":{' ||
+    section_close ||
+    dimensions_open ||
     '        "identity":{"as_of":"2026-07-29","chain":"BSC","aliases":["BNB Smart Chain","Binance Smart Chain","BNB Chain"],"category":"L1","vm":"EVM","launched":"2020-09-01","status":"established","lifecycle":[{"date":"2020-09-01","type":"launch","description":"Binance Smart Chain mainnet launched as an EVM-compatible parallel chain.","source_url":"https://www.bnbchain.org/en/blog/binance-smart-chain-mainnet-launch"},{"date":"2022-02-15","type":"rebrand","description":"The BSC ecosystem rebranded to BNB Chain without a technical chain migration.","source_url":"https://www.bnbchain.org/en/blog/bsc-is-now-bnb-chain-the-infrastructure-for-the-metafi-universe"}]},' ||
     '        "token":{"as_of":"2026-07-29","launch_status":"launched","token_symbol":"BNB","gas_token":"BNB","launch_date":"2017","launch_date_precision":"year","launch_relation":"BNB predates BSC; it began as an ERC-20 token, migrated to Binance Chain in 2019, and became BSC gas in 2020","token_cg_id":"binancecoin","token_current_usd":567.62,"token_ath_usd":1369.99,"token_ath_date":"2025-10-13","price_drawdown_pct":58.57,"market_cap_usd":75588177338,"fdv_usd":75588176714,"circulating_supply":133165524.29,"total_supply":133165524.29,"max_supply":200000000,"source_url":"https://api.coingecko.com/api/v3/coins/binancecoin"},' ||
     '        "capital":{"as_of":"2026-07-29","total_raised_usd":null,"rounds":[],"treasury_usd":null,"backers_tier":"corporate","notes":"No chain-specific funding round is asserted. Development began within the Binance ecosystem and BNB has a separate token-sale history."},' ||
@@ -97,12 +108,12 @@ WITH dossier_seed(payload) AS (
     '        "narrative":{"as_of":"2026-07-29","purpose":"Low-cost EVM-compatible execution with BNB staking and broad retail application distribution.","positioning":"Mass-market EVM infrastructure connected to the Binance and BNB ecosystem.","competitors":[{"name":"Ethereum and L2s","relationship":"EVM application and liquidity competitor"},{"name":"Solana","relationship":"low-fee retail trading competitor"},{"name":"Tron","relationship":"stablecoin transfer competitor"}],"narrative_arc":"BSC used exchange-adjacent distribution and low fees to become a major DeFi and GameFi venue, then broadened its brand into the BNB Chain ecosystem.","media_sentiment":"mixed"},' ||
     '        "risk":{"as_of":"2026-07-29","exploits":[{"date":"2022-10-06","amount_usd":570000000,"type":"native bridge proof forgery","description":"The BSC Token Hub exploit minted 2 million BNB; validators coordinated a pause and more than 100 million dollars remained unrecovered.","source_url":"https://www.bnbchain.org/en/blog/bnb-chain-a-decentralized-response"}],"sanctions":{"flagged":false,"detail":"No chain entity designation recorded in this dossier; applications and addresses can be separately sanctioned."},"extraction_flags":["validator_concentration","brand_dependency"],"audit_status":"Client and bridge audits are component-specific; no single network-wide audit.","risks":[{"type":"validator_coordination","detail":"The 2022 pause showed that a small active validator set can coordinate emergency action."},{"type":"bridge_security","detail":"Native cross-chain infrastructure created a nine-figure failure mode."},{"type":"ecosystem_dependency","detail":"Distribution and brand remain closely linked to Binance and BNB."}]},' ||
     '        "synthesis":{"as_of":"2026-07-29","situation":"BSC combines top-three spot volume with the second-largest stablecoin base in this batch, but TVL is almost 78 percent below its 2021 peak and the validator and brand model creates concentrated dependencies.","postmortem":null,"success_mechanism":"Low fees, EVM compatibility, BNB incentives and exchange-adjacent retail distribution created rapid liquidity and application growth.","lessons_learned":["Distribution can be as decisive as technical differentiation.","A pre-existing token can bootstrap a new chain without proving independent demand.","Emergency coordination reduces losses while revealing decentralization tradeoffs."],"could_differ":"Loss of Binance distribution, another bridge failure, or regulatory spillover could weaken the ecosystem faster than raw activity suggests.","outlook":{"bull":"Payments, stablecoins and opBNB expand beyond exchange-adjacent activity.","base":"BSC remains a high-volume retail EVM chain with persistent concentration discounts.","bear":"Bridge, validator or brand risk triggers sustained capital flight.","most_likely":"base"},"cause_tags":["retail_distribution","low_fees","evm_compatibility","exchange_adjacent_network"],"confidence":"high"}' ||
-    '      },' ||
+    section_close ||
     '      "meta":{"dimension_completeness_pct":100,"data_completeness_pct":78,"confidence":"medium","unsourced_fields":["capital.total_raised_usd","capital.treasury_usd","onchain.active_addresses_daily","onchain.dev_activity_monthly","onchain.tvl_concentration","team.founders","team.regulatory_status"],"last_reviewed":"2026-07-29"}' ||
-    '    },' ||
-    '    {' ||
+    dossier_close ||
+    object_open ||
     '      "chain":"Base",' ||
-    '      "source_catalog":{' ||
+    source_catalog_open ||
     '        "launch":{"title":"Base is open for everyone","url":"https://blog.base.org/base-is-open-for-everyone"},' ||
     '        "date":{"title":"Base public mainnet date announcement","url":"https://blog.base.org/its-onchain-summer-%F0%9F%9F%A1-and-base-is-open-for-bridging"},' ||
     '        "origin":{"title":"Meet Base","url":"https://blog.base.org/meet-base"},' ||
@@ -113,14 +124,14 @@ WITH dossier_seed(payload) AS (
     '        "fees":{"title":"DefiLlama Base fees API","url":"https://api.llama.fi/overview/fees/Base?dataType=dailyFees"},' ||
     '        "revenue":{"title":"DefiLlama Base revenue API","url":"https://api.llama.fi/overview/fees/Base?dataType=dailyRevenue"},' ||
     '        "volume":{"title":"DefiLlama Base DEX volume API","url":"https://api.llama.fi/overview/dexs/Base?dataType=dailyVolume"},' ||
-    '        "stables":{"title":"DefiLlama stablecoin supply by chain API","url":"https://stablecoins.llama.fi/stablecoinchains"},' ||
-    '        "ofac":{"title":"OFAC sanctions list data formats","url":"https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}' ||
-    '      },' ||
-    '      "dimension_sources":{' ||
+    stablecoin_source ||
+    ofac_source ||
+    section_close ||
+    dimension_sources_open ||
     '        "identity":["launch","date","origin","proofs"],"token":["origin","token"],"capital":["origin"],"onchain":["tvl","fees","revenue","volume","stables"],' ||
     '        "team":["launch","origin"],"narrative":["origin","launch"],"risk":["proofs","l2beat","ofac"],"synthesis":["tvl","fees","revenue","stables","origin","l2beat"]' ||
-    '      },' ||
-    '      "dimensions":{' ||
+    section_close ||
+    dimensions_open ||
     '        "identity":{"as_of":"2026-07-29","chain":"Base","aliases":["Base Mainnet"],"category":"L2_rollup","vm":"EVM","launched":"2023-08-09","status":"established","lifecycle":[{"date":"2023-08-09","type":"launch","description":"Base mainnet opened to everyone.","source_url":"https://blog.base.org/its-onchain-summer-%F0%9F%9F%A1-and-base-is-open-for-bridging"},{"date":"2024-10-30","type":"decentralization","description":"Permissionless fault proofs went live on Base mainnet.","source_url":"https://blog.base.org/fault-proofs-are-now-live-on-base-mainnet"}]},' ||
     '        "token":{"as_of":"2026-07-29","launch_status":"not_launched","token_symbol":null,"gas_token":"ETH","launch_date":null,"launch_relation":"No Base network token has launched; Base announced exploration in 2025 without timing or design commitments.","token_cg_id":null,"token_current_usd":null,"token_ath_usd":null,"token_ath_date":null,"market_cap_usd":null,"fdv_usd":null,"source_url":"https://blog.base.org/the-state-of-base-at-basecamp-2025"},' ||
     '        "capital":{"as_of":"2026-07-29","total_raised_usd":null,"rounds":[],"treasury_usd":null,"backers_tier":"corporate","parent_company":"Coinbase Global, Inc.","notes":"Base is incubated inside Coinbase; no separate Base funding round or token treasury is asserted.","source_url":"https://blog.base.org/meet-base"},' ||
@@ -129,12 +140,12 @@ WITH dossier_seed(payload) AS (
     '        "narrative":{"as_of":"2026-07-29","purpose":"Low-cost Ethereum L2 and distribution layer for Coinbase users, builders and onchain applications.","positioning":"A bridge from Coinbase distribution into the open Ethereum ecosystem and Superchain.","competitors":[{"name":"Arbitrum","relationship":"Ethereum L2 liquidity competitor"},{"name":"OP Mainnet","relationship":"OP Stack sibling and execution competitor"},{"name":"Solana","relationship":"consumer and trading execution competitor"}],"narrative_arc":"Base converted corporate distribution into an open OP Stack ecosystem and reached top-four activity without first issuing a native token.","media_sentiment":"bullish"},' ||
     '        "risk":{"as_of":"2026-07-29","exploits":[],"sanctions":{"flagged":false,"detail":"No chain entity designation recorded in this dossier; applications and addresses can be separately sanctioned."},"extraction_flags":["centralized_sequencer","corporate_dependency","upgrade_keys"],"audit_status":"Fault proofs are live; L2BEAT documents remaining upgrade and sequencing trust assumptions.","risks":[{"type":"sequencer_and_upgrade_control","detail":"A centralized operator and upgrade path remain material liveness and governance dependencies."},{"type":"corporate_dependency","detail":"Coinbase distribution is a moat and a correlated policy and strategy risk."},{"type":"token_expectations","detail":"Token exploration can drive speculative activity before design or timing exists."}]},' ||
     '        "synthesis":{"as_of":"2026-07-29","situation":"Base has the smallest TVL drawdown in this batch, nearly 1 billion dollars of daily spot volume and more stablecoins than TVL, despite operating without a native network token.","postmortem":null,"success_mechanism":"Coinbase distribution, EVM compatibility, OP Stack tooling and low fees created a strong application and liquidity flywheel.","lessons_learned":["A chain can reach product-market fit without a native token.","Corporate distribution can accelerate open ecosystem adoption.","L2 success must be discounted for sequencer and upgrade-key control."],"could_differ":"A token launch that prioritizes speculation over governance, or weaker Coinbase commitment, could damage the current product-led signal.","outlook":{"bull":"Coinbase products and third-party applications make Base the dominant consumer Ethereum L2.","base":"Base remains a leading L2 while decentralization progresses gradually.","bear":"Corporate or upgrade-key risk and L2 competition slow growth.","most_likely":"base"},"cause_tags":["corporate_distribution","no_token_launch","evm_compatibility","low_fees"],"confidence":"high"}' ||
-    '      },' ||
+    section_close ||
     '      "meta":{"dimension_completeness_pct":100,"data_completeness_pct":84,"confidence":"high","unsourced_fields":["capital.total_raised_usd","capital.treasury_usd","onchain.active_addresses_daily","onchain.dev_activity_monthly","onchain.tvl_concentration"],"last_reviewed":"2026-07-29"}' ||
-    '    },' ||
-    '    {' ||
+    dossier_close ||
+    object_open ||
     '      "chain":"Robinhood Chain",' ||
-    '      "source_catalog":{' ||
+    source_catalog_open ||
     '        "mainnet":{"title":"Robinhood Chain public mainnet announcement","url":"https://robinhood.com/us/en/newsroom/robinhood-accelerates-global-expansion-robinhood-chain-mainnet-stock-tokens-agentic-trading/"},' ||
     '        "support":{"title":"Robinhood Chain network details","url":"https://robinhood.com/us/en/support/articles/robinhood-chain-mainnet/"},' ||
     '        "testnet":{"title":"Robinhood Chain public testnet announcement","url":"https://robinhood.com/us/en/newsroom/robinhood-chain-launches-public-testnet/"},' ||
@@ -144,14 +155,14 @@ WITH dossier_seed(payload) AS (
     '        "fees":{"title":"DefiLlama Robinhood Chain fees API","url":"https://api.llama.fi/overview/fees/Robinhood%20Chain?dataType=dailyFees"},' ||
     '        "revenue":{"title":"DefiLlama Robinhood Chain revenue API","url":"https://api.llama.fi/overview/fees/Robinhood%20Chain?dataType=dailyRevenue"},' ||
     '        "volume":{"title":"DefiLlama Robinhood Chain DEX volume API","url":"https://api.llama.fi/overview/dexs/Robinhood%20Chain?dataType=dailyVolume"},' ||
-    '        "stables":{"title":"DefiLlama stablecoin supply by chain API","url":"https://stablecoins.llama.fi/stablecoinchains"},' ||
-    '        "ofac":{"title":"OFAC sanctions list data formats","url":"https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}' ||
-    '      },' ||
-    '      "dimension_sources":{' ||
+    stablecoin_source ||
+    ofac_source ||
+    section_close ||
+    dimension_sources_open ||
     '        "identity":["mainnet","support","testnet"],"token":["support","mainnet"],"capital":["mainnet","results"],"onchain":["tvl","fees","revenue","volume","stables"],' ||
     '        "team":["mainnet","testnet"],"narrative":["mainnet","support"],"risk":["l2beat","support","ofac"],"synthesis":["tvl","fees","revenue","stables","mainnet","l2beat"]' ||
-    '      },' ||
-    '      "dimensions":{' ||
+    section_close ||
+    dimensions_open ||
     '        "identity":{"as_of":"2026-07-29","chain":"Robinhood Chain","aliases":[],"category":"L2_rollup","vm":"EVM","launched":"2026-07-01","status":"emerging","lifecycle":[{"date":"2026-02-10","type":"testnet","description":"Robinhood opened the public testnet.","source_url":"https://robinhood.com/us/en/newsroom/robinhood-chain-launches-public-testnet/"},{"date":"2026-07-01","type":"launch","description":"Robinhood officially launched the public mainnet.","source_url":"https://robinhood.com/us/en/newsroom/robinhood-accelerates-global-expansion-robinhood-chain-mainnet-stock-tokens-agentic-trading/"}],"chain_id":4663,"stack":"Arbitrum Orbit"},' ||
     '        "token":{"as_of":"2026-07-29","launch_status":"not_launched","token_symbol":null,"gas_token":"ETH","launch_date":null,"launch_relation":"No native Robinhood Chain token is announced; Stock Tokens are tokenized debt securities and are not the gas or governance token.","token_cg_id":null,"token_current_usd":null,"token_ath_usd":null,"token_ath_date":null,"market_cap_usd":null,"fdv_usd":null,"source_url":"https://robinhood.com/us/en/support/articles/robinhood-chain-mainnet/"},' ||
     '        "capital":{"as_of":"2026-07-29","total_raised_usd":null,"rounds":[],"treasury_usd":null,"backers_tier":"corporate","parent_company":"Robinhood Markets, Inc. (NASDAQ: HOOD)","notes":"No external chain-specific funding round is disclosed; capital support comes from the public-company parent.","source_url":"https://investors.robinhood.com/news-releases/news-release-details/robinhood-reports-first-quarter-2026-results"},' ||
@@ -161,12 +172,12 @@ WITH dossier_seed(payload) AS (
     '        "risk":{"as_of":"2026-07-29","exploits":[],"sanctions":{"flagged":false,"detail":"No chain entity designation recorded in this dossier; regulated product access and address screening are separate controls."},"extraction_flags":["centralized_sequencer","upgrade_keys","transaction_filtering","corporate_dependency"],"audit_status":"L2BEAT reports closed fraud proofs, whitelisted challengers, instant upgrades and transaction-filtering powers.","risks":[{"type":"short_history","detail":"Less than one month of mainnet history makes retention and failure rates unknowable."},{"type":"upgrade_and_validation_control","detail":"L2BEAT reports instant upgrade paths and fewer than five external challengers."},{"type":"censorship","detail":"Authorized filtering can fail registered transaction hashes, including force-included transactions."},{"type":"regulatory_product_risk","detail":"Tokenized securities have jurisdictional restrictions and issuer dependencies."}]},' ||
     '        "synthesis":{"as_of":"2026-07-29","situation":"Robinhood Chain reached rank five within its first month, with 467 million dollars of daily spot volume and 70 million dollars of 30-day fees, but the sample is too young to distinguish durable demand from launch concentration.","postmortem":null,"success_mechanism":"Robinhood distribution, tokenized-security inventory, institutional integrations and Arbitrum tooling created immediate liquidity and user access.","lessons_learned":["Corporate distribution can compress years of cold-start time into weeks.","Early fees do not establish durable product-market fit without retention cohorts.","RWA access controls and chain censorship powers must be measured alongside throughput."],"could_differ":"The chain can fall rapidly if stock-token demand, liquidity incentives or corporate integrations do not persist after launch.","outlook":{"bull":"Tokenized assets become a durable 24-hour market and external builders add independent demand.","base":"The chain remains a Robinhood-centered RWA venue with meaningful but concentrated activity.","bear":"Launch activity fades while regulatory and upgrade-control risk limits outside adoption.","most_likely":"base"},"cause_tags":["corporate_distribution","rwa_inventory","new_launch","no_token_launch"],"confidence":"medium"},' ||
     '        "_reserved":null' ||
-    '      },' ||
+    section_close ||
     '      "meta":{"dimension_completeness_pct":100,"data_completeness_pct":82,"confidence":"medium","unsourced_fields":["capital.total_raised_usd","capital.treasury_usd","onchain.active_addresses_daily","onchain.dev_activity_monthly","onchain.tvl_concentration"],"last_reviewed":"2026-07-29"}' ||
-    '    },' ||
-    '    {' ||
+    dossier_close ||
+    object_open ||
     '      "chain":"Hyperliquid L1",' ||
-    '      "source_catalog":{' ||
+    source_catalog_open ||
     '        "about":{"title":"Hyperliquid official technical overview","url":"https://hyperliquid.gitbook.io/hyperliquid-docs"},' ||
     '        "team":{"title":"Hyperliquid core contributors","url":"https://hyperliquid.gitbook.io/hyperliquid-docs/about-hyperliquid/core-contributors"},' ||
     '        "genesis":{"title":"Hyper Foundation HYPE Genesis","url":"https://hyperfnd.medium.com/hype-genesis-1830a4dc2e3f"},' ||
@@ -177,14 +188,14 @@ WITH dossier_seed(payload) AS (
     '        "fees":{"title":"DefiLlama Hyperliquid L1 fees API","url":"https://api.llama.fi/overview/fees/Hyperliquid%20L1?dataType=dailyFees"},' ||
     '        "revenue":{"title":"DefiLlama Hyperliquid L1 revenue API","url":"https://api.llama.fi/overview/fees/Hyperliquid%20L1?dataType=dailyRevenue"},' ||
     '        "volume":{"title":"DefiLlama Hyperliquid L1 DEX volume API","url":"https://api.llama.fi/overview/dexs/Hyperliquid%20L1?dataType=dailyVolume"},' ||
-    '        "stables":{"title":"DefiLlama stablecoin supply by chain API","url":"https://stablecoins.llama.fi/stablecoinchains"},' ||
-    '        "ofac":{"title":"OFAC sanctions list data formats","url":"https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}' ||
-    '      },' ||
-    '      "dimension_sources":{' ||
+    stablecoin_source ||
+    ofac_source ||
+    section_close ||
+    dimension_sources_open ||
     '        "identity":["about","cftc"],"token":["genesis","cftc","token"],"capital":["team","genesis"],"onchain":["tvl","fees","revenue","volume","stables"],' ||
     '        "team":["team"],"narrative":["about","team"],"risk":["risk","cftc","ofac"],"synthesis":["about","tvl","fees","revenue","stables","risk"]' ||
-    '      },' ||
-    '      "dimensions":{' ||
+    section_close ||
+    dimensions_open ||
     '        "identity":{"as_of":"2026-07-29","chain":"Hyperliquid L1","aliases":["Hyperliquid"],"category":"L1","vm":"other","launched":"2023","status":"established","launch_date_precision":"year","execution_environments":["HyperCore","HyperEVM"],"lifecycle":[{"date":"2023","type":"launch","date_precision":"year","description":"A CFTC-filed product description records Hyperliquid mainnet launch in 2023; an exact public date was not verified.","source_url":"https://www.cftc.gov/filings/ptc/ptc0518263585.pdf"},{"date":"2024-11-29","type":"token_launch","description":"HYPE genesis distribution introduced the network token.","source_url":"https://hyperfnd.medium.com/hype-genesis-1830a4dc2e3f"}]},' ||
     '        "token":{"as_of":"2026-07-29","launch_status":"launched","token_symbol":"HYPE","gas_token":"HYPE","launch_date":"2024-11-29","launch_relation":"Token launched after the trading-focused L1; it secures staking and pays HyperEVM gas.","token_cg_id":"hyperliquid","token_current_usd":54.62,"token_ath_usd":76.87,"token_ath_date":"2026-06-16","price_drawdown_pct":28.94,"market_cap_usd":12151204093,"fdv_usd":54616479136,"circulating_supply":222445714.0741414,"total_supply":955307079.4341414,"max_supply":1000000000,"source_url":"https://api.coingecko.com/api/v3/coins/hyperliquid"},' ||
     '        "capital":{"as_of":"2026-07-29","total_raised_usd":0,"rounds":[],"treasury_usd":null,"backers_tier":"none_unknown","notes":"Official contributor documentation says Hyperliquid Labs is self-funded and has taken no external capital; HYPE genesis allocated no tokens to private investors, centralized exchanges or market makers.","source_url":"https://hyperliquid.gitbook.io/hyperliquid-docs/about-hyperliquid/core-contributors"},' ||
@@ -193,12 +204,12 @@ WITH dossier_seed(payload) AS (
     '        "narrative":{"as_of":"2026-07-29","purpose":"A vertically integrated L1 for onchain order books, perpetuals, spot markets and general smart contracts.","positioning":"CEX-grade financial execution with transparent onchain custody and settlement.","competitors":[{"name":"dYdX Chain","relationship":"sovereign derivatives-chain competitor"},{"name":"Solana DEXs","relationship":"high-performance trading competitor"},{"name":"centralized exchanges","relationship":"execution and liquidity competitor"}],"narrative_arc":"Hyperliquid built the trading application first, then generalized its purpose-built L1 through HYPE staking and HyperEVM.","media_sentiment":"bullish"},' ||
     '        "risk":{"as_of":"2026-07-29","exploits":[],"sanctions":{"flagged":false,"detail":"No chain entity designation recorded in this dossier; frontend and address access controls are separate questions."},"extraction_flags":["single_protocol_chain_concentration","validator_oracle_dependency","bridge_dependency"],"audit_status":"Official docs cite a Zellic audit for the Arbitrum bridge; the custom L1 has less operating history than established L1s.","risks":[{"type":"l1_liveness","detail":"Official disclosures warn the custom L1 can experience consensus downtime."},{"type":"oracle_manipulation","detail":"Validator-maintained oracle prices influence marks and liquidations."},{"type":"vertical_concentration","detail":"Chain fees, liquidity and narrative depend heavily on one exchange stack."},{"type":"regulatory","detail":"Perpetual derivatives create jurisdiction-specific access and enforcement risk."}]},' ||
     '        "synthesis":{"as_of":"2026-07-29","situation":"Hyperliquid produces 3.8 million dollars of daily chain fees and holds more than 6.2 billion dollars of stablecoins, but the board excludes its primary perpetuals notional and the chain remains concentrated around one vertically integrated exchange.","postmortem":null,"success_mechanism":"Purpose-built execution, self-custody, order-book liquidity and token-aligned staking created a strong trader and validator flywheel.","lessons_learned":["Vertical integration can outperform neutral-chain modularity for a demanding application.","A fair-distribution narrative can become a distribution moat.","Chain activity and protocol activity must not be treated as independent observations."],"could_differ":"A major oracle, consensus or bridge failure would challenge the trust premium supporting the exchange and chain simultaneously.","outlook":{"bull":"HyperEVM diversifies the chain beyond the exchange while HyperCore retains derivatives leadership.","base":"The integrated exchange remains dominant and outside applications grow slowly.","bear":"Regulatory pressure or a correlated technical failure causes liquidity flight.","most_likely":"base"},"cause_tags":["vertical_integration","orderbook_liquidity","self_funded","community_distribution"],"confidence":"high"}' ||
-    '      },' ||
+    section_close ||
     '      "meta":{"dimension_completeness_pct":100,"data_completeness_pct":83,"confidence":"high","unsourced_fields":["identity.exact_launch_date","capital.treasury_usd","onchain.active_addresses_daily","onchain.dev_activity_monthly","onchain.tvl_concentration.pct"],"last_reviewed":"2026-07-29"}' ||
-    '    },' ||
-    '    {' ||
+    dossier_close ||
+    object_open ||
     '      "chain":"Polygon",' ||
-    '      "source_catalog":{' ||
+    source_catalog_open ||
     '        "launch":{"title":"Matic mainnet monthly update recording May 31 launch","url":"https://forum.polygon.technology/t/matic-mainnet-monthly-update-1/7711"},' ||
     '        "rebrand":{"title":"Matic Network becomes Polygon","url":"https://polygon.technology/blog/matic-network-becomes-polygon-ethereums-internet-of-blockchains-expands-mission-and-tech-scope"},' ||
     '        "migration":{"title":"MATIC to POL migration announcement","url":"https://polygon.technology/blog/save-the-date-matic-pol-migration-coming-september-4th-everything-you-need-to-know"},' ||
@@ -209,14 +220,14 @@ WITH dossier_seed(payload) AS (
     '        "fees":{"title":"DefiLlama Polygon fees API","url":"https://api.llama.fi/overview/fees/Polygon?dataType=dailyFees"},' ||
     '        "revenue":{"title":"DefiLlama Polygon revenue API","url":"https://api.llama.fi/overview/fees/Polygon?dataType=dailyRevenue"},' ||
     '        "volume":{"title":"DefiLlama Polygon DEX volume API","url":"https://api.llama.fi/overview/dexs/Polygon?dataType=dailyVolume"},' ||
-    '        "stables":{"title":"DefiLlama stablecoin supply by chain API","url":"https://stablecoins.llama.fi/stablecoinchains"},' ||
-    '        "ofac":{"title":"OFAC sanctions list data formats","url":"https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}' ||
-    '      },' ||
-    '      "dimension_sources":{' ||
+    stablecoin_source ||
+    ofac_source ||
+    section_close ||
+    dimension_sources_open ||
     '        "identity":["launch","rebrand","migration"],"token":["migration","token"],"capital":["funding"],"onchain":["tvl","fees","revenue","volume","stables"],' ||
     '        "team":["rebrand","funding"],"narrative":["rebrand","migration"],"risk":["outage","ofac"],"synthesis":["tvl","fees","revenue","stables","migration","outage"]' ||
-    '      },' ||
-    '      "dimensions":{' ||
+    section_close ||
+    dimensions_open ||
     '        "identity":{"as_of":"2026-07-29","chain":"Polygon","aliases":["Polygon PoS","Matic Network"],"category":"sidechain","vm":"EVM","launched":"2020-05-31","status":"established","lifecycle":[{"date":"2020-05-31","type":"launch","description":"Matic PoS mainnet began operating through a staged validator rollout.","source_url":"https://forum.polygon.technology/t/matic-mainnet-monthly-update-1/7711"},{"date":"2021-02-09","type":"rebrand","description":"Matic Network expanded its scope and rebranded as Polygon.","source_url":"https://polygon.technology/blog/matic-network-becomes-polygon-ethereums-internet-of-blockchains-expands-mission-and-tech-scope"},{"date":"2024-09-04","type":"token_migration","description":"POL replaced MATIC as Polygon PoS gas and staking token.","source_url":"https://polygon.technology/blog/save-the-date-matic-pol-migration-coming-september-4th-everything-you-need-to-know"}]},' ||
     '        "token":{"as_of":"2026-07-29","launch_status":"launched","token_symbol":"POL","gas_token":"POL","launch_date":"2024-09-04","launch_relation":"POL is the migrated successor to MATIC, which predated mainnet; POL became PoS gas and staking token in 2024","legacy_token_symbol":"MATIC","token_cg_id":"polygon-ecosystem-token","token_current_usd":0.071796,"token_ath_usd":1.29,"token_ath_date":"2024-03-13","price_drawdown_pct":94.43,"market_cap_usd":767287745,"fdv_usd":767287745,"circulating_supply":10686818750.34657,"total_supply":10686818750.34657,"max_supply":null,"source_url":"https://api.coingecko.com/api/v3/coins/polygon-ecosystem-token"},' ||
     '        "capital":{"as_of":"2026-07-29","total_raised_usd":450000000,"rounds":[{"stage":"private MATIC token sale","date":"2022-02-07","amount_usd":450000000,"lead":"Sequoia Capital India","source_url":"https://polygon.technology/blog/polygon-raises-450-000-000-from-sequoia-capital-india-softbank-galaxy-tiger-republic-capital"}],"treasury_usd":null,"backers_tier":"tier1","notes":"The total records the cited 2022 round only and does not claim complete lifetime financing."},' ||
@@ -225,12 +236,12 @@ WITH dossier_seed(payload) AS (
     '        "narrative":{"as_of":"2026-07-29","purpose":"Low-cost EVM PoS execution and a broader aggregation ecosystem for Ethereum-compatible chains.","positioning":"A payments and RWA-oriented PoS chain within the Polygon and AggLayer stack.","competitors":[{"name":"Base","relationship":"low-cost EVM execution competitor"},{"name":"Arbitrum","relationship":"Ethereum scaling and liquidity competitor"},{"name":"BSC","relationship":"retail EVM and payments competitor"}],"narrative_arc":"Matic launched as an Ethereum scaling sidechain, expanded into the Polygon multi-chain brand, and migrated MATIC to POL while refocusing PoS on payments and RWAs.","media_sentiment":"mixed"},' ||
     '        "risk":{"as_of":"2026-07-29","exploits":[{"date":"2022-03-10","amount_usd":0,"type":"chain outage","description":"Heimdall state-sync and follow-on Bor issues took Polygon PoS offline; the postmortem reports no loss of funds or data.","source_url":"https://polygon.technology/blog/lessons-learned-from-recent-outage-of-polygon-pos-2"}],"sanctions":{"flagged":false,"detail":"No chain entity designation recorded in this dossier; applications and addresses can be separately sanctioned."},"extraction_flags":["bridge_and_checkpoint_dependency","validator_concentration","token_migration_complexity"],"audit_status":"Component audits and public postmortems exist; no single network-wide audit.","risks":[{"type":"architecture_complexity","detail":"Bor, Heimdall, Ethereum checkpoints and bridges create correlated operational dependencies."},{"type":"token_migration","detail":"MATIC and POL identity and exchange support can fragment market interpretation."},{"type":"activity_drawdown","detail":"TVL remains more than 90 percent below peak despite high current transaction activity."}]},' ||
     '        "synthesis":{"as_of":"2026-07-29","situation":"Polygon retains meaningful stablecoins, fees and spot volume, but TVL is more than 91 percent below its peak and the MATIC-to-POL migration complicates long-term token comparisons.","postmortem":null,"success_mechanism":"EVM compatibility, low costs, early Ethereum scaling distribution and enterprise partnerships created durable usage.","lessons_learned":["High transaction activity can coexist with severe capital drawdown.","Rebrands and token migrations must be modeled as lifecycle events, not overwritten history.","Payments can sustain use even when DeFi TVL contracts."],"could_differ":"Failure to make the AggLayer and payments focus economically accrue to POL would leave a used chain with weak token demand.","outlook":{"bull":"Payments and RWAs make PoS a durable high-volume settlement network and AggLayer expands POL utility.","base":"Polygon remains widely used but capital-light relative to its 2021 peak.","bear":"L2 competition and token-value ambiguity continue eroding liquidity.","most_likely":"base"},"cause_tags":["evm_compatibility","payments_distribution","enterprise_partnerships","token_migration"],"confidence":"high"}' ||
-    '      },' ||
+    section_close ||
     '      "meta":{"dimension_completeness_pct":100,"data_completeness_pct":84,"confidence":"high","unsourced_fields":["capital.lifetime_total_raised_usd","capital.treasury_usd","onchain.active_addresses_daily","onchain.dev_activity_monthly","onchain.tvl_concentration","team.regulatory_status"],"last_reviewed":"2026-07-29"}' ||
-    '    },' ||
-    '    {' ||
+    dossier_close ||
+    object_open ||
     '      "chain":"Arbitrum",' ||
-    '      "source_catalog":{' ||
+    source_catalog_open ||
     '        "launch":{"title":"Offchain Labs: Mainnet for Everyone","url":"https://offchain.medium.com/mainnet-for-everyone-27ce0f67c85e"},' ||
     '        "tokenlaunch":{"title":"Arbitrum Foundation decentralization and ARB announcement","url":"https://blog.arbitrum.foundation/arbitrum-the-next-phase-of-decentralization/"},' ||
     '        "funding":{"title":"Offchain Labs Arbitrum One launch and 120 million dollar funding release","url":"https://www.prnewswire.com/news-releases/offchain-labs-rolls-out-arbitrum-one-ethereum-scaling-solution-to-the-public-and-announces-120m-in-funding-301365642.html"},' ||
@@ -241,14 +252,14 @@ WITH dossier_seed(payload) AS (
     '        "fees":{"title":"DefiLlama Arbitrum fees API","url":"https://api.llama.fi/overview/fees/Arbitrum?dataType=dailyFees"},' ||
     '        "revenue":{"title":"DefiLlama Arbitrum revenue API","url":"https://api.llama.fi/overview/fees/Arbitrum?dataType=dailyRevenue"},' ||
     '        "volume":{"title":"DefiLlama Arbitrum DEX volume API","url":"https://api.llama.fi/overview/dexs/Arbitrum?dataType=dailyVolume"},' ||
-    '        "stables":{"title":"DefiLlama stablecoin supply by chain API","url":"https://stablecoins.llama.fi/stablecoinchains"},' ||
-    '        "ofac":{"title":"OFAC sanctions list data formats","url":"https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}' ||
-    '      },' ||
-    '      "dimension_sources":{' ||
+    stablecoin_source ||
+    ofac_source ||
+    section_close ||
+    dimension_sources_open ||
     '        "identity":["launch","tokenlaunch"],"token":["tokenlaunch","token"],"capital":["funding"],"onchain":["tvl","fees","revenue","volume","stables"],' ||
     '        "team":["funding"],"narrative":["launch","tokenlaunch"],"risk":["security","l2beat","ofac"],"synthesis":["tvl","fees","revenue","stables","l2beat"]' ||
-    '      },' ||
-    '      "dimensions":{' ||
+    section_close ||
+    dimensions_open ||
     '        "identity":{"as_of":"2026-07-29","chain":"Arbitrum","aliases":["Arbitrum One"],"category":"L2_rollup","vm":"EVM","launched":"2021-08-31","status":"established","lifecycle":[{"date":"2021-08-31","type":"launch","description":"Arbitrum One opened mainnet to everyone.","source_url":"https://offchain.medium.com/mainnet-for-everyone-27ce0f67c85e"},{"date":"2023-03-23","type":"token_launch","description":"The ARB governance-token airdrop began after the chain had operated for about 18 months.","source_url":"https://blog.arbitrum.foundation/arbitrum-the-next-phase-of-decentralization/"}]},' ||
     '        "token":{"as_of":"2026-07-29","launch_status":"launched","token_symbol":"ARB","gas_token":"ETH","launch_date":"2023-03-23","launch_relation":"ARB launched after Arbitrum One for DAO governance; ETH remains the gas token","token_cg_id":"arbitrum","token_current_usd":0.07807,"token_ath_usd":2.39,"token_ath_date":"2024-01-12","price_drawdown_pct":96.73,"market_cap_usd":516360000,"fdv_usd":780701000,"circulating_supply":6614056381,"total_supply":10000000000,"max_supply":10000000000,"source_url":"https://www.coingecko.com/en/coins/arbitrum"},' ||
     '        "capital":{"as_of":"2026-07-29","total_raised_usd":120000000,"rounds":[{"stage":"Series B","date":"2021-08-31","amount_usd":120000000,"valuation_usd":1200000000,"lead":"Lightspeed Venture Partners","source_url":"https://www.prnewswire.com/news-releases/offchain-labs-rolls-out-arbitrum-one-ethereum-scaling-solution-to-the-public-and-announces-120m-in-funding-301365642.html"}],"treasury_usd":null,"backers_tier":"tier1","notes":"The total records the cited Series B only and does not claim complete lifetime financing."},' ||
@@ -257,11 +268,11 @@ WITH dossier_seed(payload) AS (
     '        "narrative":{"as_of":"2026-07-29","purpose":"Ethereum optimistic-rollup execution with EVM compatibility, fraud proofs and an Orbit chain stack.","positioning":"A high-liquidity Ethereum L2 and customizable rollup platform.","competitors":[{"name":"Base","relationship":"Ethereum L2 activity and liquidity competitor"},{"name":"OP Mainnet","relationship":"rollup-stack and Superchain competitor"},{"name":"Solana","relationship":"high-throughput execution competitor"}],"narrative_arc":"Arbitrum established L2 liquidity before launching ARB, then expanded from one rollup into DAO governance and the Orbit chain ecosystem.","media_sentiment":"mixed"},' ||
     '        "risk":{"as_of":"2026-07-29","exploits":[{"date":"2024-09-25","amount_usd":0,"type":"preemptive emergency upgrade","description":"The Security Council upgraded Nitro to mitigate node-crash and mispriced-opcode vulnerabilities before reported user-fund impact.","source_url":"https://forum.arbitrum.foundation/t/security-council-emergency-action-transparency-report/26997"}],"sanctions":{"flagged":false,"detail":"No chain entity designation recorded in this dossier; applications and addresses can be separately sanctioned."},"extraction_flags":["centralized_sequencer","security_council_upgrade_power","governance_concentration"],"audit_status":"Interactive fraud proofs are deployed; L2BEAT documents remaining sequencing, upgrade and governance assumptions.","risks":[{"type":"sequencer_liveness_and_censorship","detail":"A centralized sequencer is a real-time ordering and uptime dependency."},{"type":"upgrade_governance","detail":"Security Council emergency powers reduce response time while creating key-holder trust."},{"type":"token_value_capture","detail":"ARB governs the system but ETH pays gas, weakening direct usage-to-token linkage."}]},' ||
     '        "synthesis":{"as_of":"2026-07-29","situation":"Arbitrum retains more than 1.2 billion dollars of TVL and 3.5 billion dollars of stablecoins, but TVL is 71 percent below peak and ARB trades about 97 percent below its high while ETH remains the gas asset.","postmortem":null,"success_mechanism":"Early rollup liquidity, EVM equivalence, Ethereum security and Orbit tooling built a durable developer and application ecosystem.","lessons_learned":["A chain can achieve product-market fit before issuing a governance token.","Usage does not guarantee token value capture when gas is paid in another asset.","L2 safety and L2 operational control are separate risk dimensions."],"could_differ":"Failure to decentralize sequencing or make governance economically useful could preserve chain usage while ARB remains weak.","outlook":{"bull":"Orbit adoption and institutional tokenization expand DAO revenue and ARB governance demand.","base":"Arbitrum remains a major L2 while Base and other stacks pressure share.","bear":"Sequencer, governance or token-value-capture concerns accelerate liquidity loss.","most_likely":"base"},"cause_tags":["early_l2_liquidity","evm_equivalence","orbit_distribution","post_launch_token"],"confidence":"high"}' ||
-    '      },' ||
+    section_close ||
     '      "meta":{"dimension_completeness_pct":100,"data_completeness_pct":84,"confidence":"high","unsourced_fields":["capital.lifetime_total_raised_usd","capital.treasury_usd","onchain.active_addresses_daily","onchain.dev_activity_monthly","onchain.tvl_concentration","team.regulatory_status"],"last_reviewed":"2026-07-29"}' ||
     '    }' ||
     '  ]'
-  )
+  FROM json_constants
 ),
 dossiers AS (
   SELECT value AS dossier
