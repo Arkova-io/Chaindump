@@ -1300,7 +1300,10 @@ function casinoAnalysisCard(item) {
   const body = open ? casinoDetailBody(item, detail) : '';
   const sourceLabel = item.source_count === 1 ? 'reviewed source' : 'reviewed sources';
   const sourcePreview = `<div class="analysis-src-preview"><div class="asrc">Cited sources: ${esc(item.source_count)} ${sourceLabel}; open dossier for field-level links.</div></div>`;
-  const dossierLink = `/api/casino/${encodeURIComponent(item.case_id)}`;
+  // Keep the public handoff inside the research UI. The API remains the data
+  // source for the lazy detail pane; a reader should never have to inspect raw
+  // JSON to read a published dossier.
+  const dossierLink = `/casino/${encodeURIComponent(item.case_id)}`;
   return `<div class="gcard ${open ? 'open' : ''}" role="button" tabindex="0" data-casino-case="${esc(item.case_id)}">
     <div class="ghead"><div class="gname">${esc(item.brand_name)} <span class="gverdict ${item.status === 'active' ? 'recover' : 'declining'}">${esc(casinoLabel(item.status))}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${item.source_count}<span class="gddl">reviewed sources</span></div></div>
@@ -1379,17 +1382,19 @@ async function loadCasinoAnalysis() {
     state.casinoCoverage = coverage.coverage || null;
     state.casinoAnalysisError = dossiers.error || '';
     renderCasinoAnalysis();
+    if (state.casinoAnalysisExpanded && !state.casinoAnalysisDetails[state.casinoAnalysisExpanded]) {
+      loadCasinoAnalysisDetail(state.casinoAnalysisExpanded);
+    }
   } catch (error) {
     state.casinoAnalysisData = { cases: [] };
     state.casinoAnalysisError = error.message;
     renderCasinoAnalysis();
   }
 }
-async function toggleCasinoAnalysisCard(caseId) {
-  const opening = state.casinoAnalysisExpanded !== caseId;
-  state.casinoAnalysisExpanded = opening ? caseId : null;
-  if (!opening || state.casinoAnalysisDetails[caseId]) { renderCasinoAnalysis(); return; }
-  state.casinoAnalysisDetails[caseId] = 'loading'; renderCasinoAnalysis();
+async function loadCasinoAnalysisDetail(caseId) {
+  if (state.casinoAnalysisDetails[caseId]) return;
+  state.casinoAnalysisDetails[caseId] = 'loading';
+  renderCasinoAnalysis();
   try {
     const response = await fetch(`/api/casino/${encodeURIComponent(caseId)}`);
     state.casinoAnalysisDetails[caseId] = response.ok ? await response.json() : { error: `HTTP ${response.status}` };
@@ -1397,6 +1402,12 @@ async function toggleCasinoAnalysisCard(caseId) {
     state.casinoAnalysisDetails[caseId] = { error: error.message };
   }
   renderCasinoAnalysis();
+}
+async function toggleCasinoAnalysisCard(caseId) {
+  const opening = state.casinoAnalysisExpanded !== caseId;
+  state.casinoAnalysisExpanded = opening ? caseId : null;
+  if (!opening || state.casinoAnalysisDetails[caseId]) { renderCasinoAnalysis(); return; }
+  loadCasinoAnalysisDetail(caseId);
 }
 
 document.getElementById('blockchainanalysisview').addEventListener('input', (e) => {
@@ -4220,6 +4231,9 @@ function applyRoute(){
   } else if (seg === 'collection' && rest) {
     state.nftExpanded = decodeURIComponent(rest);
     switchView('nft-analysis', false);
+  } else if (seg === 'casino' && rest) {
+    state.casinoAnalysisExpanded = decodeURIComponent(rest);
+    switchView('casino-analysis', false);
   } else if (KNOWN_VIEWS.includes(seg)) {
     switchView(seg, false);
   } else {

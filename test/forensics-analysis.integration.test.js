@@ -120,13 +120,16 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('casinoAnalysisLoaded');
   });
 
-  it('follows the Blockchain Analysis index contract with search, filters, sources, and direct dossier links', () => {
+  it('follows the Blockchain Analysis index contract with search, filters, sources, and direct UI dossier links', () => {
     expect(html).toContain('id="casinoAnalysisSearch"');
     expect(html).toContain('id="casinoAnalysisStatus"');
     expect(html).toContain('id="casinoAnalysisKind"');
     expect(html).toContain('id="casinoAnalysisSubtype"');
     expect(html).toContain('id="casinoAnalysisToken"');
     expect(html).toContain('Cited sources: ${esc(item.source_count)}');
+    expect(html).toContain('const dossierLink = `/casino/${encodeURIComponent(item.case_id)}`;');
+    expect(html).toContain("} else if (seg === 'casino' && rest) {");
+    expect(html).toContain('loadCasinoAnalysisDetail(state.casinoAnalysisExpanded);');
     expect(html).toContain('Open dossier →');
     expect(html).toContain('Open coverage ledger →');
     expect(html).toContain('publication-gated dossier${filtered.length===1');
