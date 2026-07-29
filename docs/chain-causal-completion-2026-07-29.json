@@ -1,0 +1,2565 @@
+{
+  "schema": "chaindump-chain-causal-completion-v1",
+  "research_as_of": "2026-07-29",
+  "methodology": {
+    "scope": "Shared causal forensic normalization for the exact 15 top-chain dossiers that lacked explicit why and strategic-choice contracts.",
+    "observation_rule": "Dated metrics are observations. Causal attribution and counterfactuals are labeled analytical inferences and carry confidence.",
+    "preservation_rule": "Migration 0062 adds forensic_analysis to synthesis and review metadata to _meta; it does not replace any existing dossier dimension.",
+    "source_rule": "Every causal field resolves to an exact checked source. Primary or operator sources establish designs and decisions; independent data and risk research test outcomes.",
+    "correction_rule": "Applied historical migrations remain immutable. Citation and arithmetic corrections are isolated, source-scoped, denominator-labeled, and idempotent."
+  },
+  "cases": [
+    {
+      "chain": "Ethereum",
+      "sources": [
+        {
+          "id": "eth-llama",
+          "title": "Ethereum chain metrics",
+          "publisher": "DefiLlama",
+          "url": "https://defillama.com/chain/ethereum",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "eth-roadmap",
+          "title": "Ethereum roadmap",
+          "publisher": "Ethereum Foundation",
+          "url": "https://ethereum.org/roadmap/",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "eth-scaling",
+          "title": "Scaling Ethereum",
+          "publisher": "Ethereum Foundation",
+          "url": "https://ethereum.org/roadmap/scaling/",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "eth-priorities",
+          "title": "Protocol priorities update for 2026",
+          "publisher": "Ethereum Foundation",
+          "url": "https://blog.ethereum.org/2026/02/18/protocol-priorities-update-2026",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "eth-build",
+          "title": "Why build on Ethereum",
+          "publisher": "Ethereum Foundation",
+          "url": "https://ethereum.org/latest/why-build-on-ethereum/",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "thriving",
+          "summary": "Ethereum is a thriving, dominant settlement and collateral network rather than an unqualified execution winner. The July 29 snapshot records deep DeFi, stablecoin and tokenized-asset bases, while the protocol deliberately pushes much transaction execution to rollups. That makes L1-only fee or transaction comparisons incomplete and makes value capture from the rollup economy the central open question.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "eth-llama",
+            "eth-roadmap",
+            "eth-scaling"
+          ]
+        },
+        "why": {
+          "summary": "Observed: Ethereum accumulated the deepest reviewed collateral and settlement base, has continued upgrading without a recorded full-network halt, and explicitly follows a rollup-centric roadmap. Strategic inference: its durability comes from choosing neutral settlement, multi-client fault isolation, conservative community-governed upgrades and cheap data availability for rollups instead of maximizing base-layer throughput. Those choices reinforced developer standards, liquidity and credible neutrality, but they also dispersed execution, users and fee capture across L2s. The success is therefore causal and conditional: standards plus security created the moat; rollup specialization preserved accessibility while creating fragmentation and an unresolved division of economics among ETH, L1 validators, applications and sequencers.",
+          "confidence": "medium",
+          "source_refs": [
+            "eth-roadmap",
+            "eth-scaling",
+            "eth-priorities",
+            "eth-build",
+            "eth-llama"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Replace proof of work with proof of stake through the Merge.",
+            "consequence": "Energy use and issuance fell and staked ETH became the security budget; the trade-off moved concentration and correlated-provider risk into staking infrastructure.",
+            "confidence": "high",
+            "source_refs": [
+              "eth-roadmap",
+              "eth-build"
+            ]
+          },
+          {
+            "decision": "Adopt a rollup-centric scaling roadmap and introduce blob data.",
+            "consequence": "L2 transaction capacity and cost improved without forcing every home node to execute every user transaction, while execution economics and user state fragmented across rollups.",
+            "confidence": "high",
+            "source_refs": [
+              "eth-scaling",
+              "eth-priorities"
+            ]
+          },
+          {
+            "decision": "Maintain multiple execution and consensus clients.",
+            "consequence": "Implementation diversity limits one-client failure blast radius, but actual protection still depends on balanced client and operator shares rather than the number of codebases.",
+            "confidence": "high",
+            "source_refs": [
+              "eth-build"
+            ]
+          },
+          {
+            "decision": "Prioritize conservative, community-coordinated protocol upgrades over a single operator roadmap.",
+            "consequence": "The network gained resilience and credible neutrality at the cost of slower coordination and unresolved governance during extreme failures.",
+            "confidence": "medium",
+            "source_refs": [
+              "eth-roadmap",
+              "eth-priorities"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "A monolithic high-throughput L1 might have retained more execution fees and simpler composability, but would likely have raised node requirements and weakened the accessibility and client diversity supporting Ethereum’s trust premium. Rejecting rollups would also have left Base- and Arbitrum-class demand facing materially higher costs. The evidence does not establish the net counterfactual value captured by either design.",
+          "confidence": "medium",
+          "source_refs": [
+            "eth-scaling",
+            "eth-build",
+            "eth-priorities"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Ethereum and L2 TVL, stablecoins, tokenized assets, blobs, fees and transactions measured together.",
+            "implication": "Growth on L2s with stagnant L1 fees can still validate settlement demand, but may weaken direct ETH value capture.",
+            "source_refs": [
+              "eth-llama",
+              "eth-scaling"
+            ]
+          },
+          {
+            "signal": "Delivery and utilization of PeerDAS, blob-scaling and the published protocol-priority roadmap.",
+            "implication": "Successful capacity increases strengthen rollup settlement; delay or sustained underuse weakens the scaling thesis.",
+            "source_refs": [
+              "eth-priorities",
+              "eth-scaling"
+            ]
+          },
+          {
+            "signal": "Execution-client, consensus-client, staking-provider and cloud concentration.",
+            "implication": "Safety depends on independent control distribution; a dominant client or operator creates correlated fault risk.",
+            "source_refs": [
+              "eth-build"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "question": "What share of rollup economic value ultimately accrues to ETH and L1 security?",
+            "resolution_trigger": "Publish a reproducible L1/L2 fee, MEV, issuance and sequencer-profit attribution series."
+          },
+          {
+            "question": "When will major rollups decentralize sequencing and proving without degrading exits?",
+            "resolution_trigger": "Verified production milestones and measured operator diversity."
+          },
+          {
+            "question": "Who beneficially controls stake across pools, operators and infrastructure providers?",
+            "resolution_trigger": "Independent entity-resolution audit of validator and delegation ownership."
+          },
+          {
+            "question": "How would extreme-case social slashing be governed in practice?",
+            "resolution_trigger": "A tested, public incident-governance procedure or real event postmortem."
+          }
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "chain": "Solana",
+      "sources": [
+        {
+          "id": "sol-llama",
+          "title": "Solana chain metrics",
+          "publisher": "DefiLlama",
+          "url": "https://defillama.com/chain/solana",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "sol-health",
+          "title": "Solana network health report — June 2025",
+          "publisher": "Solana Foundation",
+          "url": "https://solana.com/uk/news/network-health-report-june-2025",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "sol-reliability",
+          "title": "Plans to improve the Solana network",
+          "publisher": "Solana Foundation",
+          "url": "https://solana.com/news/plans-to-improve-the-network-upgrades",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "sol-alpenglow",
+          "title": "Alpenglow upgrade",
+          "publisher": "Solana Foundation",
+          "url": "https://solana.com/de/upgrades/alpenglow",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "sol-payments",
+          "title": "Subscriptions and allowances",
+          "publisher": "Solana Foundation",
+          "url": "https://solana.com/news/subscriptions-and-allowances",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "thriving",
+          "summary": "Solana is a thriving high-activity trading and payments chain. The reviewed snapshot shows leading spot DEX activity and substantial stablecoin and tokenized-asset use, while official engineering reports document a reliability program following earlier outages. High raw transaction counts are not treated as proof of valuable human demand, and the outcome remains conditioned on client diversity and validator economics.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "sol-llama",
+            "sol-health",
+            "sol-reliability"
+          ]
+        },
+        "why": {
+          "summary": "Observed: Solana combines high DEX volume, low-latency shared state, large transaction throughput and a period of improved reliability after a history of correlated failures. Strategic inference: the chain won by committing to one performance-oriented execution environment, synchronous composability and aggressive validator/network engineering rather than fragmenting liquidity across rollups. That design made trading, consumer applications and frequent payments economically practical, and returning liquidity helped repair the outage-era reputation. The same choice makes hardware, networking, validator profitability and client diversity business-critical rather than secondary engineering details. Solana’s success is therefore a coupled flywheel of execution quality, wallet/application distribution and liquidity—not a throughput number—and it can reverse if reliability or validator independence deteriorates.",
+          "confidence": "medium",
+          "source_refs": [
+            "sol-llama",
+            "sol-health",
+            "sol-reliability",
+            "sol-alpenglow",
+            "sol-payments"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Prioritize one high-throughput shared-state L1 instead of a rollup-first architecture.",
+            "consequence": "Applications gained synchronous composability and cheap frequent transactions, while demanding validator hardware and network performance became consensus dependencies.",
+            "confidence": "high",
+            "source_refs": [
+              "sol-health",
+              "sol-alpenglow"
+            ]
+          },
+          {
+            "decision": "Respond to outages with staged releases, adversarial testing, traffic controls and a second validator client.",
+            "consequence": "Reliability improved and client optionality expanded, but diversity must be measured by production stake rather than release announcements.",
+            "confidence": "high",
+            "source_refs": [
+              "sol-health",
+              "sol-reliability"
+            ]
+          },
+          {
+            "decision": "Optimize fee markets and scheduling for high-load applications.",
+            "consequence": "Trading and consumer apps can continue during local congestion, though priority markets and validator incentives can still create uneven user outcomes.",
+            "confidence": "medium",
+            "source_refs": [
+              "sol-reliability"
+            ]
+          },
+          {
+            "decision": "Expand from trading toward stablecoin payments and programmable commerce primitives.",
+            "consequence": "The chain gains a route to repeat non-speculative demand, but adoption and retention require independent transaction and revenue attribution.",
+            "confidence": "medium",
+            "source_refs": [
+              "sol-payments",
+              "sol-llama"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "Without the outage-driven reliability program and independent-client effort, high-load trading adoption would likely remain capped by liveness confidence. Reducing validator requirements could broaden participation but might sacrifice some execution profile that differentiated the chain. The evidence cannot quantify how much current activity would survive materially higher fees or lower speculative trading demand.",
+          "confidence": "medium",
+          "source_refs": [
+            "sol-health",
+            "sol-reliability",
+            "sol-alpenglow"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Thirty- and ninety-day DEX volume, application fees, stablecoins and tokenized assets rather than raw transactions alone.",
+            "implication": "Retention across paid use cases supports durable demand; activity dominated by low-value automation weakens it.",
+            "source_refs": [
+              "sol-llama"
+            ]
+          },
+          {
+            "signal": "Alpenglow activation, realized finality and incident performance.",
+            "implication": "Production fault tolerance near published targets would strengthen reliability; delay or regression reopens the core historical risk.",
+            "source_refs": [
+              "sol-alpenglow"
+            ]
+          },
+          {
+            "signal": "Stake share by independent clients, validator count and concentration.",
+            "implication": "Multiple binaries do not create resilience unless independently operated clients hold meaningful stake.",
+            "source_refs": [
+              "sol-health"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "question": "Did Alpenglow meet its stated activation and production fault-tolerance targets?",
+            "resolution_trigger": "Public activation record plus independent latency and incident measurements."
+          },
+          {
+            "question": "What share of stake runs fully independent Firedancer rather than hybrid implementations?",
+            "resolution_trigger": "Dated stake-weighted client telemetry."
+          },
+          {
+            "question": "How much activity is durable paid demand rather than bots or launch-driven churn?",
+            "resolution_trigger": "Entity-adjusted cohorts and application-level fee retention."
+          },
+          {
+            "question": "What is the validator profitability distribution after hardware, vote and bandwidth costs?",
+            "resolution_trigger": "Audited operator economics across size cohorts."
+          }
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "chain": "Base",
+      "sources": [
+        {
+          "id": "base-llama",
+          "title": "Base chain metrics",
+          "publisher": "DefiLlama",
+          "url": "https://defillama.com/chain/base?dexs=true",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "base-meet",
+          "title": "Meet Base",
+          "publisher": "Base",
+          "url": "https://blog.base.org/meet-base",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "base-strategy",
+          "title": "2026 mission, vision and strategy",
+          "publisher": "Base",
+          "url": "https://blog.base.org/2026-mission-vision-and-strategy",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "base-stage1",
+          "title": "Base has reached Stage 1 decentralization",
+          "publisher": "Base",
+          "url": "https://blog.base.org/base-has-reached-stage-1-decentralization",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "base-l2beat",
+          "title": "Base risk analysis",
+          "publisher": "L2BEAT",
+          "url": "https://l2beat.com/scaling/projects/base?protocols=base",
+          "source_role": "independent-research",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "thriving",
+          "summary": "Base is a thriving distribution-led Ethereum L2 with substantial liquidity and transactions despite launching without a native network token. It has reached Stage 1 under the project’s and L2BEAT’s frameworks, but sequencing and upgrade authority remain material trust assumptions. The observed success belongs to the network product; it is not evidence for a nonexistent token thesis.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "base-llama",
+            "base-meet",
+            "base-stage1",
+            "base-l2beat"
+          ]
+        },
+        "why": {
+          "summary": "Observed: Base reached material TVL, stablecoin liquidity and transaction volume while using ETH for gas and the OP Stack for execution. Strategic inference: it compressed the normal chain cold start by combining Ethereum settlement and EVM compatibility with Coinbase’s exchange, wallet, merchant, account and application distribution. Choosing no native token reduced mercenary incentive signaling and aligned fees with ETH, while the shared Superchain stack accelerated infrastructure delivery. The consequence is a genuine product-led adoption signal, but also a concentrated dependency: Coinbase distribution, first-party products, sequencing and upgrade influence are simultaneously the moat and the censorship, regulatory and neutrality risk. Base succeeded because distribution and usable products reinforced liquidity—not because its rollup code alone was unique.",
+          "confidence": "medium",
+          "source_refs": [
+            "base-meet",
+            "base-strategy",
+            "base-stage1",
+            "base-l2beat",
+            "base-llama"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Launch without a new network token and use ETH as gas.",
+            "consequence": "Base avoided a token-incentive cold start and strengthened Ethereum alignment, but lacks a native token for validator or governance distribution.",
+            "confidence": "high",
+            "source_refs": [
+              "base-meet"
+            ]
+          },
+          {
+            "decision": "Build on the open OP Stack and join the Superchain economic model.",
+            "consequence": "Shared infrastructure and interoperability create stack network effects, while upgrades and revenue sharing tie Base to Optimism governance and common machinery.",
+            "confidence": "high",
+            "source_refs": [
+              "base-meet",
+              "base-stage1"
+            ]
+          },
+          {
+            "decision": "Vertically integrate the chain with Coinbase and Base account, app and payments products.",
+            "consequence": "Existing users and merchant rails create distribution competitors cannot easily copy, while first-party power can challenge ecosystem neutrality.",
+            "confidence": "high",
+            "source_refs": [
+              "base-strategy"
+            ]
+          },
+          {
+            "decision": "Advance to Stage 1 before claiming full decentralization.",
+            "consequence": "Permissionless fault proofs and exit protections improve user control, but centralized sequencing and upgrade powers remain explicit rather than solved.",
+            "confidence": "high",
+            "source_refs": [
+              "base-stage1",
+              "base-l2beat"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "Without Coinbase distribution, Base would likely resemble a competent but less liquid OP Stack deployment competing on technology and incentives. A token could have accelerated grants or speculation, but also weakened the product-led and ETH-aligned signal. A faster move to decentralized sequencing might reduce control risk while sacrificing some operational integration; the sources do not quantify that trade-off.",
+          "confidence": "medium",
+          "source_refs": [
+            "base-meet",
+            "base-strategy",
+            "base-l2beat"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "TVL, stablecoin mix, DEX volume, active users and fee retention after incentives.",
+            "implication": "Persistent multi-product usage validates distribution-led demand; one-off campaigns do not.",
+            "source_refs": [
+              "base-llama",
+              "base-strategy"
+            ]
+          },
+          {
+            "signal": "Progress from Stage 1 to Stage 2, proof-system diversity and upgrade thresholds.",
+            "implication": "Reduced unilateral control strengthens the neutrality thesis; stagnation preserves a centralization discount.",
+            "source_refs": [
+              "base-stage1",
+              "base-l2beat"
+            ]
+          },
+          {
+            "signal": "Coinbase- and Base-product-originated merchant, payment and application flows.",
+            "implication": "Growth outside crypto-native trading demonstrates the proposed distribution flywheel.",
+            "source_refs": [
+              "base-strategy"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "question": "What is the dated path to Stage 2 and decentralized sequencing?",
+            "resolution_trigger": "Published milestones verified by L2 risk analysis and production contracts."
+          },
+          {
+            "question": "How independent and censorship-resistant is sequencer operation in practice?",
+            "resolution_trigger": "Public operator diversity, incident and censorship telemetry."
+          },
+          {
+            "question": "How many Base App and payment users retain activity independent of promotions?",
+            "resolution_trigger": "Audited user cohorts and attributable fees."
+          },
+          {
+            "question": "Could token policy change despite the original no-token statement?",
+            "resolution_trigger": "A binding governance or operator policy, not speculation."
+          }
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "chain": "BSC",
+      "sources": [
+        {
+          "id": "bsc-llama",
+          "title": "BSC chain metrics",
+          "publisher": "DefiLlama",
+          "url": "https://defillama.com/chain/bsc?currency=USD",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "bsc-consensus",
+          "title": "BNB Smart Chain introduction",
+          "publisher": "BNB Chain",
+          "url": "https://docs.bnbchain.org/bnb-smart-chain/introduction/",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "bsc-roadmap",
+          "title": "BNB Chain H2 2026 technical roadmap",
+          "publisher": "BNB Chain",
+          "url": "https://www.bnbchain.org/en/blog/bnb-chain-h2-2026-tech-roadmap-doubling-down-on-speed",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "bsc-mev",
+          "title": "Malicious MEV reduction",
+          "publisher": "BNB Chain",
+          "url": "https://www.bnbchain.org/en/blog/malicious-mev-reduction",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "thriving",
+          "summary": "BSC is a thriving mass-market EVM trading and stablecoin chain with high observed activity. Its success is paired with a persistent concentration discount: the small elected validator set and Binance-adjacent distribution produce speed and liquidity, but weaken the credible-neutrality case compared with broader validator networks. Activity does not erase this governance trade-off.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "bsc-llama",
+            "bsc-consensus",
+            "bsc-roadmap"
+          ]
+        },
+        "why": {
+          "summary": "Observed: BSC combines large stablecoin liquidity and DEX volume with low fees, EVM compatibility and a limited proof-of-staked-authority validator set. Strategic inference: the chain won retail flow by minimizing migration cost for Ethereum applications, using BNB incentives and exchange-adjacent wallet/liquidity distribution, and repeatedly optimizing block time, clients and gas pricing for trading. That coordinated design can ship performance changes and incident responses quickly. It also concentrates validator selection, governance and brand risk, so the same coordination that creates speed can reduce neutrality and make external regulatory or operational shocks propagate. Low fees were necessary but not sufficient: pre-existing users, assets and applications supplied the distribution flywheel that technically similar chains lacked.",
+          "confidence": "medium",
+          "source_refs": [
+            "bsc-llama",
+            "bsc-consensus",
+            "bsc-roadmap",
+            "bsc-mev"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Use a limited, stake-ranked proof-of-staked-authority validator set.",
+            "consequence": "A small active set supports predictable sub-second execution and coordinated slashing, while concentrating consensus and governance power.",
+            "confidence": "high",
+            "source_refs": [
+              "bsc-consensus"
+            ]
+          },
+          {
+            "decision": "Preserve EVM compatibility while aggressively reducing gas costs and block times.",
+            "consequence": "Ethereum applications and users migrated cheaply and trading throughput grew, while state growth and validator economics became continuing engineering constraints.",
+            "confidence": "high",
+            "source_refs": [
+              "bsc-roadmap"
+            ]
+          },
+          {
+            "decision": "Treat malicious MEV as a coordinated builder, validator, governance and protected-RPC problem.",
+            "consequence": "The ecosystem can intervene quickly, but operator-reported reduction claims require independent reproducibility and may hide displacement.",
+            "confidence": "medium",
+            "source_refs": [
+              "bsc-mev",
+              "bsc-roadmap"
+            ]
+          },
+          {
+            "decision": "Leverage BNB and Binance-adjacent liquidity instead of building distribution from zero.",
+            "consequence": "The chain gained a powerful retail funnel and asset base, while inheriting brand, access and regulatory concentration risk.",
+            "confidence": "medium",
+            "source_refs": [
+              "bsc-llama",
+              "bsc-consensus"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "A much larger, permissionlessly rotating validator set could improve credible neutrality but might slow the exact coordinated execution profile that won retail trading flow. Without Binance-adjacent liquidity and wallet distribution, low fees and EVM compatibility alone would probably not have produced the same scale. The evidence does not isolate the independent causal contribution of brand, incentives and technology.",
+          "confidence": "medium",
+          "source_refs": [
+            "bsc-llama",
+            "bsc-consensus",
+            "bsc-roadmap"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "DEX volume, stablecoin supply, active addresses and application revenue per transaction.",
+            "implication": "Paid retained demand matters more than benchmark TPS or raw transactions.",
+            "source_refs": [
+              "bsc-llama"
+            ]
+          },
+          {
+            "signal": "Validator beneficial ownership, stake concentration, client mix and slash incidents.",
+            "implication": "Concentrated control or correlated clients widen the safety discount.",
+            "source_refs": [
+              "bsc-consensus"
+            ]
+          },
+          {
+            "signal": "Realized finality, fees, state growth and validator yield after roadmap changes.",
+            "implication": "Performance gains are durable only if independent validators can economically operate them.",
+            "source_refs": [
+              "bsc-roadmap"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "question": "Who beneficially controls the elected validators and their major delegations?",
+            "resolution_trigger": "Independent entity-resolution and infrastructure audit."
+          },
+          {
+            "question": "Can the claimed malicious-MEV reduction be reproduced independently?",
+            "resolution_trigger": "Published methodology and third-party block-level replication."
+          },
+          {
+            "question": "Is validator security budget sustainable after large gas-price cuts?",
+            "resolution_trigger": "Operator cost, reward and exit data by cohort."
+          },
+          {
+            "question": "What trust and migration assumptions accompany the proposed next-generation architecture?",
+            "resolution_trigger": "Production specifications, audits and transition plan."
+          }
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "chain": "Arbitrum",
+      "sources": [
+        {
+          "id": "arb-llama",
+          "title": "Arbitrum chain metrics",
+          "publisher": "DefiLlama",
+          "url": "https://defillama.com/chain/arbitrum",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "arb-docs",
+          "title": "Arbitrum documentation",
+          "publisher": "Arbitrum Foundation",
+          "url": "https://docs.arbitrum.io/",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "arb-timeboost",
+          "title": "Timeboost live on Arbitrum",
+          "publisher": "Arbitrum Foundation",
+          "url": "https://blog.arbitrum.io/gattaca-titan-timeboost-live-on-arbitrum/",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "arb-stylus",
+          "title": "Arbitrum Stylus mainnet",
+          "publisher": "Arbitrum Foundation",
+          "url": "https://blog.arbitrum.io/arbitrum-stylus-mainnet/",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "arb-l2beat",
+          "title": "Arbitrum One risk analysis",
+          "publisher": "L2BEAT",
+          "url": "https://l2beat.com/scaling/projects/arbitrum?selectedChart=detailedTvl",
+          "source_role": "independent-research",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "successful",
+          "summary": "Arbitrum is a successful but share-challenged Ethereum L2: it retains material secured value, stablecoins and derivatives activity, while Base has taken broader activity leadership. The network and its finance applications are evaluated separately from ARB, which is a governance token while ETH pays gas. Chain use therefore does not automatically imply token value capture.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "arb-llama",
+            "arb-docs",
+            "arb-l2beat"
+          ]
+        },
+        "why": {
+          "summary": "Observed: Arbitrum built durable DeFi and perpetuals liquidity, introduced permissionless BoLD validation, and expanded from one rollup into configurable Orbit chains, Stylus execution and Timeboost ordering. Strategic inference: early rollup liquidity, close EVM compatibility and finance specialization created a defensible application base, while the Orbit stack diversified distribution beyond one chain. The consequence is strong infrastructure and substantial value secured, but also fragmentation and a weaker mass-market funnel than Base. Centralized sequencing, emergency upgrades and uncertain ARB value capture remain explicit risks. Arbitrum succeeded technically and economically in finance; it lost general-purpose share because security and developer tooling alone did not match a competitor’s integrated consumer distribution.",
+          "confidence": "medium",
+          "source_refs": [
+            "arb-llama",
+            "arb-docs",
+            "arb-timeboost",
+            "arb-stylus",
+            "arb-l2beat"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Use Nitro compression and Ethereum data availability with permissionless BoLD challenges.",
+            "consequence": "The rollup gained credible validation and exits, while interactive proofs, bonding and emergency controls remain operational trust considerations.",
+            "confidence": "high",
+            "source_refs": [
+              "arb-docs",
+              "arb-l2beat"
+            ]
+          },
+          {
+            "decision": "Offer Orbit and AnyTrust as configurable application-chain products.",
+            "consequence": "The stack reaches dedicated deployments and new fee domains, but differing data-availability assumptions and separate chains fragment liquidity.",
+            "confidence": "high",
+            "source_refs": [
+              "arb-docs"
+            ]
+          },
+          {
+            "decision": "Add Stylus support for Rust, C and C++ alongside the EVM.",
+            "consequence": "The addressable developer base expands, though production adoption and incremental demand remain unproven.",
+            "confidence": "high",
+            "source_refs": [
+              "arb-stylus"
+            ]
+          },
+          {
+            "decision": "Auction express transaction ordering through Timeboost.",
+            "consequence": "Ordering rights create explicit, treasury-capturable economics instead of eliminating MEV, while sequencer concentration persists.",
+            "confidence": "high",
+            "source_refs": [
+              "arb-timeboost",
+              "arb-l2beat"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "Without Orbit and Stylus, Arbitrum would be more dependent on one EVM rollup’s declining relative share. With a Coinbase-scale consumer funnel it might have retained category leadership, but that comparison cannot isolate product, incentives and distribution. Faster sequencer decentralization could reduce control risk, while potentially slowing the coordinated ordering and upgrade model used today.",
+          "confidence": "medium",
+          "source_refs": [
+            "arb-llama",
+            "arb-docs",
+            "arb-l2beat"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "TVL, stablecoins, spot and perpetuals volume, and net flows relative to Base and Ethereum.",
+            "implication": "Finance specialization can remain successful even if broad activity share falls, but sustained outflows challenge the moat.",
+            "source_refs": [
+              "arb-llama"
+            ]
+          },
+          {
+            "signal": "Orbit production chains, retained users and fees attributable to the Arbitrum ecosystem.",
+            "implication": "Real stack adoption validates diversification only when it creates durable use and measurable ecosystem value.",
+            "source_refs": [
+              "arb-docs"
+            ]
+          },
+          {
+            "signal": "Sequencer and upgrade decentralization, BoLD challenges and security incidents.",
+            "implication": "Reduced unilateral control strengthens the trust model; emergency dependence preserves a discount.",
+            "source_refs": [
+              "arb-l2beat"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "question": "What caused the relative TVL and activity share loss?",
+            "resolution_trigger": "Cohort analysis separating incentives, UX, app migration and competitor distribution."
+          },
+          {
+            "question": "How much Orbit economic value accrues to ARB holders or the DAO?",
+            "resolution_trigger": "Audited fee and revenue attribution across production chains."
+          },
+          {
+            "question": "When will sequencing and emergency-upgrade powers decentralize?",
+            "resolution_trigger": "Dated production milestones verified in contracts and risk frameworks."
+          },
+          {
+            "question": "How much retained usage is specifically attributable to Stylus?",
+            "resolution_trigger": "Language-level application cohorts after grants and launch effects."
+          }
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "chain": "Polygon",
+      "sources": [
+        {
+          "id": "pol-llama",
+          "title": "Polygon chain metrics",
+          "publisher": "DefiLlama",
+          "url": "https://defillama.com/chain/polygon",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "pol-zkevm",
+          "title": "Polygon zkEVM closure and recovery",
+          "publisher": "Polygon Labs",
+          "url": "https://polygon.technology/polygon-zkevm",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "pol-sunset",
+          "title": "Sunsetting Polygon zkEVM Mainnet Beta",
+          "publisher": "Polygon Forum",
+          "url": "https://forum.polygon.technology/t/sunsetting-polygon-zkevm-mainnet-beta-in-2026/21020",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "pol-payments",
+          "title": "2025 in review: payments usage on Polygon",
+          "publisher": "Polygon Labs",
+          "url": "https://polygon.technology/blog/2025-in-review-a-year-of-real-payments-usage-on-polygon",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "pol-agglayer",
+          "title": "Pessimistic proofs live on Agglayer mainnet",
+          "publisher": "Polygon Labs",
+          "url": "https://polygon.technology/blog/major-development-upgrade-for-a-multistack-future-pessimistic-proofs-live-on-agglayer-mainnet",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "middling",
+          "summary": "Polygon is a middling ecosystem with a materially used PoS chain and a failed zkEVM product. Polygon PoS retains stablecoins, transactions and DEX activity; the separate zkEVM sequencer stopped in July 2026 and recovery constraints remain. Treating the living PoS chain as dead, or the zkEVM sunset as irrelevant, would both erase the actual mixed lifecycle.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "pol-llama",
+            "pol-zkevm",
+            "pol-sunset",
+            "pol-payments"
+          ]
+        },
+        "why": {
+          "summary": "Observed: cheap EVM PoS execution continues to process meaningful payments and application activity, while Polygon’s technically ambitious zkEVM was sunset after delayed upgrades, operational constraints and weak differentiation. Strategic inference: the early PoS product won distribution by being inexpensive, familiar and enterprise-friendly, but the organization then spread attention across PoS, zkEVM and a broad multi-product scaling narrative. Custom-client complexity, ZK counters and lagging EIP-4844 support made the zkEVM experience less competitive, stranding some smart-contract-held assets during closure. The current Agglayer and payments reset is an attempt to turn research and multiple stacks into unified distribution. Polygon’s problem was not absence of engineering; it was insufficient product differentiation and focus relative to the cost of maintaining simultaneous bets.",
+          "confidence": "medium",
+          "source_refs": [
+            "pol-zkevm",
+            "pol-sunset",
+            "pol-payments",
+            "pol-agglayer",
+            "pol-llama"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Launch an EVM-equivalent zkEVM alongside the established PoS chain.",
+            "consequence": "Polygon demonstrated ZK capability, but duplicate products and custom-client constraints diluted differentiation and operating focus.",
+            "confidence": "high",
+            "source_refs": [
+              "pol-sunset",
+              "pol-zkevm"
+            ]
+          },
+          {
+            "decision": "Retain and upgrade PoS around cheap, fast payment execution.",
+            "consequence": "The surviving product preserves high-volume use and stablecoin distribution, while carrying a different security model from a full Ethereum rollup.",
+            "confidence": "high",
+            "source_refs": [
+              "pol-payments",
+              "pol-llama"
+            ]
+          },
+          {
+            "decision": "Sunset zkEVM with a user-recovery process rather than indefinitely subsidizing it.",
+            "consequence": "Resources can move to PoS and Agglayer, but contracts unable to use the recovery interface may remain stranded and trust is damaged.",
+            "confidence": "high",
+            "source_refs": [
+              "pol-zkevm",
+              "pol-sunset"
+            ]
+          },
+          {
+            "decision": "Pivot from many Polygon-branded execution products toward chain-agnostic Agglayer coordination.",
+            "consequence": "A multistack network may aggregate liquidity and create new POL roles, but adoption and value accrual are not established by launch announcements.",
+            "confidence": "medium",
+            "source_refs": [
+              "pol-agglayer"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "Concentrating earlier on PoS reliability, payments and one differentiated ZK product might have reduced ecosystem confusion and user stranding. Abandoning ZK research altogether would have forfeited Agglayer and prover optionality. The evidence supports the zkEVM failure mechanisms, but cannot prove that product focus alone would have overcome Base and Arbitrum distribution advantages.",
+          "confidence": "medium",
+          "source_refs": [
+            "pol-sunset",
+            "pol-payments",
+            "pol-agglayer"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "PoS stablecoin/payment volume, active users, fees and durable applications after zkEVM closure.",
+            "implication": "Retained paid use validates the living-chain thesis; activity collapse would move the ecosystem toward decline.",
+            "source_refs": [
+              "pol-llama",
+              "pol-payments"
+            ]
+          },
+          {
+            "signal": "Amounts recovered and stranded from zkEVM, plus claim completion.",
+            "implication": "A transparent resolution narrows user-loss uncertainty; unresolved contracts remain a continuing lifecycle liability.",
+            "source_refs": [
+              "pol-zkevm"
+            ]
+          },
+          {
+            "signal": "Agglayer connected chains, cross-chain volume, proof incidents and attributable POL economics.",
+            "implication": "Measured production use is required before the strategic pivot can be called successful.",
+            "source_refs": [
+              "pol-agglayer"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "question": "How much zkEVM value remains stranded in smart contracts?",
+            "resolution_trigger": "Final recovery accounting by asset and contract type."
+          },
+          {
+            "question": "How much PoS activity is real external payment demand rather than automation or incentives?",
+            "resolution_trigger": "Entity-adjusted application cohorts and paid fee retention."
+          },
+          {
+            "question": "Does Agglayer produce durable cross-chain activity and POL value capture?",
+            "resolution_trigger": "Audited production volumes, fees and staking flows."
+          },
+          {
+            "question": "What is current validator and infrastructure concentration after PoS upgrades?",
+            "resolution_trigger": "Independent stake, client and operator mapping."
+          }
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "chain": "Tron",
+      "sources": [
+        {
+          "id": "tron-llama",
+          "title": "Tron chain metrics",
+          "publisher": "DefiLlama",
+          "url": "https://defillama.com/chain/tron",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "tron-resource",
+          "title": "TRON resource model",
+          "publisher": "TRON DAO",
+          "url": "https://developers.tron.network/docs/resource-model",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "tron-sr",
+          "title": "TRON super representatives",
+          "publisher": "TRON DAO",
+          "url": "https://developers.tron.network/docs/super-representatives",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "tron-economics",
+          "title": "TRON economic model",
+          "publisher": "TRON DAO",
+          "url": "https://developers.tron.network/docs/tron-economic-model",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "thriving",
+          "summary": "Tron is a thriving but narrow and concentrated stablecoin-transfer rail. The reviewed snapshot shows very large stablecoin balances and active addresses relative to a much smaller DEX economy, with USDT dominating the stablecoin mix. Success in low-cost transfers should not be generalized into broad application diversity or decentralized governance.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "tron-llama",
+            "tron-resource",
+            "tron-sr"
+          ]
+        },
+        "why": {
+          "summary": "Observed: Tron supports a very large stablecoin base and frequent transfers through a bandwidth-and-energy resource model, TRC-20 compatibility and 27 elected block-producing super representatives. Strategic inference: the network optimized for cheap, predictable token movement and exchange settlement rather than a maximally broad validator set or differentiated application stack. That fit USDT distribution exceptionally well, and issuer, exchange and user liquidity reinforced one another until the payment rail became difficult to displace. The cost is concentration: one stablecoin issuer dominates balances, 27 producers coordinate consensus, and a narrow use case can mask shallow application diversity. Tron succeeded because it found a repeat transactional killer app; that success remains exposed to issuer policy, beneficial validator control and competing payment rails.",
+          "confidence": "medium",
+          "source_refs": [
+            "tron-llama",
+            "tron-resource",
+            "tron-sr",
+            "tron-economics"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Use bandwidth and energy resources obtained through staking or delegation, with TRX burn as fallback.",
+            "consequence": "Frequent transfers receive predictable economics and a resource-rental market, while users inherit complexity and intermediated resource pricing.",
+            "confidence": "high",
+            "source_refs": [
+              "tron-resource",
+              "tron-economics"
+            ]
+          },
+          {
+            "decision": "Limit block production to 27 elected super representatives.",
+            "consequence": "Three-second production and fast parameter coordination become practical, while consensus and governance power remain concentrated.",
+            "confidence": "high",
+            "source_refs": [
+              "tron-sr"
+            ]
+          },
+          {
+            "decision": "Prioritize EVM-compatible TRC-20 token and stablecoin rails.",
+            "consequence": "Existing wallets and exchanges could support USDT transfers at scale, but one issuer and use case dominate the economic profile.",
+            "confidence": "high",
+            "source_refs": [
+              "tron-llama",
+              "tron-economics"
+            ]
+          },
+          {
+            "decision": "Make transaction resources and fees adjustable through representative governance.",
+            "consequence": "The chain can respond to congestion and economics quickly, while large voters and producers gain material policy influence.",
+            "confidence": "medium",
+            "source_refs": [
+              "tron-sr",
+              "tron-resource"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "A broader validator set could improve neutrality but raise coordination and latency costs. Without early USDT and exchange distribution, the resource model alone likely would not have produced the same transfer network effect. A more diversified application strategy might reduce issuer dependence, but could also dilute the cheap-transfer specialization that made the chain successful.",
+          "confidence": "medium",
+          "source_refs": [
+            "tron-llama",
+            "tron-resource",
+            "tron-sr"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Stablecoin supply by issuer, transfer growth, active addresses, fees and diversified application volume.",
+            "implication": "Transfer growth with broader paid applications strengthens durability; greater issuer concentration increases fragility.",
+            "source_refs": [
+              "tron-llama"
+            ]
+          },
+          {
+            "signal": "Super-representative vote concentration, turnover and shared infrastructure.",
+            "implication": "Independent and rotating producers narrow the governance discount; coordinated control widens it.",
+            "source_refs": [
+              "tron-sr"
+            ]
+          },
+          {
+            "signal": "Energy pricing, rental demand, TRX burn and transfer cost versus competing rails.",
+            "implication": "The killer app persists only while users retain a cost and distribution advantage.",
+            "source_refs": [
+              "tron-resource",
+              "tron-economics"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "question": "Who beneficially controls the 27 super representatives and largest voters?",
+            "resolution_trigger": "Independent entity and infrastructure-resolution audit."
+          },
+          {
+            "question": "What share of transfers represents external commerce rather than exchange movement or automation?",
+            "resolution_trigger": "Entity-adjusted flow classification and sampled user cohorts."
+          },
+          {
+            "question": "How sensitive is activity to Tether issuance, redemption and compliance policy?",
+            "resolution_trigger": "Issuer scenario analysis and observed policy-event responses."
+          },
+          {
+            "question": "Who captures margins in the energy-rental market and how concentrated is supply?",
+            "resolution_trigger": "Address-level market-share and profitability analysis."
+          }
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "chain": "Avalanche",
+      "sources": [
+        {
+          "id": "avax-docs",
+          "title": "Avalanche documentation",
+          "publisher": "Avalanche",
+          "url": "https://build.avax.network/docs",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "avax-l1",
+          "title": "Avalanche L1 overview",
+          "publisher": "Avalanche",
+          "url": "https://build.avax.network/docs/avalanche-l1s",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "avax-llama-tvl",
+          "title": "Avalanche historical TVL",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/v2/historicalChainTvl/Avalanche",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "avax-llama-fees",
+          "title": "Avalanche fee metrics",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/overview/fees/Avalanche?dataType=dailyFees",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "avax-cg",
+          "title": "AVAX market data",
+          "publisher": "CoinGecko",
+          "url": "https://api.coingecko.com/api/v3/coins/avalanche-2",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "middling",
+          "summary": "Avalanche is an established but middling L1: its current chain still has observable fees, liquidity and application activity, while both TVL and AVAX remain roughly 96% below their reviewed cycle peaks. The current strategy centers on customizable Avalanche L1 networks, so C-Chain TVL alone is incomplete; equally, deployment announcements do not prove recurring economic demand or AVAX value capture.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "avax-llama-tvl",
+            "avax-llama-fees",
+            "avax-cg",
+            "avax-l1"
+          ]
+        },
+        "why": {
+          "summary": "Observed: Avalanche’s 2021 liquidity expansion did not persist, leaving a severe capital and token drawdown, while the platform continues to offer an EVM C-Chain and customizable sovereign-style Avalanche L1s. Strategic inference: the original combination of EVM familiarity, fast finality and liquidity incentives attracted portable DeFi capital, but did not create a sufficiently durable application or distribution moat after incentives and the market cycle faded. The later custom-chain strategy gives institutions and applications control over execution and validator requirements, yet it can fragment users, liquidity and fees away from the primary network. Avalanche is not dead because the architecture and economic activity remain; it is middling because its strategic breadth has not yet demonstrated recurring demand that reconnects custom-network adoption to shared liquidity and AVAX economics.",
+          "confidence": "medium",
+          "source_refs": [
+            "avax-docs",
+            "avax-l1",
+            "avax-llama-tvl",
+            "avax-llama-fees",
+            "avax-cg"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Provide an EVM-compatible C-Chain for general-purpose applications.",
+            "consequence": "Ethereum tooling lowered adoption friction and helped the liquidity boom, but made applications and capital highly portable to competing EVM chains.",
+            "confidence": "high",
+            "source_refs": [
+              "avax-docs"
+            ]
+          },
+          {
+            "decision": "Use incentives and ecosystem programs to accelerate early DeFi liquidity.",
+            "consequence": "TVL scaled rapidly during the cycle, while the later 96% drawdown indicates that peak capital was not a durable moat.",
+            "confidence": "medium",
+            "source_refs": [
+              "avax-llama-tvl"
+            ]
+          },
+          {
+            "decision": "Expand from subnets into customizable Avalanche L1 networks.",
+            "consequence": "Applications and institutions gain dedicated execution and policy control, while the ecosystem risks fragmenting liquidity, validator economics and user attention.",
+            "confidence": "high",
+            "source_refs": [
+              "avax-l1"
+            ]
+          },
+          {
+            "decision": "Keep AVAX as the primary network staking and fee asset while allowing custom network configurations.",
+            "consequence": "Shared security and asset demand can accrue to AVAX, but the strength of that linkage varies with each L1’s validator and fee choices.",
+            "confidence": "medium",
+            "source_refs": [
+              "avax-docs",
+              "avax-l1"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "A narrower focus on one or two high-retention applications and shared C-Chain liquidity might have produced a clearer moat, but would have sacrificed institutional and application-chain optionality. Stronger mandatory AVAX economics across custom L1s could improve value capture while raising adoption friction. The evidence cannot prove that either alternative would have retained 2021 incentive-driven capital.",
+          "confidence": "medium",
+          "source_refs": [
+            "avax-l1",
+            "avax-llama-tvl",
+            "avax-docs"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "C-Chain TVL, fees and retained users alongside each production Avalanche L1’s transactions and fees.",
+            "implication": "Broad deployment only strengthens the thesis when it produces recurring paid demand.",
+            "source_refs": [
+              "avax-llama-tvl",
+              "avax-llama-fees",
+              "avax-l1"
+            ]
+          },
+          {
+            "signal": "Liquidity and asset movement among C-Chain and custom L1s.",
+            "implication": "Rising fragmentation without usable interoperability weakens ecosystem network effects.",
+            "source_refs": [
+              "avax-l1"
+            ]
+          },
+          {
+            "signal": "AVAX staking, burn and fee demand attributable to custom L1 operation.",
+            "implication": "Measured linkage would resolve the value-capture question; weak linkage leaves used infrastructure with weak asset economics.",
+            "source_refs": [
+              "avax-docs",
+              "avax-l1"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "question": "How many announced Avalanche L1s have retained production users and fees?",
+            "resolution_trigger": "Contract- and chain-level cohorts after launch incentives."
+          },
+          {
+            "question": "What proportion of custom-L1 activity creates AVAX demand?",
+            "resolution_trigger": "Audited fee, staking and validator-payment attribution."
+          },
+          {
+            "question": "How concentrated are validators and infrastructure across primary and custom networks?",
+            "resolution_trigger": "Independent operator and hosting map."
+          },
+          {
+            "question": "How much current liquidity is incentive-sensitive?",
+            "resolution_trigger": "Protocol cohorts before, during and after reward changes."
+          }
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "chain": "Bitcoin",
+      "sources": [
+        {
+          "id": "btc-paper",
+          "title": "Bitcoin: A Peer-to-Peer Electronic Cash System",
+          "publisher": "Satoshi Nakamoto",
+          "url": "https://bitcoin.org/bitcoin.pdf",
+          "source_role": "primary-historical",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "btc-core",
+          "title": "About Bitcoin Core",
+          "publisher": "Bitcoin Core",
+          "url": "https://bitcoincore.org/en/about/",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "btc-consensus",
+          "title": "Bitcoin consensus amount constants",
+          "publisher": "Bitcoin Core",
+          "url": "https://github.com/bitcoin/bitcoin/blob/master/src/consensus/amount.h",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "btc-dev",
+          "title": "Bitcoin transaction developer guide",
+          "publisher": "Bitcoin.org",
+          "url": "https://developer.bitcoin.org/devguide/transactions.html",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "btc-cve",
+          "title": "CVE-2018-17144 disclosure",
+          "publisher": "Bitcoin Core",
+          "url": "https://bitcoincore.org/en/2018/09/20/notice/",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "successful",
+          "summary": "Bitcoin is a successful monetary-settlement L1 and the control case for a chain without a company treasury, token sale or native DeFi-TVL metric. The outcome rests on continued protocol operation and the durability of proof-of-work settlement, not on wrapped-BTC application TVL. This dossier deliberately withholds current market, hash-rate and fee conclusions not covered by its dated source set.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "btc-paper",
+            "btc-core",
+            "btc-consensus",
+            "btc-dev"
+          ]
+        },
+        "why": {
+          "summary": "Observed: Bitcoin has operated since 2009 under a proof-of-work consensus model, uses a native scarce fee asset, and is maintained through open-source client development rather than a protocol company. Strategic inference: its durability comes from choosing a deliberately narrow monetary function, simple validation rules, costly proof-of-work history and the ability for users to verify with their own software. Avoiding a foundation-led roadmap and rich base-layer application environment reduced governance and execution complexity, while limiting throughput and pushing custody, payments and applications into external layers. The success is not “oldest therefore best”: the design created a credible, hard-to-change settlement asset and social coordination norm. Its long-run weakness is the same narrowness—security must increasingly rely on fee demand, and many users depend on concentrated miners, pools and custodians outside consensus.",
+          "confidence": "medium",
+          "source_refs": [
+            "btc-paper",
+            "btc-core",
+            "btc-consensus",
+            "btc-dev",
+            "btc-cve"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Use proof of work and accumulated chain work to order transactions.",
+            "consequence": "Open participation and costly history support censorship resistance, while security consumes resources and depends on economically independent hash power.",
+            "confidence": "high",
+            "source_refs": [
+              "btc-paper"
+            ]
+          },
+          {
+            "decision": "Embed rule-based issuance and transition miner incentives toward transaction fees.",
+            "consequence": "Predictable monetary rules strengthen scarcity, while declining subsidy makes future fee demand a material security-budget question.",
+            "confidence": "high",
+            "source_refs": [
+              "btc-paper",
+              "btc-consensus"
+            ]
+          },
+          {
+            "decision": "Keep the base protocol narrow instead of adding a general smart-contract VM.",
+            "consequence": "Validation remains comparatively auditable and stable, while applications and higher-throughput payments move to layers with separate trust assumptions.",
+            "confidence": "medium",
+            "source_refs": [
+              "btc-dev",
+              "btc-core"
+            ]
+          },
+          {
+            "decision": "Rely on open-source maintainers and voluntary node adoption rather than an owner-controlled upgrade process.",
+            "consequence": "No entity can unilaterally rewrite consensus, but upgrades and emergencies require slow social coordination and concentrated maintainer review.",
+            "confidence": "high",
+            "source_refs": [
+              "btc-core",
+              "btc-cve"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "A richer VM and faster base-layer blocks could have attracted more application fees and native activity, but likely increased node resource demands, attack surface and contentious governance. A foundation treasury could coordinate development faster while creating an identifiable control point. The sources do not establish whether those alternatives would improve the current security budget or weaken the trust-minimized settlement property.",
+          "confidence": "medium",
+          "source_refs": [
+            "btc-paper",
+            "btc-core",
+            "btc-dev",
+            "btc-cve"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Fee revenue relative to block subsidy across full market cycles.",
+            "implication": "A durable fee market supports the post-subsidy security thesis; weak fees increase dependence on issuance and miner economics.",
+            "source_refs": [
+              "btc-paper",
+              "btc-consensus"
+            ]
+          },
+          {
+            "signal": "Hash-rate, mining-pool and infrastructure concentration from dated independent data.",
+            "implication": "Concentration can undermine the assumption that honest control is broadly distributed.",
+            "source_refs": [
+              "btc-paper"
+            ]
+          },
+          {
+            "signal": "Critical client vulnerabilities, adoption of fixes and implementation diversity.",
+            "implication": "Rapid remediation limits consensus risk; unpatched correlated clients widen it.",
+            "source_refs": [
+              "btc-cve",
+              "btc-core"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "question": "What is the current beneficial concentration of hash power?",
+            "resolution_trigger": "Entity-resolved pool, facility and financing data."
+          },
+          {
+            "question": "Will transaction fees support an adequate security budget as subsidy declines?",
+            "resolution_trigger": "Multi-cycle fee, hash-price and attack-cost modeling."
+          },
+          {
+            "question": "How concentrated is practical user custody and transaction access?",
+            "resolution_trigger": "Audited custodian and wallet market shares across jurisdictions."
+          },
+          {
+            "question": "How distributed is effective influence over Bitcoin Core changes?",
+            "resolution_trigger": "Maintainer, reviewer, funding and node-adoption analysis."
+          }
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-29",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "chain": "Cardano",
+      "sources": [
+        {
+          "id": "ada-eras",
+          "title": "Cardano development phases and eras",
+          "publisher": "Cardano Foundation",
+          "url": "https://docs.cardano.org/about-cardano/evolution/eras-and-phases",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "ada-shelley",
+          "title": "Byron to Shelley transition",
+          "publisher": "Cardano Foundation",
+          "url": "https://docs.cardano.org/about-cardano/evolution/upgrades/byron-to-shelley",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "ada-supply",
+          "title": "ADA supply distribution — epoch 637",
+          "publisher": "Cardano Foundation",
+          "url": "https://cardano.org/insights/supply/?epoch=637",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "ada-constitution",
+          "title": "Cardano Constitution",
+          "publisher": "Cardano Foundation",
+          "url": "https://cardano.org/constitution/",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "ada-rewards",
+          "title": "Pledging and rewards",
+          "publisher": "Cardano Foundation",
+          "url": "https://docs.cardano.org/about-cardano/learn/pledging-rewards",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "ada-llama",
+          "title": "Cardano chain metrics",
+          "publisher": "DefiLlama",
+          "url": "https://defillama.com/chain/cardano",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "middling",
+          "summary": "Cardano is an established but middling L1: it completed a documented transition from federated operation toward stake-pool consensus and constitutional governance, while the July 29 DefiLlama snapshot showed about $62 million of DeFi TVL, $63.5 million of stablecoins, $1.64 million of 24-hour DEX volume and $883 of 24-hour chain fees. Protocol longevity and governance machinery are real outcomes, but the independently observed application economy remains modest relative to ADA’s roughly $6 billion market capitalization.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "ada-eras",
+            "ada-shelley",
+            "ada-constitution",
+            "ada-supply",
+            "ada-llama"
+          ]
+        },
+        "why": {
+          "summary": "Observed: Cardano pursued staged protocol eras, formal research, a Byron-to-Shelley stake-pool transition, native staking incentives and constitutional treasury governance. The July 29 independent-data snapshot showed a functioning application layer, including DeFi liquidity, stablecoins, DEX trading, active addresses and transaction activity, but only $883 in daily chain fees against an ADA market capitalization near $6 billion. Strategic inference: this methodical approach prioritized protocol correctness, predictable evolution and formal governance over rapid application shipping and ecosystem improvisation. It produced a durable chain, a large native asset base and a clear decentralization narrative, but increased time-to-market while faster EVM and high-throughput competitors accumulated liquidity, developers and consumer distribution. Cardano is not a failed chain: consensus, staking, governance and applications continue. It is middling because the strategic investment in research and process has not yet produced application demand and fee generation commensurate with its capitalization and longevity. The causal question is execution of treasury and roadmap into retained paid use, not the existence of those mechanisms.",
+          "confidence": "medium",
+          "source_refs": [
+            "ada-eras",
+            "ada-shelley",
+            "ada-constitution",
+            "ada-rewards",
+            "ada-supply",
+            "ada-llama"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Deliver the protocol through named eras and staged hard-fork transitions.",
+            "consequence": "Changes can be researched and coordinated deliberately, while application capabilities arrive more slowly than in ecosystems that ship iteratively.",
+            "confidence": "high",
+            "source_refs": [
+              "ada-eras"
+            ]
+          },
+          {
+            "decision": "Move from federated Byron operation to delegated stake pools in Shelley.",
+            "consequence": "Consensus participation broadened beyond the launch federation, while current pool ownership and effective delegation concentration still require measurement.",
+            "confidence": "high",
+            "source_refs": [
+              "ada-shelley",
+              "ada-rewards"
+            ]
+          },
+          {
+            "decision": "Use ADA for fees, staking rewards, governance and treasury funding.",
+            "consequence": "One asset coordinates network security and policy, while price, delegation and treasury-allocation incentives become coupled.",
+            "confidence": "high",
+            "source_refs": [
+              "ada-supply",
+              "ada-rewards",
+              "ada-constitution"
+            ]
+          },
+          {
+            "decision": "Constitutionalize governance and treasury decision-making.",
+            "consequence": "The community gains formal proposal and budget mechanisms, but procedural legitimacy does not guarantee fast or economically productive allocation.",
+            "confidence": "high",
+            "source_refs": [
+              "ada-constitution"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "Shipping smart-contract and application tooling earlier could have captured more of the 2020–2021 developer and liquidity cycle, but might have weakened the research-first quality and governance transition. More centralized roadmap execution could move faster while contradicting the decentralization thesis. The evidence cannot determine whether faster delivery would have produced retained users rather than short-lived incentives.",
+          "confidence": "medium",
+          "source_refs": [
+            "ada-eras",
+            "ada-shelley",
+            "ada-constitution"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Application TVL, stablecoins, DEX volume, active users, fees and developer retention from dated sources.",
+            "implication": "Sustained paid application demand would move Cardano from institutional durability to economic success.",
+            "source_refs": [
+              "ada-llama"
+            ]
+          },
+          {
+            "signal": "Stake-pool beneficial ownership, delegation concentration and operator profitability.",
+            "implication": "Nominal pool counts are insufficient if control or infrastructure is concentrated.",
+            "source_refs": [
+              "ada-rewards",
+              "ada-shelley"
+            ]
+          },
+          {
+            "signal": "Treasury proposal throughput, completion, audited outcomes and repeat user impact.",
+            "implication": "Effective allocation validates constitutional governance; unspent or low-impact capital weakens it.",
+            "source_refs": [
+              "ada-constitution"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "question": "How much of the observed application demand represents retained users rather than short-lived activity?",
+            "resolution_trigger": "Thirty-, ninety- and 180-day user, fee and liquidity cohorts with protocol attribution."
+          },
+          {
+            "question": "Who beneficially controls stake pools and delegation?",
+            "resolution_trigger": "Independent entity and infrastructure mapping."
+          },
+          {
+            "question": "What economic outcomes has treasury spending produced?",
+            "resolution_trigger": "Proposal-level completion, spend and retained-usage audits."
+          },
+          {
+            "question": "What is current client and infrastructure diversity?",
+            "resolution_trigger": "Stake-weighted production telemetry."
+          }
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "chain": "Hyperliquid L1",
+      "sources": [
+        {
+          "id": "hl-docs",
+          "title": "Hyperliquid technical overview",
+          "publisher": "Hyperliquid",
+          "url": "https://hyperliquid.gitbook.io/hyperliquid-docs",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "hl-team",
+          "title": "Hyperliquid core contributors",
+          "publisher": "Hyperliquid",
+          "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/about-hyperliquid/core-contributors",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "hl-genesis",
+          "title": "HYPE genesis",
+          "publisher": "Hyper Foundation",
+          "url": "https://hyperfnd.medium.com/hype-genesis-1830a4dc2e3f",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "hl-risks",
+          "title": "Hyperliquid risk disclosures",
+          "publisher": "Hyperliquid",
+          "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/risks",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "hl-fees",
+          "title": "Hyperliquid L1 fee metrics",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/overview/fees/Hyperliquid%20L1?dataType=dailyFees",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "hl-stables",
+          "title": "Stablecoin supply by chain",
+          "publisher": "DefiLlama",
+          "url": "https://stablecoins.llama.fi/stablecoinchains",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "thriving",
+          "summary": "Hyperliquid L1 is thriving as a vertically integrated trading chain, with high observed fees and stablecoin balances centered on one exchange stack. This is a strong product outcome but not proof of a diversified neutral L1. Chain and application activity are causally coupled, so adding their metrics would double-count the same economic engine.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "hl-docs",
+            "hl-fees",
+            "hl-stables",
+            "hl-risks"
+          ]
+        },
+        "why": {
+          "summary": "Observed: Hyperliquid built a purpose-specific onchain order book and perpetuals venue before generalizing the L1 through staking, spot assets and HyperEVM. It reports no venture financing, distributed HYPE heavily to users, and discloses consensus, oracle, bridge and liquidation risks. Strategic inference: vertical integration let one team optimize execution, liquidity, custody, liquidation and validator economics as a single product, creating a trader flywheel that neutral general-purpose chains struggled to match. Community distribution strengthened user alignment and reduced the usual investor-unlock narrative. The same concentration creates correlated failure: exchange liquidity, validator/oracle behavior, bridge custody, token confidence and chain reputation can all break together. Hyperliquid succeeded because it solved a demanding application first; diversification beyond that application is promising but not yet proven.",
+          "confidence": "medium",
+          "source_refs": [
+            "hl-docs",
+            "hl-team",
+            "hl-genesis",
+            "hl-risks",
+            "hl-fees",
+            "hl-stables"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Build a sovereign high-performance L1 around the exchange rather than deploy on a general chain.",
+            "consequence": "Execution and liquidity could be optimized end to end, while the protocol assumed consensus, bridge and validator responsibilities.",
+            "confidence": "high",
+            "source_refs": [
+              "hl-docs",
+              "hl-risks"
+            ]
+          },
+          {
+            "decision": "Use an onchain central-limit-order-book and validator-maintained oracle inputs.",
+            "consequence": "Traders receive familiar execution and transparent settlement, while oracle manipulation and liquidation coupling become protocol-critical.",
+            "confidence": "high",
+            "source_refs": [
+              "hl-docs",
+              "hl-risks"
+            ]
+          },
+          {
+            "decision": "Distribute HYPE primarily to users and avoid a reported venture allocation.",
+            "consequence": "Community ownership and token loyalty became a distribution advantage, though beneficial concentration and future governance still require measurement.",
+            "confidence": "high",
+            "source_refs": [
+              "hl-genesis",
+              "hl-team"
+            ]
+          },
+          {
+            "decision": "Add HyperEVM after proving the core trading product.",
+            "consequence": "External applications gain access to the chain’s users and liquidity, while the ecosystem can diversify only if those apps develop independent demand.",
+            "confidence": "high",
+            "source_refs": [
+              "hl-docs"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "Deploying on an established L1 or L2 would have reduced consensus and bridge responsibilities, but likely sacrificed the execution control and latency central to the product. Launching a general-purpose chain before the exchange could have created an undifferentiated cold start. A more independent validator and oracle structure would reduce correlated risk while potentially slowing coordinated product changes.",
+          "confidence": "medium",
+          "source_refs": [
+            "hl-docs",
+            "hl-risks",
+            "hl-genesis"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Fees, stablecoins, retained traders and liquidity through volatile and quiet market regimes.",
+            "implication": "Durability requires activity beyond one favorable trading cycle.",
+            "source_refs": [
+              "hl-fees",
+              "hl-stables"
+            ]
+          },
+          {
+            "signal": "HyperEVM applications, fees and users not attributable to HyperCore trading.",
+            "implication": "Independent demand would turn a successful appchain into a more diversified L1.",
+            "source_refs": [
+              "hl-docs"
+            ]
+          },
+          {
+            "signal": "Validator, oracle and bridge concentration plus downtime or manipulation incidents.",
+            "implication": "A correlated failure would directly challenge the vertically integrated trust premium.",
+            "source_refs": [
+              "hl-risks"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "question": "Who beneficially controls validators, delegations and oracle influence?",
+            "resolution_trigger": "Independent operator and infrastructure mapping."
+          },
+          {
+            "question": "How much revenue and user activity exists outside the core exchange?",
+            "resolution_trigger": "Application-level attribution excluding HyperCore flows."
+          },
+          {
+            "question": "What loss-absorption and governance process applies after a major oracle or bridge incident?",
+            "resolution_trigger": "Published incident procedures and funded backstop terms."
+          },
+          {
+            "question": "How durable is liquidity when trading volatility and token incentives fall?",
+            "resolution_trigger": "Multi-regime cohorts of deposits, makers and fees."
+          }
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "chain": "Mantle",
+      "sources": [
+        {
+          "id": "mnt-launch",
+          "title": "Mantle mainnet launch recap",
+          "publisher": "Mantle",
+          "url": "https://www.mantle.xyz/blog/community/mainnet-launch-event-roundups-more",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "mnt-l2beat",
+          "title": "Mantle risk analysis",
+          "publisher": "L2BEAT",
+          "url": "https://l2beat.com/scaling/projects/mantle",
+          "source_role": "independent-research",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "mnt-tvl",
+          "title": "Mantle historical TVL",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/v2/historicalChainTvl/Mantle",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "mnt-fees",
+          "title": "Mantle fee metrics",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/overview/fees/Mantle?dataType=dailyFees",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "mnt-cg",
+          "title": "MNT market data",
+          "publisher": "CoinGecko",
+          "url": "https://api.coingecko.com/api/v3/coins/mantle",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "declining",
+          "summary": "Mantle is a live but declining Ethereum L2 in the reviewed snapshot: TVL is roughly 91% below an April 2026 peak and MNT is materially below its high, while the network still produces fees and maintains a product surface. A governance-linked capital base and launch programs created liquidity, but current retention is not yet a durable moat.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "mnt-tvl",
+            "mnt-fees",
+            "mnt-cg",
+            "mnt-l2beat"
+          ]
+        },
+        "why": {
+          "summary": "Observed: Mantle launched an EVM rollup with a governance-linked ecosystem fund and liquidity-centered narrative, reached a recent TVL peak, then lost roughly nine-tenths of that capital within months. L2BEAT records Stage 0 trust assumptions involving sequencing, upgrades, validation and data availability. Strategic inference: treasury scale, MNT incentives and EVM familiarity accelerated capital formation, but the chain entered a crowded L2 market where Base owns consumer distribution and Arbitrum owns deeper established DeFi. Incentive-responsive liquidity can create impressive peaks without retained users or fee-paying applications. Mantle is not dead because the chain remains operational and earns fees; it is declining because capital exited faster than a differentiated application or distribution loop replaced it. The unresolved question is whether the broader Mantle asset ecosystem creates recurring network use or merely rotates treasury-supported liquidity.",
+          "confidence": "medium",
+          "source_refs": [
+            "mnt-launch",
+            "mnt-l2beat",
+            "mnt-tvl",
+            "mnt-fees",
+            "mnt-cg"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Launch with a large governance-approved ecosystem capital pool.",
+            "consequence": "Developers and liquidity gained immediate funding, while allocation concentration and subsidy dependence became central lifecycle risks.",
+            "confidence": "high",
+            "source_refs": [
+              "mnt-launch"
+            ]
+          },
+          {
+            "decision": "Position Mantle as a liquidity-focused EVM rollup.",
+            "consequence": "Ethereum compatibility lowered migration friction, but product differentiation remained weak against other EVM L2s.",
+            "confidence": "medium",
+            "source_refs": [
+              "mnt-launch",
+              "mnt-l2beat"
+            ]
+          },
+          {
+            "decision": "Use MNT as both network gas and ecosystem incentive asset.",
+            "consequence": "Usage and treasury programs can support token demand, while declining price and rewards can jointly accelerate capital exit.",
+            "confidence": "medium",
+            "source_refs": [
+              "mnt-cg",
+              "mnt-launch"
+            ]
+          },
+          {
+            "decision": "Operate under Stage 0 rollup trust assumptions while scaling the ecosystem.",
+            "consequence": "The team can upgrade and coordinate quickly, but users depend materially on current sequencer, validation and governance controls.",
+            "confidence": "high",
+            "source_refs": [
+              "mnt-l2beat"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "A smaller capped incentive program tied to retained fees and users could have tested organic demand before large liquidity accumulated. A distinctive first-party application or distribution partner might have created a use loop that generic EVM compatibility did not. Moving faster toward stronger rollup trust guarantees could reduce risk, but alone would not create demand.",
+          "confidence": "medium",
+          "source_refs": [
+            "mnt-launch",
+            "mnt-l2beat",
+            "mnt-tvl"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Thirty-, ninety- and 180-day TVL, fees, users and application retention after incentive changes.",
+            "implication": "Stabilization in paid cohorts supports recovery; continued outflows move the chain toward failure.",
+            "source_refs": [
+              "mnt-tvl",
+              "mnt-fees"
+            ]
+          },
+          {
+            "signal": "Stage 1 milestones, proof availability, upgrade delays and sequencer controls.",
+            "implication": "Reduced unilateral trust assumptions improve safety but must be verified in production.",
+            "source_refs": [
+              "mnt-l2beat"
+            ]
+          },
+          {
+            "signal": "Treasury deployment by program and resulting retained fees or users.",
+            "implication": "Capital allocation is successful only when measurable demand survives funding.",
+            "source_refs": [
+              "mnt-launch"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "question": "What caused the April-to-July TVL collapse by protocol and asset?",
+            "resolution_trigger": "Protocol-level net-flow and incentive-event decomposition."
+          },
+          {
+            "question": "How much current activity remains incentive-dependent?",
+            "resolution_trigger": "Cohorts around reward starts, cuts and expirations."
+          },
+          {
+            "question": "What is the current liquid and committed governance treasury?",
+            "resolution_trigger": "Audited treasury inventory with encumbrances."
+          },
+          {
+            "question": "Which applications generate repeat fees independent of Mantle-controlled programs?",
+            "resolution_trigger": "Application revenue and user-retention attribution."
+          }
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "chain": "Monad",
+      "sources": [
+        {
+          "id": "mon-docs",
+          "title": "Monad documentation",
+          "publisher": "Monad Foundation",
+          "url": "https://docs.monad.xyz/",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "mon-token",
+          "title": "MON tokenomics overview",
+          "publisher": "Monad Foundation",
+          "url": "https://www.monad.xyz/blog/mon-tokenomics-overview",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "mon-funding",
+          "title": "Monad Labs raises $225M",
+          "publisher": "Monad Labs",
+          "url": "https://www.monad.xyz/blog/monad-labs-raises-225m-in-funding",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "mon-tvl",
+          "title": "Monad historical TVL",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/v2/historicalChainTvl/Monad",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "mon-fees",
+          "title": "Monad fee metrics",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/overview/fees/Monad?dataType=dailyFees",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "mon-cg",
+          "title": "MON market data",
+          "publisher": "CoinGecko",
+          "url": "https://api.coingecko.com/api/v3/coins/monad",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "middling",
+          "summary": "Monad is an emerging, presently middling L1 whose July snapshot shows substantial launch-era TVL and fees but less than one year of public-mainnet history. MON is materially below its initial high and a large locked allocation remains a future supply variable. Early capital and activity are observations, not yet evidence of durable product-market fit.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "mon-docs",
+            "mon-token",
+            "mon-tvl",
+            "mon-fees",
+            "mon-cg"
+          ]
+        },
+        "why": {
+          "summary": "Observed: Monad launched a high-throughput EVM-compatible L1 after a disclosed $225M financing round, accumulated meaningful early TVL, and tied MON to gas and staking while investor, team and builder allocations follow lock schedules. Strategic inference: parallel execution and full EVM compatibility target a specific market gap—Solana-like performance without forcing Ethereum developers to change tools. Large financing and ecosystem programs accelerated builders and liquidity, but also make it difficult to distinguish organic demand from subsidized launch positioning. The first production client and early validator ecosystem create implementation concentration, while future token unlocks can pressure confidence even if chain usage grows. Monad is not classified as thriving because the observation window is too short; it is not failing because production activity and capital are real. Its outcome depends on retained paid applications after incentives and unlocks.",
+          "confidence": "medium",
+          "source_refs": [
+            "mon-docs",
+            "mon-token",
+            "mon-funding",
+            "mon-tvl",
+            "mon-fees",
+            "mon-cg"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Preserve full EVM compatibility while redesigning execution for parallelism.",
+            "consequence": "Ethereum applications can migrate with low tooling friction, while the technical performance advantage must survive real state contention and production load.",
+            "confidence": "high",
+            "source_refs": [
+              "mon-docs"
+            ]
+          },
+          {
+            "decision": "Raise a large institutional financing round before mainnet.",
+            "consequence": "The team gained runway and ecosystem-launch capacity, while investor concentration and expectations became part of the token and governance risk.",
+            "confidence": "high",
+            "source_refs": [
+              "mon-funding"
+            ]
+          },
+          {
+            "decision": "Launch MON with gas, staking and a large locked allocation schedule.",
+            "consequence": "The asset coordinates security and incentives, but future unlocks can create supply pressure and misalign short-lived liquidity.",
+            "confidence": "high",
+            "source_refs": [
+              "mon-token",
+              "mon-cg"
+            ]
+          },
+          {
+            "decision": "Enter the market as a new general-purpose L1 rather than an Ethereum L2.",
+            "consequence": "Monad controls execution and validator economics, while accepting the harder task of bootstrapping independent security, liquidity and distribution.",
+            "confidence": "medium",
+            "source_refs": [
+              "mon-docs",
+              "mon-tvl"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "Launching as an L2 could have inherited Ethereum settlement and reduced validator cold-start risk, but weakened the sovereign high-performance thesis. Smaller incentives and financing might yield a cleaner organic-demand signal while slowing developer acquisition. Waiting longer before token launch could reduce unlock pressure, but also delay staking and ecosystem coordination.",
+          "confidence": "medium",
+          "source_refs": [
+            "mon-docs",
+            "mon-token",
+            "mon-funding"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "TVL, fees, applications and user cohorts after launch programs expire.",
+            "implication": "Stable paid demand validates the architecture; synchronized outflows reveal incentive dependence.",
+            "source_refs": [
+              "mon-tvl",
+              "mon-fees"
+            ]
+          },
+          {
+            "signal": "MON unlock dates, circulating supply, staking participation and validator concentration.",
+            "implication": "Orderly absorption supports security; concentrated exits or delegation widen token and consensus risk.",
+            "source_refs": [
+              "mon-token",
+              "mon-cg"
+            ]
+          },
+          {
+            "signal": "Production throughput, latency, outages and client diversity under contended workloads.",
+            "implication": "Real performance rather than benchmark claims determines differentiation.",
+            "source_refs": [
+              "mon-docs"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "question": "How much current TVL is directly or indirectly incentive-driven?",
+            "resolution_trigger": "Protocol cohorts around reward expiry and unlock events."
+          },
+          {
+            "question": "What is beneficial validator, stake and infrastructure concentration?",
+            "resolution_trigger": "Independent operator-resolution and stake telemetry."
+          },
+          {
+            "question": "Which applications retain fee-paying users after launch campaigns?",
+            "resolution_trigger": "Ninety- and 180-day application cohorts."
+          },
+          {
+            "question": "How does parallel execution perform under real shared-state contention?",
+            "resolution_trigger": "Reproducible production traces and incident reports."
+          }
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "chain": "OP Mainnet",
+      "sources": [
+        {
+          "id": "op-mainnet",
+          "title": "What is OP Mainnet?",
+          "publisher": "Optimism",
+          "url": "https://optimism.io/blog/what-is-op-mainnet",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "op-stack",
+          "title": "OP Stack introduction",
+          "publisher": "Optimism",
+          "url": "https://docs.optimism.io/op-stack/introduction/op-stack",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "op-chapter",
+          "title": "Optimism: A New Chapter",
+          "publisher": "Optimism",
+          "url": "https://optimism.io/blog/a-new-chapter",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "op-tvl",
+          "title": "Optimism historical TVL",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/v2/historicalChainTvl/Optimism",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "op-fees",
+          "title": "Optimism fee metrics",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/overview/fees/Optimism?dataType=dailyFees",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "op-cg",
+          "title": "OP market data",
+          "publisher": "CoinGecko",
+          "url": "https://api.coingecko.com/api/v3/coins/optimism",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "successful",
+          "summary": "OP Mainnet is a successful Ethereum L2 and the reference deployment for a widely adopted rollup stack, but it no longer owns all economic activity created by that stack. The reviewed snapshot shows meaningful fees and TVL alongside large drawdowns in network liquidity and OP price. ETH pays gas, so network usage and OP token value capture require separate conclusions.",
+          "confidence": "high",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "op-mainnet",
+            "op-stack",
+            "op-tvl",
+            "op-fees",
+            "op-cg"
+          ]
+        },
+        "why": {
+          "summary": "Observed: OP Mainnet reduced Ethereum execution costs, the OP Stack became infrastructure for multiple chains including stronger-distribution competitors, and the Collective uses OP for governance while ETH remains the gas asset. Strategic inference: Optimism chose platform distribution over protecting one chain’s exclusive market share. Open, reusable software and Superchain coordination multiplied adoption and public-goods influence, but also enabled activity to migrate to other OP chains, especially those with superior consumer funnels. The product strategy succeeded at the stack level; OP Mainnet’s own TVL and token performance show that stack success does not automatically create local liquidity or token demand. This is a deliberate value-capture trade-off, not simply competitive failure. The next causal test is whether shared sequencing, interoperability and revenue mechanisms return measurable economics to the Collective and OP.",
+          "confidence": "medium",
+          "source_refs": [
+            "op-mainnet",
+            "op-stack",
+            "op-chapter",
+            "op-tvl",
+            "op-fees",
+            "op-cg"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Use an optimistic rollup with Ethereum data and settlement.",
+            "consequence": "Applications gained lower-cost EVM execution, while users retained proof, sequencer and upgrade assumptions beyond Ethereum L1.",
+            "confidence": "high",
+            "source_refs": [
+              "op-mainnet",
+              "op-stack"
+            ]
+          },
+          {
+            "decision": "Open the OP Stack for other chains rather than keep the technology proprietary.",
+            "consequence": "Ecosystem distribution expanded dramatically, while OP Mainnet invited competition from deployments using the same stack.",
+            "confidence": "high",
+            "source_refs": [
+              "op-stack",
+              "op-chapter"
+            ]
+          },
+          {
+            "decision": "Use ETH for gas and OP for governance.",
+            "consequence": "Ethereum alignment and user onboarding improved, but routine transaction demand does not mechanically create OP buy pressure.",
+            "confidence": "high",
+            "source_refs": [
+              "op-mainnet",
+              "op-cg"
+            ]
+          },
+          {
+            "decision": "Pursue a Superchain of coordinated chains and shared standards.",
+            "consequence": "Network effects may emerge through interoperability and shared economics, while execution and liquidity fragment before those mechanisms mature.",
+            "confidence": "medium",
+            "source_refs": [
+              "op-stack",
+              "op-chapter"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "Keeping the stack proprietary might have protected OP Mainnet share and short-term fees, but would likely have reduced distribution and Superchain relevance. Making OP the gas asset could strengthen direct demand while increasing onboarding friction and weakening ETH alignment. A narrower application strategy might create stickier local use but sacrifice infrastructure leadership.",
+          "confidence": "medium",
+          "source_refs": [
+            "op-stack",
+            "op-chapter",
+            "op-mainnet"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "OP Mainnet TVL, fees, users and net flows relative to Base and other OP Stack chains.",
+            "implication": "Local retention distinguishes a successful chain from a successful shared stack.",
+            "source_refs": [
+              "op-tvl",
+              "op-fees"
+            ]
+          },
+          {
+            "signal": "Interoperability, shared sequencing and revenue contributions across the Superchain.",
+            "implication": "Production economic flows must validate the collective value-capture thesis.",
+            "source_refs": [
+              "op-stack",
+              "op-chapter"
+            ]
+          },
+          {
+            "signal": "Governance participation and OP-linked economic rights beyond grants.",
+            "implication": "Durable token relevance requires measurable control or cash-flow utility, not stack branding alone.",
+            "source_refs": [
+              "op-chapter",
+              "op-cg"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "question": "How much OP Stack value returns to the Collective and OP holders?",
+            "resolution_trigger": "Audited chain-by-chain revenue and governance-right attribution."
+          },
+          {
+            "question": "Can Superchain interoperability reduce fragmentation in production?",
+            "resolution_trigger": "Measured cross-chain UX, latency, failure and liquidity data."
+          },
+          {
+            "question": "What share of OP Mainnet users are retained independent of incentives?",
+            "resolution_trigger": "Application and wallet cohorts around grant changes."
+          },
+          {
+            "question": "When will sequencing and upgrade authority become materially decentralized?",
+            "resolution_trigger": "Verified contract and operator milestones."
+          }
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-05",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    },
+    {
+      "chain": "Robinhood Chain",
+      "sources": [
+        {
+          "id": "rh-launch",
+          "title": "Robinhood Chain mainnet announcement",
+          "publisher": "Robinhood",
+          "url": "https://robinhood.com/us/en/newsroom/robinhood-accelerates-global-expansion-robinhood-chain-mainnet-stock-tokens-agentic-trading/",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "rh-support",
+          "title": "Robinhood Chain mainnet support",
+          "publisher": "Robinhood",
+          "url": "https://robinhood.com/us/en/support/articles/robinhood-chain-mainnet/",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "rh-l2beat",
+          "title": "Robinhood Chain risk analysis",
+          "publisher": "L2BEAT",
+          "url": "https://l2beat.com/scaling/projects/robinhood",
+          "source_role": "independent-research",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "rh-tvl",
+          "title": "Robinhood Chain historical TVL",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/v2/historicalChainTvl/Robinhood%20Chain",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "rh-fees",
+          "title": "Robinhood Chain fee metrics",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/overview/fees/Robinhood%20Chain?dataType=dailyFees",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "forensic_analysis": {
+        "version": "forensic-analysis-v1",
+        "outcome": {
+          "label": "unclassified",
+          "summary": "Robinhood Chain is too new for a defensible success or failure classification. Its first-month snapshot shows unusually high spot volume and fees, and Robinhood supplies immediate users and tokenized-asset inventory, but the observation window cannot distinguish durable demand from launch concentration. It has no separately launched chain token in the reviewed dossier.",
+          "confidence": "medium",
+          "as_of": "2026-07-29",
+          "source_refs": [
+            "rh-launch",
+            "rh-support",
+            "rh-l2beat",
+            "rh-tvl",
+            "rh-fees"
+          ]
+        },
+        "why": {
+          "summary": "Observed: Robinhood launched an Arbitrum-based chain around stock tokens, always-on markets and first-party brokerage distribution, and the chain entered the activity board with substantial launch-period volume and fees. Strategic inference: this is a distribution-first experiment rather than a conventional developer-first L1 cold start. Robinhood can place assets, identity, regulated customer relationships and user interfaces onto one execution environment immediately, compressing years of liquidity acquisition. The same vertical integration concentrates product, issuer, upgrade, access and regulatory risk in one corporate ecosystem. Early activity may reflect real demand for tokenized equities, internal routing, incentives or temporary launch novelty; current evidence cannot separate them. The causal thesis is strong—corporate distribution plus unique inventory creates adoption—but the lifecycle verdict remains unclassified until retained external users and independent builders appear.",
+          "confidence": "medium",
+          "source_refs": [
+            "rh-launch",
+            "rh-support",
+            "rh-l2beat",
+            "rh-tvl",
+            "rh-fees"
+          ]
+        },
+        "strategic_choices": [
+          {
+            "decision": "Build on Arbitrum technology rather than create a new VM and validator ecosystem.",
+            "consequence": "Robinhood gained EVM tooling and rollup infrastructure quickly, while inheriting stack, sequencing and upgrade dependencies.",
+            "confidence": "high",
+            "source_refs": [
+              "rh-launch",
+              "rh-l2beat"
+            ]
+          },
+          {
+            "decision": "Anchor launch distribution in stock tokens and brokerage users.",
+            "consequence": "Unique inventory and a large user funnel create immediate demand, while regulatory and issuer controls shape asset access and transferability.",
+            "confidence": "high",
+            "source_refs": [
+              "rh-launch",
+              "rh-support"
+            ]
+          },
+          {
+            "decision": "Launch without a separate native chain token.",
+            "consequence": "Users avoid a speculative gas-token cold start and activity is a cleaner product signal, while there is no token mechanism for independent governance or validator distribution.",
+            "confidence": "medium",
+            "source_refs": [
+              "rh-launch",
+              "rh-support"
+            ]
+          },
+          {
+            "decision": "Vertically integrate chain, product interfaces, agentic trading and tokenized assets.",
+            "consequence": "The company can deliver a coherent experience rapidly, while outsiders depend on Robinhood’s continued strategy, permissions and operations.",
+            "confidence": "high",
+            "source_refs": [
+              "rh-launch",
+              "rh-l2beat"
+            ]
+          }
+        ],
+        "counterfactual": {
+          "summary": "A neutral consortium or independently governed rollup could reduce corporate-control risk but would likely launch more slowly and lack Robinhood’s integrated customer funnel. A native token might accelerate incentives and external governance while introducing speculation and regulatory complexity. Delaying launch for greater decentralization could improve trust but forfeit the timing advantage in tokenized equities.",
+          "confidence": "medium",
+          "source_refs": [
+            "rh-launch",
+            "rh-support",
+            "rh-l2beat"
+          ]
+        },
+        "watch": [
+          {
+            "signal": "Ninety- and 180-day volume, fees, users and liquidity after launch programs normalize.",
+            "implication": "Retention converts a launch event into product-market fit; rapid decay supports a temporary-distribution explanation.",
+            "source_refs": [
+              "rh-tvl",
+              "rh-fees"
+            ]
+          },
+          {
+            "signal": "Share of activity from independent applications and non-Robinhood interfaces.",
+            "implication": "External demand would reduce corporate concentration and validate the chain as an ecosystem.",
+            "source_refs": [
+              "rh-launch",
+              "rh-l2beat"
+            ]
+          },
+          {
+            "signal": "Asset redemption, transfer restrictions, sequencer incidents and upgrade-control changes.",
+            "implication": "Operational and regulatory controls determine whether tokenized assets behave as open onchain instruments.",
+            "source_refs": [
+              "rh-support",
+              "rh-l2beat"
+            ]
+          }
+        ],
+        "unknowns": [
+          {
+            "question": "How much launch activity came from incentives, internal routing or genuine external users?",
+            "resolution_trigger": "Entity-adjusted cohorts after launch campaigns."
+          },
+          {
+            "question": "What legal and redemption rights attach to each stock token?",
+            "resolution_trigger": "Instrument-level disclosures and tested redemption outcomes."
+          },
+          {
+            "question": "What is the dated decentralization path for sequencing, proofs and upgrades?",
+            "resolution_trigger": "Verified operator and contract milestones."
+          },
+          {
+            "question": "Will independent builders and liquidity providers remain without Robinhood subsidies?",
+            "resolution_trigger": "Six-month application, capital and fee retention."
+          }
+        ],
+        "review": {
+          "status": "current",
+          "last_reviewed_at": "2026-07-29",
+          "next_review_at": "2026-08-02",
+          "reviewer": "chaindump-research-desk"
+        }
+      }
+    }
+  ],
+  "corrections": [
+    {
+      "id": "xdc-identity-nested-source-coverage",
+      "chain": "XDC",
+      "dimension": "identity",
+      "correction_type": "citation_completion",
+      "reason": "The identity lifecycle cites financing and TVL observations whose URLs were absent from the dimension-level source list.",
+      "sources": [
+        {
+          "id": "xdc-funding",
+          "title": "XDC $50M LDA Capital investment",
+          "publisher": "XDC Network",
+          "url": "https://xdc.org/articles/xdc-accelerates-network-expansion-with-ldas-50-m",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "xdc-tvl",
+          "title": "DefiLlama XDC historical TVL API",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/v2/historicalChainTvl/XDC",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        }
+      ]
+    },
+    {
+      "id": "osmosis-token-overhang-denominator",
+      "chain": "Osmosis",
+      "dimension": "token",
+      "correction_type": "metric_correction",
+      "reason": "The prior 2.44% value measured max supply minus reported total supply, not the non-circulating gap between max and circulating supply.",
+      "sources": [
+        {
+          "id": "osmosis-token",
+          "title": "CoinGecko Osmosis market data API",
+          "publisher": "CoinGecko",
+          "url": "https://api.coingecko.com/api/v3/coins/osmosis",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "patch": {
+        "circulating_supply": 782724061.654104,
+        "total_supply": 975626844.081024,
+        "max_supply": 1000000000,
+        "unlock_overhang_pct": 21.73,
+        "unlock_overhang_denominator": "max_supply",
+        "unlock_overhang_formula": "(max_supply - circulating_supply) / max_supply",
+        "supply_gap_to_max": 217275938.345896,
+        "reported_total_noncirculating_supply": 192902782.42692006,
+        "reported_total_noncirculating_pct_of_total": 19.77,
+        "unissued_to_max_supply_pct": 2.44,
+        "overhang_methodology_note": "The 21.73% field is the gap from circulating supply to max supply. The 19.77% companion figure is reported total supply minus circulating supply divided by reported total supply. The 2.44% figure is only max supply minus reported total supply divided by max supply. These arithmetic gaps do not prove a contractual unlock schedule."
+      }
+    }
+  ]
+}
