@@ -1,0 +1,849 @@
+[
+  {
+    "chain": "Starknet",
+    "source_catalog": {
+      "launch": {"title": "Starknet Alpha mainnet launch", "url": "https://www.starknet.io/blog/starknet-alpha-now-on-mainnet/"},
+      "strk": {"title": "Starknet STRK protocol documentation", "url": "https://docs.starknet.io/learn/protocol/strk"},
+      "provisions": {"title": "Starknet Provisions distribution", "url": "https://www.starknet.io/blog/starknet-provisions-program/"},
+      "foundation": {"title": "Starknet Foundation formation", "url": "https://www.starknet.io/blog/introducing-the-starknet-foundation/"},
+      "starkware": {"title": "StarkWare official media kit", "url": "https://starkware.co/media-kit/"},
+      "incident_2025": {"title": "Starknet September 2025 incident report", "url": "https://www.starknet.io/blog/starknet-incident-report-september-2-2025/"},
+      "incident_2026": {"title": "Starknet January 2026 incident report", "url": "https://www.starknet.io/blog/starknet-incident-report-january-5-2026/"},
+      "token": {"title": "CoinGecko Starknet market-data API", "url": "https://api.coingecko.com/api/v3/coins/starknet"},
+      "tvl": {"title": "DefiLlama Starknet historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Starknet"},
+      "fees": {"title": "DefiLlama Starknet fees API", "url": "https://api.llama.fi/overview/fees/Starknet?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Starknet revenue API", "url": "https://api.llama.fi/overview/fees/Starknet?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Starknet DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Starknet?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["launch", "foundation"],
+      "token": ["strk", "provisions", "token"],
+      "capital": ["starkware", "foundation"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["starkware", "foundation"],
+      "narrative": ["launch", "strk", "foundation"],
+      "risk": ["incident_2025", "incident_2026", "ofac"],
+      "synthesis": ["launch", "strk", "incident_2025", "incident_2026", "token", "tvl", "fees", "revenue", "volume"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Starknet",
+        "aliases": ["StarkNet", "STRK"],
+        "category": "L2_rollup",
+        "vm": "Cairo",
+        "launched": "2021-11-29",
+        "launch_date_precision": "day",
+        "status": "established",
+        "lifecycle": [
+          {"date": "2021-11-29", "type": "launch", "description": "Starknet Alpha launched on Ethereum mainnet with a single sequencer and permissioned contract deployment.", "source_url": "https://www.starknet.io/blog/starknet-alpha-now-on-mainnet/"},
+          {"date": "2022-11-09", "type": "governance", "description": "The independent not-for-profit Starknet Foundation launched with 50.1% of the initial STRK allocation.", "source_url": "https://www.starknet.io/blog/introducing-the-starknet-foundation/"},
+          {"date": "2025-09-02", "type": "decentralization_incident", "description": "A three-sequencer rollout exposed L1-view divergence and manual-recovery bugs, causing intermittent downtime and two reorgs.", "source_url": "https://www.starknet.io/blog/starknet-incident-report-september-2-2025/"},
+          {"date": "2026-01-05", "type": "liveness_incident", "description": "Block production halted for roughly 4.5 hours and 18 minutes of activity were reverted during recovery.", "source_url": "https://www.starknet.io/blog/starknet-incident-report-january-5-2026/"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "launched",
+        "token_symbol": "STRK",
+        "gas_token": "STRK or ETH",
+        "launch_date": "2024-02-20",
+        "launch_date_precision": "day",
+        "launch_relation": "STRK became broadly claimable through Provisions on February 20, 2024; the initial 10B supply had been minted earlier and users may pay fees in STRK or ETH.",
+        "token_cg_id": "starknet",
+        "token_current_usd": 0.02711773,
+        "token_ath_usd": 4.41,
+        "token_ath_date": "2024-02-20",
+        "price_drawdown_pct": 99.39,
+        "market_cap_usd": 183252684,
+        "fdv_usd": 271608685,
+        "circulating_supply": 6746937561.348971,
+        "total_supply": 10000000000,
+        "max_supply": 10000000000,
+        "unlock_overhang_pct": 32.53,
+        "source_url": "https://api.coingecko.com/api/v3/coins/starknet"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": null,
+        "known_related_company_funding_usd": 262000000,
+        "rounds": [],
+        "treasury_usd": null,
+        "backers_tier": "tier1",
+        "notes": "StarkWare reports $250M of equity funding and a $12M Ethereum Foundation grant, but that company-level amount is not asserted as Starknet-network financing. The Foundation token allocation is not marked to market as treasury."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 330779212,
+        "tvl_peak_date": "2024-03-26",
+        "tvl_current_usd": 169449778,
+        "tvl_drawdown_pct": 48.77,
+        "stablecoin_tvl_usd": 162885471.05,
+        "spot_dex_volume_24h_usd": 4672483,
+        "spot_dex_volume_30d_usd": 117037519,
+        "fees_24h_usd": 74288,
+        "fees_30d_usd": 1757743.13,
+        "revenue_24h_usd": 533,
+        "revenue_30d_usd": 11908.03,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Starknet",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Starknet?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Starknet?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Starknet?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "Snapshots were retrieved on the as-of date. Stablecoin supply and DeFi TVL are separate measures; fees are not equivalent to protocol revenue."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [
+          {"name": "Eli Ben-Sasson", "role": "StarkWare co-founder", "prior": "STARK, FRI and Zerocash research; Zcash founding scientist", "source_url": "https://starkware.co/media-kit/"},
+          {"name": "Uri Kolodny", "role": "StarkWare co-founder", "prior": "technology entrepreneurship", "source_url": "https://starkware.co/media-kit/"},
+          {"name": "Alessandro Chiesa", "role": "StarkWare co-founder", "prior": "cryptography research", "source_url": "https://starkware.co/media-kit/"},
+          {"name": "Michael Riabzev", "role": "StarkWare co-founder", "prior": "cryptographic systems engineering", "source_url": "https://starkware.co/media-kit/"}
+        ],
+        "entity": "StarkWare develops core technology; the independent Starknet Foundation supports governance and the network as a public good.",
+        "key_events": [
+          {"date": "2018", "type": "formation", "description": "StarkWare was founded.", "source_url": "https://starkware.co/media-kit/"},
+          {"date": "2022-11-09", "type": "foundation", "description": "The Starknet Foundation formally launched.", "source_url": "https://www.starknet.io/blog/introducing-the-starknet-foundation/"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Scale Ethereum general computation with STARK validity proofs, Cairo-native contracts, account abstraction, and progressively decentralized sequencing.",
+        "positioning": "A validity-rollup stack differentiated by STARK cryptography and Cairo rather than EVM equivalence.",
+        "competitors": [
+          {"name": "zkSync Era", "relationship": "Ethereum validity-rollup competitor"},
+          {"name": "Arbitrum", "relationship": "general-purpose L2 liquidity competitor"},
+          {"name": "Base", "relationship": "distribution-led L2 competitor"}
+        ],
+        "narrative_arc": "The project advanced from guarded Alpha to token governance, staking, and multiple sequencers, but decentralization introduced new liveness and recovery complexity before producing full operational independence.",
+        "media_sentiment": "mixed"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [
+          {"date": "2025-09-02", "type": "liveness_and_reorg", "loss_usd": null, "detail": "Approximately nine hours of degraded or halted service and about 1.5 hours of reverted activity across two reorgs; no protocol-fund loss was reported.", "source_url": "https://www.starknet.io/blog/starknet-incident-report-september-2-2025/"},
+          {"date": "2026-01-05", "type": "liveness_and_reorg", "loss_usd": null, "detail": "A bug required a safety halt and reorg that dropped 18 minutes of activity.", "source_url": "https://www.starknet.io/blog/starknet-incident-report-january-5-2026/"}
+        ],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; an archived exact-name SDN review remains an explicit publication gap."},
+        "extraction_flags": ["sequencer_liveness", "upgrade_risk", "token_unlock_overhang", "non_evm_developer_friction"],
+        "audit_status": null,
+        "risks": [
+          {"type": "liveness", "detail": "Recent incidents show that multi-sequencer and recovery logic can revert soft-confirmed activity even when validity proofs protect final correctness.", "source_url": "https://www.starknet.io/blog/starknet-incident-report-september-2-2025/"},
+          {"type": "token_supply", "detail": "Roughly one-third of the reported maximum supply was not circulating at the as-of snapshot, leaving dilution and distribution risk.", "source_url": "https://docs.starknet.io/learn/protocol/strk"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Starknet retains $169.4M TVL and $117.0M in 30-day DEX volume, but STRK is 99.4% below its reported high and sequencer decentralization has produced material liveness incidents.",
+        "postmortem": "The proving layer preserved correctness during the September 2025 failure, but L1-provider divergence, manual intervention, and young consensus logic caused availability loss and reorgs.",
+        "why": "Starknet persists because it pairs differentiated STARK research with a production Ethereum rollup and a developer ecosystem willing to accept Cairo specialization for proof-system flexibility.",
+        "success_mechanism": "Validity proofs inherit Ethereum settlement security while Cairo, native account abstraction, STRK governance, and staking create a vertically integrated execution stack.",
+        "strategic_choices": [
+          "Choose Cairo and STARK-native execution instead of EVM equivalence.",
+          "Launch guarded with one sequencer, then decentralize sequencing in measured stages.",
+          "Use STRK for fees, staking, and governance while retaining ETH fee support."
+        ],
+        "unknowns": [
+          "The current sequencer, validator-stake, application-TVL, and prover concentration.",
+          "How quickly the remaining supply enters circulation and how much is economically liquid.",
+          "Whether post-incident safeguards eliminate reorg-prone recovery paths under correlated L1-provider failures."
+        ],
+        "lessons_learned": [
+          "Validity protects correctness but does not guarantee availability or prevent soft-confirmation reorgs.",
+          "A differentiated VM creates technical moat and developer-acquisition cost at the same time.",
+          "Token governance and sequencer decentralization should be evaluated as separate maturity tracks."
+        ],
+        "could_differ": "EVM equivalence might have accelerated porting and liquidity, but would have weakened Cairo as the organizing technical advantage.",
+        "outlook": {"bull": "Decentralized sequencing stabilizes and Cairo applications convert the proof-system moat into durable demand.", "base": "Starknet remains a meaningful specialist L2 with modest liquidity and ongoing operational hardening.", "bear": "Liveness incidents, unlocks, and Cairo friction keep usage below competing L2s.", "most_likely": "base"},
+        "cause_tags": ["validity_rollup", "cairo_specialization", "sequencer_decentralization", "liveness_risk", "token_dilution"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 88,
+      "confidence": "high",
+      "unsourced_fields": ["capital.network_total_raised_usd", "capital.treasury_usd", "team.regulatory_status", "risk.audit_status", "risk.archived_sanctions_check", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "Ink",
+    "source_catalog": {
+      "announce": {"title": "Kraken announces Ink", "url": "https://blog.kraken.com/news/announcing-ink"},
+      "launch": {"title": "Kraken Ink mainnet launch", "url": "https://blog.kraken.com/news/ink-mainnet-launch"},
+      "about": {"title": "Ink official architecture overview", "url": "https://docs.inkonchain.com/general/about"},
+      "faq": {"title": "Ink official FAQ and token status", "url": "https://docs.inkonchain.com/faq"},
+      "superchain": {"title": "Ink and the Optimism Superchain", "url": "https://docs.inkonchain.com/useful-information/the-superchain"},
+      "fees_docs": {"title": "Ink transaction fee documentation", "url": "https://docs.inkonchain.com/build/transaction-fees"},
+      "token_plan": {"title": "Kraken announces planned INK token integration", "url": "https://blog.kraken.com/news/integrating-ink-token"},
+      "terms": {"title": "Ink terms and Kraken Sequencer operator", "url": "https://inkonchain.com/terms"},
+      "tvl": {"title": "DefiLlama Ink historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Ink"},
+      "fees": {"title": "DefiLlama Ink fees API", "url": "https://api.llama.fi/overview/fees/Ink?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Ink revenue API", "url": "https://api.llama.fi/overview/fees/Ink?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Ink DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Ink?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["announce", "launch", "about"],
+      "token": ["faq", "token_plan", "fees_docs"],
+      "capital": ["announce", "token_plan"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["announce", "token_plan", "terms"],
+      "narrative": ["announce", "about", "superchain"],
+      "risk": ["faq", "superchain", "terms", "ofac"],
+      "synthesis": ["launch", "about", "token_plan", "terms", "tvl", "fees", "revenue", "volume"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Ink",
+        "aliases": ["Ink L2", "Kraken Ink"],
+        "category": "L2_rollup",
+        "vm": "EVM",
+        "launched": "2024-12-18",
+        "launch_date_precision": "day",
+        "status": "established",
+        "lifecycle": [
+          {"date": "2024-10-24", "type": "announcement", "description": "Kraken announced Ink as an OP Stack DeFi-focused Ethereum L2.", "source_url": "https://blog.kraken.com/news/announcing-ink"},
+          {"date": "2024-12-18", "type": "launch", "description": "Ink mainnet launched ahead of its original first-quarter 2025 target.", "source_url": "https://blog.kraken.com/news/ink-mainnet-launch"},
+          {"date": "2025-07-24", "type": "token_announcement", "description": "Kraken and the Ink Foundation announced plans for an INK token and future airdrop without publishing a completed TGE.", "source_url": "https://blog.kraken.com/news/integrating-ink-token"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "not_launched",
+        "token_symbol": null,
+        "announced_symbol": "INK",
+        "gas_token": "ETH",
+        "launch_date": null,
+        "launch_relation": "INK has been announced but the reviewed official materials still describe integration and airdrop as forthcoming; ETH remains network gas.",
+        "token_cg_id": null,
+        "token_current_usd": null,
+        "token_ath_usd": null,
+        "token_ath_date": null,
+        "price_drawdown_pct": null,
+        "market_cap_usd": null,
+        "fdv_usd": null,
+        "circulating_supply": null,
+        "total_supply": null,
+        "max_supply": null,
+        "unlock_overhang_pct": null,
+        "source_url": "https://docs.inkonchain.com/faq"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": null,
+        "rounds": [],
+        "treasury_usd": null,
+        "backers_tier": "corporate",
+        "notes": "Ink was released by Kraken and later assigned independent-Foundation stewardship; no reconciled standalone network financing total is asserted."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 572838055,
+        "tvl_peak_date": "2026-01-15",
+        "tvl_current_usd": 120551016,
+        "tvl_drawdown_pct": 78.96,
+        "stablecoin_tvl_usd": 140774785.83,
+        "spot_dex_volume_24h_usd": 3414260,
+        "spot_dex_volume_30d_usd": 66166024.49,
+        "fees_24h_usd": 120138.39,
+        "fees_30d_usd": 3075737.06,
+        "revenue_24h_usd": 28177.21,
+        "revenue_30d_usd": 760016.43,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Ink",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Ink?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Ink?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Ink?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "Snapshots were retrieved on the as-of date. DefiLlama fees, revenue, TVL, volume, and stablecoin supply are distinct series."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [],
+        "entity": "Ink Foundation stewards the L2 and ecosystem; Kraken originated and integrates the network, while Kraken Continuance operates the named Kraken Sequencer services in the reviewed terms.",
+        "key_events": [
+          {"date": "2024-10-24", "type": "corporate_launch", "description": "Kraken publicly introduced Ink.", "source_url": "https://blog.kraken.com/news/announcing-ink"},
+          {"date": "2025-07-24", "type": "foundation", "description": "Kraken identified the Ink Foundation as independent steward and future INK issuer through a subsidiary.", "source_url": "https://blog.kraken.com/news/integrating-ink-token"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Use Kraken distribution and an OP Stack Superchain L2 to simplify access between centralized exchange users and DeFi.",
+        "positioning": "A corporate-distribution, DeFi-specific Ethereum L2 with one-second blocks and Superchain interoperability.",
+        "competitors": [
+          {"name": "Base", "relationship": "exchange-distributed Superchain L2 competitor"},
+          {"name": "Unichain", "relationship": "DeFi-specialized Superchain L2 competitor"},
+          {"name": "Arbitrum", "relationship": "established DeFi-liquidity L2 competitor"}
+        ],
+        "narrative_arc": "Ink launched early on Kraken credibility, grew substantial liquidity, and announced a Foundation token, but has yet to prove whether exchange distribution produces durable independent onchain demand.",
+        "media_sentiment": "mixed"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; an archived exact-name SDN review remains an explicit gap."},
+        "extraction_flags": ["centralized_sequencer", "corporate_dependency", "bridge_risk", "token_uncertainty", "liquidity_drawdown"],
+        "audit_status": null,
+        "risks": [
+          {"type": "sequencer_control", "detail": "The reviewed terms expressly identify a Kraken Sequencer service, leaving operational dependence on a named corporate operator.", "source_url": "https://inkonchain.com/terms"},
+          {"type": "bridge_and_upgrade", "detail": "Ink inherits OP Stack shared-bridge and governance dependencies alongside its own chain configuration.", "source_url": "https://docs.inkonchain.com/useful-information/the-superchain"},
+          {"type": "token_uncertainty", "detail": "INK is announced but official launch date, supply, allocation, and governance powers remain unpublished in reviewed materials.", "source_url": "https://blog.kraken.com/news/integrating-ink-token"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Ink records $120.6M TVL and $66.2M in 30-day DEX volume, but TVL is 79.0% below its January 2026 peak and the announced INK token still lacks published launch economics.",
+        "postmortem": null,
+        "why": "Ink achieved relevance because Kraken supplied brand, users, fiat and exchange rails while the OP Stack reduced time-to-market and made Ethereum tooling immediately available.",
+        "success_mechanism": "Kraken distribution can move users and assets onchain cheaply, while Superchain standards lower integration costs for DeFi applications.",
+        "strategic_choices": [
+          "Adopt the OP Stack instead of building a proprietary execution environment.",
+          "Focus the network on DeFi and CeFi-to-DeFi distribution.",
+          "Launch with ETH gas and defer a distinct INK token and its economics."
+        ],
+        "unknowns": [
+          "The INK launch date, total supply, allocation, utility, and governance rights.",
+          "Current sequencer, upgrade-key, application-TVL, and bridge concentration.",
+          "How much observed activity persists without incentives or direct Kraken routing."
+        ],
+        "lessons_learned": [
+          "Exchange distribution can accelerate liquidity but does not eliminate retention risk.",
+          "A planned token must not be modeled as launched before verifiable TGE evidence exists.",
+          "Shared-stack security and corporate sequencer control should be reported separately."
+        ],
+        "could_differ": "A native stack could provide more differentiated economics, but would have delayed launch and sacrificed Superchain compatibility.",
+        "outlook": {"bull": "Kraken embeds Ink across products and INK launches with credible utility and sustainable liquidity.", "base": "Ink remains a meaningful but corporate-dependent DeFi L2 below its incentive-era peak.", "bear": "Token uncertainty and shrinking liquidity leave Ink peripheral to larger L2 venues.", "most_likely": "base"},
+        "cause_tags": ["exchange_distribution", "op_stack", "defi_specialization", "sequencer_centralization", "token_pending"],
+        "confidence": "medium"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 78,
+      "confidence": "medium",
+      "unsourced_fields": ["token.launch_date", "token.supply_and_allocation", "capital.total_raised_usd", "capital.treasury_usd", "team.named_chain_founders", "team.regulatory_status", "risk.audit_status", "risk.archived_sanctions_check", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "Chainflip",
+    "source_catalog": {
+      "launch": {"title": "Chainflip mainnet swapping pre-release", "url": "https://chainflip.io/blog/swapping-pre-release"},
+      "overview": {"title": "Chainflip protocol overview", "url": "https://docs.chainflip.io/protocol/protocol-overview"},
+      "security": {"title": "Chainflip governance and security model", "url": "https://docs.chainflip.io/protocol/governance-and-security"},
+      "tokenomics": {"title": "Chainflip current token economics", "url": "https://docs.chainflip.io/protocol/token-economics/current-token-economics-2025-and-beyond"},
+      "genesis": {"title": "Chainflip genesis tokenomics and financing", "url": "https://docs.chainflip.io/protocol/token-economics/genesis-token-economics-pre-2023"},
+      "founder": {"title": "Chainflip Lightpaper", "url": "https://chainflip.io/lightpaper.pdf"},
+      "changelog": {"title": "Chainflip product changelog", "url": "https://chainflip.io/changelog"},
+      "token": {"title": "CoinGecko Chainflip market-data API", "url": "https://api.coingecko.com/api/v3/coins/chainflip"},
+      "tvl": {"title": "DefiLlama Chainflip historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Chainflip"},
+      "fees": {"title": "DefiLlama Chainflip fees API", "url": "https://api.llama.fi/overview/fees/Chainflip?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Chainflip revenue API", "url": "https://api.llama.fi/overview/fees/Chainflip?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Chainflip DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Chainflip?dataType=dailyVolume"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["launch", "overview", "changelog"],
+      "token": ["tokenomics", "genesis", "token"],
+      "capital": ["genesis"],
+      "onchain": ["tvl", "fees", "revenue", "volume"],
+      "team": ["founder", "genesis"],
+      "narrative": ["overview", "security", "changelog"],
+      "risk": ["security", "overview", "ofac"],
+      "synthesis": ["overview", "security", "tokenomics", "changelog", "token", "tvl", "fees", "revenue", "volume"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Chainflip",
+        "aliases": ["Chainflip State Chain", "Berghain Mainnet", "FLIP"],
+        "category": "appchain",
+        "vm": "other",
+        "launched": "2023-12-18",
+        "launch_date_precision": "day",
+        "status": "established",
+        "lifecycle": [
+          {"date": "2023-11-23", "type": "token_launch", "description": "FLIP went live, closing pre-genesis fundraising.", "source_url": "https://docs.chainflip.io/protocol/token-economics/genesis-token-economics-pre-2023"},
+          {"date": "2023-12-18", "type": "launch", "description": "Restricted mainnet swapping pre-release opened with capped swaps and limited features.", "source_url": "https://chainflip.io/blog/swapping-pre-release"},
+          {"date": "2024-09-25", "type": "chain_expansion", "description": "Native Solana routes joined Bitcoin, Ethereum, Polkadot, and Arbitrum support.", "source_url": "https://chainflip.io/blog/solana-comes-to-chainflip-mainnet-a-new-era-of-native-cross-chain-swaps"},
+          {"date": "2026-06-17", "type": "chain_expansion", "description": "Native TRON USDT routing went live.", "source_url": "https://chainflip.io/changelog"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "launched",
+        "token_symbol": "FLIP",
+        "gas_token": "FLIP",
+        "launch_date": "2023-11-23",
+        "launch_date_precision": "day",
+        "launch_relation": "FLIP launched before the capped swapping pre-release and secures the State Chain through validator staking; protocol fees support buy-and-burn mechanics.",
+        "token_cg_id": "chainflip",
+        "token_current_usd": 0.313642,
+        "token_ath_usd": 9.48,
+        "token_ath_date": "2024-03-07",
+        "price_drawdown_pct": 96.69,
+        "market_cap_usd": 27800478,
+        "fdv_usd": 28059535,
+        "circulating_supply": 88638016.3334617,
+        "total_supply": 89463985.3334617,
+        "max_supply": null,
+        "unlock_overhang_pct": 0.92,
+        "source_url": "https://api.coingecko.com/api/v3/coins/chainflip"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": 23300000,
+        "rounds": [
+          {"date": "2021-02", "amount_usd": 3810000, "round_type": "private", "lead_backers": ["Blockchain Capital"], "source_url": "https://docs.chainflip.io/protocol/token-economics/genesis-token-economics-pre-2023"},
+          {"date": "2021-08", "amount_usd": 5800000, "round_type": "private", "lead_backers": ["Framework Ventures", "Coinbase Ventures"], "source_url": "https://docs.chainflip.io/protocol/token-economics/genesis-token-economics-pre-2023"},
+          {"date": "2022-05", "amount_usd": 10000000, "round_type": "equity", "lead_backers": ["Pantera Capital", "Framework Ventures", "Blockchain Capital"], "source_url": "https://docs.chainflip.io/protocol/token-economics/genesis-token-economics-pre-2023"},
+          {"date": "2023-09", "amount_usd": 3780000, "round_type": "public_sale", "lead_backers": ["CoinList participants"], "source_url": "https://docs.chainflip.io/protocol/token-economics/genesis-token-economics-pre-2023"}
+        ],
+        "treasury_usd": null,
+        "backers_tier": "tier1",
+        "notes": "The official historical tokenomics page reconciles the listed rounds to $23.3M; current treasury value is not asserted."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 22210323,
+        "tvl_peak_date": "2024-12-09",
+        "tvl_current_usd": 12511086,
+        "tvl_drawdown_pct": 43.67,
+        "stablecoin_tvl_usd": null,
+        "spot_dex_volume_24h_usd": 13500961,
+        "spot_dex_volume_30d_usd": 318910555,
+        "fees_24h_usd": 48592,
+        "fees_30d_usd": 978009,
+        "revenue_24h_usd": 7320,
+        "revenue_30d_usd": 180307,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Chainflip",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Chainflip?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Chainflip?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Chainflip?dataType=dailyVolume",
+        "stablecoin_source_url": null,
+        "methodology_note": "Chainflip is an appchain plus cross-chain vault system; DefiLlama TVL and DEX series should not be compared mechanically with general-purpose smart-contract L1s."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [
+          {"name": "Simon Harman", "role": "founder", "prior": "founded Chainflip in 2020 as an independent project", "source_url": "https://chainflip.io/lightpaper.pdf"}
+        ],
+        "entity": "Chainflip Labs develops the protocol; validators run the State Chain and collectively control native-chain vaults, with governance and community councils retaining defined upgrade and emergency roles.",
+        "key_events": [
+          {"date": "2020", "type": "formation", "description": "Simon Harman founded Chainflip.", "source_url": "https://chainflip.io/lightpaper.pdf"},
+          {"date": "2023-11-23", "type": "tge", "description": "FLIP launched after multiple private, equity, and public rounds.", "source_url": "https://docs.chainflip.io/protocol/token-economics/genesis-token-economics-pre-2023"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Provide native-asset cross-chain swaps without user-facing wrapped assets through validator-controlled vaults and a purpose-built JIT AMM.",
+        "positioning": "A Substrate-based cross-chain liquidity appchain competing with bridges, centralized exchanges, and native-swap networks.",
+        "competitors": [
+          {"name": "THORChain", "relationship": "native cross-chain swap competitor"},
+          {"name": "centralized exchanges", "relationship": "dominant cross-chain asset-conversion alternative"},
+          {"name": "bridge aggregators", "relationship": "cross-chain routing competitors and integration partners"}
+        ],
+        "narrative_arc": "Chainflip moved from a cautious capped launch to broader chain coverage, lending, and substantial volume, while its core tradeoff remains capital-efficient native swaps versus threshold-vault custody risk.",
+        "media_sentiment": "mixed_positive"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; an archived exact-name SDN review remains an explicit gap."},
+        "extraction_flags": ["threshold_custody", "validator_collusion", "vault_implementation", "governance_keys", "token_security_ratio"],
+        "audit_status": "The official documentation describes internal/external audits and bounties, but this dossier does not reconcile a complete current audit inventory.",
+        "risks": [
+          {"type": "threshold_custody", "detail": "A 100-of-150 authority threshold controls protocol vaults; users rely on an honest validator superminority and correct key-rotation software.", "source_url": "https://docs.chainflip.io/protocol/governance-and-security"},
+          {"type": "software_surface", "detail": "State Chain accounting, AMM logic, witnessing, broadcasting, and several external-chain vault implementations create a larger fault surface than a single-chain AMM.", "source_url": "https://docs.chainflip.io/protocol/governance-and-security"},
+          {"type": "economic_security", "detail": "Vault value can outrun staked FLIP security, so users must evaluate the changing security ratio rather than infer trustlessness from validator count alone.", "source_url": "https://docs.chainflip.io/protocol/governance-and-security"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Chainflip processes $318.9M in 30-day volume against $12.5M TVL, while FLIP is 96.7% below its high and the protocol's validator set collectively controls cross-chain vault liquidity.",
+        "postmortem": null,
+        "why": "Chainflip persists because native BTC and other cross-chain routes solve a concrete user problem that single-chain AMMs cannot, while the State Chain makes routing, accounting, and liquidity programmable.",
+        "success_mechanism": "A purpose-built JIT AMM and threshold vaults reuse liquidity across native-chain routes; fees buy and burn FLIP while staking supplies economic security.",
+        "strategic_choices": [
+          "Build a dedicated Substrate appchain rather than deploy one-chain AMM contracts.",
+          "Use 100-of-150 threshold vault custody to support native assets without wrappers.",
+          "Launch with conservative caps before expanding chains, limits, and product verticals."
+        ],
+        "unknowns": [
+          "Current validator identity, stake, delegation, and vault-value concentration.",
+          "A reconciled current audit inventory and coverage of every supported-chain vault.",
+          "How lending and additional chains change exploitable value relative to bonded FLIP."
+        ],
+        "lessons_learned": [
+          "Native cross-chain UX moves bridge risk into validator, vault, and implementation risk rather than removing it.",
+          "Volume-to-TVL efficiency is meaningful only alongside settlement and custody exposure.",
+          "Token-market drawdown can coexist with growing protocol throughput."
+        ],
+        "could_differ": "A wrapper-and-bridge design could reduce bespoke vault engineering but would lose the native-asset product thesis.",
+        "outlook": {"bull": "New routes and lending compound volume while validator security and FLIP value capture scale with vault exposure.", "base": "Chainflip remains a useful native-swap niche with material but manageable threshold-custody risk.", "bear": "A vault or authority failure overwhelms the security budget and damages integrations.", "most_likely": "base"},
+        "cause_tags": ["native_cross_chain_swaps", "appchain", "threshold_vaults", "jit_amm", "economic_security"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 87,
+      "confidence": "high",
+      "unsourced_fields": ["capital.treasury_usd", "team.regulatory_status", "risk.complete_current_audit_inventory", "risk.archived_sanctions_check", "onchain.stablecoin_tvl_usd", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.current_validator_and_vault_concentration"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "Sei",
+    "source_catalog": {
+      "launch": {"title": "Sei Labs mainnet launch release", "url": "https://www.prnewswire.com/news-releases/sei-launches-mainnet-301900263.html"},
+      "v2": {"title": "Sei V2 launch process", "url": "https://blog.sei.io/how-the-sei-v2-launch-will-work/"},
+      "giga": {"title": "Sei Giga architecture documentation", "url": "https://www.docs.sei.io/learn/sei-giga"},
+      "sip3": {"title": "SIP-3 EVM-only transition", "url": "https://blog.sei.io/announcements/the-sip-3-upgrade-making-way-for-sei-giga/"},
+      "sip3_live": {"title": "SIP-03 disables new CosmWasm deployments", "url": "https://blog.sei.io/announcements/sip-03-no-new-cosmwasm-contract-deployments/"},
+      "governance": {"title": "Sei governance documentation", "url": "https://www.docs.sei.io/learn/general-governance"},
+      "funding": {"title": "Sei institutional funding and ecosystem fund", "url": "https://blog.sei.io/announcements/foresight-ventures-brings-sei-ecosystem-fund-to-120-million-catalyzing-web3-growth-and-innovation/"},
+      "token": {"title": "CoinGecko Sei market-data API", "url": "https://api.coingecko.com/api/v3/coins/sei-network"},
+      "tvl": {"title": "DefiLlama Sei historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Sei"},
+      "fees": {"title": "DefiLlama Sei fees API", "url": "https://api.llama.fi/overview/fees/Sei?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Sei revenue API", "url": "https://api.llama.fi/overview/fees/Sei?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Sei DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Sei?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["launch", "v2", "sip3", "sip3_live"],
+      "token": ["giga", "token"],
+      "capital": ["funding"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["launch", "funding", "governance"],
+      "narrative": ["v2", "giga", "sip3"],
+      "risk": ["sip3", "sip3_live", "governance", "ofac"],
+      "synthesis": ["v2", "giga", "sip3", "sip3_live", "token", "tvl", "fees", "revenue", "volume"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Sei",
+        "aliases": ["Sei Network", "Pacific-1", "SEI"],
+        "category": "L1",
+        "vm": "EVM",
+        "launched": "2023-08-15",
+        "launch_date_precision": "day",
+        "status": "pivoting",
+        "lifecycle": [
+          {"date": "2023-08-15", "type": "launch", "description": "Sei Pacific-1 mainnet beta launched as a trading-optimized general-purpose L1.", "source_url": "https://www.prnewswire.com/news-releases/sei-launches-mainnet-301900263.html"},
+          {"date": "2024-07", "type": "architecture_upgrade", "description": "Sei V2 became production-ready with a parallelized EVM added alongside CosmWasm.", "source_url": "https://blog.sei.io/how-the-sei-v2-launch-will-work/"},
+          {"date": "2025-06-02", "type": "architecture_migration", "description": "SIP-3 passed its initial governance vote to deprecate CosmWasm and native Cosmos transactions for an EVM-only architecture.", "source_url": "https://blog.sei.io/announcements/sip-3-update-sei-moves-toward-evm-only-architecture/"},
+          {"date": "2026-05-01", "type": "architecture_migration", "description": "Validators disabled new CosmWasm uploads and instantiations as the EVM-only migration continued.", "source_url": "https://blog.sei.io/announcements/sip-03-no-new-cosmwasm-contract-deployments/"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "launched",
+        "token_symbol": "SEI",
+        "gas_token": "SEI",
+        "launch_date": "2023-08-15",
+        "launch_date_precision": "day",
+        "launch_relation": "SEI launched with Pacific-1 and remains the gas, staking, reward, and governance asset across the transition from dual Cosmos/EVM execution toward EVM-only Sei.",
+        "token_cg_id": "sei-network",
+        "token_current_usd": 0.04190836,
+        "token_ath_usd": 1.14,
+        "token_ath_date": "2024-03-15",
+        "price_drawdown_pct": 96.32,
+        "market_cap_usd": 283125150,
+        "fdv_usd": 420482896,
+        "circulating_supply": 6733333333,
+        "total_supply": 10000000000,
+        "max_supply": null,
+        "unlock_overhang_pct": 32.67,
+        "source_url": "https://api.coingecko.com/api/v3/coins/sei-network"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": 30000000,
+        "rounds": [
+          {"date": "2023-04-12", "amount_usd": 30000000, "round_type": "institutional_rounds_aggregate", "lead_backers": ["Jump", "Distributed Global", "Multicoin", "Asymmetric", "Flow Traders", "Hypersphere", "Bixin Ventures"], "source_url": "https://blog.sei.io/announcements/foresight-ventures-brings-sei-ecosystem-fund-to-120-million-catalyzing-web3-growth-and-innovation/"}
+        ],
+        "ecosystem_fund_commitments_usd": 120000000,
+        "treasury_usd": null,
+        "backers_tier": "tier1",
+        "notes": "The $30M institutional funding aggregate is separated from the announced $120M ecosystem fund, which is not counted as company financing."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 628350950,
+        "tvl_peak_date": "2025-07-18",
+        "tvl_current_usd": 40728611,
+        "tvl_drawdown_pct": 93.52,
+        "stablecoin_tvl_usd": 302398059.12,
+        "spot_dex_volume_24h_usd": 6859933,
+        "spot_dex_volume_30d_usd": 219580859.53,
+        "fees_24h_usd": 40675.61,
+        "fees_30d_usd": 1265177,
+        "revenue_24h_usd": 3926.23,
+        "revenue_30d_usd": 135260.8,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Sei",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Sei?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Sei?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Sei?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "The stablecoin series can exceed DeFi TVL because it measures circulating pegged assets, not only assets deposited in tracked protocols."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [
+          {"name": "Jay Jog", "role": "Sei Labs co-founder", "prior": "software and trading-infrastructure engineering", "source_url": "https://www.prnewswire.com/news-releases/sei-launches-mainnet-301900263.html"}
+        ],
+        "entity": "Sei Labs contributes open-source protocol engineering; token stakers and validators govern Pacific-1, while the Sei Development Foundation supports adoption.",
+        "key_events": [
+          {"date": "2023-08-15", "type": "launch", "description": "Sei Labs announced Pacific-1 mainnet beta.", "source_url": "https://www.prnewswire.com/news-releases/sei-launches-mainnet-301900263.html"},
+          {"date": "2025-06-02", "type": "governance", "description": "Community governance advanced SIP-3 toward an EVM-only architecture.", "source_url": "https://blog.sei.io/announcements/sip-3-update-sei-moves-toward-evm-only-architecture/"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Deliver high-throughput, low-latency EVM execution for trading and consumer-scale financial applications.",
+        "positioning": "A performance-led EVM L1 that began in Cosmos and is removing its original CosmWasm and IBC surface.",
+        "competitors": [
+          {"name": "Solana", "relationship": "high-throughput monolithic L1 competitor"},
+          {"name": "Monad", "relationship": "parallelized high-performance EVM competitor"},
+          {"name": "Sui", "relationship": "consumer and trading-focused high-throughput L1 competitor"}
+        ],
+        "narrative_arc": "Sei shifted from a Cosmos trading chain to a dual-execution parallel EVM and then chose EVM-only simplification, betting that Ethereum tooling matters more than preserving its original ecosystem surface.",
+        "media_sentiment": "mixed"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; an archived exact-name SDN review remains an explicit gap."},
+        "extraction_flags": ["architecture_migration", "legacy_asset_access", "token_unlock_overhang", "validator_governance", "tvl_drawdown"],
+        "audit_status": null,
+        "risks": [
+          {"type": "migration", "detail": "Deprecating native Cosmos transactions, CosmWasm, and IBC can strand legacy integrations or assets if users and custodians fail to migrate in time.", "source_url": "https://blog.sei.io/announcements/the-sip-3-upgrade-making-way-for-sei-giga/"},
+          {"type": "governance", "detail": "Staked-token voting and validator execution control parameter and upgrade changes, creating participation and stake-concentration risk.", "source_url": "https://www.docs.sei.io/learn/general-governance"},
+          {"type": "execution_complexity", "detail": "The network is replacing a dual-runtime design while pursuing new asynchronous execution, consensus, and storage architecture.", "source_url": "https://www.docs.sei.io/learn/sei-giga"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Sei shows $302.4M in stablecoin supply and $219.6M in 30-day DEX volume, but DeFi TVL is 93.5% below its 2025 peak and SEI is 96.3% below its high during a major EVM-only migration.",
+        "postmortem": null,
+        "why": "Sei remains relevant because it repeatedly optimized for the deepest developer standard—the EVM—while preserving a fast consensus base and aggressively simplifying legacy architecture.",
+        "success_mechanism": "Parallel execution, fast finality, Ethereum tooling, and native SEI staking can attract latency-sensitive applications if the Giga transition improves performance without disrupting assets.",
+        "strategic_choices": [
+          "Launch as a trading-optimized Cosmos L1.",
+          "Add a parallelized EVM without initially removing CosmWasm.",
+          "Approve SIP-3 to become EVM-only and remove legacy Cosmos and IBC complexity."
+        ],
+        "unknowns": [
+          "Whether all legacy assets, contracts, custodians, and users completed SIP-3 migration safely.",
+          "Current validator-stake, application-TVL, stablecoin-issuer, and bridge concentration.",
+          "Whether Giga's advertised throughput survives production adversarial load and state growth."
+        ],
+        "lessons_learned": [
+          "Supporting two runtimes can broaden compatibility while increasing operational and user complexity.",
+          "Architecture simplification creates migration risk that must be tracked as a lifecycle event.",
+          "Stablecoin supply, DEX volume, and DeFi TVL can diverge sharply."
+        ],
+        "could_differ": "Keeping CosmWasm and IBC would preserve ecosystem continuity, but it would retain code, tooling, and integration complexity opposed to the EVM-scale thesis.",
+        "outlook": {"bull": "Giga lands safely and converts strong stablecoin activity into durable EVM application liquidity.", "base": "Sei completes the migration and remains a high-throughput EVM niche below peak TVL.", "bear": "Migration friction and execution risk erode developers and strand legacy value.", "most_likely": "base"},
+        "cause_tags": ["parallel_evm", "architecture_pivot", "sip3", "migration_risk", "performance_competition"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 86,
+      "confidence": "high",
+      "unsourced_fields": ["capital.treasury_usd", "capital.round_level_breakout", "team.additional_founders", "team.regulatory_status", "risk.audit_status", "risk.archived_sanctions_check", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.legacy_asset_migration_completion"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "Unichain",
+    "source_catalog": {
+      "introduce": {"title": "Uniswap Labs introduces Unichain", "url": "https://blog.uniswap.org/introducing-unichain"},
+      "launch": {"title": "Unichain mainnet launch", "url": "https://blog.uniswap.org/unichain-mainnet-is-here"},
+      "whitepaper": {"title": "Unichain whitepaper", "url": "https://docs.unichain.org/whitepaper.pdf"},
+      "fault_proofs": {"title": "Unichain mainnet fault-proof roadmap", "url": "https://blog.uniswap.org/wen-unichain-mainnet"},
+      "tee": {"title": "Unichain TEE block building", "url": "https://blog.uniswap.org/rollup-boost-is-live-on-unichain"},
+      "flashblocks": {"title": "Unichain Flashblocks production launch", "url": "https://blog.uniswap.org/flashblocks-are-live"},
+      "tvl": {"title": "DefiLlama Unichain historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Unichain"},
+      "fees": {"title": "DefiLlama Unichain fees API", "url": "https://api.llama.fi/overview/fees/Unichain?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Unichain revenue API", "url": "https://api.llama.fi/overview/fees/Unichain?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Unichain DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Unichain?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["introduce", "launch", "flashblocks"],
+      "token": ["launch", "whitepaper"],
+      "capital": ["introduce", "launch"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["introduce", "launch", "whitepaper"],
+      "narrative": ["introduce", "whitepaper", "tee", "flashblocks"],
+      "risk": ["fault_proofs", "whitepaper", "tee", "ofac"],
+      "synthesis": ["launch", "whitepaper", "tee", "flashblocks", "tvl", "fees", "revenue", "volume"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Unichain",
+        "aliases": ["Uniswap Unichain"],
+        "category": "L2_rollup",
+        "vm": "EVM",
+        "launched": "2025-02-11",
+        "launch_date_precision": "day",
+        "status": "established",
+        "lifecycle": [
+          {"date": "2024-10-10", "type": "testnet", "description": "Uniswap Labs introduced Unichain and opened its testnet.", "source_url": "https://blog.uniswap.org/introducing-unichain"},
+          {"date": "2025-02-11", "type": "launch", "description": "Public mainnet launched as a Stage 1 Superchain rollup with permissionless fault proofs.", "source_url": "https://blog.uniswap.org/unichain-mainnet-is-here"},
+          {"date": "2025-05-02", "type": "architecture_upgrade", "description": "TEE-based Rollup-Boost block building went live to enforce transparent priority ordering.", "source_url": "https://blog.uniswap.org/rollup-boost-is-live-on-unichain"},
+          {"date": "2025-08-14", "type": "architecture_upgrade", "description": "Production Flashblocks reduced effective confirmation intervals to 200 milliseconds.", "source_url": "https://blog.uniswap.org/flashblocks-are-live"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "not_launched",
+        "token_symbol": null,
+        "gas_token": "ETH",
+        "launch_date": null,
+        "launch_relation": "Unichain has no separately launched network token in reviewed primary materials. ETH pays gas; UNI is an existing Uniswap governance asset contemplated for UVN staking, not reclassified as a Unichain-native token.",
+        "token_cg_id": null,
+        "token_current_usd": null,
+        "token_ath_usd": null,
+        "token_ath_date": null,
+        "price_drawdown_pct": null,
+        "market_cap_usd": null,
+        "fdv_usd": null,
+        "circulating_supply": null,
+        "total_supply": null,
+        "max_supply": null,
+        "unlock_overhang_pct": null,
+        "source_url": "https://docs.unichain.org/whitepaper.pdf"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": null,
+        "rounds": [],
+        "treasury_usd": null,
+        "backers_tier": "corporate",
+        "notes": "Uniswap Labs built Unichain and the Uniswap Foundation supported builders; no standalone chain financing total is asserted."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 902862383,
+        "tvl_peak_date": "2025-07-21",
+        "tvl_current_usd": 27322276,
+        "tvl_drawdown_pct": 96.97,
+        "stablecoin_tvl_usd": 28055742.73,
+        "spot_dex_volume_24h_usd": 10963400.39,
+        "spot_dex_volume_30d_usd": 235373426.39,
+        "fees_24h_usd": 19712.89,
+        "fees_30d_usd": 474272.49,
+        "revenue_24h_usd": 143.21,
+        "revenue_30d_usd": 3926.6,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Unichain",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Unichain?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Unichain?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Unichain?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "Snapshot series were retrieved on the as-of date; the peak-to-current TVL comparison does not attribute the decline to a single cause."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [
+          {"name": "Hayden Adams", "role": "whitepaper author and Uniswap founder", "prior": "created the Uniswap protocol", "source_url": "https://docs.unichain.org/whitepaper.pdf"}
+        ],
+        "entity": "Uniswap Labs develops Unichain and contributes to the OP Stack; the Uniswap Foundation supports ecosystem development.",
+        "key_events": [
+          {"date": "2024-10-10", "type": "announcement", "description": "Uniswap Labs introduced the chain and open-sourced its stack components.", "source_url": "https://blog.uniswap.org/introducing-unichain"},
+          {"date": "2025-02-11", "type": "launch", "description": "Uniswap Labs launched Unichain mainnet.", "source_url": "https://blog.uniswap.org/unichain-mainnet-is-here"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Create a low-latency Superchain L2 optimized for DeFi market efficiency, fair ordering, and cross-chain liquidity.",
+        "positioning": "A protocol-distributed DeFi L2 using the OP Stack, TEE block building, and 200ms Flashblocks.",
+        "competitors": [
+          {"name": "Ink", "relationship": "DeFi-focused Superchain L2 competitor"},
+          {"name": "Base", "relationship": "distribution-led Superchain L2 competitor"},
+          {"name": "Arbitrum", "relationship": "established DeFi liquidity and execution competitor"}
+        ],
+        "narrative_arc": "Unichain translated Uniswap's protocol distribution into a dedicated execution venue, shipped fault proofs and fast TEE ordering, but peak liquidity did not persist.",
+        "media_sentiment": "mixed"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; an archived exact-name SDN review remains an explicit gap."},
+        "extraction_flags": ["centralized_sequencer", "tee_dependency", "bridge_risk", "liquidity_drawdown", "protocol_concentration"],
+        "audit_status": null,
+        "risks": [
+          {"type": "sequencer_liveness", "detail": "Permissionless fault proofs constrain invalid state but do not remove centralized-sequencer liveness and censorship exposure.", "source_url": "https://blog.uniswap.org/wen-unichain-mainnet"},
+          {"type": "tee_trust", "detail": "TEE block building improves verifiability of ordering but adds hardware, attestation, and implementation assumptions; the design explicitly does not replace decentralized consensus.", "source_url": "https://blog.uniswap.org/introducing-unichain"},
+          {"type": "validation_maturity", "detail": "The whitepaper's UNI-staked UVN is a distinct validation layer whose current production participation and security budget are not established by the reviewed launch materials.", "source_url": "https://docs.unichain.org/whitepaper.pdf"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Unichain produces $235.4M in 30-day DEX volume but retains only $27.3M TVL, 97.0% below its July 2025 peak; sequencer revenue is small relative to gross fees.",
+        "postmortem": null,
+        "why": "Unichain gained immediate usage because Uniswap could route its own protocol, wallet, and developer ecosystem into an OP Stack chain built specifically around market latency and ordering.",
+        "success_mechanism": "Uniswap distribution plus 200ms Flashblocks and TEE priority ordering can improve execution and LP responsiveness while Ethereum and the Superchain supply settlement and interoperability.",
+        "strategic_choices": [
+          "Use the OP Stack and ship permissionless fault proofs at mainnet.",
+          "Separate TEE block building from sequencing to make ordering policy attestable.",
+          "Use ETH for gas and treat UNI-staked validation as an overlay rather than launch a new chain token."
+        ],
+        "unknowns": [
+          "Current sequencer, upgrade-key, UVN-validator, and application-TVL concentration.",
+          "How much DEX volume is organic versus routed, incentivized, or concentrated in Uniswap deployments.",
+          "Why peak TVL left and what share can return without incentives."
+        ],
+        "lessons_learned": [
+          "Protocol distribution can bootstrap volume faster than it creates sticky TVL.",
+          "Fast preconfirmations, Ethereum finality, and UVN attestations are different guarantees.",
+          "TEE-enforced ordering reduces one MEV surface while adding hardware-attestation dependencies."
+        ],
+        "could_differ": "A standalone stack could tailor consensus and value capture further, but would forfeit OP compatibility and delay production.",
+        "outlook": {"bull": "Uniswap routing, UVN maturity, and Superchain interop rebuild sticky liquidity around fast execution.", "base": "Unichain stays a high-volume, low-TVL specialized venue integrated with Uniswap.", "bear": "Liquidity remains fragmented and TEE/sequencer dependencies limit independent adoption.", "most_likely": "base"},
+        "cause_tags": ["protocol_distribution", "op_stack", "flashblocks", "tee_ordering", "liquidity_retention"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 82,
+      "confidence": "high",
+      "unsourced_fields": ["capital.total_raised_usd", "capital.treasury_usd", "team.regulatory_status", "risk.audit_status", "risk.archived_sanctions_check", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.current_uvn_and_upgrade_key_concentration", "synthesis.volume_incentive_attribution"],
+      "last_reviewed": "2026-07-29"
+    }
+  }
+]
