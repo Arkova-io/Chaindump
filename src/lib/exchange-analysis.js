@@ -32,6 +32,67 @@ function sortedCounts(counts) {
     .map(([key, count]) => ({ key, count }));
 }
 
+function rounded(value, digits = 3) {
+  const scale = 10 ** digits;
+  return Math.round(value * scale) / scale;
+}
+
+// Wilson score intervals remain bounded at 0..1 and behave materially better
+// than normal approximations for the small forensic cohorts in this corpus.
+function outcomeEstimate(items, populationRate) {
+  const sampleSize = items.length;
+  const successful = items.filter((item) => item.lifecycle === 'successful').length;
+  const mid = items.filter((item) => item.lifecycle === 'mid').length;
+  const dead = items.filter((item) => item.lifecycle === 'dead').length;
+  const successRate = sampleSize ? successful / sampleSize : 0;
+  if (!sampleSize) {
+    return {
+      sampleSize: 0,
+      successful: 0,
+      mid: 0,
+      dead: 0,
+      successRate: 0,
+      ci95: { low: 0, high: 1 },
+      riskDifferenceVsPopulation: populationRate == null ? 0 : rounded(-populationRate),
+      smallSample: true,
+    };
+  }
+  const z = 1.96;
+  const denominator = 1 + (z ** 2 / sampleSize);
+  const centre = (successRate + (z ** 2 / (2 * sampleSize))) / denominator;
+  const margin = (z / denominator) * Math.sqrt(
+    (successRate * (1 - successRate) / sampleSize)
+    + (z ** 2 / (4 * sampleSize ** 2)),
+  );
+  return {
+    sampleSize,
+    successful,
+    mid,
+    dead,
+    successRate: rounded(successRate),
+    ci95: {
+      low: rounded(Math.max(0, centre - margin)),
+      high: rounded(Math.min(1, centre + margin)),
+    },
+    riskDifferenceVsPopulation: populationRate == null
+      ? 0
+      : rounded(successRate - populationRate),
+    smallSample: sampleSize < 5,
+  };
+}
+
+function associationGroups(items, keyFor, populationRate) {
+  const groups = new Map();
+  for (const item of items) {
+    const key = String(keyFor(item) || 'unknown');
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(item);
+  }
+  return [...groups.entries()]
+    .map(([key, rows]) => ({ key, ...outcomeEstimate(rows, populationRate) }))
+    .sort((a, b) => b.sampleSize - a.sampleSize || a.key.localeCompare(b.key));
+}
+
 export function normalizeExchangeCase(row) {
   const profile = parse(row.profile, {});
   const chains = parse(row.feature_chains, profile.chains || []);
@@ -205,6 +266,60 @@ export function summarizeExchangeCases(cases, kind) {
     };
   }
 
+  const overallEstimate = outcomeEstimate(scoped, null);
+  const populationRate = overallEstimate.successRate;
+  const tokenGroup = (row) => {
+    if (row.analysis?.token?.status !== 'launched') return 'not_identified';
+    return row.analysis.token.evidence_level === 'documented'
+      ? 'documented_launched'
+      : 'launched_unverified';
+  };
+  const outcomeAssociations = {
+    overall: overallEstimate,
+    tokenLaunch: associationGroups(scoped, tokenGroup, populationRate),
+    productCohort: associationGroups(
+      scoped,
+      (row) => row.analysis?.product_cohort || 'unclassified',
+      populationRate,
+    ),
+    primaryChain: associationGroups(
+      scoped,
+      (row) => row.primary_chain || 'unknown',
+      populationRate,
+    ),
+    method: 'Descriptive association only. Success is the published successful lifecycle; mid and dead are non-success outcomes. Rates use 95% Wilson score intervals. Risk differences compare each observed group with this kind-wide population and are not adjusted causal effects.',
+  };
+  const trendReadiness = {
+    totalCases: scoped.length,
+    causalDossiers: scoped.filter((row) => row.analysis?.forensic_analysis_status === 'published').length,
+    documentedTokenCases: scoped.filter((row) => row.analysis?.token?.evidence_level === 'documented').length,
+    currentEvidenceCases: scoped.filter((row) => (
+      row.analysis?.freshness?.last_verified_at
+      && row.analysis?.data_quality?.label !== 'limited'
+    )).length,
+    comparableMetricGroups: [...comparison.values()].filter((group) => group.count >= 2).length,
+  };
+  const hypotheses = [
+    {
+      variable: 'token_launch',
+      hypothesis: 'Documented token launch may correlate with liquidity bootstrapping or governance coordination, while poorly matched emissions can correlate with later decline.',
+      causalClaim: false,
+      falsifier: 'Within comparable product cohorts and launch eras, the rate difference disappears or reverses after separating token timing, incentive design, and evidence quality.',
+    },
+    {
+      variable: 'primary_chain',
+      hypothesis: 'Host-chain distribution, fees, wallet reach, and liquidity can shape venue adoption, but chain labels also proxy launch era and product type.',
+      causalClaim: false,
+      falsifier: 'Matched venues on the same product model show no persistent chain-context difference after controlling for launch cohort and token incentives.',
+    },
+    {
+      variable: 'product_cohort',
+      hypothesis: 'Focused product design and distribution may be more predictive than a generic DEX/CEX label.',
+      causalClaim: false,
+      falsifier: 'Cohort-level rate differences do not survive larger samples, explicit selection dates, and consistent lifecycle follow-up windows.',
+    },
+  ];
+
   return {
     kind,
     count: scoped.length,
@@ -220,6 +335,9 @@ export function summarizeExchangeCases(cases, kind) {
     comparisonGroups: [...comparison.values()]
       .map((group) => ({ ...group, cases: [...group.cases].sort((a, b) => a.localeCompare(b)) }))
       .sort((a, b) => b.count - a.count || a.comparabilityKey.localeCompare(b.comparabilityKey)),
+    outcomeAssociations,
+    trendReadiness,
+    hypotheses,
     cautions: [
       'Metric values are not pooled across comparison groups.',
       'Aggregator-routed volume overlaps underlying venue volume and is not additive.',

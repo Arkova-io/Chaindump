@@ -157,4 +157,85 @@ describe('summarizeExchangeCases', () => {
     expect(summary).not.toHaveProperty('totalMetric');
     expect(summary.comparisonGroups.every((group) => !Object.hasOwn(group, 'total'))).toBe(true);
   });
+
+  it('publishes outcome rates with Wilson uncertainty instead of causal-sounding counts', () => {
+    const cases = [
+      normalizeExchangeCase(row({ slug: 'success-a' })),
+      normalizeExchangeCase(row({ slug: 'success-b', feature_primary_chain: 'Base' })),
+      normalizeExchangeCase(row({
+        slug: 'dead-token',
+        lifecycle: 'dead',
+        feature_primary_chain: 'Ethereum',
+      })),
+      normalizeExchangeCase(row({
+        slug: 'dead-no-token',
+        lifecycle: 'dead',
+        feature_primary_chain: 'Base',
+        feature_token_status: 'not_identified',
+        feature_token_source_url: null,
+      })),
+    ];
+    const summary = summarizeExchangeCases(cases, 'dex');
+
+    expect(summary.outcomeAssociations.overall).toMatchObject({
+      sampleSize: 4,
+      successful: 2,
+      successRate: 0.5,
+      smallSample: true,
+    });
+    expect(summary.outcomeAssociations.overall.ci95.low).toBeCloseTo(0.15, 2);
+    expect(summary.outcomeAssociations.overall.ci95.high).toBeCloseTo(0.85, 2);
+    expect(summary.outcomeAssociations.tokenLaunch).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        key: 'documented_launched',
+        sampleSize: 3,
+        successful: 2,
+        successRate: 0.667,
+      }),
+      expect.objectContaining({
+        key: 'not_identified',
+        sampleSize: 1,
+        successful: 0,
+        successRate: 0,
+      }),
+    ]));
+    expect(summary.outcomeAssociations.primaryChain).toEqual(expect.arrayContaining([
+      expect.objectContaining({ key: 'Base', sampleSize: 2, successRate: 0.5 }),
+      expect.objectContaining({ key: 'Ethereum', sampleSize: 2, successRate: 0.5 }),
+    ]));
+    expect(summary.outcomeAssociations.method).toContain('association');
+    expect(summary.outcomeAssociations.method).toContain('Wilson');
+  });
+
+  it('reports trend-readiness gaps and predeclared falsifiers', () => {
+    const cases = [
+      normalizeExchangeCase(row()),
+      normalizeExchangeCase(row({
+        slug: 'limited',
+        lifecycle: 'mid',
+        feature_quality_label: 'limited',
+        feature_last_verified_at: null,
+        feature_token_source_url: null,
+      })),
+    ];
+    const summary = summarizeExchangeCases(cases, 'dex');
+
+    expect(summary.trendReadiness).toMatchObject({
+      totalCases: 2,
+      documentedTokenCases: 1,
+      currentEvidenceCases: 1,
+    });
+    expect(summary.hypotheses).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        variable: 'token_launch',
+        causalClaim: false,
+        falsifier: expect.any(String),
+      }),
+      expect.objectContaining({
+        variable: 'primary_chain',
+        causalClaim: false,
+        falsifier: expect.any(String),
+      }),
+    ]));
+  });
 });
