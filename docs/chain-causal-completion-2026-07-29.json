@@ -5,7 +5,8 @@
     "scope": "Shared causal forensic normalization for the exact 15 top-chain dossiers that lacked explicit why and strategic-choice contracts.",
     "observation_rule": "Dated metrics are observations. Causal attribution and counterfactuals are labeled analytical inferences and carry confidence.",
     "preservation_rule": "Migration 0062 adds forensic_analysis to synthesis and review metadata to _meta; it does not replace any existing dossier dimension.",
-    "source_rule": "Every causal field resolves to an exact checked source. Primary or operator sources establish designs and decisions; independent data and risk research test outcomes."
+    "source_rule": "Every causal field resolves to an exact checked source. Primary or operator sources establish designs and decisions; independent data and risk research test outcomes.",
+    "correction_rule": "Applied historical migrations remain immutable. Citation and arithmetic corrections are isolated, source-scoped, denominator-labeled, and idempotent."
   },
   "cases": [
     {
@@ -1510,31 +1511,41 @@
           "url": "https://docs.cardano.org/about-cardano/learn/pledging-rewards",
           "source_role": "primary",
           "checked_at": "2026-07-29"
+        },
+        {
+          "id": "ada-llama",
+          "title": "Cardano chain metrics",
+          "publisher": "DefiLlama",
+          "url": "https://defillama.com/chain/cardano",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
         }
       ],
       "forensic_analysis": {
         "version": "forensic-analysis-v1",
         "outcome": {
           "label": "middling",
-          "summary": "Cardano is an established but middling L1: it completed a documented transition from federated operation toward stake-pool consensus and constitutional governance, yet this source set does not establish current application liquidity, fees or user retention. Protocol longevity and governance machinery are real outcomes; they are not substitutes for measured product demand.",
+          "summary": "Cardano is an established but middling L1: it completed a documented transition from federated operation toward stake-pool consensus and constitutional governance, while the July 29 DefiLlama snapshot showed about $62 million of DeFi TVL, $63.5 million of stablecoins, $1.64 million of 24-hour DEX volume and $883 of 24-hour chain fees. Protocol longevity and governance machinery are real outcomes, but the independently observed application economy remains modest relative to ADA’s roughly $6 billion market capitalization.",
           "confidence": "high",
           "as_of": "2026-07-29",
           "source_refs": [
             "ada-eras",
             "ada-shelley",
             "ada-constitution",
-            "ada-supply"
+            "ada-supply",
+            "ada-llama"
           ]
         },
         "why": {
-          "summary": "Observed: Cardano pursued staged protocol eras, formal research, a Byron-to-Shelley stake-pool transition, native staking incentives and constitutional treasury governance. Strategic inference: this methodical approach prioritized protocol correctness, predictable evolution and formal governance over rapid application shipping and ecosystem improvisation. It produced a durable chain, a large native asset base and a clear decentralization narrative, but increased time-to-market while faster EVM and high-throughput competitors accumulated liquidity, developers and consumer distribution. Cardano is not a failed chain: consensus, staking and governance continue. It is middling because the strategic investment in research and process has not, on the evidence reviewed here, been connected to comparable current application demand, fee generation and retention. The causal question is execution of treasury and roadmap, not the existence of those mechanisms.",
+          "summary": "Observed: Cardano pursued staged protocol eras, formal research, a Byron-to-Shelley stake-pool transition, native staking incentives and constitutional treasury governance. The July 29 independent-data snapshot showed a functioning application layer, including DeFi liquidity, stablecoins, DEX trading, active addresses and transaction activity, but only $883 in daily chain fees against an ADA market capitalization near $6 billion. Strategic inference: this methodical approach prioritized protocol correctness, predictable evolution and formal governance over rapid application shipping and ecosystem improvisation. It produced a durable chain, a large native asset base and a clear decentralization narrative, but increased time-to-market while faster EVM and high-throughput competitors accumulated liquidity, developers and consumer distribution. Cardano is not a failed chain: consensus, staking, governance and applications continue. It is middling because the strategic investment in research and process has not yet produced application demand and fee generation commensurate with its capitalization and longevity. The causal question is execution of treasury and roadmap into retained paid use, not the existence of those mechanisms.",
           "confidence": "medium",
           "source_refs": [
             "ada-eras",
             "ada-shelley",
             "ada-constitution",
             "ada-rewards",
-            "ada-supply"
+            "ada-supply",
+            "ada-llama"
           ]
         },
         "strategic_choices": [
@@ -1588,7 +1599,7 @@
             "signal": "Application TVL, stablecoins, DEX volume, active users, fees and developer retention from dated sources.",
             "implication": "Sustained paid application demand would move Cardano from institutional durability to economic success.",
             "source_refs": [
-              "ada-eras"
+              "ada-llama"
             ]
           },
           {
@@ -1609,8 +1620,8 @@
         ],
         "unknowns": [
           {
-            "question": "What is current application demand across fees, users, liquidity and stablecoins?",
-            "resolution_trigger": "A reproducible dated onchain snapshot with protocol attribution."
+            "question": "How much of the observed application demand represents retained users rather than short-lived activity?",
+            "resolution_trigger": "Thirty-, ninety- and 180-day user, fee and liquidity cohorts with protocol attribution."
           },
           {
             "question": "Who beneficially controls stake pools and delegation?",
@@ -2491,6 +2502,63 @@
           "next_review_at": "2026-08-02",
           "reviewer": "chaindump-research-desk"
         }
+      }
+    }
+  ],
+  "corrections": [
+    {
+      "id": "xdc-identity-nested-source-coverage",
+      "chain": "XDC",
+      "dimension": "identity",
+      "correction_type": "citation_completion",
+      "reason": "The identity lifecycle cites financing and TVL observations whose URLs were absent from the dimension-level source list.",
+      "sources": [
+        {
+          "id": "xdc-funding",
+          "title": "XDC $50M LDA Capital investment",
+          "publisher": "XDC Network",
+          "url": "https://xdc.org/articles/xdc-accelerates-network-expansion-with-ldas-50-m",
+          "source_role": "primary",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "xdc-tvl",
+          "title": "DefiLlama XDC historical TVL API",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/v2/historicalChainTvl/XDC",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        }
+      ]
+    },
+    {
+      "id": "osmosis-token-overhang-denominator",
+      "chain": "Osmosis",
+      "dimension": "token",
+      "correction_type": "metric_correction",
+      "reason": "The prior 2.44% value measured max supply minus reported total supply, not the non-circulating gap between max and circulating supply.",
+      "sources": [
+        {
+          "id": "osmosis-token",
+          "title": "CoinGecko Osmosis market data API",
+          "publisher": "CoinGecko",
+          "url": "https://api.coingecko.com/api/v3/coins/osmosis",
+          "source_role": "independent-data",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "patch": {
+        "circulating_supply": 782724061.654104,
+        "total_supply": 975626844.081024,
+        "max_supply": 1000000000,
+        "unlock_overhang_pct": 21.73,
+        "unlock_overhang_denominator": "max_supply",
+        "unlock_overhang_formula": "(max_supply - circulating_supply) / max_supply",
+        "supply_gap_to_max": 217275938.345896,
+        "reported_total_noncirculating_supply": 192902782.42692006,
+        "reported_total_noncirculating_pct_of_total": 19.77,
+        "unissued_to_max_supply_pct": 2.44,
+        "overhang_methodology_note": "The 21.73% field is the gap from circulating supply to max supply. The 19.77% companion figure is reported total supply minus circulating supply divided by reported total supply. The 2.44% figure is only max supply minus reported total supply divided by max supply. These arithmetic gaps do not prove a contractual unlock schedule."
       }
     }
   ]

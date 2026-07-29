@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { validateForensicAnalysis } from '../src/lib/forensic-analysis.js';
@@ -408,13 +409,14 @@ const cases = [
       source('ada-supply', 'ADA supply distribution — epoch 637', 'Cardano Foundation', 'https://cardano.org/insights/supply/?epoch=637'),
       source('ada-constitution', 'Cardano Constitution', 'Cardano Foundation', 'https://cardano.org/constitution/'),
       source('ada-rewards', 'Pledging and rewards', 'Cardano Foundation', 'https://docs.cardano.org/about-cardano/learn/pledging-rewards'),
+      source('ada-llama', 'Cardano chain metrics', 'DefiLlama', 'https://defillama.com/chain/cardano', 'independent-data'),
     ],
     forensic_analysis: analysis({
       label: 'middling',
-      outcome: 'Cardano is an established but middling L1: it completed a documented transition from federated operation toward stake-pool consensus and constitutional governance, yet this source set does not establish current application liquidity, fees or user retention. Protocol longevity and governance machinery are real outcomes; they are not substitutes for measured product demand.',
-      outcomeSources: ['ada-eras', 'ada-shelley', 'ada-constitution', 'ada-supply'],
-      why: 'Observed: Cardano pursued staged protocol eras, formal research, a Byron-to-Shelley stake-pool transition, native staking incentives and constitutional treasury governance. Strategic inference: this methodical approach prioritized protocol correctness, predictable evolution and formal governance over rapid application shipping and ecosystem improvisation. It produced a durable chain, a large native asset base and a clear decentralization narrative, but increased time-to-market while faster EVM and high-throughput competitors accumulated liquidity, developers and consumer distribution. Cardano is not a failed chain: consensus, staking and governance continue. It is middling because the strategic investment in research and process has not, on the evidence reviewed here, been connected to comparable current application demand, fee generation and retention. The causal question is execution of treasury and roadmap, not the existence of those mechanisms.',
-      whySources: ['ada-eras', 'ada-shelley', 'ada-constitution', 'ada-rewards', 'ada-supply'],
+      outcome: 'Cardano is an established but middling L1: it completed a documented transition from federated operation toward stake-pool consensus and constitutional governance, while the July 29 DefiLlama snapshot showed about $62 million of DeFi TVL, $63.5 million of stablecoins, $1.64 million of 24-hour DEX volume and $883 of 24-hour chain fees. Protocol longevity and governance machinery are real outcomes, but the independently observed application economy remains modest relative to ADA’s roughly $6 billion market capitalization.',
+      outcomeSources: ['ada-eras', 'ada-shelley', 'ada-constitution', 'ada-supply', 'ada-llama'],
+      why: 'Observed: Cardano pursued staged protocol eras, formal research, a Byron-to-Shelley stake-pool transition, native staking incentives and constitutional treasury governance. The July 29 independent-data snapshot showed a functioning application layer, including DeFi liquidity, stablecoins, DEX trading, active addresses and transaction activity, but only $883 in daily chain fees against an ADA market capitalization near $6 billion. Strategic inference: this methodical approach prioritized protocol correctness, predictable evolution and formal governance over rapid application shipping and ecosystem improvisation. It produced a durable chain, a large native asset base and a clear decentralization narrative, but increased time-to-market while faster EVM and high-throughput competitors accumulated liquidity, developers and consumer distribution. Cardano is not a failed chain: consensus, staking, governance and applications continue. It is middling because the strategic investment in research and process has not yet produced application demand and fee generation commensurate with its capitalization and longevity. The causal question is execution of treasury and roadmap into retained paid use, not the existence of those mechanisms.',
+      whySources: ['ada-eras', 'ada-shelley', 'ada-constitution', 'ada-rewards', 'ada-supply', 'ada-llama'],
       choices: [
         ['Deliver the protocol through named eras and staged hard-fork transitions.', 'Changes can be researched and coordinated deliberately, while application capabilities arrive more slowly than in ecosystems that ship iteratively.', ['ada-eras'], 'high'],
         ['Move from federated Byron operation to delegated stake pools in Shelley.', 'Consensus participation broadened beyond the launch federation, while current pool ownership and effective delegation concentration still require measurement.', ['ada-shelley', 'ada-rewards'], 'high'],
@@ -424,12 +426,12 @@ const cases = [
       counterfactual: 'Shipping smart-contract and application tooling earlier could have captured more of the 2020–2021 developer and liquidity cycle, but might have weakened the research-first quality and governance transition. More centralized roadmap execution could move faster while contradicting the decentralization thesis. The evidence cannot determine whether faster delivery would have produced retained users rather than short-lived incentives.',
       counterfactualSources: ['ada-eras', 'ada-shelley', 'ada-constitution'],
       watch: [
-        ['Application TVL, stablecoins, DEX volume, active users, fees and developer retention from dated sources.', 'Sustained paid application demand would move Cardano from institutional durability to economic success.', ['ada-eras']],
+        ['Application TVL, stablecoins, DEX volume, active users, fees and developer retention from dated sources.', 'Sustained paid application demand would move Cardano from institutional durability to economic success.', ['ada-llama']],
         ['Stake-pool beneficial ownership, delegation concentration and operator profitability.', 'Nominal pool counts are insufficient if control or infrastructure is concentrated.', ['ada-rewards', 'ada-shelley']],
         ['Treasury proposal throughput, completion, audited outcomes and repeat user impact.', 'Effective allocation validates constitutional governance; unspent or low-impact capital weakens it.', ['ada-constitution']],
       ],
       unknowns: [
-        ['What is current application demand across fees, users, liquidity and stablecoins?', 'A reproducible dated onchain snapshot with protocol attribution.'],
+        ['How much of the observed application demand represents retained users rather than short-lived activity?', 'Thirty-, ninety- and 180-day user, fee and liquidity cohorts with protocol attribution.'],
         ['Who beneficially controls stake pools and delegation?', 'Independent entity and infrastructure mapping.'],
         ['What economic outcomes has treasury spending produced?', 'Proposal-level completion, spend and retained-usage audits.'],
         ['What is current client and infrastructure diversity?', 'Stake-weighted production telemetry.'],
@@ -623,6 +625,64 @@ const cases = [
   },
 ];
 
+const corrections = [
+  {
+    id: 'xdc-identity-nested-source-coverage',
+    chain: 'XDC',
+    dimension: 'identity',
+    correction_type: 'citation_completion',
+    reason: 'The identity lifecycle cites financing and TVL observations whose URLs were absent from the dimension-level source list.',
+    sources: [
+      {
+        id: 'xdc-funding',
+        title: 'XDC $50M LDA Capital investment',
+        publisher: 'XDC Network',
+        url: 'https://xdc.org/articles/xdc-accelerates-network-expansion-with-ldas-50-m',
+        source_role: 'primary',
+        checked_at: checkedAt,
+      },
+      {
+        id: 'xdc-tvl',
+        title: 'DefiLlama XDC historical TVL API',
+        publisher: 'DefiLlama',
+        url: 'https://api.llama.fi/v2/historicalChainTvl/XDC',
+        source_role: 'independent-data',
+        checked_at: checkedAt,
+      },
+    ],
+  },
+  {
+    id: 'osmosis-token-overhang-denominator',
+    chain: 'Osmosis',
+    dimension: 'token',
+    correction_type: 'metric_correction',
+    reason: 'The prior 2.44% value measured max supply minus reported total supply, not the non-circulating gap between max and circulating supply.',
+    sources: [
+      {
+        id: 'osmosis-token',
+        title: 'CoinGecko Osmosis market data API',
+        publisher: 'CoinGecko',
+        url: 'https://api.coingecko.com/api/v3/coins/osmosis',
+        source_role: 'independent-data',
+        checked_at: checkedAt,
+      },
+    ],
+    patch: {
+      circulating_supply: 782724061.654104,
+      total_supply: 975626844.081024,
+      max_supply: 1000000000,
+      unlock_overhang_pct: 21.73,
+      unlock_overhang_denominator: 'max_supply',
+      unlock_overhang_formula: '(max_supply - circulating_supply) / max_supply',
+      supply_gap_to_max: 217275938.345896,
+      reported_total_noncirculating_supply: 192902782.42692006,
+      reported_total_noncirculating_pct_of_total: 19.77,
+      unissued_to_max_supply_pct: 2.44,
+      overhang_methodology_note: 'The 21.73% field is the gap from circulating supply to max supply. The 19.77% companion figure is reported total supply minus circulating supply divided by reported total supply. The 2.44% figure is only max supply minus reported total supply divided by max supply. These arithmetic gaps do not prove a contractual unlock schedule.',
+    },
+  },
+];
+
 const document = {
   schema: 'chaindump-chain-causal-completion-v1',
   research_as_of: checkedAt,
@@ -631,12 +691,20 @@ const document = {
     observation_rule: 'Dated metrics are observations. Causal attribution and counterfactuals are labeled analytical inferences and carry confidence.',
     preservation_rule: 'Migration 0062 adds forensic_analysis to synthesis and review metadata to _meta; it does not replace any existing dossier dimension.',
     source_rule: 'Every causal field resolves to an exact checked source. Primary or operator sources establish designs and decisions; independent data and risk research test outcomes.',
+    correction_rule: 'Applied historical migrations remain immutable. Citation and arithmetic corrections are isolated, source-scoped, denominator-labeled, and idempotent.',
   },
   cases,
+  corrections,
 };
 
 for (const entry of document.cases) {
   const sourceById = Object.fromEntries(entry.sources.map((item) => [item.id, item]));
+  if (Object.keys(sourceById).length !== entry.sources.length) {
+    throw new Error(`${entry.chain}: duplicate source id`);
+  }
+  if (new Set(entry.sources.map(({ url }) => url)).size !== entry.sources.length) {
+    throw new Error(`${entry.chain}: duplicate source URL`);
+  }
   const validation = validateForensicAnalysis(entry.forensic_analysis, {
     resolver: sourceById,
   });
@@ -645,82 +713,197 @@ for (const entry of document.cases) {
   }
 }
 
-writeFileSync(documentPath, `${JSON.stringify(document, null, 2)}\n`);
+const serializedDocument = `${JSON.stringify(document, null, 2)}\n`;
+const canRewriteManifest = process.argv.includes('--write-manifest');
+const existingDocument = existsSync(documentPath) ? readFileSync(documentPath, 'utf8') : null;
+if (existingDocument !== serializedDocument && !canRewriteManifest) {
+  throw new Error('checked manifest differs from the canonical renderer input');
+}
+if (existingDocument !== serializedDocument) writeFileSync(documentPath, serializedDocument);
+const manifestHash = createHash('sha256').update(serializedDocument).digest('hex');
+const maxD1StatementBytes = 95_000;
 
-const payload = JSON.stringify(document).replaceAll("'", "''");
-const sql = `-- Generated by scripts/render-chain-causal-completion-migration.mjs.
--- Adds the shared causal contract without replacing any existing dossier dimension.
--- Re-run after editing the checked research corpus; both updates are idempotent.
+function assertStatementSize(label, statement) {
+  const statementBytes = Buffer.byteLength(statement, 'utf8');
+  if (statementBytes > maxD1StatementBytes) {
+    throw new Error(
+      `${label}: ${statementBytes}-byte statement exceeds ${maxD1StatementBytes}`,
+    );
+  }
+  return statement;
+}
 
--- canonical-payload-start
+function renderCaseStatement(entry) {
+  const payload = JSON.stringify(entry).replaceAll("'", "''");
+  const statement = `-- canonical-case-start ${entry.chain}
 WITH causal_seed(payload) AS (
   VALUES ('${payload}')
-),
-updates AS (
-  SELECT
-    json_extract(value, '$.chain') AS chain,
-    json_extract(value, '$.forensic_analysis') AS forensic_analysis,
-    json_extract(value, '$.sources') AS new_sources
-  FROM causal_seed, json_each(json_extract(causal_seed.payload, '$.cases'))
 )
 UPDATE chain_facts AS facts
 SET
-  data = json_set(
-    facts.data,
-    '$.forensic_analysis',
-    json((SELECT forensic_analysis FROM updates WHERE updates.chain = facts.chain))
-  ),
+  data = CASE facts.dimension
+    WHEN 'synthesis' THEN json_set(
+      facts.data,
+      '$.forensic_analysis',
+      json(json_extract((SELECT payload FROM causal_seed), '$.forensic_analysis'))
+    )
+    WHEN '_meta' THEN json_set(
+      facts.data,
+      '$.forensic_analysis_version', 'forensic-analysis-v1',
+      '$.last_reviewed', '${checkedAt}',
+      '$.next_review_at',
+      json_extract(
+        (SELECT payload FROM causal_seed),
+        '$.forensic_analysis.review.next_review_at'
+      )
+    )
+    ELSE facts.data
+  END,
+  sources = CASE
+    WHEN facts.dimension = 'synthesis' THEN (
+      SELECT json_group_array(json(source_json))
+      FROM (
+        SELECT source_json
+        FROM (
+          SELECT
+            CASE
+              WHEN new_source.value IS NULL THEN old_source.value
+              ELSE json_set(
+                json_patch(old_source.value, new_source.value),
+                '$.checked_at',
+                CASE
+                  WHEN json_extract(old_source.value, '$.checked_at')
+                    > json_extract(new_source.value, '$.checked_at')
+                    THEN json_extract(old_source.value, '$.checked_at')
+                  ELSE COALESCE(
+                    json_extract(new_source.value, '$.checked_at'),
+                    json_extract(old_source.value, '$.checked_at')
+                  )
+                END
+              )
+            END AS source_json,
+            old_source.key AS position
+          FROM json_each(COALESCE(facts.sources, '[]')) AS old_source
+          LEFT JOIN json_each(
+            json_extract((SELECT payload FROM causal_seed), '$.sources')
+          ) AS new_source
+            ON json_extract(new_source.value, '$.url')
+              = json_extract(old_source.value, '$.url')
+          WHERE json_extract(old_source.value, '$.url') IS NULL
+            OR old_source.key = (
+              SELECT MIN(candidate.key)
+              FROM json_each(COALESCE(facts.sources, '[]')) AS candidate
+              WHERE json_extract(candidate.value, '$.url')
+                = json_extract(old_source.value, '$.url')
+            )
+          UNION ALL
+          SELECT new_source.value AS source_json, 10000 + new_source.key AS position
+          FROM json_each(
+            json_extract((SELECT payload FROM causal_seed), '$.sources')
+          ) AS new_source
+          WHERE NOT EXISTS (
+            SELECT 1
+            FROM json_each(COALESCE(facts.sources, '[]')) AS existing
+            WHERE json_extract(existing.value, '$.url')
+              = json_extract(new_source.value, '$.url')
+          )
+        )
+        ORDER BY position
+      )
+    )
+    ELSE facts.sources
+  END,
+  updated_at = '${checkedAt}'
+WHERE facts.chain = json_extract((SELECT payload FROM causal_seed), '$.chain')
+  AND facts.dimension IN ('synthesis', '_meta');
+-- canonical-case-end ${entry.chain}
+`;
+  return assertStatementSize(entry.chain, statement);
+}
+
+function renderCorrectionStatement(correction) {
+  const payload = JSON.stringify(correction).replaceAll("'", "''");
+  const statement = `-- canonical-correction-start ${correction.id}
+WITH correction_seed(payload) AS (
+  VALUES ('${payload}')
+)
+UPDATE chain_facts AS facts
+SET
+  data = CASE
+    WHEN json_type((SELECT payload FROM correction_seed), '$.patch') = 'object'
+      THEN json_patch(
+        facts.data,
+        json_extract((SELECT payload FROM correction_seed), '$.patch')
+      )
+    ELSE facts.data
+  END,
   sources = (
     SELECT json_group_array(json(source_json))
     FROM (
-      SELECT source_json
-      FROM (
-        SELECT old_source.value AS source_json, old_source.key AS position
-        FROM json_each(COALESCE(facts.sources, '[]')) AS old_source
-        UNION ALL
-        SELECT new_source.value AS source_json, 10000 + new_source.key AS position
-        FROM json_each((
-          SELECT new_sources FROM updates WHERE updates.chain = facts.chain
-        )) AS new_source
-        WHERE NOT EXISTS (
-          SELECT 1
-          FROM json_each(COALESCE(facts.sources, '[]')) AS existing
-          WHERE json_extract(existing.value, '$.url') = json_extract(new_source.value, '$.url')
+      SELECT
+        CASE
+          WHEN new_source.value IS NULL THEN old_source.value
+          ELSE json_set(
+            json_patch(old_source.value, new_source.value),
+            '$.checked_at',
+            CASE
+              WHEN json_extract(old_source.value, '$.checked_at')
+                > json_extract(new_source.value, '$.checked_at')
+                THEN json_extract(old_source.value, '$.checked_at')
+              ELSE COALESCE(
+                json_extract(new_source.value, '$.checked_at'),
+                json_extract(old_source.value, '$.checked_at')
+              )
+            END
+          )
+        END AS source_json,
+        old_source.key AS position
+      FROM json_each(COALESCE(facts.sources, '[]')) AS old_source
+      LEFT JOIN json_each(
+        json_extract((SELECT payload FROM correction_seed), '$.sources')
+      ) AS new_source
+        ON json_extract(new_source.value, '$.url')
+          = json_extract(old_source.value, '$.url')
+      WHERE json_extract(old_source.value, '$.url') IS NULL
+        OR old_source.key = (
+          SELECT MIN(candidate.key)
+          FROM json_each(COALESCE(facts.sources, '[]')) AS candidate
+          WHERE json_extract(candidate.value, '$.url')
+            = json_extract(old_source.value, '$.url')
         )
+      UNION ALL
+      SELECT new_source.value AS source_json, 10000 + new_source.key AS position
+      FROM json_each(
+        json_extract((SELECT payload FROM correction_seed), '$.sources')
+      ) AS new_source
+      WHERE NOT EXISTS (
+        SELECT 1
+        FROM json_each(COALESCE(facts.sources, '[]')) AS existing
+        WHERE json_extract(existing.value, '$.url')
+          = json_extract(new_source.value, '$.url')
       )
       ORDER BY position
     )
   ),
   updated_at = '${checkedAt}'
-WHERE facts.dimension = 'synthesis'
-  AND facts.chain IN (SELECT chain FROM updates);
-
-WITH causal_seed(payload) AS (
-  VALUES ('${payload}')
-),
-updates AS (
-  SELECT
-    json_extract(value, '$.chain') AS chain,
-    json_extract(value, '$.forensic_analysis.review.next_review_at') AS next_review_at
-  FROM causal_seed, json_each(json_extract(causal_seed.payload, '$.cases'))
-)
-UPDATE chain_facts AS facts
-SET
-  data = json_set(
-    facts.data,
-    '$.forensic_analysis_version', 'forensic-analysis-v1',
-    '$.last_reviewed', '${checkedAt}',
-    '$.next_review_at',
-    (SELECT next_review_at FROM updates WHERE updates.chain = facts.chain)
-  ),
-  updated_at = '${checkedAt}'
-WHERE facts.dimension = '_meta'
-  AND facts.chain IN (SELECT chain FROM updates);
+WHERE facts.chain = json_extract((SELECT payload FROM correction_seed), '$.chain')
+  AND facts.dimension = json_extract(
+    (SELECT payload FROM correction_seed),
+    '$.dimension'
+  );
+-- canonical-correction-end ${correction.id}
 `;
+  return assertStatementSize(correction.id, statement);
+}
+
+const caseStatements = document.cases.map(renderCaseStatement);
+const correctionStatements = document.corrections.map(renderCorrectionStatement);
+const sql = `-- Generated by scripts/render-chain-causal-completion-migration.mjs.
+-- Adds the shared causal contract without replacing any existing dossier dimension.
+-- Re-run after editing the checked research corpus; every update is idempotent.
+-- canonical-manifest-sha256 ${manifestHash}
+
+${caseStatements.join('\n')}
+${correctionStatements.join('\n')}`;
 
 writeFileSync(migrationPath, sql);
-
-const existing = readFileSync(documentPath, 'utf8');
-if (existing !== `${JSON.stringify(document, null, 2)}\n`) {
-  throw new Error('manifest write was not deterministic');
-}

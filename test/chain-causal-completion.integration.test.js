@@ -1,3 +1,5 @@
+import { Buffer } from 'node:buffer';
+import { createHash } from 'node:crypto';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, readdirSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
@@ -20,6 +22,7 @@ const expectedChains = [
   'Solana',
   'Tron',
 ];
+const migrationTouchedChains = [...expectedChains, 'Osmosis', 'XDC'];
 const manifestUrl = new URL(
   '../docs/chain-causal-completion-2026-07-29.json',
   import.meta.url,
@@ -28,20 +31,75 @@ const migrationUrl = new URL(
   '../migrations/0062_chain_causal_completion.sql',
   import.meta.url,
 );
+const maxD1StatementBytes = 95_000;
 
 function loadArtifacts() {
+  const manifest = readFileSync(manifestUrl, 'utf8');
   return {
-    document: JSON.parse(readFileSync(manifestUrl, 'utf8')),
+    document: JSON.parse(manifest),
+    manifest,
     migration: readFileSync(migrationUrl, 'utf8'),
   };
 }
 
-function migrationDocument(migration) {
-  const match = migration.match(
-    /-- canonical-payload-start[\s\S]*?VALUES \('([\s\S]*?)'\)\n\)/,
-  );
-  if (!match) throw new Error('0062 canonical payload not found');
-  return JSON.parse(match[1].replaceAll("''", "'"));
+function migrationCases(migration) {
+  const matches = [...migration.matchAll(
+    /-- canonical-case-start ([^\n]+)\nWITH causal_seed\(payload\) AS \(\n {2}VALUES \('([\s\S]*?)'\)\n\)\nUPDATE chain_facts AS facts/g,
+  )];
+  return matches.map(([, marker, payload]) => {
+    const entry = JSON.parse(payload.replaceAll("''", "'"));
+    if (marker !== entry.chain) throw new Error(`0062 marker mismatch for ${entry.chain}`);
+    return entry;
+  });
+}
+
+function migrationCorrections(migration) {
+  const matches = [...migration.matchAll(
+    /-- canonical-correction-start ([^\n]+)\nWITH correction_seed\(payload\) AS \(\n {2}VALUES \('([\s\S]*?)'\)\n\)\nUPDATE chain_facts AS facts/g,
+  )];
+  return matches.map(([, marker, payload]) => {
+    const correction = JSON.parse(payload.replaceAll("''", "'"));
+    if (marker !== correction.id) {
+      throw new Error(`0062 correction marker mismatch for ${correction.id}`);
+    }
+    return correction;
+  });
+}
+
+function caseStatementByteLengths(migration) {
+  return [...migration.matchAll(
+    /-- canonical-case-start [\s\S]*?\n {2}AND facts\.dimension IN \('synthesis', '_meta'\);/g,
+  )].map(([statement]) => Buffer.byteLength(statement, 'utf8'));
+}
+
+function correctionStatementByteLengths(migration) {
+  return [...migration.matchAll(
+    /-- canonical-correction-start [\s\S]*?\n {2}\);\n-- canonical-correction-end/g,
+  )].map(([statement]) => Buffer.byteLength(statement, 'utf8'));
+}
+
+function collectSourceRefs(value, found = []) {
+  if (Array.isArray(value)) {
+    for (const item of value) collectSourceRefs(item, found);
+    return found;
+  }
+  if (!value || typeof value !== 'object') return found;
+  if (Array.isArray(value.source_refs)) found.push(...value.source_refs);
+  for (const child of Object.values(value)) collectSourceRefs(child, found);
+  return found;
+}
+
+function collectNestedSourceUrls(value, found = []) {
+  if (Array.isArray(value)) {
+    for (const item of value) collectNestedSourceUrls(item, found);
+    return found;
+  }
+  if (!value || typeof value !== 'object') return found;
+  for (const [key, child] of Object.entries(value)) {
+    if (key.endsWith('source_url') && typeof child === 'string') found.push(child);
+    collectNestedSourceUrls(child, found);
+  }
+  return found;
 }
 
 function applyMigrations(database, through = 62) {
@@ -94,12 +152,35 @@ afterEach(() => {
 
 describe('chain causal completion migration 0062', () => {
   it('keeps generated SQL identical to the checked research manifest', () => {
-    const { document, migration } = loadArtifacts();
-    expect(migrationDocument(migration)).toEqual(document);
+    const { document, manifest, migration } = loadArtifacts();
+    expect(migrationCases(migration)).toEqual(document.cases);
+    expect(migrationCorrections(migration)).toEqual(document.corrections);
+    expect(migration).toContain(
+      `canonical-manifest-sha256 ${
+        createHash('sha256').update(manifest).digest('hex')
+      }`,
+    );
     expect(migration).not.toMatch(/\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i);
+    expect(caseStatementByteLengths(migration)).toHaveLength(document.cases.length);
+    expect(Math.max(...caseStatementByteLengths(migration)))
+      .toBeLessThanOrEqual(maxD1StatementBytes);
+    expect(correctionStatementByteLengths(migration))
+      .toHaveLength(document.corrections.length);
+    expect(Math.max(...correctionStatementByteLengths(migration)))
+      .toBeLessThanOrEqual(maxD1StatementBytes);
     expect(document.schema).toBe('chaindump-chain-causal-completion-v1');
     expect(document.research_as_of).toBe('2026-07-29');
     expect(document.cases.map(({ chain }) => chain).sort()).toEqual(expectedChains);
+    for (const correction of document.corrections) {
+      for (const source of correction.sources) {
+        expect(source, `${correction.id}:${source.url}`).toMatchObject({
+          id: expect.any(String),
+          publisher: expect.any(String),
+          source_role: expect.any(String),
+          checked_at: '2026-07-29',
+        });
+      }
+    }
   });
 
   it('publishes deep, evidence-resolving causal contracts instead of boilerplate', () => {
@@ -107,6 +188,8 @@ describe('chain causal completion migration 0062', () => {
     for (const entry of document.cases) {
       const sourceById = Object.fromEntries(entry.sources.map((source) => [source.id, source]));
       expect(new Set(entry.sources.map(({ id }) => id)).size, entry.chain)
+        .toBe(entry.sources.length);
+      expect(new Set(entry.sources.map(({ url }) => url)).size, entry.chain)
         .toBe(entry.sources.length);
       for (const source of entry.sources) {
         expect(source.checked_at, `${entry.chain}:${source.id}`).toBe('2026-07-29');
@@ -134,6 +217,22 @@ describe('chain causal completion migration 0062', () => {
     const { document, migration } = loadArtifacts();
     database = new DatabaseSync(':memory:');
     applyMigrations(database, 60);
+    const ethereumSources = JSON.parse(database.prepare(`
+      SELECT sources FROM chain_facts WHERE chain = 'Ethereum' AND dimension = 'synthesis'
+    `).get().sources);
+    const ethereumRoadmap = ethereumSources.find(
+      ({ url }) => url === 'https://ethereum.org/roadmap/',
+    );
+    Object.assign(ethereumRoadmap, {
+      checked_at: '2026-07-30',
+      access_state: 'bot_blocked',
+      verification_note: 'Existing access metadata must survive a URL merge.',
+    });
+    ethereumSources.push({ ...ethereumRoadmap });
+    database.prepare(`
+      UPDATE chain_facts SET sources = ?
+      WHERE chain = 'Ethereum' AND dimension = 'synthesis'
+    `).run(JSON.stringify(ethereumSources));
     const before = Object.fromEntries(document.cases.map(({ chain }) => [
       chain,
       database.prepare(`
@@ -162,9 +261,37 @@ describe('chain causal completion migration 0062', () => {
       expect(JSON.parse(synthesis.data).forensic_analysis).toEqual(entry.forensic_analysis);
       const beforeSourceUrls = JSON.parse(priorByDimension.synthesis.sources)
         .map(({ url }) => url);
-      const afterSourceUrls = JSON.parse(synthesis.sources).map(({ url }) => url);
+      const beforeSources = JSON.parse(priorByDimension.synthesis.sources);
+      const afterSources = JSON.parse(synthesis.sources);
+      const afterSourceUrls = afterSources.map(({ url }) => url);
       expect(afterSourceUrls, entry.chain).toEqual(expect.arrayContaining(beforeSourceUrls));
       expect(new Set(afterSourceUrls).size, entry.chain).toBe(afterSourceUrls.length);
+      for (const oldSource of beforeSources) {
+        const merged = afterSources.find(({ url }) => url === oldSource.url);
+        const canonical = entry.sources.find(({ url }) => url === oldSource.url);
+        expect(merged, `${entry.chain}:${oldSource.url}`).toBeTruthy();
+        if (!canonical) {
+          expect(merged, `${entry.chain}:${oldSource.url}`).toEqual(oldSource);
+          continue;
+        }
+        for (const [key, value] of Object.entries(oldSource)) {
+          if (['id', 'title', 'publisher', 'source_role', 'checked_at'].includes(key)) {
+            continue;
+          }
+          expect(merged[key], `${entry.chain}:${oldSource.url}:${key}`).toEqual(value);
+        }
+      }
+      for (const newSource of entry.sources) {
+        const merged = afterSources.find(({ url }) => url === newSource.url);
+        expect(merged, `${entry.chain}:${newSource.id}`).toMatchObject({
+          id: newSource.id,
+          url: newSource.url,
+        });
+        expect(
+          merged.checked_at >= newSource.checked_at,
+          `${entry.chain}:${newSource.id}`,
+        ).toBe(true);
+      }
 
       const meta = JSON.parse(rows.find(({ dimension }) => dimension === '_meta').data);
       expect(meta).toMatchObject({
@@ -174,19 +301,66 @@ describe('chain causal completion migration 0062', () => {
       });
     }
 
+    const xdcIdentity = database.prepare(`
+      SELECT data, sources FROM chain_facts WHERE chain = 'XDC' AND dimension = 'identity'
+    `).get();
+    expect(database.prepare(`
+      SELECT COUNT(*) AS count
+      FROM chain_facts WHERE chain = 'XDC' AND dimension = 'identity'
+    `).get().count).toBe(1);
+    const xdcSourceUrls = new Set(JSON.parse(xdcIdentity.sources).map(({ url }) => url));
+    for (const sourceUrl of collectNestedSourceUrls(JSON.parse(xdcIdentity.data))) {
+      expect(xdcSourceUrls.has(sourceUrl), `XDC:identity:${sourceUrl}`).toBe(true);
+    }
+    const xdcCorrection = document.corrections.find(
+      ({ id }) => id === 'xdc-identity-nested-source-coverage',
+    );
+    const xdcSourcesByUrl = Object.fromEntries(
+      JSON.parse(xdcIdentity.sources).map((source) => [source.url, source]),
+    );
+    for (const expectedSource of xdcCorrection.sources) {
+      expect(xdcSourcesByUrl[expectedSource.url]).toMatchObject(expectedSource);
+    }
+
+    const osmosisToken = database.prepare(`
+      SELECT data, sources FROM chain_facts WHERE chain = 'Osmosis' AND dimension = 'token'
+    `).get();
+    expect(database.prepare(`
+      SELECT COUNT(*) AS count
+      FROM chain_facts WHERE chain = 'Osmosis' AND dimension = 'token'
+    `).get().count).toBe(1);
+    const osmosisData = JSON.parse(osmosisToken.data);
+    expect(osmosisData.unlock_overhang_pct).toBe(21.73);
+    expect(osmosisData.unlock_overhang_denominator).toBe('max_supply');
+    expect(
+      ((osmosisData.max_supply - osmosisData.circulating_supply)
+        / osmosisData.max_supply) * 100,
+    ).toBeCloseTo(osmosisData.unlock_overhang_pct, 2);
+    expect(
+      ((osmosisData.total_supply - osmosisData.circulating_supply)
+        / osmosisData.total_supply) * 100,
+    ).toBeCloseTo(osmosisData.reported_total_noncirculating_pct_of_total, 2);
+    const osmosisSource = JSON.parse(osmosisToken.sources)
+      .find(({ url }) => url === osmosisData.source_url);
+    expect(osmosisSource).toMatchObject(
+      document.corrections.find(
+        ({ id }) => id === 'osmosis-token-overhang-denominator',
+      ).sources[0],
+    );
+
     const first = database.prepare(`
       SELECT chain, dimension, data, sources, updated_at
       FROM chain_facts
-      WHERE chain IN (${expectedChains.map(() => '?').join(',')})
+      WHERE chain IN (${migrationTouchedChains.map(() => '?').join(',')})
       ORDER BY chain, dimension
-    `).all(...expectedChains);
+    `).all(...migrationTouchedChains);
     database.exec(migration);
     expect(database.prepare(`
       SELECT chain, dimension, data, sources, updated_at
       FROM chain_facts
-      WHERE chain IN (${expectedChains.map(() => '?').join(',')})
+      WHERE chain IN (${migrationTouchedChains.map(() => '?').join(',')})
       ORDER BY chain, dimension
-    `).all(...expectedChains)).toEqual(first);
+    `).all(...migrationTouchedChains)).toEqual(first);
   });
 
   it('serves each causal dossier through the chain API and has a visible chain UI section', async () => {
@@ -204,7 +378,70 @@ describe('chain causal completion migration 0062', () => {
       const body = await response.json();
       expect(body.facts.synthesis.data.forensic_analysis, entry.chain)
         .toEqual(entry.forensic_analysis);
+      const actualSources = body.facts.synthesis.sources;
+      const identifiedSources = actualSources.filter(({ id }) => id);
+      expect(new Set(identifiedSources.map(({ id }) => id)).size, entry.chain)
+        .toBe(identifiedSources.length);
+      const sourceById = Object.fromEntries(
+        identifiedSources.map((source) => [source.id, source]),
+      );
+      expect(
+        validateForensicAnalysis(body.facts.synthesis.data.forensic_analysis, {
+          resolver: sourceById,
+        }),
+        entry.chain,
+      ).toEqual({ errors: [], warnings: [], withheld_sections: [] });
+      for (const sourceRef of collectSourceRefs(entry.forensic_analysis)) {
+        expect(sourceById[sourceRef], `${entry.chain}:${sourceRef}`).toBeTruthy();
+        expect(sourceById[sourceRef].url, `${entry.chain}:${sourceRef}`)
+          .toMatch(/^https:\/\//);
+      }
     }
+
+    const xdcResponse = await worker.fetch(
+      new Request('http://localhost/api/chain/XDC'),
+      { DB: d1(database) },
+      ctx(),
+    );
+    expect(xdcResponse.status).toBe(200);
+    const xdcBody = await xdcResponse.json();
+    const xdcSourceUrls = new Set(
+      xdcBody.facts.identity.sources.map(({ url }) => url),
+    );
+    for (const sourceUrl of collectNestedSourceUrls(xdcBody.facts.identity.data)) {
+      expect(xdcSourceUrls.has(sourceUrl), `XDC:identity:${sourceUrl}`).toBe(true);
+    }
+    const xdcCorrection = document.corrections.find(
+      ({ id }) => id === 'xdc-identity-nested-source-coverage',
+    );
+    const xdcSourcesByUrl = Object.fromEntries(
+      xdcBody.facts.identity.sources.map((source) => [source.url, source]),
+    );
+    for (const expectedSource of xdcCorrection.sources) {
+      expect(xdcSourcesByUrl[expectedSource.url]).toMatchObject(expectedSource);
+    }
+
+    const osmosisResponse = await worker.fetch(
+      new Request('http://localhost/api/chain/Osmosis'),
+      { DB: d1(database) },
+      ctx(),
+    );
+    expect(osmosisResponse.status).toBe(200);
+    const osmosisBody = await osmosisResponse.json();
+    const osmosisToken = osmosisBody.facts.token;
+    expect(osmosisToken.data).toMatchObject({
+      unlock_overhang_pct: 21.73,
+      unlock_overhang_denominator: 'max_supply',
+      reported_total_noncirculating_pct_of_total: 19.77,
+      unissued_to_max_supply_pct: 2.44,
+    });
+    const osmosisSource = osmosisToken.sources
+      .find(({ url }) => url === osmosisToken.data.source_url);
+    expect(osmosisSource).toMatchObject(
+      document.corrections.find(
+        ({ id }) => id === 'osmosis-token-overhang-denominator',
+      ).sources[0],
+    );
 
     const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
     expect(html).toContain('forensicAnalysisHtml(d.forensic_analysis');
