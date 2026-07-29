@@ -1,5 +1,5 @@
 import { DatabaseSync } from 'node:sqlite';
-import { readFileSync, readdirSync } from 'node:fs';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { validateForensicAnalysis } from '../src/lib/forensic-analysis.js';
 
@@ -10,6 +10,10 @@ const document = JSON.parse(readFileSync(
 const migration = readFileSync(
   new URL('../migrations/0060_exchange_cex_causal_wave_b.sql', import.meta.url),
   'utf8',
+);
+const migrationUrl = new URL(
+  '../migrations/0060_exchange_cex_causal_wave_b.sql',
+  import.meta.url,
 );
 const publicUi = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
 const expectedSlugs = [
@@ -90,6 +94,16 @@ afterEach(() => {
 });
 
 describe('exchange CEX causal Wave B migration 0060', () => {
+  it('keeps renderer imports side-effect free and pure output byte-identical to applied 0060', async () => {
+    const modifiedBeforeImport = statSync(migrationUrl).mtimeMs;
+    const renderer = await import(
+      '../scripts/render-exchange-cex-causal-wave-b-migration.mjs?import-regression'
+    );
+    expect(renderer.buildExchangeCexCausalWaveBManifest()).toEqual(document);
+    expect(renderer.renderExchangeCexCausalWaveBMigration(document)).toBe(migration);
+    expect(statSync(migrationUrl).mtimeMs).toBe(modifiedBeforeImport);
+  });
+
   it('keeps one bounded generated statement per checked research case', () => {
     expect(migration).not.toMatch(/\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i);
     expect(migration).toContain('-- batched-payload-start');

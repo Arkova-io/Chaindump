@@ -386,7 +386,7 @@ describe('NFT forensic normalization wave', () => {
   });
 
   it('exposes every normalized causal field through the public NFT list and detail contract', async () => {
-    expect(publicHtml).toContain('function nftProfileAnalysisHtml(profile, sources)');
+    expect(publicHtml).toContain('function nftProfileAnalysisHtml(profile, sources, publicationDepth = null)');
     expect(publicHtml).toContain("['Token model &amp; value capture', profile?.token_model]");
     expect(publicHtml).toContain("['Chain dependence', profile?.chain_dependence]");
     expect(publicHtml).toContain('forensicAnalysisHtml(profile?.forensic_analysis, resolveRef');

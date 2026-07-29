@@ -67,7 +67,7 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('id="exchangeAnalysisCohort"');
     expect(html).toContain('id="exchangeAnalysisQuality"');
     expect(html).toContain('id="exchangeAnalysisForensic"');
-    expect(html).toContain('Cited causal maps');
+    expect(html).toContain('Indexed causal maps');
     expect(html).toContain('id="exchangeAnalysisSort"');
     expect(html).toContain('Cited sources');
   });
@@ -98,11 +98,17 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('Strategic choices');
     expect(html).toContain('What could have been different');
     expect(html).toContain('Material unknowns');
-    expect(html).toContain('structured causal analysis has not passed the publication gate yet');
+    expect(html).toContain('structured causal analysis is pending review');
     expect(html).toContain('function forensicSourceArray(contract)');
     expect(html).toContain('forensicSourceArray(forensic)');
     expect(html).toContain("forensicStatus: analysis.forensic_analysis_status || (forensic ? 'published' : 'pending')");
-    expect(html).toContain("'forensic dossiers'");
+    expect(html).toContain("'causal maps indexed'");
+    expect(html).toContain('Exchange claim-support audit:');
+    expect(html).toContain('high-risk claims meet policy');
+    expect(html).toContain('publicationDepth: parsedObject(row.publication_depth)');
+    expect(html).toContain('sections.push(exchangeFindingHtml(row))');
+    expect(html).toContain('${exchangeFindingHtml(row)}');
+    expect(html).toContain("}, 'This exchange dossier is indexed; its normalized causal contract is pending review.', depth)");
   });
 
   it('renders association rates, uncertainty, and falsifiers instead of causal-sounding trend prose', () => {
@@ -142,7 +148,7 @@ describe('Stuck/Mid UI parity', () => {
 });
 
 describe('Web3 Casino Analysis data surface', () => {
-  it('loads only publication-gated dossiers with coverage and lazy cited detail', () => {
+  it('loads indexed dossiers with coverage, support audits, and lazy cited detail', () => {
     expect(html).toContain('/api/casinos?sort=${encodeURIComponent(state.casinoAnalysisSort)}');
     expect(html).toContain("fetch('/api/casino-coverage')");
     expect(html).toContain('/api/casino/${encodeURIComponent(caseId)}');
@@ -155,13 +161,13 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('id="casinoAnalysisKind"');
     expect(html).toContain('id="casinoAnalysisSubtype"');
     expect(html).toContain('id="casinoAnalysisToken"');
-    expect(html).toContain('Cited sources: ${esc(item.source_count)}');
+    expect(html).toContain('Evidence: ${esc(item.registered_source_count)} registered');
     expect(html).toContain('const dossierLink = `/casino/${encodeURIComponent(item.case_id)}`;');
     expect(html).toContain("} else if (seg === 'casino' && rest) {");
     expect(html).toContain('loadCasinoAnalysisDetail(state.casinoAnalysisExpanded);');
     expect(html).toContain('Open dossier →');
     expect(html).toContain('Open coverage ledger →');
-    expect(html).toContain('publication-gated dossier${filtered.length===1');
+    expect(html).toContain('indexed dossier${filtered.length===1');
   });
 
   it('uses the detailed cited casino case for expanded identity fields omitted from summary cards', () => {
@@ -170,9 +176,27 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('identity.date_precision');
   });
 
-  it('keeps unverified candidates visibly withheld rather than rendering them as analyses', () => {
-    expect(html).toContain('candidates withheld');
-    expect(html).toContain('intentionally not presented as analyses');
+  it('visibly separates registered, reachable, and editor-reviewed casino evidence', () => {
+    expect(html).toContain('function evidenceStatusParts(source)');
+    expect(html).toContain("'editor review pending'");
+    expect(html).toContain('identity.registered_source_count');
+    expect(html).toContain('identity.reachable_source_count');
+    expect(html).toContain('identity.reviewed_source_count');
+    expect(html).toContain('Field evidence &amp; review status');
+    expect(html).toContain('casinoEvidenceStatusHtml({ ...claim, registered: true');
+    expect(html).toContain('High-risk claim support: ${esc(passing)} of ${esc(total)} meet policy');
+    expect(html).toContain("function publicationDepthBanner(depth, corpusLabel = 'Corpus inclusion')");
+    expect(html).toContain('High-risk claim withheld — independent support pending.');
+    expect(html).toContain('Unsupported lifecycle, causal, legal, loss, and counterfactual conclusions are withheld below.');
+    expect(html).toContain('forensicAnalysisHtml(synthesis.forensic_analysis');
+    expect(html).toContain("}, 'This casino dossier is indexed; its normalized causal contract is pending review.', depth)");
+    expect(html).toContain('return ` <a class="ecite"');
+    expect(html).toContain('${sourceMetadataHtml(resolved)}');
+  });
+
+  it('keeps corpus coverage distinct from claim support', () => {
+    expect(html).toContain('expected dossiers missing');
+    expect(html).toContain('expected dossier IDs remain absent from the indexed corpus');
     expect(html).toContain('No cross-case “largest casino” ranking is computed.');
     expect(html).toContain('No licence observation is published. Do not infer global legality from this dossier.');
     expect(html).toContain('Lifecycle timeline');
@@ -180,13 +204,17 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('function casinoReviewState(item)');
     expect(html).toContain('detail.synthesis?.forensic_analysis?.review');
     expect(html).toContain('each causal map’s explicit next-review date');
-    expect(html).toContain('metric scope, gaps, and review date');
+    expect(html).toContain('which lifecycle, causal, legal, loss, and counterfactual claims meet policy or are withheld');
   });
 
-  it('renders the stored casino causal fields rather than hiding them behind the API', () => {
-    expect(html).toContain("['Success / failure hypotheses', synthesis.success_failure_hypotheses]");
-    expect(html).toContain("['Counterfactual', synthesis.counterfactual]");
-    expect(html).toContain("['Chain dependence', synthesis.chain_dependence]");
+  it('renders supported casino causal fields and withholds unsupported fields', () => {
+    expect(html).toContain("'Success / failure hypotheses',");
+    expect(html).toContain('synthesis.success_failure_hypotheses');
+    expect(html).toContain("'Counterfactual',");
+    expect(html).toContain('synthesis.counterfactual');
+    expect(html).toContain("'Chain dependence', synthesis.chain_dependence");
+    expect(html).toContain('casinoDepthSectionHtml(label, text, depth, isUnsupported)');
+    expect(html).toContain('publicationPendingHtml(label.replaceAll');
   });
 });
 
@@ -212,7 +240,7 @@ describe('six-hour forensic review surface', () => {
 
 describe('NFT and Ordinals Analysis data surface', () => {
   it('uses the same sortable research-index pattern as Blockchain Analysis', () => {
-    expect(html).toContain('This index deliberately distinguishes lifecycle research from live catalog coverage.');
+    expect(html).toContain('NFT/Ordinals claim-support audit:');
     expect(html).toContain('id="nftCaseStatus"');
     expect(html).toContain('id="nftCaseChain"');
     expect(html).toContain('id="nftCaseSort"');
@@ -222,11 +250,11 @@ describe('NFT and Ordinals Analysis data surface', () => {
   });
 
   it('shows collapsed citation and coverage metadata before expansion', () => {
-    expect(html).toContain('field-cited');
+    expect(html).toContain('field-citation schema');
     expect(html).toContain('Review freshness');
     expect(html).toContain('90d policy');
     expect(html).toContain('legacy/collection-cited');
-    expect(html).toContain("srcHtml(sourceArray(c.sources).slice(0, 3), 'Cited sources: ')");
+    expect(html).toContain("srcHtml(sourceArray(citedSources).slice(0, 3), 'Cited sources: ')");
     expect(html).toContain('lifecycle case stud');
     expect(html).toContain("if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(nextReviewAt || '')) return 'unknown';");
   });
@@ -242,7 +270,7 @@ describe('NFT and Ordinals Analysis data surface', () => {
   });
 
   it('renders structured NFT causal, token, and chain fields instead of leaving Wave7 JSON hidden', () => {
-    expect(html).toContain('function nftProfileAnalysisHtml(profile, sources)');
+    expect(html).toContain('function nftProfileAnalysisHtml(profile, sources, publicationDepth = null)');
     expect(html).toContain("['Token model &amp; value capture', profile?.token_model]");
     expect(html).toContain("['Chain dependence', profile?.chain_dependence]");
     expect(html).toContain("['Risk evidence', profile?.risks]");
@@ -252,6 +280,9 @@ describe('NFT and Ordinals Analysis data surface', () => {
     expect(html).toContain("['What would change our mind · legacy profile field', profile?.watch]");
     expect(html).toContain("['Material unknowns · legacy profile field', profile?.unknowns]");
     expect(html).toContain("forensicAnalysisHtml(profile?.forensic_analysis, resolveRef");
-    expect(html).toContain('${nftProfileAnalysisHtml(p, c.sources)}');
+    expect(html).toContain('${nftProfileAnalysisHtml(p, citedSources, depth)}');
+    expect(html).toContain('${nftEvidenceHtml(p, citedSources, c.freshness, depth)}');
+    expect(html.match(/\$\{nftLifecycleReadHtml\(p, depth\)\}/g)).toHaveLength(2);
+    expect(html).toContain('High-risk field conclusion withheld.');
   });
 });

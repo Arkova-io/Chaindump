@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { validateForensicAnalysis } from '../src/lib/forensic-analysis.js';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const sourcePath = resolve(root, 'docs/exchange-cex-causal-wave-b-2026-07-29.json');
 const destinationPath = resolve(root, 'migrations/0060_exchange_cex_causal_wave_b.sql');
-const document = JSON.parse(readFileSync(sourcePath, 'utf8'));
 
 const expectedSlugs = [
   'blockfi',
@@ -25,39 +24,18 @@ const expectedSlugs = [
   'zipmex',
 ];
 
-if (document.as_of !== '2026-07-29' || document.source_check?.checked_at !== '2026-07-29') {
-  throw new Error('CEX Wave B requires an explicit 2026-07-29 research and source-check date');
+function assertCexWaveSource(entry, source, checkedAt) {
+  if (
+    !source.title
+    || !source.publisher
+    || !/^https:\/\/\S+$/.test(source.url || '')
+    || source.checked_at !== checkedAt
+  ) {
+    throw new Error(`${entry.slug}: invalid or stale public source ${JSON.stringify(source)}`);
+  }
 }
 
-const actualSlugs = document.cases.map(({ slug }) => slug);
-if (JSON.stringify(actualSlugs) !== JSON.stringify(expectedSlugs)) {
-  throw new Error(`Unexpected CEX Wave B cohort: ${actualSlugs.join(', ')}`);
-}
-
-for (const entry of document.cases) {
-  const expectedTable = ['wazirx', 'xeggex'].includes(entry.slug)
-    ? 'mid_exchanges'
-    : 'dead_exchanges';
-  if (entry.table !== expectedTable || entry.kind !== 'cex') {
-    throw new Error(`${entry.slug}: expected ${expectedTable}/cex target`);
-  }
-  if (!entry.row_patch?.why || !entry.row_patch?.outlook || !entry.row_patch?.verdict) {
-    throw new Error(`${entry.slug}: a complete row_patch is required to remove stale public claims`);
-  }
-  if (!Array.isArray(entry.sources) || entry.sources.length < 2) {
-    throw new Error(`${entry.slug}: at least two named public sources are required`);
-  }
-  for (const source of entry.sources) {
-    if (
-      !source.title
-      || !source.publisher
-      || !/^https:\/\/\S+$/.test(source.url || '')
-      || source.checked_at !== document.source_check.checked_at
-    ) {
-      throw new Error(`${entry.slug}: invalid or stale public source ${JSON.stringify(source)}`);
-    }
-  }
-
+function assertCexWaveForensicAnalysis(entry) {
   const validation = validateForensicAnalysis(entry.forensic_analysis);
   if (
     validation.errors.length > 0
@@ -66,7 +44,6 @@ for (const entry of document.cases) {
   ) {
     throw new Error(`${entry.slug}: ${JSON.stringify(validation)}`);
   }
-
   const citedUrls = [
     ...entry.forensic_analysis.outcome.source_refs,
     ...entry.forensic_analysis.why.source_refs,
@@ -79,8 +56,49 @@ for (const entry of document.cases) {
   }
 }
 
+function assertCexWaveEntry(entry, checkedAt) {
+  const expectedTable = ['wazirx', 'xeggex'].includes(entry.slug)
+    ? 'mid_exchanges'
+    : 'dead_exchanges';
+  if (entry.table !== expectedTable || entry.kind !== 'cex') {
+    throw new Error(`${entry.slug}: expected ${expectedTable}/cex target`);
+  }
+  if (!entry.row_patch?.why || !entry.row_patch?.outlook || !entry.row_patch?.verdict) {
+    throw new Error(`${entry.slug}: a complete row_patch is required to remove stale public claims`);
+  }
+  if (!Array.isArray(entry.sources) || entry.sources.length < 2) {
+    throw new Error(`${entry.slug}: at least two named public sources are required`);
+  }
+  entry.sources.forEach((source) => assertCexWaveSource(entry, source, checkedAt));
+  assertCexWaveForensicAnalysis(entry);
+}
+
+export function validateExchangeCexCausalWaveBManifest(document) {
+  if (document.as_of !== '2026-07-29' || document.source_check?.checked_at !== '2026-07-29') {
+    throw new Error('CEX Wave B requires an explicit 2026-07-29 research and source-check date');
+  }
+
+  const actualSlugs = document.cases.map(({ slug }) => slug);
+  if (JSON.stringify(actualSlugs) !== JSON.stringify(expectedSlugs)) {
+    throw new Error(`Unexpected CEX Wave B cohort: ${actualSlugs.join(', ')}`);
+  }
+
+  document.cases.forEach((entry) => (
+    assertCexWaveEntry(entry, document.source_check.checked_at)
+  ));
+  return document;
+}
+
+export function buildExchangeCexCausalWaveBManifest() {
+  return validateExchangeCexCausalWaveBManifest(JSON.parse(readFileSync(sourcePath, 'utf8')));
+}
+
 const quoteSql = (value) => `'${value.replaceAll("'", "''")}'`;
-const caseInserts = document.cases.map((entry) => `
+export function renderExchangeCexCausalWaveBMigration(
+  documentValue = buildExchangeCexCausalWaveBManifest(),
+) {
+  const document = validateExchangeCexCausalWaveBManifest(documentValue);
+  const caseInserts = document.cases.map((entry) => `
 INSERT OR REPLACE INTO exchange_cex_causal_wave_b_0060 (
   target_table,
   kind,
@@ -101,7 +119,7 @@ VALUES (
   ${quoteSql(entry.row_patch.outlook)}, -- NOSONAR: deterministic cited research payload
   ${quoteSql(JSON.stringify(entry.sources))} -- NOSONAR: deterministic cited research payload
 );`).join('\n');
-const sql = `-- Generated by scripts/render-exchange-cex-causal-wave-b-migration.mjs.
+  return `-- Generated by scripts/render-exchange-cex-causal-wave-b-migration.mjs.
 -- The source corpus corrects stale public claims and attaches publication-gated causal analysis.
 
 DROP TABLE IF EXISTS exchange_cex_causal_wave_b_0060;
@@ -235,5 +253,12 @@ WHERE EXISTS (
 
 DROP TABLE IF EXISTS exchange_cex_causal_wave_b_0060;
 `;
+}
 
-writeFileSync(destinationPath, sql);
+function main() {
+  writeFileSync(destinationPath, renderExchangeCexCausalWaveBMigration());
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main();
+}

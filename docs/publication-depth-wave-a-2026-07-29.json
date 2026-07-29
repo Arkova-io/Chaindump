@@ -1,0 +1,3229 @@
+{
+  "schema": "chaindump-publication-depth-wave-v1",
+  "generated_migration": "0063_publication_depth_wave_a.sql",
+  "as_of": "2026-07-29",
+  "method": "Risk-first evidence repair. Adverse, legal, loss, and causal claims require one resolving/reviewed T1 authority, one resolving/reviewed independent T2, or two resolving/reviewed independent T3 publishers. A T2 operator source can pass only a narrow lifecycle/status claim that the operator reports about itself. Access timestamps do not imply editorial evidence review.",
+  "source_verification": {
+    "checked_at": "2026-07-29",
+    "method": "HTTP retrieval and source-identity verification; this does not establish claim-level editorial review.",
+    "states": [
+      "resolving"
+    ],
+    "results": [
+      {
+        "source_id": "bitmex-closure",
+        "http_status": 200,
+        "final_url": "https://www.bitmex.com/blog/bitmex-closure",
+        "content_type": "text/html"
+      },
+      {
+        "source_id": "bitmex-reuters",
+        "http_status": 200,
+        "final_url": "https://live.euronext.com/en/financial-news/cryptocurrency-exchange-bitmex-shut-down",
+        "content_type": "text/html"
+      },
+      {
+        "source_id": "kucoin-doj-plea",
+        "http_status": 200,
+        "final_url": "https://www.justice.gov/usao-sdny/pr/kucoin-pleads-guilty-unlicensed-money-transmission-charge-and-agrees-pay-penalties",
+        "content_type": "text/html"
+      },
+      {
+        "source_id": "kucoin-cftc-order",
+        "http_status": 200,
+        "final_url": "https://www.cftc.gov/media/13586/EnfPekenGlobalLimitedConsentOrder033026/download",
+        "content_type": "application/pdf"
+      },
+      {
+        "source_id": "kucoin-us-restrictions",
+        "http_status": 200,
+        "final_url": "https://www.kucoin.com/announcement/us-ip-access-restrictions-and-guidance-on-asset-withdrawals-for-users-in-the-united-states?x=pl_PL",
+        "content_type": "text/html"
+      },
+      {
+        "source_id": "kucoin-proof-of-reserves",
+        "http_status": 200,
+        "final_url": "https://www.kucoin.com/proof-of-reserves",
+        "content_type": "text/html"
+      },
+      {
+        "source_id": "casino:source:bcgame:trustee-final-report-2025-07-22",
+        "http_status": 200,
+        "final_url": "https://nagelmakers.com/downloads/bankruptcies/250722-tweede-faillissementsverslag-SH-%28ZB%29.pdf",
+        "content_type": "application/pdf"
+      },
+      {
+        "source_id": "casino:source:bcgame:cga-certificate-2026-07-29",
+        "http_status": 200,
+        "final_url": "https://cert.cga.cw/certificate?id=ZXlKcGRpSTZJa2x1ZEdjMVFuUTFVRzF4VERWUWJYRXpXakZaU0VFOVBTSXNJblpoYkhWbElqb2llV3BKZFhsTlRtTkJXbkZoUWpGUE9IWnZha3hpUVQwOUlpd2liV0ZqSWpvaVltVTNNVEZtTjJRek1qVXhOemt6WldVeFpHWXlNVGxtTURVM1pqSTVNemd3WldGbFpUSmtZamszTWpGa01tSTJORFU0WWpNME9EYzRNMk0zTlRJd05DSXNJblJoWnlJNklpSjk%3D",
+        "content_type": "text/html"
+      },
+      {
+        "source_id": "f1dt-closure",
+        "http_status": 200,
+        "final_url": "https://www.animocabrands.com/announcement/f1-delta-time-to-cease-operations-announces-rewards-for-supporters",
+        "content_type": "text/html"
+      },
+      {
+        "source_id": "f1dt-racefans",
+        "http_status": 200,
+        "final_url": "https://www.racefans.net/2022/04/01/official-formula-1-nft-game-f1-delta-time-closes-three-years-after-launch/",
+        "content_type": "text/html"
+      },
+      {
+        "source_id": "casino:source:zkasino:om-2025-07-03",
+        "http_status": 200,
+        "final_url": "https://www.prosecutionservice.nl/latest/news/2025/07/03/arrest-in-the-uae-in-criminal-case-involving-gambling-platform-zkasino",
+        "content_type": "text/html; charset=utf-8"
+      }
+    ]
+  },
+  "exchange_patches": [
+    {
+      "table": "dead_exchanges",
+      "kind": "cex",
+      "slug": "bitmex",
+      "sources": [
+        {
+          "id": "bitmex-closure",
+          "title": "BitMEX Exchange to Sunset on 23 September at 04:00 UTC",
+          "publisher": "BitMEX",
+          "url": "https://www.bitmex.com/blog/bitmex-closure",
+          "source_tier": "T2",
+          "source_role": "primary",
+          "access_state": "resolving",
+          "resolving": true,
+          "evidence_reviewed": false,
+          "checked_at": "2026-07-29",
+          "evidence_locator": "Operator notice dated July 23, 2026 gives the closure, risk-limit, force-close, withdrawal, and BMEX-unstaking schedule and attributes the decision only to a board strategic review."
+        },
+        {
+          "id": "bitmex-reuters",
+          "title": "Cryptocurrency exchange BitMEX to shut down",
+          "publisher": "Reuters",
+          "url": "https://live.euronext.com/en/financial-news/cryptocurrency-exchange-bitmex-shut-down",
+          "source_tier": "T2",
+          "source_role": "independent",
+          "access_state": "resolving",
+          "resolving": true,
+          "evidence_reviewed": false,
+          "checked_at": "2026-07-29",
+          "evidence_locator": "Reuters independently confirms the announced September 23 closure and reports Kaiko's estimate of about $400,000 daily volume and less than 0.01% market share; Reuters also states that BitMEX did not disclose a more specific reason."
+        }
+      ],
+      "row_patch": {
+        "why": "BitMEX's board said only that a strategic review of the business and broader crypto industry led to closure. Reuters independently confirmed the wind-down and reported Kaiko estimates of roughly $400,000 in daily volume and less than 0.01% market share. That establishes that the venue was closing from a marginal competitive position, but it does not prove that market share, regulation, profitability, reserves, token design, or any other single factor caused the board decision.",
+        "outlook": "The exchange remains in an announced wind-down: new-position limits begin August 26, 2026 and exchange services are scheduled to cease September 23, 2026. Completion of forced position closures and withdrawals must be verified before changing the case from wind-down announced to closed."
+      },
+      "analysis_updates": {
+        "outcome_source_refs": [
+          "bitmex-closure",
+          "bitmex-reuters"
+        ],
+        "why_summary": "BitMEX's board disclosed only a strategic review of the business and broader crypto industry. Reuters independently confirmed the closure and reported Kaiko estimates of roughly $400,000 in daily volume and less than 0.01% market share. The evidence therefore supports a venue closing from a marginal competitive position, but it does not establish whether scale, regulation, profitability, reserves, token design, or another factor drove the board's decision.",
+        "why_confidence": "medium",
+        "why_source_refs": [
+          "bitmex-closure",
+          "bitmex-reuters"
+        ],
+        "counterfactual_source_refs": [
+          "bitmex-closure",
+          "bitmex-reuters"
+        ]
+      }
+    },
+    {
+      "table": "mid_exchanges",
+      "kind": "cex",
+      "slug": "kucoin",
+      "sources": [
+        {
+          "id": "kucoin-doj-plea",
+          "title": "KuCoin pleads guilty to unlicensed money transmission charge and agrees to pay penalties totaling nearly $300 million",
+          "publisher": "U.S. Department of Justice",
+          "url": "https://www.justice.gov/usao-sdny/pr/kucoin-pleads-guilty-unlicensed-money-transmission-charge-and-agrees-pay-penalties",
+          "source_tier": "T1",
+          "source_role": "authority",
+          "access_state": "resolving",
+          "resolving": true,
+          "evidence_reviewed": false,
+          "checked_at": "2026-07-29",
+          "evidence_locator": "DOJ release dated January 27, 2025 records Peken Global's guilty plea, more than $297 million in forfeiture and fines, U.S. exit, management restrictions, and admitted U.S.-customer figures."
+        },
+        {
+          "id": "kucoin-cftc-order",
+          "title": "Consent Order for Permanent Injunction against Peken Global Limited",
+          "publisher": "U.S. Commodity Futures Trading Commission / U.S. District Court for the Southern District of New York",
+          "url": "https://www.cftc.gov/media/13586/EnfPekenGlobalLimitedConsentOrder033026/download",
+          "source_tier": "T1",
+          "source_role": "authority",
+          "access_state": "resolving",
+          "resolving": true,
+          "evidence_reviewed": false,
+          "checked_at": "2026-07-29",
+          "evidence_locator": "Court-filed consent order dated March 30, 2026 imposes a permanent injunction and $500,000 civil monetary penalty concerning unregistered direct U.S. access."
+        },
+        {
+          "id": "kucoin-us-restrictions",
+          "title": "US IP Access Restrictions and Guidance on Asset Withdrawals for Users in the United States",
+          "publisher": "KuCoin",
+          "url": "https://www.kucoin.com/announcement/us-ip-access-restrictions-and-guidance-on-asset-withdrawals-for-users-in-the-united-states?x=pl_PL",
+          "source_tier": "T2",
+          "source_role": "primary",
+          "access_state": "resolving",
+          "resolving": true,
+          "evidence_reviewed": false,
+          "checked_at": "2026-07-29",
+          "evidence_locator": "Operator notice states U.S. account closure, IP restrictions, and the assisted-withdrawal process while saying non-U.S. services remain operational."
+        },
+        {
+          "id": "kucoin-proof-of-reserves",
+          "title": "Proof of Reserves",
+          "publisher": "KuCoin",
+          "url": "https://www.kucoin.com/proof-of-reserves",
+          "source_tier": "T2",
+          "source_role": "primary",
+          "access_state": "resolving",
+          "resolving": true,
+          "evidence_reviewed": false,
+          "checked_at": "2026-07-29",
+          "evidence_locator": "Operator page reports a June 30, 2026 snapshot for BTC, ETH, USDT, and USDC. It is retained as scoped operator evidence and not treated as an audit of complete entity-wide solvency."
+        }
+      ]
+    }
+  ],
+  "casino_patches": [
+    {
+      "case_id": "bc-game-curacao-small-house",
+      "case_patch": {
+        "status": "insolvent",
+        "status_as_of": "2026-07-29",
+        "outcome_label": "failed",
+        "outcome_as_of": "2026-07-29",
+        "last_reviewed": "2026-07-29"
+      },
+      "sources": [
+        {
+          "source_id": "casino:source:bcgame:trustee-final-report-2025-07-22",
+          "canonical_url": "https://nagelmakers.com/downloads/bankruptcies/250722-tweede-faillissementsverslag-SH-%28ZB%29.pdf",
+          "title": "Second and final public bankruptcy report — Small House B.V.",
+          "publisher": "Court-appointed trustee Barbara Nagelmakers",
+          "published_at": "2025-07-22",
+          "accessed_at": "2026-07-29",
+          "source_tier": "A",
+          "source_role": "independent",
+          "resolving": 1,
+          "evidence_reviewed": 1,
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "chaindump-research-desk",
+          "notes": "Court-supervised estate report identifies judgment CUR2024H00248, the November 12, 2024 bankruptcy order, BC.Game operation as the debtor's activity, an unknown balance sheet, nil closing estate balance, and a final-report proposal to terminate the bankruptcy. It is not a complete asset map."
+        },
+        {
+          "source_id": "casino:source:bcgame:cga-certificate-2026-07-29",
+          "canonical_url": "https://cert.cga.cw/certificate?id=ZXlKcGRpSTZJa2x1ZEdjMVFuUTFVRzF4VERWUWJYRXpXakZaU0VFOVBTSXNJblpoYkhWbElqb2llV3BKZFhsTlRtTkJXbkZoUWpGUE9IWnZha3hpUVQwOUlpd2liV0ZqSWpvaVltVTNNVEZtTjJRek1qVXhOemt6WldVeFpHWXlNVGxtTURVM1pqSTVNemd3WldGbFpUSmtZamszTWpGa01tSTJORFU0WWpNME9EYzRNMk0zTlRJd05DSXNJblJoWnlJNklpSjk%3D",
+          "title": "Small House B.V. OGL/2023/118/0060 certificate",
+          "publisher": "Curaçao Gaming Authority",
+          "published_at": null,
+          "accessed_at": "2026-07-29",
+          "source_tier": "A",
+          "source_role": "independent",
+          "resolving": 1,
+          "evidence_reviewed": 1,
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "chaindump-research-desk",
+          "notes": "Current official certificate identifies Small House B.V., company 164979, licence OGL/2023/118/0060 and status Revoked. It scopes the Curaçao licence only."
+        }
+      ],
+      "claims": [
+        {
+          "claim_id": "casino:claim:bcgame:bankruptcy",
+          "field_path": "status.insolvent",
+          "source_id": "casino:source:bcgame:trustee-final-report-2025-07-22",
+          "evidence_locator": "Court-appointed trustee's final report identifies judgment CUR2024H00248 and states that the Joint Court declared Small House B.V. bankrupt on November 12, 2024.",
+          "claim_type": "event",
+          "support_direction": "supports",
+          "analyst_note": "Applies only to the Small House B.V. estate; it does not classify the current international BC.Game brand.",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "claim_id": "casino:claim:bcgame:trustee-final-report",
+          "field_path": "status.insolvent,events.bankruptcy,observations.estate_balance",
+          "source_id": "casino:source:bcgame:trustee-final-report-2025-07-22",
+          "evidence_locator": "Final trustee report records the November 12, 2024 bankruptcy judgment, describes BC.Game operation as Small House's activity, lists the balance sheet as unknown and the closing estate balance as nil, and proposes termination of the bankruptcy.",
+          "claim_type": "event",
+          "support_direction": "supports",
+          "analyst_note": "This is estate-level evidence. Nil estate balance is not converted into a claimant recovery percentage, and the report disclaims completeness.",
+          "checked_at": "2026-07-29"
+        },
+        {
+          "claim_id": "casino:claim:bcgame:cga-current-revocation",
+          "field_path": "licences.curacao,status.licence",
+          "source_id": "casino:source:bcgame:cga-certificate-2026-07-29",
+          "evidence_locator": "CGA certificate identifies Small House B.V. and licence OGL/2023/118/0060 and displays current status Revoked.",
+          "claim_type": "licence",
+          "support_direction": "supports",
+          "analyst_note": "The certificate does not identify the current operator or licence of the international BC.Game brand.",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "event": {
+        "event_id": "casino:event:bcgame:trustee-final-report:2025-07-22",
+        "event_type": "insolvency",
+        "event_date": "2025-07-22",
+        "date_precision": "day",
+        "description": "The court-appointed trustee issued a second and final public report for Small House B.V., reporting a nil estate balance and proposing termination of the bankruptcy.",
+        "source_claim_ids": [
+          "casino:claim:bcgame:trustee-final-report"
+        ]
+      },
+      "synthesis_patch": {
+        "present_situation": "Small House B.V.'s scoped Curaçao estate remains a failed operator case. The trustee's July 22, 2025 final report records the bankruptcy order, an unknown balance sheet, a nil closing estate balance and a proposal to terminate the proceeding; the CGA certificate reviewed July 29, 2026 still displays its licence as revoked. These records do not establish that the current international BC.Game brand has ceased.",
+        "risk_legal_posture": "Court-supervised trustee and current regulator records establish the scoped estate and revoked Curaçao licence. Claimant recovery, asset transfers and the present international operator remain unresolved; the operator's contrary global-continuity statement remains preserved.",
+        "success_failure_hypotheses": "The observed sequence is unresolved player-payment obligations, contested separation of assets and liabilities during an operator transfer, bankruptcy, a nil reported estate balance and licence revocation. The record supports the sequence but does not quantify how much each decision caused the shortfall.",
+        "source_claim_ids": [
+          "casino:claim:bcgame:creditor-context",
+          "casino:claim:bcgame:transfer-scope",
+          "casino:claim:bcgame:licence-revoked",
+          "casino:claim:bcgame:operator-conflict",
+          "casino:claim:bcgame:bankruptcy",
+          "casino:claim:bcgame:trustee-final-report",
+          "casino:claim:bcgame:cga-current-revocation"
+        ],
+        "outlook": {
+          "as_of": "2026-07-29",
+          "product_status": "scoped Curaçao operator estate failed; current global brand not classified",
+          "legal_status": "bankruptcy final report proposed termination; scoped Curaçao licence remains revoked; claimant recovery unknown",
+          "forensic_analysis": {
+            "version": "forensic-analysis-v1",
+            "outcome": {
+              "label": "failed",
+              "summary": "Small House B.V.'s scoped Curaçao BC.Game operator estate failed. A court-appointed trustee's final report records the November 12, 2024 bankruptcy order, identifies BC.Game operation as the debtor's activity, reports an unknown balance sheet and nil closing estate balance, and proposes termination of the proceeding. The current CGA certificate still marks the named licence revoked. This does not classify the current international BC.Game brand or a successor operator as failed.",
+              "confidence": "high",
+              "as_of": "2026-07-29",
+              "source_refs": [
+                "https://nagelmakers.com/downloads/bankruptcies/250722-tweede-faillissementsverslag-SH-%28ZB%29.pdf",
+                "https://cert.cga.cw/certificate?id=ZXlKcGRpSTZJa2x1ZEdjMVFuUTFVRzF4VERWUWJYRXpXakZaU0VFOVBTSXNJblpoYkhWbElqb2llV3BKZFhsTlRtTkJXbkZoUWpGUE9IWnZha3hpUVQwOUlpd2liV0ZqSWpvaVltVTNNVEZtTjJRek1qVXhOemt6WldVeFpHWXlNVGxtTURVM1pqSTVNemd3WldGbFpUSmtZamszTWpGa01tSTJORFU0WWpNME9EYzRNMk0zTlRJd05DSXNJblJoWnlJNklpSjk%3D",
+                "https://bc.game/press-release.pdf"
+              ]
+            },
+            "why": {
+              "summary": "The evidence supports a sequence rather than a single-cause story: player-payment obligations remained disputed through an operator transfer; Small House argued that it acquired assets but not legacy liabilities; the appellate court declared the entity bankrupt; the trustee later reported no visibility into a complete balance sheet and a nil estate balance; and the Curaçao licence is now marked revoked. The international operator contested the bankruptcy narrative. The record does not establish a complete asset trail or quantify how much transfer design, operating losses, governance or regulation contributed.",
+              "confidence": "high",
+              "source_refs": [
+                "https://nagelmakers.com/downloads/bankruptcies/250722-tweede-faillissementsverslag-SH-%28ZB%29.pdf",
+                "https://www.curacaochronicle.com/post/main/curacao-court-declares-bankruptcy-for-blockdance-and-small-house-amidst-unpaid-player-claims/",
+                "https://bc.game/press-release.pdf"
+              ]
+            },
+            "strategic_choices": [
+              {
+                "decision": "Transfer BC.Game website and software operations from Blockdance to Small House while treating legacy liabilities as outside the acquired package.",
+                "consequence": "The separation preserved a path for brand and software continuity but made creditor responsibility central to litigation; the trustee report says Small House asserted it acquired the assets while relevant liabilities remained with Blockdance.",
+                "confidence": "high",
+                "source_refs": [
+                  "https://nagelmakers.com/downloads/bankruptcies/250722-tweede-faillissementsverslag-SH-%28ZB%29.pdf",
+                  "https://www.curacaochronicle.com/post/main/curacao-court-declares-bankruptcy-for-blockdance-and-small-house-amidst-unpaid-player-claims/"
+                ]
+              },
+              {
+                "decision": "Continue international brand operations while contesting the Curaçao estate's implications.",
+                "consequence": "Brand continuity became separable from the failure of one legal operator and licence. That preserves an operating claim outside Curaçao but makes entity, custody and liability mapping essential before drawing a global conclusion.",
+                "confidence": "medium",
+                "source_refs": [
+                  "https://bc.game/press-release.pdf",
+                  "https://cert.cga.cw/certificate?id=ZXlKcGRpSTZJa2x1ZEdjMVFuUTFVRzF4VERWUWJYRXpXakZaU0VFOVBTSXNJblpoYkhWbElqb2llV3BKZFhsTlRtTkJXbkZoUWpGUE9IWnZha3hpUVQwOUlpd2liV0ZqSWpvaVltVTNNVEZtTjJRek1qVXhOemt6WldVeFpHWXlNVGxtTURVM1pqSTVNemd3WldGbFpUSmtZamszTWpGa01tSTJORFU0WWpNME9EYzRNMk0zTlRJd05DSXNJblJoWnlJNklpSjk%3D"
+                ]
+              }
+            ],
+            "counterfactual": {
+              "summary": "Segregated player funds, a court- and regulator-visible asset register, and an explicitly funded assumption or exclusion of every player liability during transfer would have reduced ambiguity and creditor risk. The trustee's inability to establish a complete balance sheet shows why those controls matter, but the public record cannot prove that they would have made the product profitable or prevented every claim.",
+              "confidence": "medium",
+              "source_refs": [
+                "https://nagelmakers.com/downloads/bankruptcies/250722-tweede-faillissementsverslag-SH-%28ZB%29.pdf",
+                "https://www.curacaochronicle.com/post/main/curacao-court-declares-bankruptcy-for-blockdance-and-small-house-amidst-unpaid-player-claims/"
+              ]
+            },
+            "watch": [
+              {
+                "signal": "A court order terminating the Small House bankruptcy and any final creditor distribution schedule.",
+                "implication": "These records will determine realized recovery; a nil estate balance is not itself a claimant-level distribution result.",
+                "source_refs": [
+                  "https://nagelmakers.com/downloads/bankruptcies/250722-tweede-faillissementsverslag-SH-%28ZB%29.pdf"
+                ]
+              },
+              {
+                "signal": "CGA certificate or enforcement-register changes for OGL/2023/118/0060.",
+                "implication": "A status change would update the scoped licence record but would not identify a successor's operator, custody or liabilities.",
+                "source_refs": [
+                  "https://cert.cga.cw/certificate?id=ZXlKcGRpSTZJa2x1ZEdjMVFuUTFVRzF4VERWUWJYRXpXakZaU0VFOVBTSXNJblpoYkhWbElqb2llV3BKZFhsTlRtTkJXbkZoUWpGUE9IWnZha3hpUVQwOUlpd2liV0ZqSWpvaVltVTNNVEZtTjJRek1qVXhOemt6WldVeFpHWXlNVGxtTURVM1pqSTVNemd3WldGbFpUSmtZamszTWpGa01tSTJORFU0WWpNME9EYzRNMk0zTlRJd05DSXNJblJoWnlJNklpSjk%3D"
+                ]
+              },
+              {
+                "signal": "Current BC.Game terms naming the international operator, licences, custody path and treatment of legacy balances.",
+                "implication": "Direct evidence is required before connecting the failed Curaçao estate to the current global product.",
+                "source_refs": [
+                  "https://bc.game/press-release.pdf"
+                ]
+              }
+            ],
+            "unknowns": [
+              "What distribution, if any, did each recognized creditor receive before termination?",
+              "What assets and player liabilities moved from Blockdance to Small House, and under which enforceable agreements?",
+              "Who is the current international operator, where are customer assets held, and what relationship does it have to Small House?",
+              "Did the court grant the trustee's proposal to terminate the bankruptcy, and on what final estate accounting?"
+            ],
+            "review": {
+              "status": "current",
+              "last_reviewed_at": "2026-07-29",
+              "next_review_at": "2026-08-05",
+              "reviewer": "chaindump-research-desk"
+            }
+          }
+        }
+      }
+    }
+  ],
+  "nft_patches": [
+    {
+      "slug": "f1-delta-time",
+      "sources": [
+        {
+          "id": "f1dt-closure",
+          "title": "F1 Delta Time to cease operations; rewards announced for supporters",
+          "url": "https://www.animocabrands.com/f1-delta-time-to-cease-operations-announces-rewards-for-supporters",
+          "publisher": "Animoca Brands",
+          "source_date": "2022-03-16",
+          "source_date_kind": "event",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "terminal_outcome",
+          "stale_after": null,
+          "stale": false,
+          "source_tier": "T2",
+          "source_role": "primary",
+          "access_state": "resolving",
+          "resolving": true,
+          "evidence_reviewed": false,
+          "verification_note": "Operator notice confirms cessation, inability to renew the Formula 1 licence, and the available replacement or payout paths. It does not disclose licence negotiations, economics, player counts, or completion rates."
+        },
+        {
+          "id": "f1dt-racefans",
+          "title": "Official Formula 1 NFT game F1 Delta Time closes three years after launch",
+          "url": "https://www.racefans.net/2022/04/01/official-formula-1-nft-game-f1-delta-time-closes-three-years-after-launch/",
+          "publisher": "RaceFans",
+          "source_date": "2022-04-01",
+          "source_date_kind": "published",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "terminal_outcome",
+          "stale_after": null,
+          "stale": false,
+          "source_tier": "T3",
+          "source_role": "independent",
+          "access_state": "resolving",
+          "resolving": true,
+          "evidence_reviewed": false,
+          "verification_note": "Independent motorsport reporting confirms launch timing, closure after non-renewal of the Formula 1 licence, and historically high-value NFT sales. Sale values are historical transactions, not current valuation or holder recovery."
+        }
+      ],
+      "analysis_updates": {
+        "outcome_source_refs": [
+          "f1dt-closure",
+          "f1dt-racefans"
+        ],
+        "why_source_refs": [
+          "f1dt-closure",
+          "f1dt-racefans"
+        ],
+        "counterfactual_source_refs": [
+          "f1dt-closure",
+          "f1dt-racefans"
+        ]
+      },
+      "evidence_updates": {
+        "lifecycle_status_source_ids": [
+          "f1dt-closure",
+          "f1dt-racefans"
+        ],
+        "analysis_source_ids": [
+          "f1dt-closure",
+          "f1dt-racefans"
+        ]
+      }
+    }
+  ],
+  "reference_repairs": {
+    "checked_at": "2026-07-29",
+    "method": "Register every forensic source reference missing from its dossier source array. resolving and access_state record retrieval status only. evidence_reviewed remains false for URL/source-identity checks unless a named reviewer, review time, and field-level evidence mapping are present. Unavailable links remain explicitly non-resolving and unreviewed.",
+    "summary": {
+      "dossier_count": 40,
+      "source_ref_count": 179,
+      "resolving_source_ref_count": 161,
+      "unavailable_source_ref_count": 18,
+      "editorially_reviewed_source_ref_count": 1
+    },
+    "exchange_patches": [
+      {
+        "dossier_id": "cex:dead:ascendex",
+        "slug": "ascendex",
+        "kind": "cex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-67ba1c648cb6cf3e",
+            "title": "AscendEX cessation of operations and wind-down notice",
+            "publisher": "AscendEX",
+            "url": "https://ascendex.com/en/support/articles/138693",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "http_404",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but HTTP 404 on 2026-07-29; it is not counted as resolving evidence."
+          },
+          {
+            "id": "publication-depth-ref-052a0ee0333be266",
+            "title": "AscendEX official wind-down communication notice",
+            "publisher": "AscendEX",
+            "url": "https://ascendex.com/en/support/articles/120932",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "http_404",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but HTTP 404 on 2026-07-29; it is not counted as resolving evidence."
+          },
+          {
+            "id": "publication-depth-ref-3d950e4e8da040fa",
+            "title": "Markets in Crypto-Assets Regulation (MiCA)",
+            "publisher": "European Securities and Markets Authority",
+            "url": "https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/markets-crypto-assets-regulation-mica",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-faa21cde780bc60b",
+            "title": "AscendEx shutdown: Uncertainty over withdrawals as hot wallets lack funds",
+            "publisher": "Protos",
+            "url": "https://protos.com/ascendex-shutdown-uncertainty-over-withdrawals-as-hot-wallets-lack-funds/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "independent",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-ef6b2d6da17fac88",
+            "title": "AscendEX shuts down",
+            "publisher": "The Block",
+            "url": "https://www.theblock.co/post/407654/ascendex-shuts-down",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "independent",
+            "access_state": "http_403",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but HTTP 403 on 2026-07-29; it is not counted as resolving evidence."
+          }
+        ]
+      },
+      {
+        "dossier_id": "cex:dead:bittrex",
+        "slug": "bittrex",
+        "kind": "cex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-205923d16078db4c",
+            "title": "Bittrex Global",
+            "publisher": "Bittrex Global",
+            "url": "https://bittrexglobal.com/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-f2fba9a46f23d9d9",
+            "title": "SEC.gov | Crypto Asset Trading Platform Bittrex and Former CEO to Settle SEC Charges for Operating an Unregistered Exchange, Broker, and Clearing Agency",
+            "publisher": "U.S. Securities and Exchange Commission",
+            "url": "https://www.sec.gov/newsroom/press-releases/2023-150",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-890aacfe5c8dbe26",
+            "title": "SEC.gov | SEC Charges Crypto Asset Trading Platform Bittrex and its Former CEO for Operating an Unregistered Exchange, Broker, and Clearing Agency",
+            "publisher": "U.S. Securities and Exchange Commission",
+            "url": "https://www.sec.gov/newsroom/press-releases/2023-78",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-31b82fa543f84052",
+            "title": "OFAC enforcement release — Bittrex",
+            "publisher": "U.S. Office of Foreign Assets Control",
+            "url": "https://ofac.treasury.gov/media/928746/download?inline=",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-e4a74511982009c0",
+            "title": "SEC complaint — Bittrex and William Shihara",
+            "publisher": "U.S. Securities and Exchange Commission",
+            "url": "https://www.sec.gov/files/litigation/complaints/2023/comp-pr2023-78.pdf",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "cex:dead:blockfi",
+        "slug": "blockfi",
+        "kind": "cex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-84763f9c7e606eae",
+            "title": "Official Committee of Unsecured Creditors of BlockFi",
+            "publisher": "Official Committee of Unsecured Creditors of BlockFi",
+            "url": "https://blockfiofficialcommittee.com/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-ae4da616fa3eefe2",
+            "title": "SEC.gov | BlockFi Agrees to Pay $100 Million in Penalties and Pursue Registration of its Crypto Lending Product",
+            "publisher": "U.S. Securities and Exchange Commission",
+            "url": "https://www.sec.gov/newsroom/press-releases/2022-26",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "cex:dead:celsius",
+        "slug": "celsius",
+        "kind": "cex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-3e9508a54849a591",
+            "title": "Fourth Distribution : Celsius Distributions",
+            "publisher": "Celsius Claims Administrator",
+            "url": "https://celsiusdistribution.stretto.com/support/solutions/articles/153000252038-fourth-distribution",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-dc41269ad339fd1e",
+            "title": "FTC complaint — Celsius Network",
+            "publisher": "U.S. Federal Trade Commission",
+            "url": "https://www.ftc.gov/system/files/ftc_gov/pdf/2223137celsiusnetworkcomplaint.pdf",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "cex:dead:coinflex",
+        "slug": "coinflex",
+        "kind": "cex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-c0d6313bc58b1f87",
+            "title": "CoinFLEX rebrands to OPNX",
+            "publisher": "The Block",
+            "url": "https://www.theblock.co/post/218171/coinflex-rebrands-to-opnx-with-leslie-lamb-as-ceo-of-3ac-founders-latest-venture",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "independent",
+            "access_state": "http_403",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but HTTP 403 on 2026-07-29; it is not counted as resolving evidence."
+          }
+        ]
+      },
+      {
+        "dossier_id": "cex:dead:cryptopia",
+        "slug": "cryptopia",
+        "kind": "cex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-319e5274bb2d3382",
+            "title": "Cryptopia Limited appoints Grant Thornton as liquidators | Grant Thornton New Zealand",
+            "publisher": "Grant Thornton New Zealand",
+            "url": "https://www.grantthornton.co.nz/press/press-releases-2019/cryptopia-limited-appoints-grant-thornton-as-liquidators/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-8aec2210fb27464f",
+            "title": "Cryptopia account holders receive $400m from liquidators | Grant Thornton New Zealand",
+            "publisher": "Grant Thornton New Zealand",
+            "url": "https://www.grantthornton.co.nz/press/press-releases-2024/cryptopia-account-holders-receive-%24400m-from-liquidators/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-2868966ed9fdf44e",
+            "title": "Update for Cryptopia Claimants and Stakeholders 15 May 2026 | Grant Thornton New Zealand",
+            "publisher": "Grant Thornton New Zealand",
+            "url": "https://www.grantthornton.co.nz/cryptopia/cryptopia-updates/update-for-cryptopia-claimants-and-stakeholders-15-may-2026/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-bd6639adb659f5f9",
+            "title": "Submissions for the Cryptopia liquidators — 23 January 2020",
+            "publisher": "Grant Thornton New Zealand",
+            "url": "https://www.grantthornton.co.nz/globalassets/1.-member-firms/new-zealand/pdfs/cryptopia/2020/d.submissions-for-the-liquidators-23-january-2020.pdf",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-2ddc8245affe3011",
+            "title": "Police continue to make progress in cryptocurrency investigation | New Zealand Police",
+            "publisher": "New Zealand Police",
+            "url": "https://www.police.govt.nz/news/release/police-continue-make-progress-cryptocurrency-investigation",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-f4dbf8a65f5deb19",
+            "title": "Cryptopia eleventh liquidators report — June 2024",
+            "publisher": "Grant Thornton New Zealand",
+            "url": "https://www.grantthornton.co.nz/globalassets/1.-member-firms/new-zealand/pdfs/11th-liquidators-report_cryptopia_june-24_final.pdf",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-72c3adc87c4062f9",
+            "title": "Cryptopia sealed orders for distribution of cryptocurrencies",
+            "publisher": "Grant Thornton New Zealand",
+            "url": "https://www.grantthornton.co.nz/globalassets/1.-member-firms/new-zealand/pdfs/f20240301-sealed-orders-for-distribution-of-cryptocurrencies.pdf",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-4de3981ec57ec618",
+            "title": "Update: Investigation involving cryptocurrency company | New Zealand Police",
+            "publisher": "New Zealand Police",
+            "url": "https://www.police.govt.nz/news/release/update-investigation-involving-cryptocurrency-company",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-df8db71ac8dfcbc2",
+            "title": "Cryptopia Limited | Grant Thornton New Zealnd",
+            "publisher": "Grant Thornton New Zealand",
+            "url": "https://www.grantthornton.co.nz/cryptopia/cryptopia-updates//",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "cex:dead:ftx",
+        "slug": "ftx",
+        "kind": "cex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-905cacef197d2101",
+            "title": "CFTC complaint — FTX Trading and Alameda Research",
+            "publisher": "U.S. Commodity Futures Trading Commission",
+            "url": "https://www.cftc.gov/media/7986/enfftxtradingcomplaint121322/download",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-1c1eb3218cc1ee71",
+            "title": "FTX distributions dashboard FAQs",
+            "publisher": "FTX Recovery",
+            "url": "https://support.ftx.com/hc/en-us/articles/34522100742804-Distributions-Dashboard-FAQs",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "http_403",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but HTTP 403 on 2026-07-29; it is not counted as resolving evidence."
+          },
+          {
+            "id": "publication-depth-ref-e242b0f7394f179a",
+            "title": "FTX Announces Fifth Distribution of Approximately $900 Million to Creditors on July 31, 2026",
+            "publisher": "PR Newswire",
+            "url": "https://www.prnewswire.com/news-releases/ftx-announces-fifth-distribution-of-approximately-900-million-to-creditors-on-july-31-2026-302828726.html",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-341f7d644fc43d12",
+            "title": "Samuel Bankman Fried Sentenced 25 Years Prison",
+            "publisher": "U.S. Department of Justice",
+            "url": "https://www.justice.gov/usao-sdny/pr/samuel-bankman-fried-sentenced-25-years-prison",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-a3d4b9ed93b3e062",
+            "title": "Testimony of John J. Ray III concerning FTX",
+            "publisher": "U.S. Congress",
+            "url": "https://www.congress.gov/117/meeting/house/115246/witnesses/HHRG-117-BA00-Wstate-RayJ-20221213.pdf",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-ae0c8f961c60f86f",
+            "title": "FTX distribution service providers — general information",
+            "publisher": "FTX Recovery",
+            "url": "https://support.ftx.com/hc/en-us/articles/33190623459092-General-Information-on-Distribution-Service-Providers",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "http_403",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but HTTP 403 on 2026-07-29; it is not counted as resolving evidence."
+          }
+        ]
+      },
+      {
+        "dossier_id": "cex:dead:genesis-global",
+        "slug": "genesis-global",
+        "kind": "cex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-2f5482a9bd663853",
+            "title": "DFS Announces $8 Million Penalty Against Genesis Global Trading After Significant Failings in Anti-Money Laundering and Cybersecurity Programs | Department of Financial Services",
+            "publisher": "New York State Department of Financial Services",
+            "url": "https://www.dfs.ny.gov/reports_and_publications/press_releases/pr2024011224",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "cex:dead:hodlnaut",
+        "slug": "hodlnaut",
+        "kind": "cex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-f8df25a44cf148db",
+            "title": "SPF | Investigation Into Hodlnaut Pte. Ltd.",
+            "publisher": "Singapore Police Force",
+            "url": "https://www.police.gov.sg/media-hub/news/2022/20221123_inv_into_hodlnaut_pte_ltd",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-6e7f74645a9d97e0",
+            "title": "[2022] SGHC 209",
+            "publisher": "Singapore Judiciary",
+            "url": "https://www.elitigation.sg/gd/s/2022_SGHC_209",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "cex:dead:mt-gox",
+        "slug": "mt-gox",
+        "kind": "cex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-7e0e61c99a5d90c0",
+            "title": "MtGox.com",
+            "publisher": "Mt. Gox",
+            "url": "https://www.mtgox.com/?Locale=en_US",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-8c4ea927bac0faf2",
+            "title": "Russian Nationals Charged Hacking One Cryptocurrency Exchange And Illicitly Operating",
+            "publisher": "U.S. Department of Justice",
+            "url": "https://www.justice.gov/usao-sdny/pr/russian-nationals-charged-hacking-one-cryptocurrency-exchange-and-illicitly-operating",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-4b4599655395c622",
+            "title": "Russian Nationals Charged Hacking One Cryptocurrency Exchange And Illicitly Operating",
+            "publisher": "U.S. Department of Justice",
+            "url": "https://www.justice.gov/usao-ndca/pr/russian-nationals-charged-hacking-one-cryptocurrency-exchange-and-illicitly-operating",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-1ff7300e80d663ce",
+            "title": "Mt. Gox rehabilitation plan implementation announcement — 6 October 2022",
+            "publisher": "Mt. Gox",
+            "url": "https://www.mtgox.com/img/pdf/20221006_announcement_en.pdf",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "cex:dead:quadrigacx",
+        "slug": "quadrigacx",
+        "kind": "cex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-79b73c293a2889ce",
+            "title": "QuadrigaCX: A Review by Staff of the Ontario Securities Commission",
+            "publisher": "Ontario Securities Commission",
+            "url": "https://www.osc.ca/quadrigacxreport/web/files/QuadrigaCX-A-Review-by-Staff-of-the-Ontario-Securities-Commission.pdf",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-2c0a9001127c42e3",
+            "title": "Registre de la LACC Quadriga Fintech Solutions Corp., Whiteside Capital Corporation and 0984750 B.C. Ltd.",
+            "publisher": "Office of the Superintendent of Bankruptcy Canada",
+            "url": "https://ised-isde.canada.ca/site/bureau-surintendant-faillites/fr/liste-procedures-sous-lacc/registre-lacc-quadriga-fintech-solutions-corp-whiteside-capital-corporation-and-0984750-bc-ltd",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-c38b8135394372cd",
+            "title": "Growth of Quadriga (2015-2017) - QuadrigaCX Report",
+            "publisher": "Ontario Securities Commission",
+            "url": "https://www.osc.ca/quadrigacxreport/growth-of-quadriga.html",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "cex:dead:vauld",
+        "slug": "vauld",
+        "kind": "cex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-f1e6ef62980f9039",
+            "title": "Important Update: Temporary Suspension of Withdrawals from 30 June 2025 | Vauld Help Center",
+            "publisher": "Vauld",
+            "url": "https://support.vauld.com/en/articles/11768488-important-update-temporary-suspension-of-withdrawals-from-30-june-2025",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-887e4eeb4ac47bbd",
+            "title": "Creditors Committee Meeting Updates and Q&As as of 20-Oct-22 | Vauld Help Center",
+            "publisher": "Vauld",
+            "url": "https://support.vauld.com/en/articles/6655404-creditors-committee-meeting-updates-and-q-as-as-of-20-oct-22",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-0821409872711289",
+            "title": "Scheme Related FAQs - As of 16 Aug 2023 | Vauld Help Center",
+            "publisher": "Vauld",
+            "url": "https://support.vauld.com/en/articles/8262910-scheme-related-faqs-as-of-16-aug-2023",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "cex:dead:voyager-digital",
+        "slug": "voyager-digital",
+        "kind": "cex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-bd9bbd43c18b3409",
+            "title": "Voyager second-distribution FAQ",
+            "publisher": "Voyager Digital",
+            "url": "https://support.investvoyager.com/hc/en-us/articles/28007576100507-I-don-t-see-a-Second-Distribution-check-in-my-account-Why",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "http_403",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but HTTP 403 on 2026-07-29; it is not counted as resolving evidence."
+          }
+        ]
+      },
+      {
+        "dossier_id": "cex:dead:zipmex",
+        "slug": "zipmex",
+        "kind": "cex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-d86241f629935544",
+            "title": "FAQ: revocation of Zipmex digital-asset exchange and broker licences",
+            "publisher": "Thailand Securities and Exchange Commission",
+            "url": "https://www.sec.or.th/Documents/News/Attach/10850/FAQ%20Revocation%20of%20Zipmex%20s%20Digital%20Asset%20Exchange%20and%20Broker%20Licenses.pdf",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-8b65fb2855140a2d",
+            "title": "Zipmex Thailand creditor update",
+            "publisher": "Zipmex Thailand",
+            "url": "https://updates.zipmex.co.th/?lang=th&p=181635",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "fetch_failed",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but the request failed on 2026-07-29; it is not counted as resolving evidence."
+          }
+        ]
+      },
+      {
+        "dossier_id": "cex:mid:okx",
+        "slug": "okx",
+        "kind": "cex",
+        "lifecycle": "mid",
+        "table": "mid_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-b0b8fcb759aecdb5",
+            "title": "Prueba de reservas | Verificación de criptoactivos | OKX",
+            "publisher": "OKX",
+            "url": "https://www.okx.com/es-la/proof-of-reserves",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-ad6920487354a897",
+            "title": "Proof of Reserves | Cryptocurrency Asset Verification | OKX",
+            "publisher": "OKX",
+            "url": "https://www.okx.com/en-gb/proof-of-reserves/download",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "cex:mid:wazirx",
+        "slug": "wazirx",
+        "kind": "cex",
+        "lifecycle": "mid",
+        "table": "mid_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-c48763315bfd2ae2",
+            "title": "From Setback to Comeback: WazirX’s Road to Recovery - WazirX Blog",
+            "publisher": "WazirX",
+            "url": "https://wazirx.com/blog/wazirx-comeback-journey-2025/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-084f5aa8f44ca338",
+            "title": "Update on WazirX Restructuring Scheme: Recovery Token Allocation Complete - WazirX Blog",
+            "publisher": "WazirX",
+            "url": "https://wazirx.com/blog/recovery-tokens-explained/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-8ad165f65e532769",
+            "title": "WazirX Cyber Attack: Key Insights and Learnings - WazirX Blog",
+            "publisher": "WazirX",
+            "url": "https://wazirx.com/blog/wazirx-cyber-attack-key-insights-and-learnings/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:dead:bunni",
+        "slug": "bunni",
+        "kind": "dex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-da8037333f38b456",
+            "title": "Bunni exploit post-mortem",
+            "publisher": "Bunni",
+            "url": "https://blog.bunni.xyz/posts/exploit-post-mortem/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "fetch_failed",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but the request failed on 2026-07-29; it is not counted as resolving evidence."
+          },
+          {
+            "id": "publication-depth-ref-d3b198fbf554fb8f",
+            "title": "DefiLlama protocol data — Bunni",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/protocol/bunni",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:dead:gmx-v1",
+        "slug": "gmx-v1",
+        "kind": "dex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-b0512688c8c89a49",
+            "title": "Contracts for V1 | GMX Docs",
+            "publisher": "GMX",
+            "url": "https://docs.gmx.io/docs/archived/contracts-v1/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-2df551709748355c",
+            "title": "Archived | GMX Docs",
+            "publisher": "GMX",
+            "url": "https://docs.gmx.io/docs/category/archived/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-c968907e592a253b",
+            "title": "DISCUSSION: Resolve the Distribution Plan for the Recovered Funds from Arbitrum GLP - Proposals - GMX",
+            "publisher": "GMX Governance",
+            "url": "https://gov.gmx.io/t/discussion-resolve-the-distribution-plan-for-the-recovered-funds-from-arbitrum-glp/4678",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-b8445207f180b7a0",
+            "title": "GLP Distribution - Plan of Action - Proposals - GMX",
+            "publisher": "GMX Governance",
+            "url": "https://gov.gmx.io/t/glp-distribution-plan-of-action/4703",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-a4ac5849a0a83430",
+            "title": "Assist V1 GLP Depositors Stuck in Archi Finance - Proposals - GMX",
+            "publisher": "GMX Governance",
+            "url": "https://gov.gmx.io/t/assist-v1-glp-depositors-stuck-in-archi-finance/4521",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-5c4b90bde66d64c3",
+            "title": "Archi Finance Security Incident Distribution - GMX",
+            "publisher": "GMX Governance",
+            "url": "https://gov.gmx.io/t/archi-finance-security-incident-distribution/4906",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:dead:kyberswap",
+        "slug": "kyberswap",
+        "kind": "dex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-863db03405a5ff39",
+            "title": "KyberSwap Elastic | KyberSwap Docs",
+            "publisher": "KyberSwap",
+            "url": "https://docs.kyberswap.com/reference/legacy/kyberswap-elastic",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-a7b86cbf112eaecc",
+            "title": "Introduction to KyberSwap | KyberSwap Docs",
+            "publisher": "KyberSwap",
+            "url": "https://docs.kyberswap.com/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-a4bf080357035b05",
+            "title": "KyberSwap 2026: Product Updates - KyberSwap Blog",
+            "publisher": "KyberSwap",
+            "url": "https://blog.kyberswap.com/kyberswap-2026-product-updates/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-37f6b2561ac1f0d8",
+            "title": "Audits | KyberSwap Docs",
+            "publisher": "KyberSwap",
+            "url": "https://docs.kyberswap.com/reference/legacy/audits",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-133085496f400239",
+            "title": "Is KyberSwap Elastic a fork of Uniswap v3?",
+            "publisher": "KyberSwap",
+            "url": "https://support.kyberswap.com/hc/en-us/articles/13766703722393-Is-KyberSwap-Elastic-a-fork-of-Uniswap-V3",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "http_403",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but HTTP 403 on 2026-07-29; it is not counted as resolving evidence."
+          },
+          {
+            "id": "publication-depth-ref-6c578a7d932fc448",
+            "title": "DefiLlama protocol data — KyberSwap Elastic",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/protocol/kyberswap-elastic",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:dead:mango-markets",
+        "slug": "mango-markets",
+        "kind": "dex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-c5d9787e245f4024",
+            "title": "SEC.gov | Mango Labs, LLC, Mango DAO, and Blockworks Foundation",
+            "publisher": "U.S. Securities and Exchange Commission",
+            "url": "https://www.sec.gov/enforcement-litigation/litigation-releases/lr-26140",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-7aad6806c2fb6757",
+            "title": "CFTC Charges Avraham Eisenberg with Manipulative and Deceptive Scheme to Misappropriate Over $110 million from Mango Markets, a Digital Asset Exchange | CFTC",
+            "publisher": "U.S. Commodity Futures Trading Commission",
+            "url": "https://www.cftc.gov/PressRoom/PressReleases/8647-23",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-e1cc7ba2cac6a3f6",
+            "title": "CFTC complaint — Avraham Eisenberg / Mango Markets",
+            "publisher": "U.S. Commodity Futures Trading Commission",
+            "url": "https://www.cftc.gov/media/8046/enfeisenbergcomplaint010923/download",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-e6ba8e95c2ba70da",
+            "title": "Alleged Perpetrator 100 Million Crypto Market Manipulation Scheme Make Initial",
+            "publisher": "U.S. Department of Justice",
+            "url": "https://www.justice.gov/usao-sdny/pr/alleged-perpetrator-100-million-crypto-market-manipulation-scheme-make-initial",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:dead:mirror-protocol",
+        "slug": "mirror-protocol",
+        "kind": "dex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-2b3f2813e44ff6be",
+            "title": "SEC.gov | Terraform Labs PTE, Ltd. and Do Kwon",
+            "publisher": "U.S. Securities and Exchange Commission",
+            "url": "https://www.sec.gov/enforcement-litigation/litigation-releases/lr-25262",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-c5efc7a0dd8b0466",
+            "title": "SEC amended complaint — Terraform Labs and Do Kwon",
+            "publisher": "U.S. Securities and Exchange Commission",
+            "url": "https://www.sec.gov/files/terraform-labs-pte-ltd-amended-complaint.pdf",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-d71f3503a3c53588",
+            "title": "Mirror Protocol · GitHub",
+            "publisher": "GitHub",
+            "url": "https://github.com/mirror-protocol",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-7d443eb9d638090e",
+            "title": "DefiLlama protocol data — Mirror Protocol",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/protocol/mirror",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:dead:platypus-finance",
+        "slug": "platypus-finance",
+        "kind": "dex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-3e8f28b49570abfa",
+            "title": "DefiLlama protocol data — Platypus Finance",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/protocol/platypus-finance",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-065b60837eaae1ef",
+            "title": "Update on Platypus recovery efforts after the exploit",
+            "publisher": "Platypus Finance",
+            "url": "https://medium.com/platypus-finance/update-on-recovery-efforts-after-the-exploitation-a8f64acd5aa5",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "http_403",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but HTTP 403 on 2026-07-29; it is not counted as resolving evidence."
+          },
+          {
+            "id": "publication-depth-ref-22dba416ee3276d3",
+            "title": "Hack analysis: Platypus Finance — February 2023",
+            "publisher": "Immunefi",
+            "url": "https://medium.com/immunefi/hack-analysis-platypus-finance-february-2023-d11fce37d861",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "independent",
+            "access_state": "http_403",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but HTTP 403 on 2026-07-29; it is not counted as resolving evidence."
+          },
+          {
+            "id": "publication-depth-ref-b6d5fdbd339a126c",
+            "title": "Platypus DeFi Incident Analysis - CertiK",
+            "publisher": "CertiK",
+            "url": "https://www.certik.com/ko/blog/platypus-defi-incident-analysis",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "independent",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-c7ac4c4d965ec0f0",
+            "title": "Platypus recap: the 2022–2023 transition",
+            "publisher": "Platypus Finance",
+            "url": "https://medium.com/platypus-finance/platypus-recap-the-2022-2023-transition-503ca5483076",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "http_403",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but HTTP 403 on 2026-07-29; it is not counted as resolving evidence."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:dead:saddle-finance",
+        "slug": "saddle-finance",
+        "kind": "dex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-4235927525a477c3",
+            "title": "Saddle governance data",
+            "publisher": "DefiLlama",
+            "url": "https://defillama.com/governance/saddle",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "http_403",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but HTTP 403 on 2026-07-29; it is not counted as resolving evidence."
+          },
+          {
+            "id": "publication-depth-ref-93d77aa5fe15b15a",
+            "title": "[FIP - 280] Implement Saddle L2D4 Gauge ragequit function with 20% fee - Gauges - Frax Finance Governance",
+            "publisher": "Frax Finance Governance",
+            "url": "https://gov.frax.finance/t/fip-280-implement-saddle-l2d4-gauge-ragequit-function-with-20-fee/2528",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-4ef28561efdfa0e9",
+            "title": "DefiLlama protocol data — Saddle Finance",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/protocol/saddle-finance",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-8488b428aca0da0b",
+            "title": "Saddle FAQ | saddle.finance",
+            "publisher": "Saddle Finance",
+            "url": "https://docs.saddle.finance/saddle-faq",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-0fce028bbe49cdc3",
+            "title": "Governance (SIPs) | saddle.finance",
+            "publisher": "Saddle Finance",
+            "url": "https://docs.saddle.finance/governance",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:dead:serum",
+        "slug": "serum",
+        "kind": "dex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-663ddea69f1d897a",
+            "title": "Monthly Community Update | December 2022 | Solana Media",
+            "publisher": "Solana Foundation",
+            "url": "https://solana.com/nl/news/monthly-community-update-december-2022",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-cdfe09d6642e9e11",
+            "title": "DefiLlama protocol data — Serum",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/protocol/serum",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:dead:uranium-finance",
+        "slug": "uranium-finance",
+        "kind": "dex",
+        "lifecycle": "dead",
+        "table": "dead_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-4b9c3e438ca06069",
+            "title": "Maryland Man Charged Defrauding Crypto Exchange Over 50 Million Hacks",
+            "publisher": "U.S. Department of Justice",
+            "url": "https://www.justice.gov/usao-sdny/pr/maryland-man-charged-defrauding-crypto-exchange-over-50-million-hacks",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-cc8c683dc0a9c61b",
+            "title": "Binance Chain DeFi Exchange Uranium Finance Loses $50M in Exploit",
+            "publisher": "CoinDesk",
+            "url": "https://www.coindesk.com/markets/2021/04/28/binance-chain-defi-exchange-uranium-finance-loses-50m-in-exploit",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "independent",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-d792f603d0647eb8",
+            "title": "Uranium Finance Exploit Resulting in a $57.2 Million Loss - Distributed Networks Institute",
+            "publisher": "Distributed Networks Institute",
+            "url": "https://dn.institute/research/cyberattacks/incidents/2021-04-28-uranium-finance/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "independent",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:mid:balancer",
+        "slug": "balancer",
+        "kind": "dex",
+        "lifecycle": "mid",
+        "table": "mid_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-bd1a994e303a8982",
+            "title": "DefiLlama protocol data — Balancer",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/protocol/balancer",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-934b94a018ec0294",
+            "title": "Balancer November 3 exploit post-mortem",
+            "publisher": "Balancer Protocol",
+            "url": "https://medium.com/balancer-protocol/nov-3-exploit-post-mortem-51dcbeb6b020",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "http_403",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but HTTP 403 on 2026-07-29; it is not counted as resolving evidence."
+          },
+          {
+            "id": "publication-depth-ref-f39be5a78b71b87c",
+            "title": "[BIP-918] Operational Restructuring for Balancer - Funding Proposals - Balancer",
+            "publisher": "Balancer Governance Forum",
+            "url": "https://forum.balancer.fi/t/bip-918-operational-restructuring-for-balancer/7000",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-7e699baee229b315",
+            "title": "On the Future of Balancer: Shutting Down Balancer Labs, Supporting the Path Forward - Service Providers - Balancer",
+            "publisher": "Balancer Governance Forum",
+            "url": "https://forum.balancer.fi/t/on-the-future-of-balancer-shutting-down-balancer-labs-supporting-the-path-forward/7002",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-017ba88da00082d0",
+            "title": "Balancer whitepaper",
+            "publisher": "Balancer",
+            "url": "https://docs.balancer.fi/whitepaper.pdf",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-bd49068dd2eaef71",
+            "title": "Understanding the Balancer v2 Exploit: Technical Analysis and Lessons for the Blockchain Industry",
+            "publisher": "OpenZeppelin",
+            "url": "https://www.openzeppelin.com/news/understanding-the-balancer-v2-exploit",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "independent",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-519ce71e41e4104f",
+            "title": "Emergency Pause | Balancer",
+            "publisher": "Balancer",
+            "url": "https://balancer.gitbook.io/balancer-v2/security/emergency-pause",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-0a57c1f0ea0bafdb",
+            "title": "[BIP-887] Transitioning to Balancer v3: Disabling v2 Pool Factories - General Proposal - Balancer",
+            "publisher": "Balancer Governance Forum",
+            "url": "https://forum.balancer.fi/t/bip-887-transitioning-to-balancer-v3-disabling-v2-pool-factories/6874",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:mid:bancor",
+        "slug": "bancor",
+        "kind": "dex",
+        "lifecycle": "mid",
+        "table": "mid_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-804e5a39ae8a1f61",
+            "title": "DefiLlama protocol data — Bancor",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/protocol/bancor",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-77de560b0d24d1e7",
+            "title": "Ratification of Emergency Actions Taken on Sunday 19th June (UTC) - DAO Archive (SUBMITTED) - Bancor Governance Forum",
+            "publisher": "Bancor Governance Forum",
+            "url": "https://gov.bancor.network/t/ratification-of-emergency-actions-taken-on-sunday-19th-june-utc/3714",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-ec91cc46eab7b6e0",
+            "title": "wBTC and ETH deficit - Community Chatroom (DISCUSSION) - Bancor Governance Forum",
+            "publisher": "Bancor Governance Forum",
+            "url": "https://gov.bancor.network/t/wbtc-and-eth-deficit/4931",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-9d322e150c234719",
+            "title": "Four Years Later: What Has Actually Changed on the Deficit, and What Comes Next? - Community Chatroom (DISCUSSION) - Bancor Governance Forum",
+            "publisher": "Bancor Governance Forum",
+            "url": "https://gov.bancor.network/t/four-years-later-what-has-actually-changed-on-the-deficit-and-what-comes-next/6953",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-4f1d3c55426e008c",
+            "title": "Proposing Bancor v2.1: Single-Sided AMM Exposure with Elastic BNT Supply - OLD GOV (LEGACY) - Bancor Governance Forum",
+            "publisher": "Bancor Governance Forum",
+            "url": "https://gov.bancor.network/t/proposing-bancor-v2-1-single-sided-amm-exposure-with-elastic-bnt-supply/35",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-bbe596e2ce8422b4",
+            "title": "BIP15: Proposing Bancor 3 - #48 by mbr - DAO Archive (SUBMITTED) - Bancor Governance Forum",
+            "publisher": "Bancor Governance Forum",
+            "url": "https://gov.bancor.network/t/bip15-proposing-bancor-3/3445/48",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-51aa8d95a72c3d47",
+            "title": "BIP9: Proposing the Bancor Vortex - OLD GOV (LEGACY) - Bancor Governance Forum",
+            "publisher": "Bancor Governance Forum",
+            "url": "https://gov.bancor.network/t/bip9-proposing-the-bancor-vortex/354",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-24e5f00dc6779953",
+            "title": "Bancor3 Surplus Deficit | Dune",
+            "publisher": "Dune",
+            "url": "https://dune.com/bancor/bancor3-surplus-deficit",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-51e1a60c18e1ac1d",
+            "title": "Proposal to Use POL to Reduce B3 Deficits - DAO Archive (SUBMITTED) - Bancor Governance Forum",
+            "publisher": "Bancor Governance Forum",
+            "url": "https://gov.bancor.network/t/proposal-to-use-pol-to-reduce-b3-deficits/4502",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:mid:dodo-amm",
+        "slug": "dodo-amm",
+        "kind": "dex",
+        "lifecycle": "mid",
+        "table": "mid_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-78bc3c5b8677ba39",
+            "title": "What is DODO? - DODO Docs",
+            "publisher": "DODO",
+            "url": "https://docs.dodoex.io/en/home/what-is-dodo",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-3870ef39c63e1765",
+            "title": "The Math Behind - DODO Docs",
+            "publisher": "DODO",
+            "url": "https://docs-next.dodoex.io/en/product/pmm-algorithm/the-mathematical-principle-of-pmm",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-fe7aca478f0e6a12",
+            "title": "DODO Token - DODO Docs",
+            "publisher": "DODO",
+            "url": "https://docs.dodoex.io/en/home/token-economy",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-fedea261b9c6c2ca",
+            "title": "DefiLlama protocol data — DODO AMM",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/protocol/dodo-amm",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-1cec8f44c5eeaef4",
+            "title": "DefiLlama DEX volume data — DODO AMM",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/summary/dexs/dodo-amm?dataType=dailyVolume",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:mid:osmosis",
+        "slug": "osmosis",
+        "kind": "dex",
+        "lifecycle": "mid",
+        "table": "mid_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-3be32d65a5e34812",
+            "title": "DefiLlama protocol data — Osmosis DEX",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/protocol/osmosis-dex",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-261711c8c31e1a22",
+            "title": "Osmosis Docs",
+            "publisher": "Osmosis",
+            "url": "https://docs.osmosis.zone/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-94a22f2d5320e9db",
+            "title": "Osmosis: Tokenomics into 2025 - Blog - Osmosis Community Hall",
+            "publisher": "Osmosis Community Hall",
+            "url": "https://forum.osmosis.zone/t/osmosis-tokenomics-into-2025/3352",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-f14c14287b663360",
+            "title": "Tokenomics Roadmap - Blog - Osmosis Community Hall",
+            "publisher": "Osmosis Community Hall",
+            "url": "https://forum.osmosis.zone/t/tokenomics-roadmap/3775",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-4445854b894bc864",
+            "title": "Remove Liquidity Incentives from Inflation - Liquidity Incentives - Osmosis Community Hall",
+            "publisher": "Osmosis Community Hall",
+            "url": "https://forum.osmosis.zone/t/remove-liquidity-incentives-from-inflation/3776",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-42fae3a29e0b8428",
+            "title": "Top of Block Revenue Usage as OSMO Liquidity and Buyback - Proposal Discussion - Osmosis Community Hall",
+            "publisher": "Osmosis Community Hall",
+            "url": "https://forum.osmosis.zone/t/top-of-block-revenue-usage-as-osmo-liquidity-and-buyback/3810",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-d6ef8e3d2ce74d4f",
+            "title": "Reduce Staking Subsidy to below Taker Fee Burn Rate - Proposal Discussion - Osmosis Community Hall",
+            "publisher": "Osmosis Community Hall",
+            "url": "https://forum.osmosis.zone/t/reduce-staking-subsidy-to-below-taker-fee-burn-rate/3835",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-7e5770dd45c056ae",
+            "title": "DefiLlama DEX volume data — Osmosis DEX",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/summary/dexs/osmosis-dex?dataType=dailyVolume",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:mid:spookyswap",
+        "slug": "spookyswap",
+        "kind": "dex",
+        "lifecycle": "mid",
+        "table": "mid_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-57634cad4f504f6f",
+            "title": "SpookySwap",
+            "publisher": "SpookySwap",
+            "url": "https://spooky.fi/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-29d8877d975d8c53",
+            "title": "SpookySwap V3",
+            "publisher": "SpookySwap",
+            "url": "https://docs.spooky.fi/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-973425f5a14cc2b7",
+            "title": "1inch Integrates Sonic — Swaps, Speed, and Seamless DeFi",
+            "publisher": "Sonic Labs",
+            "url": "https://blog.soniclabs.com/1inch-integrates-sonic-swaps-speed-and-seamless-defi/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-feaf9d2777458f06",
+            "title": "DefiLlama protocol data — SpookySwap",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/protocol/spookyswap-v2",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-adc6e34a5bb231df",
+            "title": "DefiLlama DEX volume data — SpookySwap",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/summary/dexs/spookyswap-v2?dataType=dailyVolume",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:mid:sushiswap",
+        "slug": "sushiswap",
+        "kind": "dex",
+        "lifecycle": "mid",
+        "table": "mid_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-e3d93f8d0eddedf5",
+            "title": "DefiLlama protocol data — SushiSwap",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/protocol/sushiswap",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-440b799d364cae15",
+            "title": "DefiLlama DEX volume data — SushiSwap",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/summary/dexs/sushiswap?excludeTotalDataChart=false&excludeTotalDataChartBreakdown=false&dataType=dailyVolume",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-2550af6dcab1fe9c",
+            "title": "Introducing Sushi's New Head Chef: Jared Grey | Sushi 🍣",
+            "publisher": "Sushi",
+            "url": "https://www.sushi.com/blog/introducing-sushi-head-chef-jared-grey",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-6927973b3f677a61",
+            "title": "Sushi Aggregator Just Got Smarter (Again), powered by Route Processor 7(RP7) | Sushi 🍣",
+            "publisher": "Sushi",
+            "url": "https://www.sushi.com/blog/rp7",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-a3387c6681da72a8",
+            "title": "Swap Anything: Sushi Activates its Super Swap Roadmap | Sushi 🍣",
+            "publisher": "Sushi",
+            "url": "https://www.sushi.com/blog/swap-anything",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-f5ec9a55924b4cdf",
+            "title": "Sushi 🍣",
+            "publisher": "Sushi",
+            "url": "https://www.sushi.com/faq/governance/governance/sushi-governance",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-7ea001050f44f8a4",
+            "title": "Important Update: Kanpai 2.0 expires, xSushi revived! | Sushi 🍣",
+            "publisher": "Sushi",
+            "url": "https://www.sushi.com/blog/kanpai-expires-xsushi-revived",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-87b0d85469c3e1c5",
+            "title": "Breaking down the Sushi Tokenomics | Sushi 🍣",
+            "publisher": "Sushi",
+            "url": "https://www.sushi.com/blog/breaking-down-the-sushi-tokenomics",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-cebe16dfb3bb71e9",
+            "title": "RouteProcessor2 Post Mortem | Sushi 🍣",
+            "publisher": "Sushi",
+            "url": "https://www.sushi.com/blog/routeprocessor2-post-mortem",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:successful:curve-finance",
+        "slug": "curve-finance",
+        "kind": "dex",
+        "lifecycle": "successful",
+        "table": "successful_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-88bc537c4b3a533b",
+            "title": "DefiLlama protocol data — Curve",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/protocol/curve-finance",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-09a449a9370225aa",
+            "title": "StableSwap — efficient mechanism for stablecoin liquidity",
+            "publisher": "Curve",
+            "url": "https://docs.curve.finance/assets/files/whitepaper_stableswap-fc0bb370db9fe3a91afdde8662e78206.pdf",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-eb3b46228b62aa42",
+            "title": "What is veCRV? | Curve Knowledge Hub",
+            "publisher": "Curve",
+            "url": "https://resources.curve.finance/user/vecrv/what-is-vecrv",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-47d3fc9dada9145d",
+            "title": "Gauges & Incentives Overview | Curve Knowledge Hub",
+            "publisher": "Curve",
+            "url": "https://resources.curve.finance/protocol/gauge/overview",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-061d3d0fe4c3c8ef",
+            "title": "What is Curve? | Curve Knowledge Hub",
+            "publisher": "Curve",
+            "url": "https://resources.curve.finance/user/introduction",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-82fd9253588fb2ca",
+            "title": "LlamaLend v2 Overview | Curve Knowledge Hub",
+            "publisher": "Curve",
+            "url": "https://resources.curve.finance/protocol/lending/overview",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:successful:dydx",
+        "slug": "dydx",
+        "kind": "dex",
+        "lifecycle": "successful",
+        "table": "successful_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-757301065245d212",
+            "title": "dYdX Ecosystem Semi Annual Report H1 2025 | dYdX Foundation",
+            "publisher": "dYdX Foundation",
+            "url": "https://www.dydx.foundation/blog/dydx-ecosystem-annual-report-2025",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-733f8b4e1bdfcbd3",
+            "title": "New Trading Pairs Considerations | dYdX Foundation",
+            "publisher": "dYdX Foundation",
+            "url": "https://www.dydx.foundation/blog/new-trading-pairs-permissionless-markets-on-the-dydx-chain",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-8b8a7f38f23045c2",
+            "title": "How Staking Rewards Work on the dYdX Chain | dYdX Foundation",
+            "publisher": "dYdX Foundation",
+            "url": "https://www.dydx.foundation/blog/how-staking-rewards-work-on-the-dydx-chain",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-81d1c7d35e835cca",
+            "title": "How Validator Selection Shapes the dYdX Chain | dYdX Foundation",
+            "publisher": "dYdX Foundation",
+            "url": "https://www.dydx.foundation/blog/how-validator-selection-shapes-the-dydx-chain",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-ccbb69c6c7ddf3cb",
+            "title": "dYdX Chain Launch Incentives Program Powered by Chaos Labs: Seasons 5 & 6 Extension | dYdX Foundation",
+            "publisher": "dYdX Foundation",
+            "url": "https://www.dydx.foundation/blog/dydx-chain-launch-incentives-program-powered-by-chaos-labs-seasons-5-6-extension",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-086e7448ab890c52",
+            "title": "DYDX Buybacks: A New Model for Token Holder Alignment | dYdX Foundation",
+            "publisher": "dYdX Foundation",
+            "url": "https://www.dydx.foundation/blog/dydx-buybacks-a-new-model-for-token-holder-alignment",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-49f310de56016792",
+            "title": "Discontinuation of Support for the ethDYDX Bridge | dYdX Foundation",
+            "publisher": "dYdX Foundation",
+            "url": "https://www.dydx.foundation/blog/discontinuation-of-ethdydx-bridge",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-055bb96245ecb4aa",
+            "title": "DYDX - The Layer-1 Token that Powers the dYdX Chain | dYdX Foundation",
+            "publisher": "dYdX Foundation",
+            "url": "https://www.dydx.foundation/blog/dydx-the-layer-1-token-that-powers-the-dydx-chain",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:successful:hyperliquid",
+        "slug": "hyperliquid",
+        "kind": "dex",
+        "lifecycle": "successful",
+        "table": "successful_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-4a0a2808b023b832",
+            "title": "DefiLlama protocol data — Hyperliquid",
+            "publisher": "DefiLlama",
+            "url": "https://defillama.com/protocol/hyperliquid",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "http_403",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but HTTP 403 on 2026-07-29; it is not counted as resolving evidence."
+          },
+          {
+            "id": "publication-depth-ref-fbdbc499ad88ce05",
+            "title": "About Hyperliquid | Hyperliquid Docs",
+            "publisher": "Hyperliquid",
+            "url": "https://hyperliquid.gitbook.io/hyperliquid-docs",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-ece43d759c1fb814",
+            "title": "Fees | Hyperliquid Docs",
+            "publisher": "Hyperliquid",
+            "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/trading/fees",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-02347638df7e27e8",
+            "title": "Bitwise Hyperliquid ETF registration statement — Form S-1/A",
+            "publisher": "U.S. Securities and Exchange Commission",
+            "url": "https://www.sec.gov/Archives/edgar/data/2088139/000121390026052317/ea0288809-s1a3_bitwise.htm",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-144a1bf1f47cc6b8",
+            "title": "21Shares Hyperliquid ETP prospectus — Form 424B3",
+            "publisher": "U.S. Securities and Exchange Commission",
+            "url": "https://www.sec.gov/Archives/edgar/data/2090011/000121390026054478/ea0288943-424b3_21shares.htm",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-2cce3d86ca7e3c51",
+            "title": "HIP-3: Builder-deployed perpetuals | Hyperliquid Docs",
+            "publisher": "Hyperliquid",
+            "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/hyperliquid-improvement-proposals-hips/hip-3-builder-deployed-perpetuals",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-19e44c491946e3e5",
+            "title": "Staking | Hyperliquid Docs",
+            "publisher": "Hyperliquid",
+            "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/hypercore/staking",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-bba361194539c609",
+            "title": "Delegation program | Hyperliquid Docs",
+            "publisher": "Hyperliquid",
+            "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/validators/delegation-program",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-38de0f1b730a1485",
+            "title": "Bridge | Hyperliquid Docs",
+            "publisher": "Hyperliquid",
+            "url": "https://hyperliquid.gitbook.io/hyperliquid-docs/hypercore/bridge",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:successful:meteora",
+        "slug": "meteora",
+        "kind": "dex",
+        "lifecycle": "successful",
+        "table": "successful_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-7c63876697f8ea5f",
+            "title": "DefiLlama DEX volume data — Meteora",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/summary/dexs/meteora?dataType=dailyVolume",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-d716f710aee10f58",
+            "title": "Meteora Q1 2026 token-holder report",
+            "publisher": "Meteora",
+            "url": "https://ir.meteora.ag/assets/Meteora_Q1_2026_Token_Holder_Report.pdf",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-59cb6e8b05c58c8e",
+            "title": "How do I create a new farm?",
+            "publisher": "Meteora",
+            "url": "https://docs.meteora.ag/faq/how-do-i-create-a-new-farm",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "http_404",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but HTTP 404 on 2026-07-29; it is not counted as resolving evidence."
+          },
+          {
+            "id": "publication-depth-ref-e51960091c0a26da",
+            "title": "Meteora Launch Guide",
+            "publisher": "Meteora",
+            "url": "https://launch.meteora.ag/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-34b7666e34bac52a",
+            "title": "dlmm-sdk/CHANGELOG.md at main · MeteoraAg/dlmm-sdk · GitHub",
+            "publisher": "GitHub",
+            "url": "https://github.com/MeteoraAg/dlmm-sdk/blob/main/CHANGELOG.md",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:successful:pancakeswap",
+        "slug": "pancakeswap",
+        "kind": "dex",
+        "lifecycle": "successful",
+        "table": "successful_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-dceca78273f35a86",
+            "title": "PancakeSwap 2025 Recap: A Breakthrough Year | PancakeSwap",
+            "publisher": "PancakeSwap",
+            "url": "https://blog.pancakeswap.finance/articles/2025-recap",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-70ea4468e2348f8e",
+            "title": "PancakeSwap Infinity is Now Live! (Formerly PancakeSwap v4) | PancakeSwap",
+            "publisher": "PancakeSwap",
+            "url": "https://blog.pancakeswap.finance/articles/pancake-swap-infinity-is-now-live-formerly-pancake-swap-v4",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-9e9c852e2142295a",
+            "title": "5 Years of PancakeSwap: Cooked Onchain | PancakeSwap",
+            "publisher": "PancakeSwap",
+            "url": "https://blog.pancakeswap.finance/articles/5-years-of-pancakeswap",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-d5b4cff2dac44f79",
+            "title": "PancakeSwap Developer",
+            "publisher": "PancakeSwap Developer Documentation",
+            "url": "https://developer.pancakeswap.finance/",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:successful:raydium",
+        "slug": "raydium",
+        "kind": "dex",
+        "lifecycle": "successful",
+        "table": "successful_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-d16ece2846872a96",
+            "title": "Protocol fees - Raydium Docs",
+            "publisher": "Raydium",
+            "url": "https://docs.raydium.io/ray/protocol-fees",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-bd0981670059d595",
+            "title": "DefiLlama protocol data — Raydium",
+            "publisher": "DefiLlama",
+            "url": "https://api.llama.fi/protocol/raydium",
+            "checked_at": "2026-07-29",
+            "source_tier": "T3",
+            "source_role": "data",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:successful:thorchain",
+        "slug": "thorchain",
+        "kind": "dex",
+        "lifecycle": "successful",
+        "table": "successful_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-4deb4749d0c036f4",
+            "title": "THORFi Unwind | THORChain",
+            "publisher": "THORChain",
+            "url": "https://blog.thorchain.org/thorfi-unwind",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-21e11818e4a04454",
+            "title": "TCY Launch | THORChain",
+            "publisher": "THORChain",
+            "url": "https://blog.thorchain.org/tcy-launch",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-85984dc1085b3bca",
+            "title": "TCY Guide - THORChain Dev Docs",
+            "publisher": "THORChain Developer Documentation",
+            "url": "https://dev.thorchain.org/concepts/tcy.html",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-f983bb1600f0b951",
+            "title": "TCY overview",
+            "publisher": "THORChain",
+            "url": "https://thorchain.com/tcy",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "fetch_failed",
+            "resolving": false,
+            "evidence_reviewed": false,
+            "verification_note": "Source registry repaired, but the request failed on 2026-07-29; it is not counted as resolving evidence."
+          }
+        ]
+      },
+      {
+        "dossier_id": "dex:successful:uniswap",
+        "slug": "uniswap",
+        "kind": "dex",
+        "lifecycle": "successful",
+        "table": "successful_exchanges",
+        "sources": [
+          {
+            "id": "publication-depth-ref-f1d6b3923b8dab48",
+            "title": "Uniswap v3 Mainnet launch",
+            "publisher": "Uniswap Labs",
+            "url": "https://blog.uniswap.org/launch-uniswap-v3",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-6a839e15be0e6e22",
+            "title": "Uniswap v4 is Here – A New Era of DeFi",
+            "publisher": "Uniswap Labs",
+            "url": "https://blog.uniswap.org/uniswap-v4-is-here",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-86e41593b4b46690",
+            "title": "Uniswap v3 Core whitepaper",
+            "publisher": "Uniswap Labs",
+            "url": "https://blog.uniswap.org/whitepaper-v3.pdf",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-ab6fd68a9b92874c",
+            "title": "UNI Token | Uniswap Developers",
+            "publisher": "Uniswap Developers",
+            "url": "https://developers.uniswap.org/docs/ecosystem/governance/uni",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-281f117c84f6ef19",
+            "title": "Protocol Fee Expansion: Vote 2",
+            "publisher": "Uniswap Foundation Governance",
+            "url": "https://vote.uniswapfoundation.org/proposals/95",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-b0edaf7c5673157c",
+            "title": "CFTC Issues Order Against Uniswap Labs for Offering Illegal Digital Asset Derivatives Trading | CFTC",
+            "publisher": "U.S. Commodity Futures Trading Commission",
+            "url": "https://www.cftc.gov/PressRoom/PressReleases/8961-24",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-1a12a9d06f8a0477",
+            "title": "CFTC order — Uniswap Labs",
+            "publisher": "U.S. Commodity Futures Trading Commission",
+            "url": "https://www.cftc.gov/media/11201/enfuniswaplabsorder090424/download",
+            "checked_at": "2026-07-29",
+            "source_tier": "T1",
+            "source_role": "authority",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          },
+          {
+            "id": "publication-depth-ref-f5705afc81647349",
+            "title": "Introducing Uniswap v3",
+            "publisher": "Uniswap Labs",
+            "url": "https://blog.uniswap.org/uniswap-v3",
+            "checked_at": "2026-07-29",
+            "source_tier": "T2",
+            "source_role": "primary",
+            "access_state": "resolving",
+            "resolving": true,
+            "evidence_reviewed": false,
+            "verification_note": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ]
+      }
+    ],
+    "casino_patches": [
+      {
+        "case_id": "wink-gaming-platform",
+        "sources": [
+          {
+            "source_id": "publication-depth-ref-62e6ad9abd575b59",
+            "canonical_url": "https://doc.winklink.org/v2/doc/",
+            "title": "Introduction to WINkLink | WINkLink Developer Documentation",
+            "publisher": "WINkLink Developer Documentation",
+            "published_at": null,
+            "accessed_at": "2026-07-29",
+            "source_tier": "B",
+            "source_role": "primary",
+            "resolving": 1,
+            "evidence_reviewed": 1,
+            "evidence_reviewed_at": "2026-07-29",
+            "evidence_reviewer": "chaindump-research-desk",
+            "notes": "HTTP 200 and source identity rechecked on 2026-07-29; existing field-level forensic citation retained."
+          }
+        ],
+        "claims": [
+          {
+            "claim_id": "casino:claim:wink:developer-docs-root",
+            "field_path": "scope.successor_documentation",
+            "source_id": "publication-depth-ref-62e6ad9abd575b59",
+            "evidence_locator": "Current developer-documentation root cited by the forensic analysis as the successor network technical surface.",
+            "claim_type": "context",
+            "support_direction": "context_only",
+            "analyst_note": "Registers the directly cited documentation root; it does not establish casino economics or adoption.",
+            "checked_at": "2026-07-29"
+          }
+        ]
+      }
+    ],
+    "casino_strengthening_patches": [
+      {
+        "case_id": "zkasino-alleged-platform",
+        "sources": [
+          {
+            "source_id": "casino:source:zkasino:om-2025-07-03",
+            "canonical_url": "https://www.prosecutionservice.nl/latest/news/2025/07/03/arrest-in-the-uae-in-criminal-case-involving-gambling-platform-zkasino",
+            "title": "Arrest in the UAE in Criminal Case Involving Gambling Platform ZKasino",
+            "publisher": "Dutch Public Prosecution Service",
+            "published_at": "2025-07-03",
+            "accessed_at": "2026-07-29",
+            "source_tier": "A",
+            "source_role": "independent",
+            "resolving": 1,
+            "evidence_reviewed": 1,
+            "evidence_reviewed_at": "2026-07-29",
+            "evidence_reviewer": "chaindump-research-desk",
+            "notes": "Official prosecutorial update corroborates the unfulfilled 30-day return promise, describes alleged evidence of intent, and records a second arrest plus planned extradition; allegations are not a conviction."
+          }
+        ],
+        "claims": [
+          {
+            "claim_id": "casino:claim:zkasino:om-second-arrest",
+            "field_path": "events.enforcement_update",
+            "source_id": "casino:source:zkasino:om-2025-07-03",
+            "evidence_locator": "The Public Prosecution Service records a second suspect arrested in the UAE, an Interpol Red Notice, and a planned Dutch extradition request.",
+            "claim_type": "event",
+            "support_direction": "supports",
+            "analyst_note": "Official investigation update; arrest and extradition process are not a conviction.",
+            "checked_at": "2026-07-29"
+          },
+          {
+            "claim_id": "casino:claim:zkasino:om-promise-intent",
+            "field_path": "status.failed",
+            "source_id": "casino:source:zkasino:om-2025-07-03",
+            "evidence_locator": "The prosecutorial update says the 30-day deposit-return promise was not fulfilled and that suspect communications and smart-contract design indicated no intent to return funds.",
+            "claim_type": "risk",
+            "support_direction": "supports",
+            "analyst_note": "Independent authority corroboration of the failure mechanics; final criminal liability remains unresolved.",
+            "checked_at": "2026-07-29"
+          }
+        ],
+        "analysis_updates": {
+          "outcome_source_refs": [
+            "https://www.fiod.nl/en/more-than-11-million-euros-seized-and-man-arrested-in-investigation-into-gambling-platform-scam/",
+            "https://www.prosecutionservice.nl/latest/news/2025/07/03/arrest-in-the-uae-in-criminal-case-involving-gambling-platform-zkasino"
+          ],
+          "why_source_refs": [
+            "https://www.fiod.nl/en/more-than-11-million-euros-seized-and-man-arrested-in-investigation-into-gambling-platform-scam/",
+            "https://www.prosecutionservice.nl/latest/news/2025/07/03/arrest-in-the-uae-in-criminal-case-involving-gambling-platform-zkasino"
+          ],
+          "strategic_choice_0_source_refs": [
+            "https://www.fiod.nl/en/more-than-11-million-euros-seized-and-man-arrested-in-investigation-into-gambling-platform-scam/",
+            "https://www.prosecutionservice.nl/latest/news/2025/07/03/arrest-in-the-uae-in-criminal-case-involving-gambling-platform-zkasino"
+          ],
+          "watch_0_source_refs": [
+            "https://www.fiod.nl/en/more-than-11-million-euros-seized-and-man-arrested-in-investigation-into-gambling-platform-scam/",
+            "https://www.prosecutionservice.nl/latest/news/2025/07/03/arrest-in-the-uae-in-criminal-case-involving-gambling-platform-zkasino"
+          ]
+        }
+      }
+    ]
+  }
+}
