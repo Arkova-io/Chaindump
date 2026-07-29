@@ -2,6 +2,9 @@
 
 ## Current state
 
+- Current execution branch: `codex/nft-art-blocks-20260729`, now rebased on the branch that includes merged PR #52. The branch carries migrations `0022`–`0026`; unrelated untracked `.claude/` and `archer-agent-config.md` remain intentionally unstaged.
+- Current research delivery: `0026_bitcoin_chain_dossier.sql` publishes Bitcoin as the 14th complete eight-dimension blockchain dossier and is visible in the existing public Blockchain Analysis route/card/detail UI. It intentionally withholds mutable price, fee, activity, hashrate/pool-concentration, capital, and custody metrics until each has a dated source. Four cited sources resolve: the white paper, Bitcoin Core consensus amount constants, Bitcoin Core chain parameters, and the developer transaction guide. Focused migration/contract tests, lint, and migration guard pass locally.
+- Top-50 implementation coverage is now **14/50 complete schema-v1 dossiers**, **34/50 partial or legacy research**, and **2/50 absent in the historical audit**. This remains an incomplete rollout; neither the count nor the structural dossier schema claims that all current-board coverage is current or equally deep.
 - Repository: `carson-see/Chaindump`
 - Root checkout: `/Users/carson/Desktop/chain-monitor-source`
 - Root branch at latest handoff update: `codex/nft-wave2-freshness-20260729`, based on `origin/main` at `21f1325` after PR #49 merged.
