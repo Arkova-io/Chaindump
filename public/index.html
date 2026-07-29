@@ -1298,7 +1298,11 @@ function exchangeAnalysisCard(row) {
   const sourcePreview = srcHtml(row.sources.slice(0, 3), 'Cited sources: ');
   const details = open ? exchangeAnalysisDetails(row, p, exchangeTokenLine(token)) : '';
   const metricContext = row.peakMetric != null ? `Peak ${fmtUsd(row.peakMetric)} → ${exchangeMetric(row)}` : exchangeMetric(row);
-  const meta = [row.kind.toUpperCase(), exchangeLabel(row.productCohort)];
+  const meta = [
+    row.kind.toUpperCase(),
+    `venue: ${exchangeLabel(row.venueType)}`,
+    exchangeLabel(row.productCohort),
+  ];
   if (row.primaryChain) meta.push(row.primaryChain);
   if (row.launched) meta.push(`launched ${row.launched}`);
   meta.push(`data quality: ${row.qualityLabel}`);

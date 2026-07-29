@@ -1763,19 +1763,19 @@ app.get('/api/exchange-analysis', wrap(async (req, res) => {
                 current_metric AS metric, peak_metric, drawdown_pct, collapse_date AS event_date,
                 why AS summary, outlook, profile, sources, updated_at
          FROM dead_exchanges
-         WHERE venue_type = 'exchange'
+         WHERE venue_type = 'exchange' OR kind = 'cex'
          UNION ALL
          SELECT slug, kind, 'mid', venue_type, name, launched, NULL,
                 verdict, metric_label, metric_type, metric_unit,
                 metric, NULL, NULL, NULL, why_stuck, outlook, profile, sources, updated_at
          FROM mid_exchanges
-         WHERE venue_type = 'exchange'
+         WHERE venue_type = 'exchange' OR kind = 'cex'
          UNION ALL
          SELECT slug, type, 'successful', venue_type, name, launched, primary_chain,
                 status, metric_label, metric_type, metric_unit,
                 metric, NULL, NULL, NULL, why_successful, outlook, profile, sources, updated_at
          FROM successful_exchanges
-         WHERE venue_type = 'exchange'
+         WHERE venue_type = 'exchange' OR type = 'cex'
        )
        SELECT c.*,
               f.operating_model AS feature_operating_model,
@@ -1842,7 +1842,7 @@ app.get('/api/dead-exchanges', wrap(async (req, res) => {
   try {
     const rows = await dbQuery(
       `SELECT slug, kind, venue_type, name, launched, metric_label, metric_type, metric_unit, peak_metric, current_metric, drawdown_pct, peak_date, collapse_date, why, outlook, verdict, sources, profile, updated_at
-       FROM dead_exchanges WHERE kind = ? AND venue_type = 'exchange'
+       FROM dead_exchanges WHERE kind = ? AND (venue_type = 'exchange' OR kind = 'cex')
        ORDER BY CASE WHEN kind = 'cex' THEN metric_type ELSE '' END, CASE WHEN kind = 'cex' THEN metric_unit ELSE '' END, COALESCE(peak_metric, current_metric) DESC, name ASC`, [kind]);
     const exchanges = rows.map((r) => { let p = null; try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {} return { ...r, profile: p }; });
 
@@ -1895,7 +1895,7 @@ app.get('/api/mid-exchanges', wrap(async (req, res) => {
   try {
     const rows = await dbQuery(
       `SELECT slug, kind, venue_type, name, launched, metric_label, metric_type, metric_unit, metric, verdict, why_stuck, outlook, profile, sources, updated_at
-       FROM mid_exchanges WHERE kind = ? AND venue_type = 'exchange'
+       FROM mid_exchanges WHERE kind = ? AND (venue_type = 'exchange' OR kind = 'cex')
        ORDER BY CASE WHEN kind = 'cex' THEN metric_type ELSE '' END, CASE WHEN kind = 'cex' THEN metric_unit ELSE '' END, metric DESC, name ASC`, [kind]);
     const exchanges = rows.map((r) => { let p = null; try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {} return { ...r, profile: p }; });
     const verdictCounts = {};
@@ -1926,7 +1926,7 @@ app.get('/api/successful-exchanges', wrap(async (req, res) => {
   const metricType = typeof req.query.metric_type === 'string' && req.query.metric_type.trim() ? req.query.metric_type.trim() : null;
   const filters = { chain, metricType };
   try {
-    const where = ['type = ?'];
+    const where = ['type = ?', "(venue_type = 'exchange' OR type = 'cex')"];
     const binds = [kind];
     if (chain) { where.push('primary_chain = ?'); binds.push(chain); }
     if (metricType) { where.push('metric_type = ?'); binds.push(metricType); }
@@ -3182,7 +3182,7 @@ async function exchangePageRow(kind, lifecycle, slug) {
     return (await dbQuery(
       `SELECT slug, name, why_successful AS summary, outlook, sources, updated_at
          FROM successful_exchanges
-        WHERE type = ? AND slug = ? AND venue_type = 'exchange' LIMIT 1`,
+        WHERE type = ? AND slug = ? AND (venue_type = 'exchange' OR type = 'cex') LIMIT 1`,
       [kind, slug],
     ))[0] || null;
   }
@@ -3190,14 +3190,14 @@ async function exchangePageRow(kind, lifecycle, slug) {
     return (await dbQuery(
       `SELECT slug, name, why_stuck AS summary, outlook, sources, updated_at
          FROM mid_exchanges
-        WHERE kind = ? AND slug = ? AND venue_type = 'exchange' LIMIT 1`,
+        WHERE kind = ? AND slug = ? AND (venue_type = 'exchange' OR kind = 'cex') LIMIT 1`,
       [kind, slug],
     ))[0] || null;
   }
   return (await dbQuery(
     `SELECT slug, name, why AS summary, outlook, sources, updated_at
        FROM dead_exchanges
-      WHERE kind = ? AND slug = ? AND venue_type = 'exchange' LIMIT 1`,
+      WHERE kind = ? AND slug = ? AND (venue_type = 'exchange' OR kind = 'cex') LIMIT 1`,
     [kind, slug],
   ))[0] || null;
 }
@@ -3499,9 +3499,9 @@ app.get('/sitemap.xml', async (c) => {
   try {
     const [exchanges, casinos, lifecycleNfts] = await Promise.all([
       dbQuery(
-        `SELECT type AS kind, 'successful' AS lifecycle, slug FROM successful_exchanges WHERE venue_type = 'exchange'
-         UNION ALL SELECT kind, 'mid', slug FROM mid_exchanges WHERE venue_type = 'exchange'
-         UNION ALL SELECT kind, 'dead', slug FROM dead_exchanges WHERE venue_type = 'exchange'`,
+        `SELECT type AS kind, 'successful' AS lifecycle, slug FROM successful_exchanges WHERE venue_type = 'exchange' OR type = 'cex'
+         UNION ALL SELECT kind, 'mid', slug FROM mid_exchanges WHERE venue_type = 'exchange' OR kind = 'cex'
+         UNION ALL SELECT kind, 'dead', slug FROM dead_exchanges WHERE venue_type = 'exchange' OR kind = 'cex'`,
       ),
       dbQuery(`SELECT case_id FROM casino_cases WHERE quality_passed = 1`),
       dbQuery(`SELECT slug FROM nft_collections`),
