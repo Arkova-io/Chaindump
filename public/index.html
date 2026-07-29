@@ -719,6 +719,27 @@ function srcHtml(sources, label) {
   return `<div class="asrc">${label || 'Sources: '}${links.join(' · ')}</div>`;
 }
 
+// New NFT/Ordinals dossiers use a field-level evidence ledger.  Keep the
+// older source list visible, but never imply that legacy prose has this
+// stronger provenance model.
+function nftEvidenceHtml(profile, sources) {
+  if (!profile || profile.citation_schema !== 'field-v1' || !Array.isArray(profile.evidence)) return '';
+  let all; try { all = typeof sources === 'string' ? JSON.parse(sources) : sources; } catch (e) { return ''; }
+  if (!Array.isArray(all)) return '';
+  const byId = new Map(all.filter(s => s && typeof s === 'object' && s.id).map(s => [s.id, s]));
+  const rows = profile.evidence.map((item) => {
+    if (!item || !item.field || !Array.isArray(item.source_ids)) return '';
+    const links = item.source_ids.map((id) => {
+      const source = byId.get(id);
+      if (!source || !source.url) return '';
+      return `<a href="${esc(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title || id)} ↗</a>`;
+    }).filter(Boolean).join(' · ');
+    if (!links) return '';
+    return `<div class="gfield"><span class="gfl">${esc(item.field.replaceAll('_',' '))}</span> ${esc(String(item.value))}<span class="muted"> · as of ${esc(item.as_of || '—')} · ${esc(item.basis || 'source')}</span><div class="asrc">Cited evidence: ${links}</div></div>`;
+  }).filter(Boolean).join('');
+  return rows ? `<div class="gsec">Field-level evidence</div>${rows}` : '';
+}
+
 function parsedObject(value) {
   if (!value) return {};
   if (typeof value === 'object') return value;
@@ -2190,6 +2211,9 @@ function renderNft(data){
   const a = data.agg || {};
   const n = (data.market && data.market.count) || 0;
   const m = data.market || {};
+  const citation = data.citationCoverage || {};
+  const legacyCount = citation.legacyCount ?? data.collections.length;
+  const evidenceCoverage = `<div class="gnar muted" style="margin:0 0 14px">Evidence coverage: ${citation.fieldCitedCount||0} field-cited dossier${citation.fieldCitedCount===1?'':'s'}; ${legacyCount} legacy dossier${legacyCount===1?'':'s'} retain collection-level source lists while they are retrofitted.</div>`;
   // Stat row hoisted out of the panel to sit under the page header, as on every
   // other view. The caveat line stays with the tiles it qualifies.
   const stats = n>50 ? `<div class="gstats">
@@ -2231,6 +2255,7 @@ function renderNft(data){
       ${p.benefits?`<div class="gsec">Holder benefits / products</div>${proseBox(p.benefits)}`:''}
       ${p.business?`<div class="gsec">Real-world business — product · distribution · strengths &amp; weaknesses</div>${proseBox(p.business)}`:''}
       ${p.analysis?`<div class="gsec">Lifecycle read</div>${proseBox(p.analysis)}`:''}
+      ${nftEvidenceHtml(p, c.sources)}
       ${sources}
     </div>` : '';
     return `<div class="gcard ${open?'open':''}" data-slug="${esc(c.slug)}">
@@ -2243,7 +2268,7 @@ function renderNft(data){
       <div class="gexpand">${open?'Hide details ▲':'Full lifecycle ▾'}</div>
     </div>`;
   }).join('');
-  el.innerHTML = `${NFT_HEAD}${stats}${panel}<div class="dsec" style="margin:20px 0 10px">Deep-dive case studies — ${data.collections.length}</div>
+  el.innerHTML = `${NFT_HEAD}${stats}${evidenceCoverage}${panel}<div class="dsec" style="margin:20px 0 10px">Deep-dive case studies — ${data.collections.length}</div>
   <div class="toolbar"><input id="casesearch" class="search wide" placeholder="Search case studies by name, chain or status…" value="${esc(caseQ)}" /></div>
   <div class="gwrap">${cards || '<div class="skel">No case studies match.</div>'}</div>
   <div class="dsec" style="margin:28px 0 4px">Browse the full catalog by chain</div>
