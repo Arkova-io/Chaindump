@@ -1,3 +1,4 @@
+import { DatabaseSync } from 'node:sqlite';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 
 async function freshWorker() {
@@ -25,7 +26,97 @@ function makeDB() {
   };
 }
 
-afterEach(() => vi.unstubAllGlobals());
+let database;
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  database?.close();
+  database = undefined;
+});
+
+function d1Adapter(db) {
+  return {
+    prepare(sql) {
+      let values = [];
+      return {
+        bind(...bound) {
+          values = bound;
+          return this;
+        },
+        async first() {
+          return db.prepare(sql).get(...values) || null;
+        },
+        async all() {
+          return { results: db.prepare(sql).all(...values) };
+        },
+        async run() {
+          const result = db.prepare(sql).run(...values);
+          return { meta: { changes: Number(result.changes || 0) } };
+        },
+      };
+    },
+    async batch(statements) {
+      return Promise.all(statements.map((statement) => statement.run()));
+    },
+  };
+}
+
+function freshnessFixture() {
+  const db = new DatabaseSync(':memory:');
+  db.exec(`
+    CREATE TABLE forensic_refresh_runs (
+      run_id INTEGER PRIMARY KEY AUTOINCREMENT,
+      scheduled_at TEXT NOT NULL,
+      completed_at TEXT NOT NULL,
+      status TEXT NOT NULL,
+      scanned_nft INTEGER NOT NULL,
+      due_nft INTEGER NOT NULL,
+      scanned_exchange INTEGER NOT NULL,
+      due_exchange INTEGER NOT NULL,
+      scanned_casino INTEGER NOT NULL,
+      due_casino INTEGER NOT NULL,
+      scanned_chain INTEGER NOT NULL,
+      due_chain INTEGER NOT NULL,
+      notes TEXT
+    );
+    CREATE TABLE nft_collections (profile TEXT, updated_at TEXT);
+    CREATE TABLE exchange_case_features (
+      kind TEXT, slug TEXT, lifecycle TEXT, next_review_at TEXT
+    );
+    CREATE TABLE dead_exchanges (slug TEXT, kind TEXT, profile TEXT);
+    CREATE TABLE mid_exchanges (slug TEXT, kind TEXT, profile TEXT);
+    CREATE TABLE successful_exchanges (slug TEXT, type TEXT, profile TEXT);
+    CREATE TABLE casino_cases (
+      case_id TEXT, quality_passed INTEGER, last_reviewed TEXT, updated_at TEXT
+    );
+    CREATE TABLE casino_syntheses (case_id TEXT, outlook TEXT);
+    CREATE TABLE chain_facts (
+      chain TEXT, dimension TEXT, data TEXT, updated_at TEXT
+    );
+
+    INSERT INTO nft_collections VALUES
+      ('{"evidence_policy":{"next_review_at":"2026-07-30"}}', '2026-07-29'),
+      ('{}', '2026-07-29');
+
+    INSERT INTO exchange_case_features VALUES
+      ('cex', 'contract-deadline', 'dead', '2026-08-05'),
+      ('dex', 'feature-fallback', 'mid', '2026-07-30');
+    INSERT INTO dead_exchanges VALUES
+      ('contract-deadline', 'cex', '{"forensic_analysis":{"review":{"next_review_at":"2026-07-30"}}}');
+    INSERT INTO mid_exchanges VALUES ('feature-fallback', 'dex', '{}');
+
+    INSERT INTO casino_cases VALUES
+      ('contract-deadline', 1, '2026-07-29', '2026-07-29'),
+      ('ninety-day-fallback', 1, '2026-07-29', '2026-07-29');
+    INSERT INTO casino_syntheses VALUES
+      ('contract-deadline', '{"forensic_analysis":{"review":{"next_review_at":"2026-07-30"}}}');
+
+    INSERT INTO chain_facts VALUES
+      ('Explicit', '_meta', '{"last_reviewed":"2026-07-29","next_review_at":"2026-07-30"}', '2026-07-29'),
+      ('Fallback', '_meta', '{"last_reviewed":"2026-07-29"}', '2026-07-29');
+  `);
+  return db;
+}
 
 describe('forensic refresh status route', () => {
   it('exposes six-hour review debt without claiming automated promotion', async () => {
@@ -38,5 +129,40 @@ describe('forensic refresh status route', () => {
       cadence: 'six_hours', promotion_policy: 'human_review_required',
       refresh: { due_nft: 2, due_exchange: 3, due_casino: 1, due_chain: 4 },
     });
+  });
+
+  it('runs immediately, honors dossier deadlines, and recovers missed six-hour boundaries', async () => {
+    database = freshnessFixture();
+    const DB = d1Adapter(database);
+    vi.stubGlobal('fetch', vi.fn(async () => new Response('', { status: 500 })));
+    const worker = await freshWorker();
+    const initial = Date.parse('2026-07-30T19:15:00.000Z');
+
+    // This is deliberately not a 00/06/12/18 UTC boundary. A fresh deployment
+    // still needs an immediate governance scan.
+    await worker.scheduled({ scheduledTime: initial }, { DB }, ctx());
+    expect(database.prepare(`
+      SELECT scanned_nft, due_nft, scanned_exchange, due_exchange,
+             scanned_casino, due_casino, scanned_chain, due_chain
+        FROM forensic_refresh_runs
+    `).get()).toEqual({
+      scanned_nft: 2,
+      due_nft: 1,
+      scanned_exchange: 2,
+      due_exchange: 2,
+      scanned_casino: 2,
+      due_casino: 1,
+      scanned_chain: 2,
+      due_chain: 1,
+    });
+
+    // Five-minute triggers inside the six-hour window do not duplicate runs.
+    await worker.scheduled({ scheduledTime: initial + 5 * 60 * 1000 }, { DB }, ctx());
+    expect(database.prepare('SELECT COUNT(*) AS count FROM forensic_refresh_runs').get().count).toBe(1);
+
+    // If the exact six-hour wall-clock boundary was missed, the next trigger
+    // records the overdue scan instead of waiting another six hours.
+    await worker.scheduled({ scheduledTime: initial + 6 * 60 * 60 * 1000 + 5 * 60 * 1000 }, { DB }, ctx());
+    expect(database.prepare('SELECT COUNT(*) AS count FROM forensic_refresh_runs').get().count).toBe(2);
   });
 });
