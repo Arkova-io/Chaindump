@@ -17,6 +17,7 @@ The latest explicit request was to provide code review on open PRs, commit uncom
 - PR #29, "Server-render live board rows", was merged earlier in the session.
 - PR #33, "DEX/CEX Graveyard", is open and no longer has a known local blocker. A real review issue was found and fixed: CEX exchange rows were being sorted by metric fields that either were null for CEXs or mixed incompatible units. The branch now orders CEX rows inside comparable metric cohorts and has regression coverage. A separate pushed fix on the same branch corrected the DEX aggregate drawdown text from -99.2% mean to -98.9% mean. Local validation after these fixes: `npm test` 389/389, `npm run lint`, and `node scripts/check-migrations.mjs`.
 - PR #34, "Add citation-backed DEX success cohort", is a draft stacked PR on top of PR #33. It adds 10 successful DEX dossiers, the Exchange Dossier Schema v1, and migration `0013_exchange_success_seed.sql`. Its GitHub base was corrected from `main` to `feature/exchange-graveyard` because migration `0013` depends on `0011` and `0012` from PR #33. Local validation on the stack before this handoff: `npm test` 388/388, `npm run lint`, and `node scripts/check-migrations.mjs`.
+- Latest GitHub status: PR #33 is fully green. PR #34 has green GitHub Actions, but SonarCloud still fails on 46.6% duplication on new code, likely from the repeated research/seed payload. Keep PR #34 draft until that is remediated or the quality-gate policy is adjusted for research seed data.
 
 ## Code review findings
 
@@ -64,4 +65,3 @@ Untracked files were intentionally left uncommitted because they appear unrelate
 - `npm run lint`
 - `node scripts/check-migrations.mjs`
 - Targeted: `npm test -- test/exchange-routes.integration.test.js test/exchange-tiers.integration.test.js`
-
