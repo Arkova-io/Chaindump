@@ -781,9 +781,12 @@ function srcHtml(sources, label) {
       if (s.access_state) metadata.push(`access ${esc(String(s.access_state).replaceAll('_', ' '))}`);
       if (s.verification_note) metadata.push(esc(s.verification_note));
     }
+    const metadataHtml = metadata.length
+      ? `<span class="muted"> · ${metadata.join(' · ')}</span>`
+      : '';
     // safeUrl() first: esc() blocks attribute breakout but not a javascript:/data:
     // scheme, and these URLs are research-agent/third-party authored.
-    return `<a href="${esc(safeUrl(u))}" target="_blank" rel="noopener noreferrer">${esc(t)} ↗</a>${metadata.length ? `<span class="muted"> · ${metadata.join(' · ')}</span>` : ''}`;
+    return `<a href="${esc(safeUrl(u))}" target="_blank" rel="noopener noreferrer">${esc(t)} ↗</a>${metadataHtml}`;
   }).filter(Boolean);
   if (!links.length) return '';
   return `<div class="asrc">${label || 'Sources: '}${links.join(' · ')}</div>`;
@@ -858,6 +861,10 @@ function sourceArray(value) {
       last_verified_at: source.last_verified_at || '',
       access_state: source.access_state || '',
       verification_note: source.verification_note || '',
+      evidence_scope: source.evidence_scope || '',
+      stale_after: source.stale_after || '',
+      stale: source.stale === true,
+      reference_id: source.reference_id || '',
     };
   }).filter(Boolean);
 }
