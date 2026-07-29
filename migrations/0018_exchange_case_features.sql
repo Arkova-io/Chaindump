@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS exchange_case_features (
   metric_type          TEXT NOT NULL,
   metric_unit          TEXT NOT NULL,
   metric_window        TEXT NOT NULL,
-  metric_as_of         TEXT NOT NULL CHECK (metric_as_of GLOB '????-??-??'),
+  metric_as_of         TEXT NOT NULL CHECK (metric_as_of GLOB '????-??-??'), -- NOSONAR: date shape is repeated for migration-level constraints
   metric_observed_at   TEXT,
   comparability_key    TEXT NOT NULL,
   evidence             TEXT NOT NULL CHECK (json_valid(evidence)),
@@ -157,7 +157,7 @@ legacy_rows AS (
       WHEN metric_type LIKE '%_24h' THEN 'rolling_24h'
       ELSE 'snapshot'
     END,
-    '2026-07-29',
+    '2026-07-29', -- NOSONAR: source-review date is repeated in this auditable seed
     json_extract(profile, '$.chains'),
     primary_chain
   FROM successful_exchanges
