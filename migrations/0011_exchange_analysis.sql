@@ -8,9 +8,12 @@
 CREATE TABLE IF NOT EXISTS dead_exchanges (
   slug          TEXT NOT NULL,        -- normalized id, e.g. 'ftx', 'sushiswap'
   kind          TEXT NOT NULL,        -- 'dex' | 'cex'
+  venue_type    TEXT NOT NULL DEFAULT 'exchange', -- exchange | lender | broker | custodian
   name          TEXT NOT NULL,
   launched      TEXT,                 -- 'YYYY-MM'
   metric_label  TEXT NOT NULL,        -- e.g. '24h volume' (dex) | 'daily trading volume' (cex)
+  metric_type   TEXT NOT NULL DEFAULT 'unknown', -- tvl | trading_volume | token_price | loss_exposure | operational_status
+  metric_unit   TEXT NOT NULL DEFAULT 'usd',
   peak_metric     REAL,
   current_metric  REAL,
   drawdown_pct    REAL,
@@ -29,9 +32,12 @@ CREATE INDEX IF NOT EXISTS idx_dead_exchanges_kind ON dead_exchanges(kind);
 CREATE TABLE IF NOT EXISTS mid_exchanges (
   slug          TEXT NOT NULL,
   kind          TEXT NOT NULL,        -- 'dex' | 'cex'
+  venue_type    TEXT NOT NULL DEFAULT 'exchange',
   name          TEXT NOT NULL,
   launched      TEXT,
   metric_label  TEXT NOT NULL,
+  metric_type   TEXT NOT NULL DEFAULT 'unknown',
+  metric_unit   TEXT NOT NULL DEFAULT 'usd',
   metric        REAL,                 -- current value only — no peak/drawdown framing, matches mid_chains.tvl
   verdict       TEXT,
   why_stuck     TEXT,

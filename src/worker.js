@@ -1485,12 +1485,13 @@ const toISO = (unix) => new Date(unix * 1000).toISOString().slice(0, 10);
 // Flatten a previous classifyChains() result into a { chainName: metric } map,
 // so a later cycle can recover a chain's known peak/drawdown when this
 // cycle's own historicalChainTvl fetch fails for it.
-export function priorMetricsByChain(tierData) {
+function flattenTierMetrics(tierData) {
   const map = {};
   if (!tierData) return map;
   for (const t of TIERS) for (const m of (tierData[t] || [])) map[m.chain] = m;
   return map;
 }
+export const priorMetricsByChain = (tierData) => flattenTierMetrics(tierData);
 
 export async function classifyChains(priorMetrics = {}) {
   const all = await fetchJson(CHAINS_URL);
@@ -1599,16 +1600,27 @@ app.get('/api/dead-exchanges', wrap(async (req, res) => {
   const kind = req.query.kind === 'cex' ? 'cex' : 'dex';
   try {
     const rows = await dbQuery(
-      `SELECT slug, kind, name, launched, metric_label, peak_metric, current_metric, drawdown_pct, peak_date, collapse_date, why, outlook, verdict, sources, profile, updated_at
-       FROM dead_exchanges WHERE kind = ? ORDER BY peak_metric DESC`, [kind]);
+      `SELECT slug, kind, venue_type, name, launched, metric_label, metric_type, metric_unit, peak_metric, current_metric, drawdown_pct, peak_date, collapse_date, why, outlook, verdict, sources, profile, updated_at
+       FROM dead_exchanges WHERE kind = ? AND venue_type = 'exchange' ORDER BY peak_metric DESC`, [kind]);
     const exchanges = rows.map((r) => { let p = null; try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {} return { ...r, profile: p }; });
 
-    const tagCounts = {}; let ddSum = 0, ddN = 0, fraud = 0; const verdictCounts = {};
+    const tagCounts = {}; let fraud = 0; const verdictCounts = {}; const metricGroupMap = {};
     for (const c of exchanges) {
       const tags = (c.profile && c.profile.cause_tags) || [];
       canonTags(tags).forEach((t) => { tagCounts[t] = (tagCounts[t] || 0) + 1; });
       if (isFraudy(tags)) fraud++;
-      if (c.drawdown_pct != null) { ddSum += c.drawdown_pct; ddN++; }
+      const metricType = c.metric_type || 'unknown';
+      const metricUnit = c.metric_unit || 'unknown';
+      const metricKey = `${metricType}:${metricUnit}`;
+      const group = metricGroupMap[metricKey] || {
+        metricType, metricUnit, count: 0, drawdownCount: 0, drawdownSum: 0,
+      };
+      group.count++;
+      if (c.drawdown_pct != null) {
+        group.drawdownCount++;
+        group.drawdownSum += c.drawdown_pct;
+      }
+      metricGroupMap[metricKey] = group;
       const v = (c.verdict || 'unknown').toLowerCase();
       verdictCounts[v] = (verdictCounts[v] || 0) + 1;
     }
@@ -1618,16 +1630,16 @@ app.get('/api/dead-exchanges', wrap(async (req, res) => {
     let narrative = null;
     try { const m = await dbQuery(`SELECT v, updated_at FROM graveyard_meta WHERE k = ?`, [`${kind}_trends`]); if (m[0]) narrative = { text: m[0].v, updated_at: m[0].updated_at }; } catch (e) {}
 
-    const totalPeak = exchanges.reduce((a, c) => a + (c.peak_metric || 0), 0);
-    const totalNow = exchanges.reduce((a, c) => a + (c.current_metric || 0), 0);
+    const metricGroups = Object.values(metricGroupMap).map(({ drawdownSum, ...group }) => ({
+      ...group,
+      avgDrawdown: group.drawdownCount ? +(drawdownSum / group.drawdownCount).toFixed(1) : null,
+    }));
 
     res.json({
       kind, exchanges, count: exchanges.length,
       trends: {
         topTags, verdictCounts, causeVocab: causeVocab(),
-        avgDrawdown: ddN ? +(ddSum / ddN).toFixed(1) : null,
-        fraudCount: fraud, totalPeakMetric: totalPeak, totalCurrentMetric: totalNow,
-        wipedOut: totalPeak > 0 ? +(((totalPeak - totalNow) / totalPeak) * 100).toFixed(1) : null,
+        fraudCount: fraud, metricGroups,
         narrative,
       },
     });
@@ -1640,8 +1652,8 @@ app.get('/api/mid-exchanges', wrap(async (req, res) => {
   const kind = req.query.kind === 'cex' ? 'cex' : 'dex';
   try {
     const rows = await dbQuery(
-      `SELECT slug, kind, name, launched, metric_label, metric, verdict, why_stuck, outlook, profile, sources, updated_at
-       FROM mid_exchanges WHERE kind = ? ORDER BY metric DESC`, [kind]);
+      `SELECT slug, kind, venue_type, name, launched, metric_label, metric_type, metric_unit, metric, verdict, why_stuck, outlook, profile, sources, updated_at
+       FROM mid_exchanges WHERE kind = ? AND venue_type = 'exchange' ORDER BY metric DESC`, [kind]);
     const exchanges = rows.map((r) => { let p = null; try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {} return { ...r, profile: p }; });
     const verdictCounts = {};
     const tagCounts = {};
@@ -1679,10 +1691,7 @@ let dexTiersBuilding = false;
 // priorMetricsByChain above, guarding the exact bug fixed in commits
 // 1f04f66/3d6ec31 (a fetch failure must never report 0% drawdown).
 export function priorMetricsByDex(tierData) {
-  const map = {};
-  if (!tierData) return map;
-  for (const t of TIERS) for (const m of (tierData[t] || [])) map[m.chain] = m;
-  return map;
+  return flattenTierMetrics(tierData);
 }
 
 export async function classifyDexTiers(priorMetrics = {}) {
@@ -1772,7 +1781,7 @@ app.get('/api/dex-tiers', wrap(async (req, res) => {
 // re-fetching DEXS_URL on every request.
 app.get('/api/dex', wrap(async (req, res) => {
   try {
-    const b = await getDexTiers();
+    const b = (await getDexTiers()) || {};
     const board = [
       ...(b.thriving || []).map((m) => ({ ...m, tier: 'thriving' })),
       ...(b.zombie || []).map((m) => ({ ...m, tier: 'zombie' })),

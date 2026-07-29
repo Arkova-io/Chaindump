@@ -30,7 +30,8 @@ function stubFeed() {
 }
 
 // Minimal D1 stub: serves dead_exchanges/mid_exchanges rows filtered by the
-// bound `kind`, plus a generic snapshot_cache key='cex' single-row lookup.
+// bound `kind` and the route's exchange-only venue scope, plus a generic
+// snapshot_cache key='cex' single-row lookup.
 function makeDB({ dead = [], mid = [], cexCache = null } = {}) {
   return {
     prepare(sql) {
@@ -44,7 +45,7 @@ function makeDB({ dead = [], mid = [], cexCache = null } = {}) {
         async all() {
           if (sql.includes('FROM dead_exchanges')) {
             const kind = this.binds[0];
-            const rows = dead.filter((r) => r.kind === kind);
+            const rows = dead.filter((r) => r.kind === kind && (!sql.includes(`venue_type = 'exchange'`) || r.venue_type === 'exchange'));
             // Mirror the route's real ORDER BY peak_metric DESC so a dropped
             // ORDER BY clause actually fails the "sorts descending" test below
             // (D1 sorts server-side; this stub has to do it explicitly).
@@ -53,7 +54,7 @@ function makeDB({ dead = [], mid = [], cexCache = null } = {}) {
           }
           if (sql.includes('FROM mid_exchanges')) {
             const kind = this.binds[0];
-            return { results: mid.filter((r) => r.kind === kind) };
+            return { results: mid.filter((r) => r.kind === kind && (!sql.includes(`venue_type = 'exchange'`) || r.venue_type === 'exchange')) };
           }
           if (sql.includes('FROM graveyard_meta')) return { results: [] };
           return { results: [] };
@@ -66,28 +67,43 @@ function makeDB({ dead = [], mid = [], cexCache = null } = {}) {
 }
 
 const DEAD_DEX = {
-  slug: 'sushiswap', kind: 'dex', name: 'SushiSwap', launched: '2020-08', metric_label: '24h volume',
+  slug: 'sushiswap', kind: 'dex', venue_type: 'exchange', name: 'SushiSwap', launched: '2020-08',
+  metric_label: '24h volume', metric_type: 'trading_volume', metric_unit: 'usd',
   peak_metric: 7.04e9, current_metric: 12e6, drawdown_pct: 99.8, peak_date: '2021-11-01', collapse_date: null,
   why: 'Chronic multi-year bleed.', outlook: 'Long-tail DEX.', verdict: 'declining',
   sources: '[{"title":"DefiLlama","url":"https://defillama.com/protocol/sushiswap"}]',
   profile: '{"cause_tags":["competition","declining_volume"]}', updated_at: '2026-07-27',
 };
 const DEAD_CEX = {
-  slug: 'ftx', kind: 'cex', name: 'FTX', launched: '2019-05', metric_label: 'daily trading volume',
+  slug: 'ftx', kind: 'cex', venue_type: 'exchange', name: 'FTX', launched: '2019-05',
+  metric_label: 'daily trading volume', metric_type: 'trading_volume', metric_unit: 'usd',
   peak_metric: 20e9, current_metric: 0, drawdown_pct: 100, peak_date: '2021-11-01', collapse_date: '2022-11-11',
   why: 'Alameda commingling exposed.', outlook: 'Liquidated, 96.6% of claims repaid.', verdict: 'defunct',
   sources: '[{"title":"CoinDesk","url":"https://www.coindesk.com/business/2022/11/02/divisions-in-sam-bankman-frieds-crypto-empire-blur-on-his-trading-titan-alamedas-balance-sheet/"}]',
   profile: '{"cause_tags":["commingled_funds","insider_fraud"]}', updated_at: '2026-07-27',
 };
+const DEAD_LENDER = {
+  ...DEAD_CEX,
+  slug: 'celsius',
+  name: 'Celsius',
+  venue_type: 'lender',
+  metric_label: 'documented loss / exposure',
+  metric_type: 'loss_exposure',
+  peak_metric: null,
+  current_metric: 4.7e9,
+  drawdown_pct: null,
+};
 const MID_DEX = {
-  slug: 'dodo-amm', kind: 'dex', name: 'DODO AMM', launched: '2020-08', metric_label: '24h volume',
+  slug: 'dodo-amm', kind: 'dex', venue_type: 'exchange', name: 'DODO AMM', launched: '2020-08',
+  metric_label: '24h volume', metric_type: 'trading_volume', metric_unit: 'usd',
   metric: 320e3, verdict: 'declining', why_stuck: 'Outcompeted by concentrated-liquidity DEXs.', outlook: 'Long-tail.',
   sources: '[]', profile: '{"success_factors_missing":["no_liquidity_moat"]}', updated_at: '2026-07-27',
 };
 // CEX mid rows are seeded with cause_tags, not success_factors_missing (see
 // migrations/0012_exchange_seed.sql) — the route must read both fields.
 const MID_CEX = {
-  slug: 'htx', kind: 'cex', name: 'HTX', launched: null, metric_label: 'quarterly spot trading volume',
+  slug: 'htx', kind: 'cex', venue_type: 'exchange', name: 'HTX', launched: null,
+  metric_label: 'quarterly spot trading volume', metric_type: 'trading_volume', metric_unit: 'usd',
   metric: 133.6e9, verdict: 'declining', why_stuck: 'Losing licensed jurisdictions.', outlook: 'Structural decline.',
   sources: '[]', profile: '{"cause_tags":["regulatory","declining_volume"]}', updated_at: '2026-07-27',
 };
@@ -104,17 +120,23 @@ describe('GET /api/dead-exchanges', () => {
     expect(body.exchanges[0].slug).toBe('sushiswap');
     expect(body.exchanges[0].profile.cause_tags).toContain('competition');
     expect(body.trends.causeVocab).toBeTruthy();
-    expect(body.trends.avgDrawdown).toBeCloseTo(99.8, 1);
+    expect(body.trends.metricGroups).toEqual([{
+      metricType: 'trading_volume', metricUnit: 'usd', count: 1, drawdownCount: 1, avgDrawdown: 99.8,
+    }]);
+    expect(body.trends).not.toHaveProperty('totalPeakMetric');
+    expect(body.trends).not.toHaveProperty('totalCurrentMetric');
+    expect(body.trends).not.toHaveProperty('wipedOut');
   });
 
   it('serves kind=cex separately, with its own fraud count', async () => {
     stubFeed();
     const worker = await freshWorker();
-    const res = await worker.fetch(new Request('http://localhost/api/dead-exchanges?kind=cex'), { DB: makeDB({ dead: [DEAD_DEX, DEAD_CEX] }) }, ctx());
+    const res = await worker.fetch(new Request('http://localhost/api/dead-exchanges?kind=cex'), { DB: makeDB({ dead: [DEAD_DEX, DEAD_CEX, DEAD_LENDER] }) }, ctx());
     const body = await res.json();
     expect(body.kind).toBe('cex');
     expect(body.exchanges).toHaveLength(1);
     expect(body.exchanges[0].slug).toBe('ftx');
+    expect(body.exchanges.some((row) => row.venue_type !== 'exchange')).toBe(false);
     // commingled_funds + insider_fraud are both FRAUDY — one row still counts once.
     expect(body.trends.fraudCount).toBe(1);
   });
