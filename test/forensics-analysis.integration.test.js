@@ -35,6 +35,17 @@ describe('Forensics analysis navigation', () => {
   });
 });
 
+describe('Blockchain Analysis research coverage surface', () => {
+  it('loads a normalized coverage contract and exposes completeness plus citation sorting', () => {
+    expect(html).toContain("fetch('/api/chain-research-coverage')");
+    expect(html).toContain('CHAIN_DOSSIER_DIMENSIONS = 8');
+    expect(html).toContain('Full dossier · ${CHAIN_DOSSIER_DIMENSIONS}/${CHAIN_DOSSIER_DIMENSIONS} dimensions');
+    expect(html).toContain("value=\"completeness\"");
+    expect(html).toContain('Dossier completeness');
+    expect(html).toContain('Partial dossier');
+  });
+});
+
 describe('DEX/CEX Analysis data surface', () => {
   it('loads successful, mid, and dead cohorts for both venue types', () => {
     for (const kind of ['dex', 'cex']) {

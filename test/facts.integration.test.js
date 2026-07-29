@@ -62,6 +62,7 @@ function makeDB(factRows = []) {
     async first() { const m = this.sql.match(/key='([a-z_]+)'/); return m && store[m[1]] ? { data: store[m[1]], updated_at: 1 } : null; },
     async all() {
       if (this.sql.includes('FROM chain_facts')) {
+        if (this.sql.includes('SELECT chain, dimension, data, sources')) return { results: factRows };
         // The unbound UNION scan (deskOnlyChain's norm() fallback) selects every
         // researched chain name; the bound query selects one chain's rows.
         if (!this.binds.length) return { results: factRows.map((r) => ({ chain: r.chain })) };
@@ -141,6 +142,24 @@ describe('research desk facts on /api/chain/:name', () => {
     const res = await worker.fetch(new Request('http://localhost/api/chain/Berachain'), {}, ctx());
     expect(res.status).toBe(200);
     expect((await res.json()).facts).toBeNull();
+  });
+});
+
+describe('chain research coverage for the Forensics index', () => {
+  it('counts only valid dossier dimensions and joins the desk’s BNB Chain spelling to BSC', async () => {
+    const worker = await freshWorker();
+    const rows = [
+      { chain: 'BNB Chain', dimension: 'identity', data: '{"name":"BNB Chain"}', sources: JSON.stringify([{ title: 'Official', url: 'https://bnbchain.org' }]) },
+      { chain: 'BNB Chain', dimension: 'capital', data: '{"funding":true}', sources: JSON.stringify([{ title: 'Same citation', url: 'https://bnbchain.org' }]) },
+      { chain: 'BNB Chain', dimension: 'risk', data: '{not json', sources: JSON.stringify([{ title: 'Broken', url: 'https://example.test' }]) },
+      { chain: 'BNB Chain', dimension: '_meta', data: '{"ignored":true}', sources: '[]' },
+    ];
+    const res = await worker.fetch(new Request('http://localhost/api/chain-research-coverage'), { DB: makeDB(rows) }, ctx());
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.dimensions).toHaveLength(8);
+    expect(body.chains.bsc).toEqual({ dimensions: 2, citations: 1, citationUrls: ['https://bnbchain.org'] });
+    expect(body.chains.bnbchain).toEqual(body.chains.bsc);
   });
 });
 

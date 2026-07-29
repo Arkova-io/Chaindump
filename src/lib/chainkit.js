@@ -16,7 +16,7 @@
 // Moved here from worker.js so the worker and chainkit can never disagree on a
 // chain key. worker.js imports { ALIAS, norm } from this module.
 export const ALIAS = {
-  bnb: 'bsc', binance: 'bsc', binancesmartchain: 'bsc',
+  bnb: 'bsc', bnbchain: 'bsc', binance: 'bsc', binancesmartchain: 'bsc',
   op: 'opmainnet', optimism: 'opmainnet', opmainnet: 'opmainnet',
   avax: 'avalanche',
   xdai: 'gnosis',

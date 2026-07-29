@@ -750,33 +750,61 @@ function analysisText(value) {
 // researched mid/dead cohorts. Live-only rows are labeled as such; being in the
 // top 50 is not presented as a completed research dossier.
 // ---------------------------------------------------------------------------
-function normalizeBlockchainAnalysis(live, mid, dead) {
+const CHAIN_DOSSIER_DIMENSIONS = 8;
+function blockchainResearchKey(name) {
+  const key = String(name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+  return key.replace(/l[12]$/, '');
+}
+function uniqueSourceCount(...sourceLists) {
+  const urls = new Set();
+  sourceLists.flat().forEach((source) => {
+    const url = typeof source === 'string' ? source : source && source.url;
+    if (typeof url === 'string' && /^https?:\/\//i.test(url)) urls.add(url);
+  });
+  return urls.size;
+}
+function normalizeBlockchainAnalysis(live, mid, dead, researchCoverage = {}) {
   const byName = new Map();
+  const research = (name, sources = []) => {
+    const summary = researchCoverage[blockchainResearchKey(name)] || { dimensions: 0, citations: 0, citationUrls: [] };
+    return {
+      dossierDimensions: Number(summary.dimensions) || 0,
+      citationCount: uniqueSourceCount(sources, summary.citationUrls || []),
+    };
+  };
   (live.chains || []).forEach((row) => {
     const name = row.name || row.chain;
     if (!name) return;
     byName.set(String(name).toLowerCase(), {
       name, lifecycle: 'live', coverage: 'Live metrics', metric: row.tvl,
       metricLabel: 'TVL', summary: '', sources: [], updatedAt: row.updated_at,
+      ...research(name),
     });
   });
   (mid.chains || []).forEach((row) => {
     const p = parsedObject(row.profile);
+    const sources = sourceArray(row.sources);
     byName.set(String(row.chain).toLowerCase(), {
       name: row.chain, lifecycle: 'mid', coverage: 'Research dossier',
       metric: row.tvl, metricLabel: 'TVL', summary: row.why_stuck || p.situation || '',
-      sources: sourceArray(row.sources), updatedAt: row.updated_at,
+      sources, updatedAt: row.updated_at, ...research(row.chain, sources),
     });
   });
   (dead.chains || []).forEach((row) => {
     const p = parsedObject(row.profile);
+    const sources = sourceArray(row.sources);
     byName.set(String(row.chain).toLowerCase(), {
       name: row.chain, lifecycle: 'dead', coverage: 'Research dossier',
       metric: row.current_tvl, metricLabel: 'Current TVL', summary: row.why || p.postmortem || '',
-      sources: sourceArray(row.sources), updatedAt: row.updated_at,
+      sources, updatedAt: row.updated_at, ...research(row.chain, sources),
     });
   });
   return [...byName.values()];
+}
+function dossierCoverageLabel(row) {
+  if (row.dossierDimensions >= CHAIN_DOSSIER_DIMENSIONS) return `Full dossier · ${CHAIN_DOSSIER_DIMENSIONS}/${CHAIN_DOSSIER_DIMENSIONS} dimensions`;
+  if (row.dossierDimensions) return `Partial dossier · ${row.dossierDimensions}/${CHAIN_DOSSIER_DIMENSIONS} dimensions`;
+  return row.sources.length ? 'Legacy case study · structured dossier not yet complete' : 'No published dossier';
 }
 function renderBlockchainAnalysis() {
   const el = document.getElementById('blockchainanalysisview');
@@ -788,20 +816,22 @@ function renderBlockchainAnalysis() {
   const order = { live: 0, mid: 1, dead: 2 };
   filtered.sort((a, b) => {
     if (state.blockchainAnalysisSort === 'lifecycle') return (order[a.lifecycle] - order[b.lifecycle]) || a.name.localeCompare(b.name);
-    if (state.blockchainAnalysisSort === 'citations') return (b.sources.length - a.sources.length) || a.name.localeCompare(b.name);
+    if (state.blockchainAnalysisSort === 'completeness') return (b.dossierDimensions - a.dossierDimensions) || (b.citationCount - a.citationCount) || a.name.localeCompare(b.name);
+    if (state.blockchainAnalysisSort === 'citations') return (b.citationCount - a.citationCount) || (b.dossierDimensions - a.dossierDimensions) || a.name.localeCompare(b.name);
     return a.name.localeCompare(b.name);
   });
-  const researched = rows.filter((row) => row.coverage === 'Research dossier').length;
+  const fullDossiers = rows.filter((row) => row.dossierDimensions >= CHAIN_DOSSIER_DIMENSIONS).length;
+  const partialDossiers = rows.filter((row) => row.dossierDimensions > 0 && row.dossierDimensions < CHAIN_DOSSIER_DIMENSIONS).length;
   const cards = filtered.map((row) => `<div class="gcard">
     <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${row.lifecycle === 'dead' ? 'dead' : row.lifecycle === 'mid' ? 'declining' : 'recover'}">${esc(row.lifecycle)}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${row.metric == null ? '—' : fmtUsd(row.metric)}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
-    <div class="gmeta">${esc(row.coverage)} · ${row.sources.length} cited source${row.sources.length === 1 ? '' : 's'}</div>
+    <div class="gmeta">${esc(dossierCoverageLabel(row))} · ${row.citationCount} cited source${row.citationCount === 1 ? '' : 's'}</div>
     ${row.summary ? `<div class="gbody">${esc(row.summary)}</div>` : '<div class="gbody muted">Live market row; a completed research dossier is not yet published.</div>'}
     ${srcHtml(row.sources.slice(0, 3), 'Cited sources: ')}
   </div>`).join('');
   el.innerHTML = `${head}
-    <div class="analysis-note">This index deliberately distinguishes live coverage from researched coverage. A chain appearing in the live top 50 is not automatically counted as analyzed.</div>
-    <div class="gstats">${gstat(rows.length, 'chains indexed')}${gstat(researched, 'research dossiers')}${gstat(rows.filter(r=>r.lifecycle==='mid').length, 'stuck / mid')}${gstat(rows.filter(r=>r.lifecycle==='dead').length, 'dead / dying')}</div>
+    <div class="analysis-note">A full dossier has all eight research dimensions. A chain appearing in the live top 50 is not automatically counted as analyzed; partial and legacy research remain visible without being overstated.</div>
+    <div class="gstats">${gstat(rows.length, 'chains indexed')}${gstat(fullDossiers, 'full 8/8 dossiers')}${gstat(partialDossiers, 'partial dossiers')}${gstat(rows.filter(r=>r.lifecycle==='dead').length, 'dead / dying')}</div>
     <div class="toolbar"><div class="analysis-controls">
       <input id="blockchainAnalysisSearch" class="search" placeholder="Search chains or lifecycle…" value="${esc(state.blockchainAnalysisQuery)}" />
       <span class="analysis-spacer"></span>
@@ -809,6 +839,7 @@ function renderBlockchainAnalysis() {
       <select id="blockchainAnalysisSort" class="analysis-select">
         <option value="name"${state.blockchainAnalysisSort==='name'?' selected':''}>Name</option>
         <option value="lifecycle"${state.blockchainAnalysisSort==='lifecycle'?' selected':''}>Lifecycle</option>
+        <option value="completeness"${state.blockchainAnalysisSort==='completeness'?' selected':''}>Dossier completeness</option>
         <option value="citations"${state.blockchainAnalysisSort==='citations'?' selected':''}>Citation count</option>
       </select>
     </div></div>
@@ -819,12 +850,13 @@ function renderBlockchainAnalysis() {
 async function loadBlockchainAnalysis() {
   renderBlockchainAnalysis();
   try {
-    const [live, mid, dead] = await Promise.all([
+    const [live, mid, dead, coverage] = await Promise.all([
       fetch('/api/chains').then((r) => { if (!r.ok) throw new Error('live chains'); return r.json(); }),
       fetch('/api/mid').then((r) => { if (!r.ok) throw new Error('mid chains'); return r.json(); }),
       fetch('/api/dead').then((r) => { if (!r.ok) throw new Error('dead chains'); return r.json(); }),
+      fetch('/api/chain-research-coverage').then((r) => { if (!r.ok) throw new Error('research coverage'); return r.json(); }),
     ]);
-    state.blockchainAnalysisData = normalizeBlockchainAnalysis(live, mid, dead);
+    state.blockchainAnalysisData = normalizeBlockchainAnalysis(live, mid, dead, coverage.chains || {});
     renderBlockchainAnalysis();
   } catch (e) {
     blockchainAnalysisLoaded = false;

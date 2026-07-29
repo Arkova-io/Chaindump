@@ -1273,6 +1273,60 @@ async function chainFacts(chainName) {
   return Object.keys(out).length ? out : null;
 }
 
+// The forensic index needs a cheap, truthful research-completeness signal. It
+// must not make a client fetch every full /api/chain payload (which also builds
+// live project/token context) just to learn whether a dossier exists. Count
+// only well-formed, public dimensions and deduplicate citation URLs. The key is
+// norm() so desk names such as "BNB Chain" and the board's "BSC" join.
+const CHAIN_DOSSIER_DIMENSIONS = ['identity', 'capital', 'team', 'narrative', 'onchain', 'token', 'risk', 'synthesis'];
+function researchCitationUrls(raw) {
+  let sources = raw;
+  if (typeof sources === 'string') {
+    try { sources = JSON.parse(sources); } catch (e) { return []; }
+  }
+  if (!Array.isArray(sources)) return [];
+  return sources
+    .map((source) => typeof source === 'string' ? source : source && source.url)
+    .filter((url) => typeof url === 'string' && /^https?:\/\//i.test(url));
+}
+
+app.get('/api/chain-research-coverage', wrap(async (req, res) => {
+  const coverage = {};
+  try {
+    const rows = await dbQuery('SELECT chain, dimension, data, sources FROM chain_facts');
+    for (const row of rows) {
+      if (!row.chain || !CHAIN_DOSSIER_DIMENSIONS.includes(row.dimension)) continue;
+      // A row which cannot be parsed is not published research. This mirrors
+      // chainFacts(), rather than allowing a malformed row to inflate coverage.
+      let data;
+      try { data = JSON.parse(row.data || 'null'); } catch (e) { continue; }
+      if (!data || typeof data !== 'object' || Array.isArray(data) || !Object.keys(data).length) continue;
+      const key = norm(row.chain);
+      const entry = coverage[key] || { dimensions: new Set(), citations: new Set(), lookupKeys: new Set([key]) };
+      entry.dimensions.add(row.dimension);
+      researchCitationUrls(row.sources).forEach((url) => entry.citations.add(url));
+      entry.lookupKeys.add(String(row.chain).toLowerCase().replace(/[^a-z0-9]/g, ''));
+      coverage[key] = entry;
+    }
+  } catch (e) {
+    // The index still works without D1 research data; it will label rows as
+    // unstructured rather than inventing dossier coverage.
+  }
+  const chains = {};
+  for (const entry of Object.values(coverage)) {
+    const summary = {
+      dimensions: entry.dimensions.size,
+      citations: entry.citations.size,
+      citationUrls: [...entry.citations].sort(),
+    };
+    // Include both the canonical key and the desk spelling. The SPA can use a
+    // cheap punctuation-insensitive lookup without reimplementing chainkit's
+    // alias vocabulary, while BNB Chain still resolves to the board's BSC key.
+    entry.lookupKeys.forEach((key) => { chains[key] = summary; });
+  }
+  res.json({ dimensions: CHAIN_DOSSIER_DIMENSIONS, chains });
+}));
+
 // Resolve a chain's tags: themes are curated (stored), the cohort is COMPUTED.
 //
 // Field names here are taken FROM THE REAL ROWS, not from what a schema ought to
