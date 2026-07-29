@@ -55,21 +55,21 @@ function indexSources(sourcesValue) {
   return { errors, byId };
 }
 
-function validateEvidence(evidence, byId, errors) {
-  const claimedFields = new Set();
-  for (const item of evidence) {
-    if (!asObject(item) || typeof item?.field !== 'string' || !item.field) {
-      errors.push('Every evidence item needs a field');
-      continue;
-    }
-    claimedFields.add(item.field);
-    if (item.value === undefined || item.value === null || item.value === '') errors.push(`Evidence ${item.field} needs its displayed value`);
-    if (typeof item.as_of !== 'string' || !ISO_DATE.test(item.as_of)) errors.push(`Evidence ${item.field} needs an ISO as_of date`);
-    if (!VALID_BASES.has(item.basis)) errors.push(`Evidence ${item.field} has an invalid basis`);
-    if (!Array.isArray(item.source_ids) || !item.source_ids.length) errors.push(`Evidence ${item.field} needs at least one source`);
-    for (const id of item.source_ids ?? []) if (!byId.has(id)) errors.push(`Evidence ${item.field} references unknown source ${id}`);
+function validateEvidenceItem(item, byId, errors) {
+  if (!asObject(item) || typeof item?.field !== 'string' || !item.field) {
+    errors.push('Every evidence item needs a field');
+    return null;
   }
-  return claimedFields;
+  if (item.value === undefined || item.value === null || item.value === '') errors.push(`Evidence ${item.field} needs its displayed value`);
+  if (typeof item.as_of !== 'string' || !ISO_DATE.test(item.as_of)) errors.push(`Evidence ${item.field} needs an ISO as_of date`);
+  if (!VALID_BASES.has(item.basis)) errors.push(`Evidence ${item.field} has an invalid basis`);
+  if (!Array.isArray(item.source_ids) || !item.source_ids.length) errors.push(`Evidence ${item.field} needs at least one source`);
+  for (const id of item.source_ids ?? []) if (!byId.has(id)) errors.push(`Evidence ${item.field} references unknown source ${id}`);
+  return item.field;
+}
+
+function validateEvidence(evidence, byId, errors) {
+  return new Set(evidence.map((item) => validateEvidenceItem(item, byId, errors)).filter(Boolean));
 }
 
 function validateRequiredEvidence(profile, claimedFields, errors) {
