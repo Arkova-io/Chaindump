@@ -64,7 +64,9 @@ function makeDB({ dead = [], mid = [], successful = [], features = [], cexCache 
               'chains', 'token_status', 'token_symbol', 'token_launch_date',
               'token_launch_timing', 'token_strategy', 'token_source_url', 'metric_type',
               'metric_unit', 'metric_window', 'metric_as_of', 'comparability_key',
+              'metric_observed_at',
               'evidence', 'quality_label', 'quality_issues',
+              'lifecycle_evidence_date', 'last_verified_at', 'next_review_at', 'freshness_status',
             ];
             return {
               results: lifecycleRows.map((row) => {
@@ -193,8 +195,11 @@ const SUCCESS_FEATURE = {
   token_source_url: 'https://blog.uniswap.org/uni',
   metric_type: 'spot_volume_24h', metric_unit: 'usd', metric_window: 'rolling_24h',
   metric_as_of: '2026-07-29',
+  metric_observed_at: null,
   comparability_key: 'dex|spot_amm_multichain|spot_volume_24h|usd|rolling_24h',
   evidence: '{"source_count":1}', quality_label: 'partial', quality_issues: '["single_source_case"]',
+  lifecycle_evidence_date: null, last_verified_at: '2026-07-29',
+  next_review_at: '2026-08-05', freshness_status: 'unknown',
 };
 
 describe('GET /api/exchange-analysis', () => {
@@ -214,8 +219,12 @@ describe('GET /api/exchange-analysis', () => {
       operating_model: 'Permissionless multi-chain spot AMM.',
       product_cohort: 'spot_amm_multichain',
       token: { status: 'launched', symbol: 'UNI', launch_timing: 'post_product' },
-      metric: { type: 'spot_volume_24h', unit: 'usd', window: 'rolling_24h', as_of: '2026-07-29' },
+      metric: {
+        type: 'spot_volume_24h', unit: 'usd', window: 'rolling_24h',
+        as_of: '2026-07-29', observed_at: null,
+      },
       data_quality: { label: 'partial', issues: ['single_source_case'] },
+      freshness: { last_verified_at: '2026-07-29', next_review_at: '2026-08-05', status: 'unknown' },
     });
     expect(body.summary.comparisonGroups).toHaveLength(1);
     expect(body.summary).not.toHaveProperty('totalMetric');

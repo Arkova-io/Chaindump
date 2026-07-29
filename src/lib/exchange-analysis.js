@@ -86,18 +86,26 @@ export function normalizeExchangeCase(row) {
         launch_timing: row.feature_token_launch_timing || 'unknown',
         strategy: row.feature_token_strategy || 'unresolved',
         source_url: row.feature_token_source_url || null,
+        evidence_level: row.feature_token_source_url ? 'documented' : 'unverified',
       },
       metric: {
         type: metricType,
         unit: metricUnit,
         window: metricWindow,
         as_of: row.feature_metric_as_of || null,
+        observed_at: row.feature_metric_observed_at || null,
         comparability_key: comparisonKey,
       },
       evidence,
       data_quality: {
         label: row.feature_quality_label || 'limited',
         issues: Array.isArray(qualityIssues) ? qualityIssues : ['invalid_quality_issues'],
+      },
+      freshness: {
+        lifecycle_evidence_date: row.feature_lifecycle_evidence_date || null,
+        last_verified_at: row.feature_last_verified_at || null,
+        next_review_at: row.feature_next_review_at || null,
+        status: row.feature_freshness_status || 'unknown',
       },
     },
   };
@@ -168,7 +176,14 @@ export function summarizeExchangeCases(cases, kind) {
     const lifecycleCases = scoped.filter((row) => row.lifecycle === lifecycle);
     tokenByLifecycle[lifecycle] = {
       total: lifecycleCases.length,
-      launched: lifecycleCases.filter((row) => row.analysis?.token?.status === 'launched').length,
+      documentedLaunched: lifecycleCases.filter((row) => (
+        row.analysis?.token?.status === 'launched'
+        && row.analysis?.token?.evidence_level === 'documented'
+      )).length,
+      unverifiedLaunched: lifecycleCases.filter((row) => (
+        row.analysis?.token?.status === 'launched'
+        && row.analysis?.token?.evidence_level !== 'documented'
+      )).length,
       notIdentified: lifecycleCases.filter((row) => row.analysis?.token?.status !== 'launched').length,
     };
   }
@@ -186,7 +201,7 @@ export function summarizeExchangeCases(cases, kind) {
     tokenStrategies: [...tokenStrategies.values()]
       .sort((a, b) => b.count - a.count || a.tokenStrategy.localeCompare(b.tokenStrategy)),
     comparisonGroups: [...comparison.values()]
-      .map((group) => ({ ...group, cases: [...group.cases].sort() }))
+      .map((group) => ({ ...group, cases: [...group.cases].sort((a, b) => a.localeCompare(b)) }))
       .sort((a, b) => b.count - a.count || a.comparabilityKey.localeCompare(b.comparabilityKey)),
     cautions: [
       'Metric values are not pooled across comparison groups.',

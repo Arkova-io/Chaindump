@@ -65,6 +65,13 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('row.comparisonKey');
     expect(html).toContain('row.metricAsOf');
     expect(html).toContain('row.qualityIssues');
+    expect(html).toContain('operating_model_source_indexes');
+    expect(html).toContain('metric_source_indexes');
+    expect(html).toContain('custody_model_source_indexes');
+    expect(html).toContain('product_cohort_source_indexes');
+    expect(html).toContain('observation time unknown');
+    expect(html).toContain('lifecycle evidence');
+    expect(html).toContain('next review');
     expect(html).toContain("String(row.metricUnit || '').toLowerCase()");
   });
 });

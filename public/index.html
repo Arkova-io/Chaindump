@@ -902,12 +902,14 @@ function normalizeExchangeResearchCase(row) {
     metric: row.metric, peakMetric: row.peak_metric,
     metricLabel: row.metric_label || 'Metric', metricType: metric.type || row.metric_type || '',
     metricUnit: metric.unit || row.metric_unit || 'usd', metricWindow: metric.window || 'unknown',
-    metricAsOf: metric.as_of || '', comparisonKey: metric.comparability_key || '',
+    metricAsOf: metric.as_of || '', metricObservedAt: metric.observed_at || '',
+    comparisonKey: metric.comparability_key || '',
     summary: row.summary || '', outlook: row.outlook || '',
     productCohort: analysis.product_cohort || 'unclassified',
     operatingModel: analysis.operating_model || '',
     custodyModel: analysis.custody_model || '',
     token: parsedObject(analysis.token),
+    freshness: parsedObject(analysis.freshness),
     qualityLabel: quality.label || 'limited',
     qualityIssues: Array.isArray(quality.issues) ? quality.issues : [],
     evidence: parsedObject(analysis.evidence),
@@ -922,46 +924,122 @@ function exchangeMetric(row) {
   return `${fmtNum(row.metric)} ${esc(row.metricUnit)}`;
 }
 function lifecycleLabel(value) {
-  return value === 'successful' ? 'successful' : value === 'mid' ? 'stuck / mid' : 'dead / winding down';
+  if (value === 'successful') return 'successful';
+  if (value === 'mid') return 'stuck / mid';
+  return 'dead / winding down';
 }
 function lifecycleClass(value) {
-  return value === 'successful' ? 'recover' : value === 'mid' ? 'declining' : 'dead';
+  if (value === 'successful') return 'recover';
+  if (value === 'mid') return 'declining';
+  return 'dead';
+}
+function exchangeLabel(value) {
+  return String(value || '').replaceAll('_', ' ');
+}
+function exchangeFindingLabel(lifecycle) {
+  if (lifecycle === 'successful') return 'Why it succeeded';
+  if (lifecycle === 'mid') return 'Why it is stuck';
+  return 'What happened';
+}
+function exchangeTokenLine(token) {
+  const tokenSymbol = analysisText(token.symbol || '');
+  let line = 'No venue token identified in the cited dossier';
+  if (tokenSymbol) {
+    line = `${esc(tokenSymbol)} · ${esc(exchangeLabel(token.strategy || 'strategy unresolved'))}`;
+    if (token.launch_timing) line += ` · ${esc(exchangeLabel(token.launch_timing))}`;
+  }
+  if (token.source_url) {
+    line += ` · <a href="${esc(safeUrl(token.source_url))}" target="_blank" rel="noopener noreferrer">token source ↗</a>`;
+  } else if (token.status === 'launched') {
+    line += ' · launch claim not field-verified';
+  }
+  return line;
+}
+function exchangeEvidenceLinks(row, indexField, label) {
+  const indexes = Array.isArray(row.evidence[indexField]) ? row.evidence[indexField] : [];
+  const links = indexes.flatMap((index) => {
+    const source = row.sources[index];
+    if (!source) return [];
+    const url = typeof source === 'string' ? source : source.url;
+    const title = typeof source === 'string' ? source : (source.title || source.url);
+    if (!url) return [];
+    return [`<a href="${esc(safeUrl(url))}" target="_blank" rel="noopener noreferrer">${esc(title)} ↗</a>`];
+  });
+  const evidence = links.length ? links.join(' · ') : 'not field-verified';
+  return `<div class="gfield"><span class="gfl">${esc(label)}</span>${evidence}</div>`;
+}
+function exchangeOption(value, label, selected) {
+  const selectedAttribute = selected ? ' selected' : '';
+  return `<option value="${esc(value)}"${selectedAttribute}>${esc(label)}</option>`;
+}
+function exchangeTokenEvidence(row) {
+  const url = row.token?.source_url;
+  if (!url) return '<div class="gfield"><span class="gfl">Token</span>not field-verified</div>';
+  const asOf = row.evidence.token_evidence_as_of
+    ? ` · evidence as of ${esc(row.evidence.token_evidence_as_of)}`
+    : ' · evidence date unknown';
+  return `<div class="gfield"><span class="gfl">Token</span><a href="${esc(safeUrl(url))}" target="_blank" rel="noopener noreferrer">token source ↗</a>${asOf}</div>`;
+}
+function exchangeAnalysisDetails(row, profile, tokenLine) {
+  const fields = [];
+  if (row.launched) fields.push(`<div class="gfield"><span class="gfl">Launched</span> ${esc(row.launched)}</div>`);
+  const venueContext = [String(row.venueType).toUpperCase(), exchangeLabel(row.custodyModel || 'custody unresolved')];
+  if (row.primaryChain) venueContext.push(row.primaryChain);
+  fields.push(`<div class="gfield"><span class="gfl">Venue</span> ${venueContext.map(esc).join(' · ')}</div>`);
+  fields.push(`<div class="gfield"><span class="gfl">Product cohort</span> ${esc(exchangeLabel(row.productCohort))}</div>`);
+  fields.push(`<div class="gfield"><span class="gfl">Token</span> ${tokenLine}</div>`);
+  const metricContract = [row.metricType, row.metricUnit, exchangeLabel(row.metricWindow)];
+  if (row.metricAsOf) metricContract.push(`as of ${row.metricAsOf}`);
+  metricContract.push(row.metricObservedAt ? `observed ${row.metricObservedAt}` : 'observation time unknown');
+  fields.push(`<div class="gfield"><span class="gfl">Metric contract</span> ${metricContract.map(esc).join(' · ')}</div>`);
+  if (row.comparisonKey) fields.push(`<div class="gfield"><span class="gfl">Comparison key</span> ${esc(row.comparisonKey)}</div>`);
+
+  const sections = [];
+  if (row.operatingModel) sections.push(`<div class="gsec">Operating model</div>${proseBox(row.operatingModel)}`);
+  const purpose = profile.purpose || profile.what_it_does;
+  if (purpose) sections.push(`<div class="gsec">Purpose</div>${proseBox(analysisText(purpose))}`);
+  if (row.summary) sections.push(`<div class="gsec">${exchangeFindingLabel(row.lifecycle)}</div>${proseBox(row.summary)}`);
+  if (profile.success_factors) sections.push(`<div class="gsec">Success factors</div>${proseBox(analysisText(profile.success_factors))}`);
+  const risks = profile.risks || profile.risk_factors;
+  if (risks) sections.push(`<div class="gsec">Risks</div>${proseBox(analysisText(risks))}`);
+  if (profile.synthesis) sections.push(`<div class="gsec">Research synthesis</div>${proseBox(analysisText(profile.synthesis))}`);
+  if (row.outlook) sections.push(`<div class="gsec">Outlook</div>${proseBox(row.outlook)}`);
+  const qualityIssueText = row.qualityIssues.length
+    ? row.qualityIssues.map(exchangeLabel).join(' · ')
+    : 'No recorded feature gaps';
+  const snapshotDate = row.metricAsOf || String(row.updatedAt || '').slice(0,10) || 'date unresolved';
+  const freshness = row.freshness || {};
+  return `<div class="gexp">${fields.join('')}${sections.join('')}
+    <div class="gsec">Field evidence</div>
+    ${exchangeEvidenceLinks(row, 'operating_model_source_indexes', 'Operating model')}
+    ${exchangeEvidenceLinks(row, 'custody_model_source_indexes', 'Custody')}
+    ${exchangeEvidenceLinks(row, 'product_cohort_source_indexes', 'Product cohort')}
+    ${exchangeTokenEvidence(row)}
+    ${exchangeEvidenceLinks(row, 'metric_source_indexes', 'Metric')}
+    <div class="gsec">Data quality</div>
+    <div class="gfield"><span class="gfl">${esc(row.qualityLabel)}</span> ${esc(qualityIssueText)}</div>
+    <div class="gfield"><span class="gfl">Freshness</span>${esc(freshness.status || 'unknown')} · lifecycle evidence ${esc(freshness.lifecycle_evidence_date || 'date unknown')} · last verified ${esc(freshness.last_verified_at || 'unknown')} · next review ${esc(freshness.next_review_at || 'unknown')}</div>
+    ${srcHtml(row.sources, 'Cited sources: ')}
+    <div class="stampline">Research snapshot ${esc(snapshotDate)} · data quality ${esc(row.qualityLabel)}</div>
+  </div>`;
 }
 function exchangeAnalysisCard(row) {
   const p = row.profile || {};
   const open = state.exchangeAnalysisExpanded === `${row.kind}:${row.lifecycle}:${row.slug}`;
   const token = row.token || {};
-  const tokenSymbol = analysisText(token.symbol || '');
-  const tokenSource = token.source_url
-    ? ` · <a href="${esc(safeUrl(token.source_url))}" target="_blank" rel="noopener noreferrer">token source ↗</a>` : '';
-  const tokenLine = (tokenSymbol
-    ? `${esc(tokenSymbol)} · ${esc(String(token.strategy || 'strategy unresolved').replace(/_/g, ' '))}${token.launch_timing ? ` · ${esc(String(token.launch_timing).replace(/_/g, ' '))}` : ''}`
-    : 'No venue token identified in the cited dossier') + tokenSource;
   const sourcePreview = srcHtml(row.sources.slice(0, 3), 'Cited sources: ');
-  const details = open ? `<div class="gexp">
-    ${row.launched ? `<div class="gfield"><span class="gfl">Launched</span> ${esc(row.launched)}</div>` : ''}
-    <div class="gfield"><span class="gfl">Venue</span> ${esc(String(row.venueType).toUpperCase())} · ${esc(String(row.custodyModel || 'custody unresolved').replace(/_/g, ' '))}${row.primaryChain ? ` · ${esc(row.primaryChain)}` : ''}</div>
-    <div class="gfield"><span class="gfl">Product cohort</span> ${esc(String(row.productCohort).replace(/_/g, ' '))}</div>
-    <div class="gfield"><span class="gfl">Token</span> ${tokenLine}</div>
-    <div class="gfield"><span class="gfl">Metric contract</span> ${esc(row.metricType)} · ${esc(row.metricUnit)} · ${esc(String(row.metricWindow).replace(/_/g, ' '))}${row.metricAsOf ? ` · as of ${esc(row.metricAsOf)}` : ''}</div>
-    ${row.comparisonKey ? `<div class="gfield"><span class="gfl">Comparison key</span> ${esc(row.comparisonKey)}</div>` : ''}
-    ${row.operatingModel ? `<div class="gsec">Operating model</div>${proseBox(row.operatingModel)}` : ''}
-    ${p.purpose || p.what_it_does ? `<div class="gsec">Purpose</div>${proseBox(analysisText(p.purpose || p.what_it_does))}` : ''}
-    ${row.summary ? `<div class="gsec">${row.lifecycle === 'successful' ? 'Why it succeeded' : row.lifecycle === 'mid' ? 'Why it is stuck' : 'What happened'}</div>${proseBox(row.summary)}` : ''}
-    ${p.success_factors ? `<div class="gsec">Success factors</div>${proseBox(analysisText(p.success_factors))}` : ''}
-    ${p.risks || p.risk_factors ? `<div class="gsec">Risks</div>${proseBox(analysisText(p.risks || p.risk_factors))}` : ''}
-    ${p.synthesis ? `<div class="gsec">Research synthesis</div>${proseBox(analysisText(p.synthesis))}` : ''}
-    ${row.outlook ? `<div class="gsec">Outlook</div>${proseBox(row.outlook)}` : ''}
-    <div class="gsec">Data quality</div>
-    <div class="gfield"><span class="gfl">${esc(row.qualityLabel)}</span> ${row.qualityIssues.length ? esc(row.qualityIssues.map((issue) => issue.replace(/_/g, ' ')).join(' · ')) : 'No recorded feature gaps'}</div>
-    ${srcHtml(row.sources, 'Cited sources: ')}
-    <div class="stampline">Research snapshot ${esc(row.metricAsOf || String(row.updatedAt || '').slice(0,10) || 'date unresolved')} · data quality ${esc(row.qualityLabel)}</div>
-  </div>` : '';
+  const details = open ? exchangeAnalysisDetails(row, p, exchangeTokenLine(token)) : '';
   const metricContext = row.peakMetric != null ? `Peak ${fmtUsd(row.peakMetric)} → ${exchangeMetric(row)}` : exchangeMetric(row);
+  const meta = [row.kind.toUpperCase(), exchangeLabel(row.productCohort)];
+  if (row.primaryChain) meta.push(row.primaryChain);
+  if (row.launched) meta.push(`launched ${row.launched}`);
+  meta.push(`data quality: ${row.qualityLabel}`);
+  const sourceLabel = row.sources.length === 1 ? 'source' : 'sources';
+  meta.push(`${row.sources.length} ${sourceLabel}`);
   return `<div class="gcard ${open?'open':''}" role="button" tabindex="0" data-exchange-analysis-key="${esc(`${row.kind}:${row.lifecycle}:${row.slug}`)}">
     <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${lifecycleClass(row.lifecycle)}">${esc(lifecycleLabel(row.lifecycle))}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${metricContext}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
-    <div class="gmeta">${esc(row.kind.toUpperCase())} · ${esc(String(row.productCohort).replace(/_/g, ' '))}${row.primaryChain ? ` · ${esc(row.primaryChain)}` : ''}${row.launched ? ` · launched ${esc(row.launched)}` : ''} · data quality: ${esc(row.qualityLabel)} · ${row.sources.length} source${row.sources.length===1?'':'s'}</div>
+    <div class="gmeta">${meta.map(esc).join(' · ')}</div>
     ${row.summary ? `<div class="gbody">${esc(row.summary)}</div>` : ''}
     <div class="analysis-src-preview">${sourcePreview || '<div class="asrc">No cited sources published for this row.</div>'}</div>
     ${details}<div class="gexpand">${open?'Hide dossier ▲':'Full dossier ▾'}</div>
@@ -974,16 +1052,20 @@ function exchangeTrendSummary(summary, label) {
   const token = summary.tokenByLifecycle || {};
   const tokenParts = ['successful','mid','dead']
     .filter((key) => token[key] && token[key].total)
-    .map((key) => `${key}: ${token[key].launched}/${token[key].total}`);
+    .map((key) => `${key}: ${token[key].documentedLaunched}/${token[key].total} documented; ${token[key].unverifiedLaunched} unverified`);
   const outcomeText = (counts = {}) => ['successful','mid','dead']
     .filter((key) => counts[key])
     .map((key) => `${counts[key]} ${key}`)
     .join('/');
   const productParts = (summary.productCohorts || []).slice(0, 4)
-    .map((cohort) => `${cohort.productCohort.replace(/_/g, ' ')}: ${cohort.count} (${outcomeText(cohort.lifecycleCounts)})`);
+    .map((cohort) => `${exchangeLabel(cohort.productCohort)}: ${cohort.count} (${outcomeText(cohort.lifecycleCounts)})`);
   const chainParts = (summary.primaryChainContexts || []).slice(0, 4)
     .map((chain) => `${chain.primaryChain}: ${chain.count} (${outcomeText(chain.lifecycleCounts)})`);
-  return `<div class="analysis-note"><b>${esc(label)} cohort:</b> ${summary.count || 0} cases · ${lifecycle.successful || 0} successful · ${lifecycle.mid || 0} mid · ${lifecycle.dead || 0} dead · ${quality.verified || 0} verified / ${quality.partial || 0} partial / ${quality.limited || 0} limited. ${summary.comparisonGroups?.length || 0} strict metric groups. Documented token launches by outcome: ${esc(tokenParts.join(', ') || 'none')}.<br/><b>Largest product cohorts:</b> ${esc(productParts.join(' · ') || 'none')}.${chainParts.length ? `<br/><b>Primary-chain context (descriptive, not causal):</b> ${esc(chainParts.join(' · '))}.` : ''}</div>`;
+  let chainContext = '';
+  if (chainParts.length) {
+    chainContext = `<br/><b>Primary-chain context (descriptive, not causal):</b> ${esc(chainParts.join(' · '))}.`;
+  }
+  return `<div class="analysis-note"><b>${esc(label)} cohort:</b> ${summary.count || 0} cases · ${lifecycle.successful || 0} successful · ${lifecycle.mid || 0} mid · ${lifecycle.dead || 0} dead · ${quality.verified || 0} verified / ${quality.partial || 0} partial / ${quality.limited || 0} limited. ${summary.comparisonGroups?.length || 0} strict metric groups. Token evidence by outcome: ${esc(tokenParts.join(', ') || 'none')}.<br/><b>Largest product cohorts:</b> ${esc(productParts.join(' · ') || 'none')}.${chainContext}</div>`;
 }
 function renderExchangeAnalysis() {
   const el = document.getElementById('exchangeanalysisview');
@@ -1015,7 +1097,8 @@ function renderExchangeAnalysis() {
   const errors = state.exchangeAnalysisErrors.length
     ? `<div class="analysis-note">Some cohorts could not be loaded: ${esc(state.exchangeAnalysisErrors.join(', '))}. Available cited dossiers are shown below.</div>` : '';
   const cited = rows.filter((row) => row.sources.length).length;
-  const cohorts = [...new Set(rows.map((row) => row.productCohort))].sort();
+  const cohorts = [...new Set(rows.map((row) => row.productCohort))]
+    .sort((a, b) => a.localeCompare(b));
   el.innerHTML = `${head}${errors}
     <div class="gstats">${gstat(rows.filter(r=>r.kind==='dex').length, 'DEX cases')}${gstat(rows.filter(r=>r.kind==='cex').length, 'CEX cases')}${gstat(rows.filter(r=>r.qualityLabel==='verified').length, 'verified')}${gstat(rows.filter(r=>r.qualityLabel==='partial').length, 'partial')}</div>
     <div class="analysis-note">${cited} of ${rows.length} dossiers expose citations. Comparison requires the same venue kind, product cohort, metric type, unit, and window. Spot, routed, perpetual, TVL, loss, daily, and quarterly measures are never added together.</div>
@@ -1037,11 +1120,14 @@ function renderExchangeAnalysis() {
       <label class="muted" for="exchangeAnalysisCohort">Cohort</label>
       <select id="exchangeAnalysisCohort" class="analysis-select">
         <option value="all">All product cohorts</option>
-        ${cohorts.map((cohort) => `<option value="${esc(cohort)}"${state.exchangeAnalysisCohort===cohort?' selected':''}>${esc(cohort.replace(/_/g, ' '))}</option>`).join('')}
+        ${cohorts.map((cohort) => exchangeOption(cohort, exchangeLabel(cohort), state.exchangeAnalysisCohort === cohort)).join('')}
       </select>
       <label class="muted" for="exchangeAnalysisQuality">Quality</label>
       <select id="exchangeAnalysisQuality" class="analysis-select">
-        ${['all','verified','partial','limited'].map((quality) => `<option value="${quality}"${state.exchangeAnalysisQuality===quality?' selected':''}>${quality === 'all' ? 'All quality labels' : quality}</option>`).join('')}
+        ${['all','verified','partial','limited'].map((quality) => {
+          const label = quality === 'all' ? 'All quality labels' : quality;
+          return exchangeOption(quality, label, state.exchangeAnalysisQuality === quality);
+        }).join('')}
       </select>
       <span class="analysis-spacer"></span>
       <label class="muted" for="exchangeAnalysisSort">Sort</label>

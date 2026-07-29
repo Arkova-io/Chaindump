@@ -23,14 +23,20 @@ function row(overrides = {}) {
     feature_token_symbol: 'UNI',
     feature_token_launch_timing: 'post_product',
     feature_token_strategy: 'governance',
+    feature_token_source_url: 'https://blog.uniswap.org/uni',
     feature_metric_type: 'spot_volume_24h',
     feature_metric_unit: 'usd',
     feature_metric_window: 'rolling_24h',
     feature_metric_as_of: '2026-07-29',
+    feature_metric_observed_at: null,
     feature_comparability_key: 'dex|spot_amm|spot_volume_24h|usd|rolling_24h',
     feature_evidence: '{"source_count":1}',
     feature_quality_label: 'partial',
     feature_quality_issues: '["single_source_case"]',
+    feature_lifecycle_evidence_date: null,
+    feature_last_verified_at: '2026-07-29',
+    feature_next_review_at: '2026-08-05',
+    feature_freshness_status: 'unknown',
     ...overrides,
   };
 }
@@ -42,15 +48,25 @@ describe('normalizeExchangeCase', () => {
       operating_model: 'Spot AMM',
       product_cohort: 'spot_amm',
       custody_model: 'non_custodial',
-      token: { status: 'launched', symbol: 'UNI', launch_timing: 'post_product' },
+      token: {
+        status: 'launched', symbol: 'UNI', launch_timing: 'post_product',
+        evidence_level: 'documented',
+      },
       metric: {
         type: 'spot_volume_24h',
         unit: 'usd',
         window: 'rolling_24h',
         as_of: '2026-07-29',
+        observed_at: null,
       },
       evidence: { source_count: 1 },
       data_quality: { label: 'partial', issues: ['single_source_case'] },
+      freshness: {
+        lifecycle_evidence_date: null,
+        last_verified_at: '2026-07-29',
+        next_review_at: '2026-08-05',
+        status: 'unknown',
+      },
     });
     expect(normalized.sources).toHaveLength(1);
   });
@@ -111,6 +127,10 @@ describe('summarizeExchangeCases', () => {
     expect(summary.tokenStrategies[0]).toMatchObject({
       tokenStrategy: 'governance',
       lifecycleCounts: { successful: 1 },
+    });
+    expect(summary.tokenByLifecycle.successful).toMatchObject({
+      documentedLaunched: 1,
+      unverifiedLaunched: 0,
     });
   });
 

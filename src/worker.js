@@ -1718,10 +1718,15 @@ app.get('/api/exchange-analysis', wrap(async (req, res) => {
               f.metric_unit AS feature_metric_unit,
               f.metric_window AS feature_metric_window,
               f.metric_as_of AS feature_metric_as_of,
+              f.metric_observed_at AS feature_metric_observed_at,
               f.comparability_key AS feature_comparability_key,
               f.evidence AS feature_evidence,
               f.quality_label AS feature_quality_label,
-              f.quality_issues AS feature_quality_issues
+              f.quality_issues AS feature_quality_issues,
+              f.lifecycle_evidence_date AS feature_lifecycle_evidence_date,
+              f.last_verified_at AS feature_last_verified_at,
+              f.next_review_at AS feature_next_review_at,
+              f.freshness_status AS feature_freshness_status
        FROM lifecycle_cases c
        LEFT JOIN exchange_case_features f
          ON f.kind = c.kind AND f.slug = c.slug AND f.lifecycle = c.lifecycle
@@ -1738,8 +1743,10 @@ app.get('/api/exchange-analysis', wrap(async (req, res) => {
       cases,
       count: cases.length,
       available: {
-        productCohorts: [...new Set(allCases.map((row) => row.analysis.product_cohort))].sort(),
-        qualityLabels: [...new Set(allCases.map((row) => row.analysis.data_quality.label))].sort(),
+        productCohorts: [...new Set(allCases.map((row) => row.analysis.product_cohort))]
+          .sort((a, b) => a.localeCompare(b)),
+        qualityLabels: [...new Set(allCases.map((row) => row.analysis.data_quality.label))]
+          .sort((a, b) => a.localeCompare(b)),
       },
       summary: summarizeExchangeCases(cases, kind),
     });

@@ -60,7 +60,10 @@ describe('exchange_case_features migration', () => {
           OR metric_window = ''
           OR metric_as_of NOT GLOB '????-??-??'
           OR NOT json_valid(evidence)
-          OR NOT json_valid(quality_issues)`,
+          OR NOT json_valid(quality_issues)
+          OR last_verified_at NOT GLOB '????-??-??'
+          OR next_review_at NOT GLOB '????-??-??'
+          OR freshness_status NOT IN ('current', 'review_due', 'stale', 'unknown')`,
     ).get();
     expect(gaps.count).toBe(0);
     db.close();
@@ -126,6 +129,59 @@ describe('exchange_case_features migration', () => {
        WHERE metric_type = 'operational_status'`,
     ).all();
     expect(statusUnits).toEqual([{ metric_unit: 'status' }]);
+    db.close();
+  });
+
+  it('maps only exact successful-case metric evidence and never infers legacy evidence from source order', () => {
+    const db = migratedDb();
+    const rows = db.prepare(
+      `SELECT f.slug, f.lifecycle, f.evidence, c.sources, c.profile
+       FROM exchange_case_features f
+       INNER JOIN (
+         SELECT kind, slug, 'dead' AS lifecycle, sources, profile FROM dead_exchanges
+         UNION ALL
+         SELECT kind, slug, 'mid', sources, profile FROM mid_exchanges
+         UNION ALL
+         SELECT type AS kind, slug, 'successful', sources, profile FROM successful_exchanges
+       ) c ON c.kind = f.kind AND c.slug = f.slug AND c.lifecycle = f.lifecycle
+       WHERE f.kind = 'dex'
+         AND f.slug IN ('kyberswap', 'sushiswap', 'dydx', 'hyperliquid', 'uniswap')
+       ORDER BY f.slug`,
+    ).all();
+    expect(rows).toHaveLength(5);
+    for (const row of rows) {
+      const sources = JSON.parse(row.sources);
+      const indexes = JSON.parse(row.evidence).metric_source_indexes;
+      if (row.lifecycle === 'successful') {
+        expect(indexes).toHaveLength(1);
+        const mappedUrl = sources[indexes[0]].url;
+        expect(mappedUrl).toBe(JSON.parse(row.profile).metrics.source_url);
+      } else {
+        expect(indexes).toEqual([]);
+      }
+    }
+    expect(JSON.parse(rows.find((row) => row.slug === 'dydx').evidence).metric_source_indexes).toEqual([2]);
+    expect(JSON.parse(rows.find((row) => row.slug === 'hyperliquid').evidence).metric_source_indexes).toEqual([2]);
+    expect(JSON.parse(rows.find((row) => row.slug === 'uniswap').evidence).metric_source_indexes).toEqual([1]);
+    db.close();
+  });
+
+  it('keeps uncited token and lifecycle claims partial and exposes their review state', () => {
+    const db = migratedDb();
+    const uncited = db.prepare(
+      `SELECT COUNT(*) AS count
+       FROM exchange_case_features
+       WHERE token_status = 'launched' AND token_source_url IS NULL`,
+    ).get().count;
+    const wronglyVerified = db.prepare(
+      `SELECT COUNT(*) AS count
+       FROM exchange_case_features
+       WHERE quality_label = 'verified'
+          OR freshness_status != 'unknown'
+          OR lifecycle_evidence_date IS NOT NULL`,
+    ).get().count;
+    expect(uncited).toBeGreaterThan(0);
+    expect(wronglyVerified).toBe(0);
     db.close();
   });
 });

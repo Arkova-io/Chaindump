@@ -27,8 +27,11 @@ The primary key is:
 
 ## Token-decision features
 
-`token_status` distinguishes a documented launch from `not_identified`. The
-latter is deliberately not the stronger claim that a venue never had a token.
+`token_status` records the research assertion `launched` or `not_identified`.
+Only a launch with `token_source_url` is counted as documented. An uncited
+launch assertion remains visible as unverified and forces partial quality. The
+`not_identified` value is deliberately not the stronger claim that a venue
+never had a token.
 `token_launch_timing` records whether launch was near product launch, after an
 operating product existed, or unresolved. `token_strategy` describes the
 mechanism without treating token launch as a causal success factor.
@@ -38,8 +41,10 @@ lifecycle. No success probability is inferred from this observational cohort.
 
 ## Metric provenance and comparability
 
-Every row carries explicit `metric_type`, `metric_unit`, `metric_window`, and
-`metric_as_of`. A machine-readable comparison key is:
+Every row carries explicit `metric_type`, `metric_unit`, `metric_window`,
+`metric_as_of`, and nullable `metric_observed_at`. A rolling observation without
+an exact retrieval timestamp is partial because a mutable API cannot reproduce
+the historical value from a date alone. A machine-readable comparison key is:
 
 `kind | product_cohort | metric_type | metric_unit | metric_window`
 
@@ -62,14 +67,20 @@ In particular:
 ## Evidence and data quality
 
 `evidence` points back to the ordered citation list on the underlying lifecycle
-record. A token-specific URL is stored separately when one was verified.
+record. Metric indexes are derived from the exact `profile.metrics.source_url`
+for successful cases. Legacy metric indexes remain empty until a reviewer maps
+the precise source; source order is never treated as field-level evidence.
+Operating-model indexes remain empty until a field-specific citation is mapped;
+the UI displays this gap rather than treating citation count as field coverage.
+A token-specific URL is stored separately when one was verified.
 `source_replacements` records an audited live URL for a retired citation without
 silently rewriting the historical lifecycle row. The API applies that mapping
 before publishing citations and leaves the replacement visible in `evidence`.
 
 Quality labels are:
 
-- `verified`: at least two case sources and no recorded feature gap;
+- `verified`: all required operating-model, metric, token, lifecycle, and
+  freshness evidence is field-mapped;
 - `partial`: at least one case source, with one or more explicit gaps;
 - `limited`: missing normalized evidence or a missing feature record.
 
@@ -77,12 +88,22 @@ Quality labels are:
 non-field-specific token citation, and scoped-product caveats remain visible
 instead of being silently imputed.
 
+## Lifecycle freshness
+
+Lifecycle evidence date is distinct from access and review dates. Each case
+exposes `lifecycle_evidence_date`, `last_verified_at`, `next_review_at`, and
+`freshness_status`. The initial cohort leaves lifecycle evidence dates and
+freshness unknown because historical source publication dates have not yet been
+normalized. Those records are partial, never current by inference, and queued
+for review. Future agent proposals remain unpublished until a human promotes
+field-mapped evidence.
+
 ## API trend envelope
 
 `GET /api/exchange-analysis?kind=dex|cex` returns one kind at a time. Its
-`summary` contains lifecycle and quality counts, documented token launches by
-lifecycle, product-cohort outcome counts, primary-chain context for DEXs, token
-strategy counts, and strict comparison-group membership.
+`summary` contains lifecycle and quality counts, documented versus unverified
+token launches by lifecycle, product-cohort outcome counts, primary-chain
+context for DEXs, token strategy counts, and strict comparison-group membership.
 
 These are descriptive cohort views. The response contains no `totalMetric`,
 does not estimate a pooled success rate across heterogeneous products, and does
