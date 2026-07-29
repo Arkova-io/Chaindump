@@ -1,5 +1,15 @@
 import { describe, it, expect } from "vitest";
-import { gateProposal, sanitizeSlug, buildRecord } from "../src/proposal.js";
+import {
+  DIRECTLY_PROMOTABLE_DATASETS,
+  PROPOSAL_DATASETS,
+  RESEARCH_CANDIDATE_DATASETS,
+  gateProposal,
+  sanitizeSlug,
+  buildRecord,
+  isDirectlyPromotableDataset,
+  isProposalDataset,
+  isResearchCandidateDataset,
+} from "../src/proposal.js";
 
 // The desk NEVER publishes directly — it queues proposals for human review.
 // gateProposal is the safety rule (must match the Worker's server-side gate):
@@ -21,6 +31,40 @@ describe("gateProposal", () => {
     expect(gateProposal({ names_individuals: false, confidence: NaN })).toBe(true);
     expect(gateProposal({ names_individuals: false, confidence: undefined })).toBe(true);
     expect(gateProposal({ names_individuals: false })).toBe(true);
+  });
+  it("always forces review for every cross-vertical analysis candidate", () => {
+    for (const dataset of RESEARCH_CANDIDATE_DATASETS) {
+      expect(gateProposal({ dataset, names_individuals: false, confidence: 1 })).toBe(true);
+    }
+  });
+});
+
+describe("proposal dataset safety contract", () => {
+  it("allows all four forensic analysis verticals in the proposal queue", () => {
+    expect(RESEARCH_CANDIDATE_DATASETS).toEqual([
+      "blockchain_analysis_candidate",
+      "exchange_analysis_candidate",
+      "casino_analysis_candidate",
+      "nft_lifecycle_candidate",
+    ]);
+    for (const dataset of RESEARCH_CANDIDATE_DATASETS) {
+      expect(PROPOSAL_DATASETS).toContain(dataset);
+      expect(isProposalDataset(dataset)).toBe(true);
+      expect(isResearchCandidateDataset(dataset)).toBe(true);
+    }
+  });
+  it("never classifies complex analysis candidates as directly promotable", () => {
+    for (const dataset of RESEARCH_CANDIDATE_DATASETS) {
+      expect(isDirectlyPromotableDataset(dataset)).toBe(false);
+    }
+    expect(DIRECTLY_PROMOTABLE_DATASETS).toEqual([
+      "scam_intel",
+      "dead_chains",
+      "mid_chains",
+      "risk_signals",
+    ]);
+    expect(isDirectlyPromotableDataset("dead_chains")).toBe(true);
+    expect(isProposalDataset("not-a-real-dataset")).toBe(false);
   });
 });
 
@@ -52,6 +96,13 @@ describe("buildRecord", () => {
   });
   it("high-risk record is flagged for review", () => {
     const rec = buildRecord({ slug: "y", names_individuals: true, confidence: 0.99 }, "2026-07-14T00:00:00.000Z");
+    expect(rec.needs_human_review).toBe(true);
+  });
+  it("stamps a high-confidence lifecycle candidate as review-required", () => {
+    const rec = buildRecord(
+      { dataset: "nft_lifecycle_candidate", slug: "azuki-lifecycle", names_individuals: false, confidence: 1 },
+      "2026-07-29T00:00:00.000Z"
+    );
     expect(rec.needs_human_review).toBe(true);
   });
 });
