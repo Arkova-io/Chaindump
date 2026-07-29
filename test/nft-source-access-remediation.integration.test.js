@@ -4,6 +4,8 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { unstable_splitSqlQuery } from 'wrangler';
 import { buildNftLifecycleAnalysis } from '../src/lib/nft-lifecycle-analysis.js';
+import { normalizePublicationSource } from '../src/lib/publication-depth.mjs';
+import { prepareRemediationDocument } from '../scripts/prepare-nft-source-access-remediation.mjs';
 import {
   buildRemediationRows,
   renderNftSourceAccessRemediationMigration,
@@ -14,11 +16,13 @@ const document = JSON.parse(readFileSync(
   new URL('../docs/nft-source-access-remediation-wave-2026-07-29.json', import.meta.url),
   'utf8',
 ));
+const remediationMigrationName = '0064_nft_source_access_remediation.sql';
 
-function databaseThroughCurrentMigrations() {
+function databaseThroughCurrentMigrations({ includeRemediation = true } = {}) {
   const database = new DatabaseSync(':memory:');
   for (const file of readdirSync(new URL('../migrations', import.meta.url))
     .filter((name) => /^\d{4}_.+\.sql$/.test(name))
+    .filter((name) => includeRemediation || name !== remediationMigrationName)
     .sort()) {
     database.exec(readFileSync(new URL(`../migrations/${file}`, import.meta.url), 'utf8'));
   }
@@ -62,21 +66,55 @@ let before;
 let after;
 let baselineRows;
 let builtRows;
+let renderedSql;
+let committedSql;
 
 beforeAll(() => {
-  before = databaseThroughCurrentMigrations();
+  before = databaseThroughCurrentMigrations({ includeRemediation: false });
   baselineRows = rows(before);
   builtRows = buildRemediationRows(document, baselineRows);
   after = databaseThroughCurrentMigrations();
-  after.exec(renderNftSourceAccessRemediationMigration(document, rows(after), '0064'));
+  renderedSql = renderNftSourceAccessRemediationMigration(document, baselineRows, '0064');
+  committedSql = readFileSync(
+    new URL(`../migrations/${remediationMigrationName}`, import.meta.url),
+    'utf8',
+  );
 });
 
 describe('NFT source-access remediation wave', () => {
+  it('regenerates the integrated manifest without changing any reviewed evidence value', () => {
+    const accessClass = {
+      accessible: 'access_verified',
+      bot_blocked: 'bot_blocked',
+      unverified: 'unverified',
+      dead: 'dead',
+    };
+    const regenerated = prepareRemediationDocument({
+      schema: 'nft-source-access-remediation-v1',
+      items: document.audit_records.map((record) => ({
+        dossier_slug: record.dossier_slug,
+        source_id: record.source_id,
+        url: record.url,
+        remediation_priority: record.remediation_priority,
+        audit: {
+          access_class: accessClass[record.access_state],
+          checked_at: record.access_checked_at,
+          http_status: record.http_status,
+          final_url: record.final_url,
+          reason: record.verification_note,
+        },
+      })),
+    });
+
+    expect(regenerated).toEqual(document);
+  });
+
   it('preserves the bounded audit result without converting HTTP access into evidence review', () => {
     expect(document.migration_sequence).toMatchObject({
       reserved_after: '0063',
       confirmed_id: '0064',
-      rendered: false,
+      rendered: true,
+      rendered_file: `migrations/${remediationMigrationName}`,
     });
     expect(document.audit_records).toHaveLength(198);
     expect(document.expected.audited_access_states).toEqual({
@@ -107,6 +145,35 @@ describe('NFT source-access remediation wave', () => {
     ))).toBe(true);
   });
 
+  it('keeps all seven reviewed repair sources primary, including SEC-hosted Gemini filings', () => {
+    const repairSources = document.repair_sources.map(({ source: repairSource }) => repairSource);
+    expect(repairSources).toHaveLength(7);
+    for (const repairSource of repairSources) {
+      expect(repairSource).toMatchObject({
+        source_role: 'primary',
+        source_tier: 'B',
+        evidence_reviewed: true,
+        evidence_reviewer: 'codex-research-agent',
+        evidence_reviewed_at: '2026-07-29',
+      });
+      expect(normalizePublicationSource(repairSource)).toMatchObject({
+        role: 'primary',
+        tier: 'T2',
+        evidence_reviewed: true,
+        classification_basis: 'declared_metadata',
+      });
+    }
+
+    const geminiFilings = repairSources.filter(({ independence_group: group }) => (
+      group === 'gemini_issuer'
+    ));
+    expect(geminiFilings).toHaveLength(3);
+    expect(geminiFilings.every(({ url }) => url.startsWith('https://www.sec.gov/Archives/edgar/')))
+      .toBe(true);
+    expect(geminiFilings.map(normalizePublicationSource).every(({ role }) => role === 'primary'))
+      .toBe(true);
+  });
+
   it('patches every audited source and adds seven separately inspected repair sources', () => {
     expect(builtRows).toHaveLength(49);
     const allSources = builtRows.flatMap(({ sources }) => sources);
@@ -121,6 +188,21 @@ describe('NFT source-access remediation wave', () => {
     expect(stateCounts.bot_blocked).toHaveLength(21);
     expect(stateCounts.unverified).toHaveLength(5);
     expect(stateCounts.dead).toHaveLength(1);
+  });
+
+  it('preserves editorial verification notes while recording retrieval notes separately', () => {
+    const beforeSource = source(before, 'f1-delta-time', 'f1dt-closure');
+    const afterSource = source(after, 'f1-delta-time', 'f1dt-closure');
+    expect(beforeSource.verification_note).toContain('Operator notice confirms cessation');
+    expect(afterSource.verification_note).toBe(beforeSource.verification_note);
+    expect(afterSource.access_note).toBe(
+      'HTTP 200; content reachable (claim support not re-verified)',
+    );
+    expect(afterSource).toMatchObject({
+      access_state: 'accessible',
+      access_checked_at: '2026-07-29',
+      access_http_status: 200,
+    });
   });
 
   it('keeps all six broken originals visible and remaps every published reference', () => {
@@ -170,7 +252,7 @@ describe('NFT source-access remediation wave', () => {
     const beforeAnalysis = buildNftLifecycleAnalysis(analysisRows(before));
     const afterAnalysis = buildNftLifecycleAnalysis(analysisRows(after));
     expect(beforeAnalysis.coverage).toMatchObject({
-      source_records: 226,
+      source_records: 227,
       source_records_access_confirmed: 0,
       field_claims: 440,
       field_claims_access_anchored: 0,
@@ -181,9 +263,9 @@ describe('NFT source-access remediation wave', () => {
     expect(beforeAnalysis.evidenceWindow.source_access_checked_through).toBeNull();
 
     expect(afterAnalysis.coverage).toMatchObject({
-      source_records: 233,
+      source_records: 234,
       source_records_access_confirmed: 178,
-      distinct_source_urls: 228,
+      distinct_source_urls: 229,
       field_claims: 440,
       field_claims_access_anchored: 372,
       forensic_sections_total: 457,
@@ -197,21 +279,24 @@ describe('NFT source-access remediation wave', () => {
       { key: 'redirected_to_homepage', count: 2 },
       { key: 'dead', count: 1 },
       { key: 'not_found_by_raw_fetch', count: 1 },
+      { key: 'resolving', count: 1 },
       { key: 'service_unavailable', count: 1 },
       { key: 'tls_fetch_failed', count: 1 },
     ]);
     expect(afterAnalysis.evidenceWindow.source_access_checked_through).toBe('2026-07-29');
   });
 
-  it('does not reserve a numbered migration file before sequencing is confirmed', () => {
+  it('commits the contiguous migration exactly as rendered from the reviewed manifest', () => {
     const migrationNames = readdirSync(new URL('../migrations', import.meta.url));
-    expect(migrationNames.some((name) => name.includes('nft_source_access_remediation'))).toBe(false);
+    expect(migrationNames.filter((name) => name.includes('nft_source_access_remediation')))
+      .toEqual([remediationMigrationName]);
+    expect(committedSql).toBe(renderedSql);
     expect(() => renderNftSourceAccessRemediationMigration(document, baselineRows))
       .toThrow('confirmed four-digit migration id');
   });
 
   it('renders within Cloudflare D1 authorization and statement-size constraints', () => {
-    const sql = renderNftSourceAccessRemediationMigration(document, baselineRows, '0064');
+    const sql = committedSql;
     const wranglerStatements = unstable_splitSqlQuery(sql);
     expect(sql).not.toMatch(/\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i);
     expect(sql).toContain('CREATE TABLE nft_source_remediation_0064');

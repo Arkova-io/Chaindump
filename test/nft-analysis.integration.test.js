@@ -71,6 +71,7 @@ describe('NFT / Ordinals citation-ready surface', () => {
     expect(html).toContain('source.verification_note');
     expect(html).toContain('access ${esc(access)}');
     expect(html).toContain('access checked ${esc(source.access_checked_at)}');
+    expect(html).toContain('retrieval note: ${esc(source.access_note)}');
     expect(html).toContain("source.access_state || 'not recorded'");
     expect(html).not.toContain("source.access_state || (verified ? 'verified' : 'not recorded')");
     expect(html).toContain('evidence_scope: source.evidence_scope');
@@ -83,7 +84,7 @@ describe('NFT / Ordinals citation-ready surface', () => {
     expect(html).toContain('Aggregate evidence:');
     expect(html).toContain('sources explicitly accessible');
     expect(html).toContain('field claims access-anchored');
-    expect(html).toContain('causal sections access-anchored');
+    expect(html).toContain('forensic sections access-anchored');
     expect(html).toContain('sources not access-confirmed');
     expect(html).toContain('Ledger matching and HTTP access prove linkage and reachability—not claim truth.');
     expect(html).not.toContain('Across 16 notable collections');

@@ -149,7 +149,7 @@ function repairBaycProfile(profile) {
 function validateDocument(document) {
   if (document?.schema !== 'chaindump-nft-source-remediation-v1') throw new Error('Unexpected remediation schema');
   if (!ISO_DAY.test(document.research_as_of || '')) throw new Error('Remediation requires research_as_of');
-  if (document.migration_sequence?.rendered !== false) throw new Error('Source document must remain unrendered until migration sequence is confirmed');
+  if (document.migration_sequence?.rendered !== true) throw new Error('Source document must record the confirmed rendered migration');
   if (document.migration_sequence?.confirmed_id !== '0064') throw new Error('Remediation migration sequence must be confirmed as 0064');
   if (document.audit_records?.length !== 198) throw new Error('Remediation must cover 198 audited source records');
   const counts = countBy(document.audit_records, ({ access_state: state }) => state);
@@ -190,7 +190,7 @@ function patchSource(source, record) {
     access_checked_at: record.access_checked_at,
     access_http_status: record.http_status,
     access_final_url: record.final_url,
-    verification_note: record.verification_note,
+    access_note: record.verification_note,
   };
   return { ...source, ...patch };
 }

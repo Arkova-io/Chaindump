@@ -830,6 +830,7 @@ function sourceMetadataHtml(source) {
   if (source.last_verified_at) metadata.push(`verified ${esc(source.last_verified_at)}`);
   if (source.access_state) metadata.push(`access ${esc(String(source.access_state).replaceAll('_', ' '))}`);
   if (source.access_checked_at) metadata.push(`access checked ${esc(source.access_checked_at)}`);
+  if (source.access_note) metadata.push(`retrieval note: ${esc(source.access_note)}`);
   if (source.verification_note) metadata.push(esc(source.verification_note));
   return metadata.length ? `<span class="muted"> · ${metadata.join(' · ')}</span>` : '';
 }
@@ -878,6 +879,9 @@ function nftEvidenceHtml(profile, sources, freshnessState, publicationDepth = nu
         : '';
       const verification = verified ? `verified ${esc(verified)}` : 'verification not recorded';
       const note = source.verification_note ? ` · ${esc(source.verification_note)}` : '';
+      const accessNote = source.access_note
+        ? ` · retrieval note: ${esc(source.access_note)}`
+        : '';
       const publicationState = evidenceStatusParts({ ...source, registered: true });
       const publication = publicationState.length
         ? ` · ${publicationState.map(esc).join(' · ')}`
@@ -885,7 +889,7 @@ function nftEvidenceHtml(profile, sources, freshnessState, publicationDepth = nu
       const today = new Date().toISOString().slice(0, 10);
       const stale = source.stale === true || (source.evidence_scope === 'current_state' && source.stale_after && today > source.stale_after);
       const freshness = typeof source.stale === 'boolean' ? (stale ? 'STALE' : 'fresh') : 'freshness not rated';
-      return `<a href="${esc(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title || id)} ↗</a><span class="muted"> · source ${esc(sourceDate)} · inspected ${esc(inspected)} · ${verification} · access ${esc(access)}${accessChecked} · ${esc(freshness)}${publication}${note}</span>`;
+      return `<a href="${esc(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title || id)} ↗</a><span class="muted"> · source ${esc(sourceDate)} · inspected ${esc(inspected)} · ${verification} · access ${esc(access)}${accessChecked} · ${esc(freshness)}${publication}${accessNote}${note}</span>`;
     }).filter(Boolean).join(' · ');
     if (!links) return '';
     let value = item.value;
@@ -3617,7 +3621,7 @@ function nftAggregateAnalysisHtml(data) {
     <div class="gstats">
       ${gstat(accessibleSources, 'sources explicitly accessible')}
       ${gstat(`${Number(coverage.field_claims_access_anchored || 0)} / ${Number(coverage.field_claims || 0)}`, 'field claims access-anchored')}
-      ${gstat(`${Number(coverage.forensic_sections_access_anchored || 0)} / ${Number(coverage.forensic_sections_total || 0)}`, 'causal sections access-anchored')}
+      ${gstat(`${Number(coverage.forensic_sections_access_anchored || 0)} / ${Number(coverage.forensic_sections_total || 0)}`, 'forensic sections access-anchored')}
       ${gstat(limitedSources, 'sources not access-confirmed')}
     </div>
     <div class="gsec">Chain and lifecycle association</div>
@@ -3628,7 +3632,7 @@ function nftAggregateAnalysisHtml(data) {
     <div class="gsec">Decision depth and causal boundary</div>
     <div class="gbody">${Number(coverage.forensic_dossiers || 0)} of ${total} dossiers have a normalized causal map containing ${Number(coverage.strategic_choices || 0)} documented strategic choices, ${Number(coverage.watch_signals || 0)} watch/falsifier signals, and ${Number(coverage.material_unknowns || 0)} explicit unknowns. Schema-declared outcome confidence is ${Number(confidence.high || 0)} high and ${Number(confidence.medium || 0)} medium; schema-declared “why” confidence is ${Number(whyConfidence.high || 0)} high and ${Number(whyConfidence.medium || 0)} medium. The claim-support audit above remains controlling: unsupported conclusions are withheld in each dossier and these counts are not independent verification or experimental causal estimates.</div>
     <div class="gsec">Evidence contract and freshness</div>
-    <div class="gbody">${Number(coverage.field_cited || 0)} of ${total} dossiers pass the field-citation structure check, covering ${Number(coverage.field_claims || 0)} field claims and ${Number(coverage.source_records || 0)} source records (${Number(coverage.distinct_source_urls || 0)} distinct URLs). Field-cited is not the same as editor reviewed. Publication depth: ${Number(coverage.field_claims_access_anchored || 0)} of ${Number(coverage.field_claims || 0)} field claims and ${Number(coverage.forensic_sections_access_anchored || 0)} of ${Number(coverage.forensic_sections_total || 0)} causal sections cite at least one explicitly accessible source. ${Number(coverage.forensic_references_ledger_matched || 0)} of ${Number(coverage.forensic_references_total || 0)} causal references match a source ID or URL in the published ledgers; ${Number(coverage.forensic_references_access_anchored || 0)} of those references point to an explicitly accessible source. Ledger matching and HTTP access prove linkage and reachability—not claim truth. Current review state: ${Number(review.current || 0)} current, ${Number(review.review_due || 0)} review due, ${Number(review.withheld || 0)} stale/withheld, ${Number(review.legacy || 0)} legacy. Published lifecycle-status evidence spans ${esc(analysis.evidenceWindow?.oldest_lifecycle_status_as_of || 'unknown')} to ${esc(analysis.evidenceWindow?.newest_lifecycle_status_as_of || 'unknown')}; forensic outcome summaries span ${esc(analysis.evidenceWindow?.oldest_forensic_outcome_as_of || 'unknown')} to ${esc(analysis.evidenceWindow?.newest_forensic_outcome_as_of || 'unknown')}; lifecycle dossiers were reviewed through ${esc(analysis.evidenceWindow?.lifecycle_reviewed_through || 'unknown')}; source records were inspected through ${esc(analysis.evidenceWindow?.source_inspected_through || 'unknown')}. ${accessCheckedThrough ? `Explicit successful source access was checked through ${esc(accessCheckedThrough)}.` : 'No source in this cohort records an explicit successful-access check, so an access-checked-through date is withheld.'} Recorded source access states: ${esc(sourceAccess || 'not recorded')}.</div>
+    <div class="gbody">${Number(coverage.field_cited || 0)} of ${total} dossiers pass the field-citation structure check, covering ${Number(coverage.field_claims || 0)} field claims and ${Number(coverage.source_records || 0)} source records (${Number(coverage.distinct_source_urls || 0)} distinct URLs). Field-cited is not the same as editor reviewed. Publication depth: ${Number(coverage.field_claims_access_anchored || 0)} of ${Number(coverage.field_claims || 0)} field claims and ${Number(coverage.forensic_sections_access_anchored || 0)} of ${Number(coverage.forensic_sections_total || 0)} forensic sections cite at least one explicitly accessible source. ${Number(coverage.forensic_references_ledger_matched || 0)} of ${Number(coverage.forensic_references_total || 0)} causal references match a source ID or URL in the published ledgers; ${Number(coverage.forensic_references_access_anchored || 0)} of those references point to an explicitly accessible source. Ledger matching and HTTP access prove linkage and reachability—not claim truth. Current review state: ${Number(review.current || 0)} current, ${Number(review.review_due || 0)} review due, ${Number(review.withheld || 0)} stale/withheld, ${Number(review.legacy || 0)} legacy. Published lifecycle-status evidence spans ${esc(analysis.evidenceWindow?.oldest_lifecycle_status_as_of || 'unknown')} to ${esc(analysis.evidenceWindow?.newest_lifecycle_status_as_of || 'unknown')}; forensic outcome summaries span ${esc(analysis.evidenceWindow?.oldest_forensic_outcome_as_of || 'unknown')} to ${esc(analysis.evidenceWindow?.newest_forensic_outcome_as_of || 'unknown')}; lifecycle dossiers were reviewed through ${esc(analysis.evidenceWindow?.lifecycle_reviewed_through || 'unknown')}; source records were inspected through ${esc(analysis.evidenceWindow?.source_inspected_through || 'unknown')}. ${accessCheckedThrough ? `Explicit successful source access was checked through ${esc(accessCheckedThrough)}.` : 'No source in this cohort records an explicit successful-access check, so an access-checked-through date is withheld.'} Recorded source access states: ${esc(sourceAccess || 'not recorded')}.</div>
     <div class="gsec">What this dataset does not yet prove</div><ul class="evlist">${limitations}</ul>
     <div class="gsec">What would change the aggregate read</div><ul class="evlist">${falsifiers}</ul>
     <div class="gsec">Cited dossier anchors</div>

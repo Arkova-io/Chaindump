@@ -4,8 +4,9 @@
   "migration_sequence": {
     "reserved_after": "0063",
     "confirmed_id": "0064",
-    "rendered": false,
-    "note": "Sequence 0064 is confirmed, but the repository migration must not be committed until 0063 is merged and the renderer is rerun on that baseline."
+    "rendered": true,
+    "rendered_file": "migrations/0064_nft_source_access_remediation.sql",
+    "note": "Migration 0064 was rendered from this manifest after 0063 merged; renderer parity and a fresh persisted Wrangler replay through 0064 are required release gates."
   },
   "evidence_boundary": [
     "accessible plus access_checked_at means an HTTP 2xx response was observed on 2026-07-29; it does not mark the evidence reviewed and does not independently verify every claim attributed to the page",
