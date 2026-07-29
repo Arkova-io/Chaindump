@@ -1,0 +1,855 @@
+[
+  {
+    "chain": "Katana",
+    "source_catalog": {
+      "coverage": {"title": "Chaindump top-50 chain coverage snapshot", "url": "https://chaindump.xyz/api/chains"},
+      "launch": {"title": "Katana mainnet launch and incentive announcement", "url": "https://katana.network/blog/katana-mainnet-is-live-with-1-billion-kat-available-to-users-as-incentives-to-bootstrap-the-chain"},
+      "network": {"title": "Katana mainnet network information", "url": "https://docs.katana.network/katana/technical-reference/network-information/"},
+      "overview": {"title": "Katana protocol overview", "url": "https://docs.katana.network/"},
+      "governance": {"title": "Katana governance and security councils", "url": "https://docs.katana.network/katana/core-concepts/governance/"},
+      "tokenomics": {"title": "KAT economic model and allocation", "url": "https://katana.network/blog/the-network-is-katana-the-token-is-kat"},
+      "tge": {"title": "Katana KAT token-generation event", "url": "https://katana.network/blog/the-wait-is-over-katana-tge-is-here"},
+      "token": {"title": "CoinGecko Katana market-data API", "url": "https://api.coingecko.com/api/v3/coins/katana-network-token"},
+      "tvl": {"title": "DefiLlama Katana historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Katana"},
+      "fees": {"title": "DefiLlama Katana fees API", "url": "https://api.llama.fi/overview/fees/Katana?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Katana revenue API", "url": "https://api.llama.fi/overview/fees/Katana?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Katana DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Katana?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["coverage", "launch", "network"],
+      "token": ["network", "tokenomics", "tge", "token"],
+      "capital": ["launch", "tokenomics"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["launch", "governance"],
+      "narrative": ["overview", "launch", "tokenomics"],
+      "risk": ["network", "governance", "tokenomics", "ofac"],
+      "synthesis": ["overview", "tokenomics", "token", "tvl", "fees", "revenue", "volume", "stables"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Katana",
+        "aliases": ["Katana Network"],
+        "category": "L2_rollup",
+        "vm": "EVM",
+        "launched": "2025-07-01",
+        "launch_date_precision": "day",
+        "status": "declining",
+        "top50_rank": 36,
+        "lifecycle": [
+          {"date": "2025-07-01", "type": "launch", "description": "Katana opened mainnet after more than $240M in pre-deposits, using a curated DeFi application and liquidity model.", "source_url": "https://katana.network/blog/katana-mainnet-is-live-with-1-billion-kat-available-to-users-as-incentives-to-bootstrap-the-chain"},
+          {"date": "2026-03-07", "type": "tvl_peak", "description": "DefiLlama's reviewed history reached a $711.0M TVL peak before a steep retrenchment.", "source_url": "https://api.llama.fi/v2/historicalChainTvl/Katana"},
+          {"date": "2026-03", "type": "token_launch", "description": "KAT became transferable and vKAT Armory governance went live.", "source_url": "https://katana.network/blog/the-wait-is-over-katana-tge-is-here"},
+          {"date": "2026-07-29", "type": "current_snapshot", "description": "Katana remained in Chaindump's current top 50, but tracked TVL was 89.15% below peak.", "source_url": "https://chaindump.xyz/api/chains"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "launched",
+        "token_symbol": "KAT",
+        "gas_token": "ETH",
+        "launch_date": "2026-03",
+        "launch_date_precision": "month",
+        "launch_relation": "Katana launched with ETH gas; KAT later became the transferable governance and emissions asset, with vote-escrowed vKAT directing incentives.",
+        "token_cg_id": "katana-network-token",
+        "token_current_usd": 0.00426421,
+        "token_ath_usd": 0.02946815,
+        "token_ath_date": "2026-04-24",
+        "price_drawdown_pct": 85.53,
+        "market_cap_usd": 9979452,
+        "fdv_usd": 42610812,
+        "circulating_supply": 2342000000,
+        "total_supply": 10000000000,
+        "max_supply": 10000000000,
+        "unlock_overhang_pct": 76.58,
+        "source_url": "https://api.coingecko.com/api/v3/coins/katana-network-token"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": null,
+        "rounds": [],
+        "treasury_usd": null,
+        "backers_tier": "corporate",
+        "notes": "Polygon Labs and GSR incubated Katana and the launch disclosed more than $240M of user pre-deposits; neither figure is treated as a standalone equity raise or current treasury."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 711046604,
+        "tvl_peak_date": "2026-03-07",
+        "tvl_current_usd": 77129924,
+        "tvl_drawdown_pct": 89.15,
+        "stablecoin_tvl_usd": 18129670.47,
+        "spot_dex_volume_24h_usd": 971793,
+        "spot_dex_volume_30d_usd": 27092692,
+        "fees_24h_usd": 12463.9,
+        "fees_30d_usd": 283381.99,
+        "revenue_24h_usd": 937.97,
+        "revenue_30d_usd": 15566.8,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Katana",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Katana?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Katana?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Katana?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "Stablecoin circulating supply is not TVL. DefiLlama categories and adapter coverage differ, and the TVL drawdown is calculated from the reviewed daily series."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [],
+        "entity": "Katana Foundation; incubated by Polygon Labs and GSR.",
+        "key_events": [
+          {"date": "2025-07-01", "type": "foundation_launch", "description": "The nonprofit Katana Foundation launched the network with Polygon Labs and GSR identified as incubators.", "source_url": "https://katana.network/blog/katana-mainnet-is-live-with-1-billion-kat-available-to-users-as-incentives-to-bootstrap-the-chain"},
+          {"date": "2026-03", "type": "governance_launch", "description": "Transferable KAT and the vKAT Armory moved emissions direction into token-governed gauges.", "source_url": "https://katana.network/blog/the-wait-is-over-katana-tge-is-here"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Concentrate DeFi liquidity into a small core market set and recycle bridge yield, application revenue, and sequencer proceeds back into those markets.",
+        "positioning": "A vertically coordinated Agglayer L2 whose differentiator is chain-owned liquidity and productive bridged assets rather than maximum application permissionlessness.",
+        "competitors": [
+          {"name": "Base", "relationship": "Ethereum L2 distribution and DeFi competitor"},
+          {"name": "Berachain", "relationship": "chain-level liquidity-incentive competitor"},
+          {"name": "Arbitrum", "relationship": "mature EVM DeFi liquidity competitor"}
+        ],
+        "narrative_arc": "Katana evolved from a curated DeFi launch with pre-deposit scale into a token-governed liquidity system, but 2026 TVL and token drawdowns test whether recycled yield can sustain capital without launch incentives.",
+        "media_sentiment": "mixed_negative"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; an archived exact-name SDN review remains an explicit gap."},
+        "extraction_flags": ["sequencer_centralization", "upgrade_key_control", "bridge_risk", "curated_app_concentration", "token_unlock_overhang"],
+        "audit_status": null,
+        "risks": [
+          {"type": "governance_concentration", "detail": "The Katana Admin is a 3-of-5 multisig involving the Foundation, GSR, and Polygon Labs; the Security Council is 10-of-13.", "source_url": "https://docs.katana.network/katana/core-concepts/governance/"},
+          {"type": "bridge_and_stack", "detail": "Katana depends on Agglayer's CDK OP stack, unified bridge, Ethereum blobs, and ZK proof path; defects or emergency control failures can cross system boundaries.", "source_url": "https://docs.katana.network/katana/technical-reference/network-information/"},
+          {"type": "economic_reflexivity", "detail": "Curated core apps, vKAT gauges, and recycled sequencer/bridge proceeds can deepen liquidity but also concentrate capital and amplify incentive withdrawal.", "source_url": "https://docs.katana.network/"},
+          {"type": "supply_overhang", "detail": "Only 23.42% of the fixed 10B KAT supply was circulating in the reviewed market snapshot.", "source_url": "https://api.coingecko.com/api/v3/coins/katana-network-token"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Katana still carried $77.1M of tracked TVL and $27.1M of 30-day DEX volume, but TVL was 89.15% below peak and KAT was 85.53% below its high.",
+        "postmortem": "The launch successfully concentrated capital, but the later contraction shows that productive bridge yield and chain-owned liquidity have not yet prevented capital from leaving as launch conditions changed.",
+        "why": "Katana won early liquidity by combining Polygon/GSR distribution, more than $240M of pre-deposits, a deliberately narrow app set, and recycling multiple revenue streams into user yield; it lost momentum as incentives and novelty decayed faster than organic fee demand grew.",
+        "success_mechanism": "VaultBridge makes bridged capital productive, curated apps reduce fragmentation, and KAT/vKAT gauges direct emissions; the model works only if retained yield and application demand exceed dilution and exit pressure.",
+        "strategic_choices": [
+          "Concentrate lending and spot liquidity in Morpho and Sushi rather than subsidize many duplicative venues.",
+          "Recycle net sequencer and bridge-derived revenue into chain-owned liquidity.",
+          "Keep ETH as gas while using KAT and vKAT for emissions and governance.",
+          "Use Agglayer CDK and the unified bridge instead of a bespoke execution stack."
+        ],
+        "unknowns": [
+          "Current sequencer, prover, bridge, multisig-signer, and core-application concentration.",
+          "How much peak TVL was pre-deposit or incentive-sensitive versus durable user capital.",
+          "The realized schedule and sell-side effect of the 76.58% non-circulating KAT supply.",
+          "Whether recycled revenues can cover incentives without continuing token dilution."
+        ],
+        "lessons_learned": [
+          "Capital concentration can bootstrap depth quickly but makes withdrawals visible and correlated.",
+          "Productive bridge yield improves capital efficiency without eliminating bridge and governance risk.",
+          "A high launch TVL is not evidence of durable fee-paying demand."
+        ],
+        "could_differ": "A broader permissionless application strategy could reduce core-app concentration, but would fragment liquidity and weaken Katana's central thesis.",
+        "outlook": {"bull": "Revenue recycling and vKAT governance stabilize a smaller but productive DeFi core.", "base": "Katana retains a useful niche while TVL remains far below launch-cycle highs.", "bear": "Unlocks and declining incentives accelerate capital flight from a concentrated application set.", "most_likely": "base"},
+        "cause_tags": ["curated_defi", "chain_owned_liquidity", "vaultbridge", "incentive_decay", "governance_concentration"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 86,
+      "confidence": "high",
+      "unsourced_fields": ["capital.total_raised_usd", "capital.treasury_usd", "team.named_founders", "team.regulatory_status", "risk.audit_status", "risk.archived_sanctions_check", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.current_control_concentration"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "Abstract",
+    "source_catalog": {
+      "coverage": {"title": "Chaindump top-50 chain coverage snapshot", "url": "https://chaindump.xyz/api/chains"},
+      "launch": {"title": "Abstract mainnet launch announcement", "url": "https://www.prnewswire.com/news-releases/introducing-abstract-the-highly-anticipated-consumer-blockchain-to-bring-crypto-to-the-masses-302360254.html"},
+      "overview": {"title": "What is Abstract", "url": "https://docs.abs.xyz/what-is-abstract"},
+      "architecture": {"title": "Abstract ZK-rollup architecture", "url": "https://docs.abs.xyz/how-abstract-works/architecture/layer-2s"},
+      "network": {"title": "Abstract mainnet connection information", "url": "https://docs.abs.xyz/connect-to-abstract"},
+      "nodes": {"title": "Abstract node architecture and limitations", "url": "https://docs.abs.xyz/infrastructure/nodes/introduction"},
+      "contracts": {"title": "Abstract L1 rollup and governance contracts", "url": "https://docs.abs.xyz/how-abstract-works/architecture/components/l1-rollup-contracts"},
+      "funding": {"title": "Igloo and Cube Labs $11M financing for Abstract", "url": "https://www.axios.com/2024/07/23/pudgy-penguins-igloo-nft-founders-fund-11m"},
+      "tvl": {"title": "DefiLlama Abstract historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Abstract"},
+      "fees": {"title": "DefiLlama Abstract fees API", "url": "https://api.llama.fi/overview/fees/Abstract?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Abstract revenue API", "url": "https://api.llama.fi/overview/fees/Abstract?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Abstract DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Abstract?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["coverage", "launch", "overview", "architecture"],
+      "token": ["network", "overview"],
+      "capital": ["funding"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["launch", "funding"],
+      "narrative": ["launch", "overview"],
+      "risk": ["nodes", "contracts", "architecture", "ofac"],
+      "synthesis": ["overview", "nodes", "funding", "tvl", "fees", "revenue", "volume", "stables"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Abstract",
+        "aliases": ["Abstract Chain"],
+        "category": "L2_rollup",
+        "vm": "EVM",
+        "launched": "2025-01-27",
+        "launch_date_precision": "day",
+        "status": "declining",
+        "top50_rank": 37,
+        "lifecycle": [
+          {"date": "2024-07-23", "type": "incubation_funding", "description": "Igloo raised $11M for Cube Labs, the entity incubating and contributing to Abstract.", "source_url": "https://www.axios.com/2024/07/23/pudgy-penguins-igloo-nft-founders-fund-11m"},
+          {"date": "2025-01-27", "type": "launch", "description": "Abstract opened its consumer-oriented Ethereum ZK-rollup mainnet.", "source_url": "https://www.prnewswire.com/news-releases/introducing-abstract-the-highly-anticipated-consumer-blockchain-to-bring-crypto-to-the-masses-302360254.html"},
+          {"date": "2025-08-14", "type": "tvl_peak", "description": "DefiLlama's reviewed history reached a $57.8M TVL peak.", "source_url": "https://api.llama.fi/v2/historicalChainTvl/Abstract"},
+          {"date": "2026-07-29", "type": "current_snapshot", "description": "Abstract remained top-50 by Chaindump's composite index with TVL 82.44% below its tracked peak.", "source_url": "https://chaindump.xyz/api/chains"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "not_launched",
+        "token_symbol": null,
+        "gas_token": "ETH",
+        "launch_date": null,
+        "launch_date_precision": "day",
+        "launch_relation": "Abstract has no disclosed network token in reviewed official materials; ETH pays gas. PENGU is associated with Pudgy Penguins and is not represented as Abstract's gas or governance token.",
+        "token_current_usd": null,
+        "market_cap_usd": null,
+        "fdv_usd": null,
+        "source_url": "https://docs.abs.xyz/connect-to-abstract"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": 11000000,
+        "rounds": [
+          {"date": "2024-07-23", "type": "Igloo financing supporting Cube Labs and Abstract", "amount_usd": 11000000, "lead": "Founders Fund", "participants": ["Fenbushi Capital", "1kx", "Everest Ventures Group"], "source_url": "https://www.axios.com/2024/07/23/pudgy-penguins-igloo-nft-founders-fund-11m"}
+        ],
+        "treasury_usd": null,
+        "backers_tier": "tier1",
+        "notes": "The $11M was raised by parent company Igloo to establish Cube Labs and support Abstract; it is not presented as an isolated protocol treasury."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 57839558,
+        "tvl_peak_date": "2025-08-14",
+        "tvl_current_usd": 10154127,
+        "tvl_drawdown_pct": 82.44,
+        "stablecoin_tvl_usd": 6848330.91,
+        "spot_dex_volume_24h_usd": 917960,
+        "spot_dex_volume_30d_usd": 15826172,
+        "fees_24h_usd": 101556.37,
+        "fees_30d_usd": 3005623.8,
+        "revenue_24h_usd": 21813.68,
+        "revenue_30d_usd": 806221.57,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Abstract",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Abstract?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Abstract?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Abstract?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "TVL, stablecoin circulation, sequencer/user fees, application revenue, and DEX volume are distinct adapter-defined measures."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [
+          {"name": "Luca Netz", "role": "Abstract co-inventor and Igloo CEO", "source_url": "https://blog.abs.xyz/blog/articles/what-is-abstract"}
+        ],
+        "entity": "Cube Labs contributes to Abstract under Igloo Inc.; the ecosystem is closely linked to Pudgy Penguins.",
+        "key_events": [
+          {"date": "2024-07-23", "type": "company_formation", "description": "Igloo announced Cube Labs and financing to incubate Abstract.", "source_url": "https://www.axios.com/2024/07/23/pudgy-penguins-igloo-nft-founders-fund-11m"},
+          {"date": "2025-01-27", "type": "mainnet_launch", "description": "The team launched Abstract with a consumer portal and native account-abstraction experience.", "source_url": "https://www.prnewswire.com/news-releases/introducing-abstract-the-highly-anticipated-consumer-blockchain-to-bring-crypto-to-the-masses-302360254.html"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Make consumer crypto applications easier to discover and use through wallet abstraction, low fees, and Ethereum settlement.",
+        "positioning": "A ZK Stack consumer L2 combining the Pudgy Penguins audience, Abstract Global Wallet, and a curated app-discovery portal.",
+        "competitors": [
+          {"name": "Base", "relationship": "consumer and social Ethereum L2 competitor"},
+          {"name": "Ronin", "relationship": "gaming and consumer-distribution competitor"},
+          {"name": "ZKsync Era", "relationship": "shared ZK Stack technology and liquidity peer"}
+        ],
+        "narrative_arc": "Abstract translated NFT-brand distribution into a consumer-chain thesis, then had to prove that easier onboarding and discoverability create durable economic activity beyond branded launches.",
+        "media_sentiment": "mixed"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; an archived exact-name SDN review remains an explicit gap."},
+        "extraction_flags": ["centralized_sequencer", "upgrade_key_control", "bridge_risk", "brand_dependency", "no_network_token"],
+        "audit_status": null,
+        "risks": [
+          {"type": "sequencer_centralization", "detail": "Public Abstract nodes are read-only replicas: they cannot create blocks, generate proofs, submit data, or independently participate in fork choice.", "source_url": "https://docs.abs.xyz/infrastructure/nodes/introduction"},
+          {"type": "upgrade_and_governance_control", "detail": "Official docs identify a governance address, proxy admin, validator timelock, default upgrader, and fee-collecting operator; signer identities and thresholds were not reconciled here.", "source_url": "https://docs.abs.xyz/how-abstract-works/architecture/components/l1-rollup-contracts"},
+          {"type": "bridge_risk", "detail": "Abstract's native bridge and ZK Stack contracts custody or message assets across L1/L2, with withdrawals subject to a delay.", "source_url": "https://docs.abs.xyz/tooling/bridges"},
+          {"type": "distribution_dependency", "detail": "Consumer positioning is closely coupled to Igloo and Pudgy Penguins distribution; brand strength can bootstrap users but creates a correlated strategic dependency.", "source_url": "https://www.prnewswire.com/news-releases/introducing-abstract-the-highly-anticipated-consumer-blockchain-to-bring-crypto-to-the-masses-302360254.html"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Abstract's TVL was only $10.2M and 82.44% below peak, yet adapters recorded $3.01M of 30-day fees and $806K of revenue—an unusual fee-to-capital profile requiring attribution review.",
+        "postmortem": null,
+        "why": "Abstract reached the top-50 conversation by pairing a familiar EVM/ZK stack with Igloo's consumer brand, wallet abstraction, and app discovery; capital retention lagged because consumer engagement and DeFi TVL are not the same thing.",
+        "success_mechanism": "Brand distribution lowers acquisition cost, account abstraction lowers wallet friction, and Ethereum ZK settlement supports EVM applications; retention depends on repeat consumer use rather than liquidity incentives alone.",
+        "strategic_choices": [
+          "Build on ZK Stack and Ethereum rather than operate a new L1 consensus.",
+          "Use ETH gas and avoid launching a separate network token in the reviewed period.",
+          "Lead with a global wallet and app portal rather than a DeFi-first liquidity campaign.",
+          "Tie distribution to Igloo and Pudgy Penguins' existing consumer audience."
+        ],
+        "unknowns": [
+          "Current sequencer, prover, governor, upgrader, bridge, and fee-recipient control thresholds.",
+          "How DefiLlama's fee and revenue adapters attribute the high totals relative to TVL.",
+          "Repeat-user retention and activity composition across games, social apps, NFTs, and DeFi.",
+          "Whether Abstract will introduce a native network token and how it would relate to PENGU."
+        ],
+        "lessons_learned": [
+          "Consumer activity can be economically meaningful without appearing as large DeFi TVL.",
+          "Account abstraction improves onboarding but does not decentralize sequencing or upgrades.",
+          "Brand-led distribution is powerful and creates a single-ecosystem dependency."
+        ],
+        "could_differ": "A network token could fund incentives and governance, but would add dilution, regulatory, and brand-confusion risks that ETH-only gas currently avoids.",
+        "outlook": {"bull": "Abstract becomes a repeat-use consumer hub whose fee activity is independent of large TVL.", "base": "The chain remains a branded consumer niche with centralized operations and modest capital.", "bear": "Brand launches fail to retain users and activity migrates to larger consumer L2s.", "most_likely": "base"},
+        "cause_tags": ["consumer_crypto", "brand_distribution", "account_abstraction", "zk_stack", "centralized_sequencer"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 84,
+      "confidence": "high",
+      "unsourced_fields": ["capital.treasury_usd", "team.complete_founder_roster", "team.regulatory_status", "risk.audit_status", "risk.governance_signer_thresholds", "risk.archived_sanctions_check", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.fee_adapter_attribution"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "MegaETH",
+    "source_catalog": {
+      "coverage": {"title": "Chaindump top-50 chain coverage snapshot", "url": "https://chaindump.xyz/api/chains"},
+      "mainnet": {"title": "MegaETH mainnet network parameters", "url": "https://docs.megaeth.com/frontier"},
+      "architecture": {"title": "MegaETH specialized-node architecture", "url": "https://docs.megaeth.com/architecture"},
+      "realtime": {"title": "MegaETH real-time API and sequencer preconfirmations", "url": "https://docs.megaeth.com/realtime-api"},
+      "tokenomics": {"title": "MEGA token economics, allocation, and KPI milestones", "url": "https://www.megaeth.com/token"},
+      "tge": {"title": "MEGA token-generation event", "url": "https://www.megaeth.com/blog-news/mega-is-live"},
+      "terms": {"title": "MegaETH Rabbithole terms and operating entity", "url": "https://www.megaeth.com/rabbithole-terms-of-use"},
+      "token": {"title": "CoinGecko MegaETH market-data API", "url": "https://api.coingecko.com/api/v3/coins/megaeth"},
+      "tvl": {"title": "DefiLlama MegaETH historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/MegaETH"},
+      "fees": {"title": "DefiLlama MegaETH fees API", "url": "https://api.llama.fi/overview/fees/MegaETH?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama MegaETH revenue API", "url": "https://api.llama.fi/overview/fees/MegaETH?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama MegaETH DEX-volume API", "url": "https://api.llama.fi/overview/dexs/MegaETH?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["coverage", "mainnet", "tokenomics", "terms"],
+      "token": ["mainnet", "tokenomics", "tge", "token"],
+      "capital": ["tokenomics"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["terms", "tokenomics"],
+      "narrative": ["architecture", "realtime", "tokenomics"],
+      "risk": ["architecture", "realtime", "mainnet", "tokenomics", "ofac"],
+      "synthesis": ["architecture", "tokenomics", "token", "tvl", "fees", "revenue", "volume", "stables"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "MegaETH",
+        "aliases": ["MegaETH Mainnet", "MegaETH Frontier"],
+        "category": "L2_rollup",
+        "vm": "EVM",
+        "launched": "2026-02-09",
+        "launch_date_precision": "day",
+        "status": "declining",
+        "top50_rank": 38,
+        "lifecycle": [
+          {"date": "2024-10", "type": "testnet_launch", "description": "MegaETH opened a public testnet for its real-time, specialized-node architecture.", "source_url": "https://www.megaeth.com/token"},
+          {"date": "2026-02-09", "type": "mainnet_public_access", "description": "MegaETH's public-facing terms became effective with mainnet services; the network used chain ID 4326 and ETH gas.", "source_url": "https://www.megaeth.com/rabbithole-terms-of-use"},
+          {"date": "2026-04-23", "type": "adoption_kpi", "description": "Ten MegaMafia applications deployed onchain, satisfying the first token-launch KPI.", "source_url": "https://www.megaeth.com/blog-news/mega-is-live"},
+          {"date": "2026-04-30", "type": "token_launch", "description": "MEGA became live after the application KPI was met.", "source_url": "https://www.megaeth.com/blog-news/mega-is-live"},
+          {"date": "2026-05-12", "type": "tvl_peak", "description": "DefiLlama's reviewed history peaked at $245.6M before an 81.05% decline.", "source_url": "https://api.llama.fi/v2/historicalChainTvl/MegaETH"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "launched",
+        "token_symbol": "MEGA",
+        "gas_token": "ETH",
+        "launch_date": "2026-04-30",
+        "launch_date_precision": "day",
+        "launch_relation": "MegaETH mainnet uses ETH for gas. MEGA launched later for KPI rewards, planned sequencer rotation/proximity access, and ecosystem value capture rather than current transaction fees.",
+        "token_cg_id": "megaeth",
+        "token_current_usd": 0.0361108,
+        "token_ath_usd": 0.217716,
+        "token_ath_date": "2026-04-30",
+        "price_drawdown_pct": 83.41,
+        "market_cap_usd": 40829351,
+        "fdv_usd": 361387960,
+        "circulating_supply": 1129792788,
+        "total_supply": 10000000000,
+        "max_supply": 10000000000,
+        "unlock_overhang_pct": 88.7,
+        "source_url": "https://api.coingecko.com/api/v3/coins/megaeth"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": 10000000,
+        "rounds": [
+          {"date": "2024", "type": "Echo community financing", "amount_usd": 10000000, "lead": "Echo participants", "participants": ["more than 3,000 community investors"], "source_url": "https://www.megaeth.com/token"}
+        ],
+        "treasury_usd": null,
+        "backers_tier": "tier1",
+        "notes": "The official token page also names Dragonfly, Figment, Vitalik Buterin, and Joseph Lubin and describes a separate Sonar auction with $1.39B committed, but this dossier counts only the explicitly raised $10M Echo round rather than bids or undisclosed venture proceeds."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 245592022,
+        "tvl_peak_date": "2026-05-12",
+        "tvl_current_usd": 46548027,
+        "tvl_drawdown_pct": 81.05,
+        "stablecoin_tvl_usd": 20824067.35,
+        "spot_dex_volume_24h_usd": 1091489.38,
+        "spot_dex_volume_30d_usd": 36389147.6,
+        "fees_24h_usd": 12341.85,
+        "fees_30d_usd": 799801.88,
+        "revenue_24h_usd": 10624.33,
+        "revenue_30d_usd": 396458.73,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/MegaETH",
+        "fees_source_url": "https://api.llama.fi/overview/fees/MegaETH?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/MegaETH?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/MegaETH?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "The stress-test transaction claim is not substituted for economic activity. TVL, fees, revenue, volume, and stablecoin circulation come from separate DefiLlama adapters."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [],
+        "entity": "MegaLabs, a Cayman Islands company; MegaETH Foundation is described as the recipient of USDm rewards and operator of buybacks and early KPI attestations.",
+        "key_events": [
+          {"date": "2024", "type": "community_financing", "description": "MegaETH opened an Echo round on the same terms as the seed round and reported $10M raised.", "source_url": "https://www.megaeth.com/token"},
+          {"date": "2026-04-30", "type": "foundation_economics", "description": "The Foundation began the KPI-reward and USDm-to-MEGA buyback model at TGE.", "source_url": "https://www.megaeth.com/blog-news/mega-is-live"}
+        ],
+        "regulatory_status": "MegaLabs' public-facing terms restrict sanctioned and prohibited jurisdictions; the network token's full jurisdiction-by-jurisdiction treatment is not asserted."
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Deliver real-time EVM execution for latency-sensitive trading, games, and interactive applications.",
+        "positioning": "An Ethereum L2 built around specialized node roles, roughly 10ms sequencer preconfirmations, a 10-billion-gas block envelope, and future proximity markets.",
+        "competitors": [
+          {"name": "Solana", "relationship": "low-latency execution and trading competitor"},
+          {"name": "Monad", "relationship": "high-performance EVM competitor"},
+          {"name": "Base", "relationship": "Ethereum L2 distribution and application competitor"}
+        ],
+        "narrative_arc": "MegaETH moved from extreme-performance testnet claims to production stress tests and a KPI-triggered TGE; the next test is whether low latency creates durable applications and decentralized sequencing rather than benchmark activity.",
+        "media_sentiment": "mixed"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; MegaLabs terms impose sanctions restrictions and an archived exact-name SDN review remains open."},
+        "extraction_flags": ["single_sequencer", "preconfirmation_trust", "bridge_risk", "planned_not_live_decentralization", "token_unlock_overhang"],
+        "audit_status": null,
+        "risks": [
+          {"type": "sequencer_centralization", "detail": "The architecture centers transaction ordering and real-time preconfirmations on a sequencer; rotation and staking are described as planned, not current.", "source_url": "https://docs.megaeth.com/architecture"},
+          {"type": "preconfirmation_risk", "detail": "Mini-block results are sequencer preconfirmations and remain exposed to the sequencer's ordering, rollback, and availability guarantees until L1 settlement.", "source_url": "https://docs.megaeth.com/realtime-api"},
+          {"type": "execution_compatibility", "detail": "MegaEVM differs from standard EVM gas behavior, and uncustomized local simulators can underestimate gas or revert transactions.", "source_url": "https://docs.megaeth.com/frontier"},
+          {"type": "governance_and_kpi_discretion", "detail": "The Foundation defines and attests early KPI rewards, with token governance and oracle verification deferred to later phases.", "source_url": "https://www.megaeth.com/token"},
+          {"type": "supply_overhang", "detail": "Only about 11.30% of MEGA supply was circulating; 53% is allocated to KPI rewards and other large buckets remain.", "source_url": "https://api.coingecko.com/api/v3/coins/megaeth"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "MegaETH had $46.5M TVL, $36.4M in 30-day DEX volume, and $396K in 30-day revenue, but TVL and MEGA price were each more than 81% below peak.",
+        "postmortem": null,
+        "why": "MegaETH earned attention and early applications by specializing node roles and delivering visibly lower latency than conventional EVM chains; capital faded after launch because stress-test scale and token KPIs do not automatically produce persistent liquidity or fee-paying users.",
+        "success_mechanism": "A powerful sequencer produces 10ms preconfirmations, replica/prover specialization removes universal-node bottlenecks, USDm yield funds MEGA buybacks, and future proximity access targets latency-sensitive monetization.",
+        "strategic_choices": [
+          "Specialize sequencers, replicas, full nodes, provers, and DA roles rather than require homogeneous nodes.",
+          "Keep ETH as gas and monetize USDm yield and planned proximity access instead of large sequencer surcharges.",
+          "Release more than half of MEGA supply against measurable KPIs rather than a fixed calendar.",
+          "Delay sequencer rotation and oracle-attested governance until after proving the product."
+        ],
+        "unknowns": [
+          "Current single-sequencer failover, censorship-resistance, prover, DA, and upgrade-key guarantees.",
+          "How much of reported transaction scale and peak TVL came from stress tests or launch incentives.",
+          "The sell-side path for 88.70% non-circulating MEGA and the Foundation's KPI discretion.",
+          "Whether USDm rewards and proximity markets can generate durable value capture without harming fairness."
+        ],
+        "lessons_learned": [
+          "Extreme performance is a product capability, not evidence of product-market fit.",
+          "Specialized roles raise throughput while making trust boundaries more explicit.",
+          "Outcome-linked emissions still create dilution and attestation-governance risk."
+        ],
+        "could_differ": "Launching with multi-sequencer rotation would improve neutrality, but likely sacrifice the deterministic low-latency experience used to attract early applications.",
+        "outlook": {"bull": "Latency-sensitive trading and games generate organic demand and proximity revenue while sequencing decentralizes.", "base": "MegaETH remains a technically differentiated but centrally operated niche with volatile liquidity.", "bear": "Unlocks overwhelm demand and real-time applications fail to retain users after incentives.", "most_likely": "base"},
+        "cause_tags": ["real_time_evm", "specialized_nodes", "single_sequencer", "kpi_emissions", "usdm_buybacks"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 86,
+      "confidence": "high",
+      "unsourced_fields": ["capital.full_seed_and_venture_total", "capital.treasury_usd", "team.complete_founder_roster", "risk.audit_status", "risk.current_control_thresholds", "risk.archived_sanctions_check", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.organic_transaction_share"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "Rootstock",
+    "source_catalog": {
+      "coverage": {"title": "Chaindump top-50 chain coverage snapshot", "url": "https://chaindump.xyz/api/chains"},
+      "overview": {"title": "Rootstock developer portal", "url": "https://dev.rootstock.io/"},
+      "whitepaper": {"title": "Rootstock platform white paper", "url": "https://rootstock.io/rsk-white-paper-updated.pdf"},
+      "powpeg": {"title": "Rootstock PowPeg emergency multisignature specification", "url": "https://ips.rootstock.io/IPs/RSKIP201.html"},
+      "svp": {"title": "Rootstock PowPeg spendability validation protocol", "url": "https://ips.rootstock.io/IPs/RSKIP419.html"},
+      "company": {"title": "RootstockLabs company and network history", "url": "https://www.rootstocklabs.com/"},
+      "tvl": {"title": "DefiLlama Rootstock historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Rootstock"},
+      "fees": {"title": "DefiLlama Rootstock fees API", "url": "https://api.llama.fi/overview/fees/Rootstock?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Rootstock revenue API", "url": "https://api.llama.fi/overview/fees/Rootstock?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Rootstock DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Rootstock?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["coverage", "overview", "whitepaper", "company"],
+      "token": ["overview", "whitepaper", "powpeg"],
+      "capital": ["company"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["whitepaper", "company"],
+      "narrative": ["overview", "whitepaper", "company"],
+      "risk": ["powpeg", "svp", "overview", "ofac"],
+      "synthesis": ["overview", "powpeg", "tvl", "fees", "revenue", "volume", "stables"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Rootstock",
+        "aliases": ["RSK", "Rootstock Bitcoin Sidechain"],
+        "category": "sidechain",
+        "vm": "EVM",
+        "launched": "2018-01",
+        "launch_date_precision": "month",
+        "status": "established",
+        "top50_rank": 39,
+        "lifecycle": [
+          {"date": "2018-01", "type": "launch", "description": "RSK launched mainnet as a Bitcoin sidechain with EVM-compatible smart contracts and bitcoin-backed gas.", "source_url": "https://rootstock.io/rsk-white-paper-updated.pdf"},
+          {"date": "2020-12", "type": "bridge_security_upgrade", "description": "Rootstock transitioned its two-way peg to PowPeg HSM-backed functionaries.", "source_url": "https://ips.rootstock.io/IPs/RSKIP201.html"},
+          {"date": "2025-10-07", "type": "tvl_peak", "description": "DefiLlama's reviewed history reached a $283.4M TVL peak.", "source_url": "https://api.llama.fi/v2/historicalChainTvl/Rootstock"},
+          {"date": "2026-07-29", "type": "current_snapshot", "description": "Rootstock remained top-50 by Chaindump's composite index after more than eight years of mainnet operation.", "source_url": "https://chaindump.xyz/api/chains"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "not_launched",
+        "token_symbol": null,
+        "gas_token": "RBTC",
+        "launch_date": null,
+        "launch_date_precision": "day",
+        "launch_relation": "Rootstock deliberately has no independent native-supply token. RBTC is the BTC-pegged gas asset created against bitcoin locked through the two-way PowPeg; RIF is a separate infrastructure/governance asset.",
+        "token_current_usd": null,
+        "market_cap_usd": null,
+        "fdv_usd": null,
+        "source_url": "https://rootstock.io/rsk-white-paper-updated.pdf"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": null,
+        "rounds": [],
+        "treasury_usd": null,
+        "backers_tier": "none_unknown",
+        "notes": "RootstockLabs contributes infrastructure and integrations, but reviewed official materials do not provide a reconciled Rootstock network financing total or protocol treasury."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 283447916,
+        "tvl_peak_date": "2025-10-07",
+        "tvl_current_usd": 73621892,
+        "tvl_drawdown_pct": 74.03,
+        "stablecoin_tvl_usd": 11899585.83,
+        "spot_dex_volume_24h_usd": 1286829,
+        "spot_dex_volume_30d_usd": 43925320,
+        "fees_24h_usd": 3316,
+        "fees_30d_usd": 117749,
+        "revenue_24h_usd": 0,
+        "revenue_30d_usd": 1,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Rootstock",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Rootstock?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Rootstock?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Rootstock?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "RBTC locked through PowPeg, DeFi TVL, stablecoin supply, miner fees, and application revenue are different measures; near-zero adapter revenue does not imply miners collect no fees."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [
+          {"name": "Sergio Demian Lerner", "role": "RSK co-founder and protocol researcher", "source_url": "https://rootstock.io/rsk-white-paper-updated.pdf"},
+          {"name": "Diego Gutierrez Zaldivar", "role": "RSK co-founder and ecosystem leader", "source_url": "https://rootstock.io/rsk-white-paper-updated.pdf"}
+        ],
+        "entity": "Rootstock is an open network; RootstockLabs is a longstanding contributor rather than represented here as the chain owner.",
+        "key_events": [
+          {"date": "2017", "type": "company_history", "description": "RootstockLabs dates its work building on Bitcoin to 2017.", "source_url": "https://www.rootstocklabs.com/"},
+          {"date": "2018-01", "type": "mainnet_launch", "description": "The founding team launched the RSK mainnet.", "source_url": "https://rootstock.io/rsk-white-paper-updated.pdf"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Extend Bitcoin into EVM-compatible smart contracts and financial applications while using BTC as the native economic asset.",
+        "positioning": "Bitcoin's long-running EVM finance sidechain, secured by merge mining and connected to BTC through the HSM-backed PowPeg.",
+        "competitors": [
+          {"name": "Stacks", "relationship": "Bitcoin smart-contract platform competitor"},
+          {"name": "Core", "relationship": "Bitcoin-aligned EVM and DeFi competitor"},
+          {"name": "Bitlayer", "relationship": "newer Bitcoin L2 and bridge competitor"}
+        ],
+        "narrative_arc": "Rootstock progressed from an early federated Bitcoin sidechain to merge mining above 85% of Bitcoin hash power and layered PowPeg defenses, prioritizing longevity and BTC denomination over a new gas-token flywheel.",
+        "media_sentiment": "neutral"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; an archived exact-name SDN review remains an explicit gap."},
+        "extraction_flags": ["powpeg_federation", "emergency_multisig", "merge_mining_dependency", "bridge_risk", "upgrade_coordination"],
+        "audit_status": null,
+        "risks": [
+          {"type": "powpeg_trust", "detail": "RBTC exits depend on a threshold group of identified pegnatories, PowHSM behavior, Bridge consensus logic, and honest/available Bitcoin miners rather than Bitcoin consensus alone.", "source_url": "https://ips.rootstock.io/IPs/RSKIP201.html"},
+          {"type": "emergency_control", "detail": "The adopted design includes a 3-of-4 emergency multisig behind a long timelock, trading recovery availability against additional signatory trust.", "source_url": "https://ips.rootstock.io/IPs/RSKIP201.html"},
+          {"type": "powpeg_migration", "detail": "Changing PowPeg composition moves bitcoin through an irreversible process; spendability validation adds safeguards but confirms the migration is a critical boundary.", "source_url": "https://ips.rootstock.io/IPs/RSKIP419.html"},
+          {"type": "miner_dependency", "detail": "Merge mining imports substantial Bitcoin hash power, but miner participation, fee economics, and censorship incentives are not equivalent to native Bitcoin settlement.", "source_url": "https://dev.rootstock.io/"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Rootstock retained $73.6M TVL and $43.9M in 30-day DEX volume after eight years, though TVL was 74.03% below peak and tracked protocol revenue was negligible.",
+        "postmortem": null,
+        "why": "Rootstock survives because it gives Bitcoin holders EVM functionality without inventing a volatile gas asset, uses familiar Ethereum tooling, and recruits Bitcoin miners for merge-mined security; growth remains constrained by PowPeg trust and competition from newer Bitcoin layers.",
+        "success_mechanism": "BTC is locked into RBTC, merge miners order and secure the sidechain, EVM compatibility attracts existing tooling, and layered HSM/multisig controls manage peg-outs.",
+        "strategic_choices": [
+          "Use RBTC rather than launch an independent native gas supply.",
+          "Adopt EVM/Web3 compatibility to reuse Ethereum developer tooling.",
+          "Secure block production through Bitcoin merge mining.",
+          "Layer PowHSMs, federation thresholds, timelocked emergency recovery, and spendability validation around the peg."
+        ],
+        "unknowns": [
+          "Current pegnatory identities, threshold, geographic distribution, hardware diversity, and operational independence.",
+          "Current merge-miner concentration and the share economically committed beyond nominal hash support.",
+          "Application, bridge, and collateral concentration within the $73.6M TVL.",
+          "Why the reviewed revenue adapter reports almost no protocol revenue despite continuing fees and volume."
+        ],
+        "lessons_learned": [
+          "Avoiding a new gas token can preserve BTC-native identity and reduce dilution.",
+          "Merge mining does not remove the separate trust model of a two-way peg.",
+          "Long operational history is evidence of resilience, not proof that bridge governance is trustless."
+        ],
+        "could_differ": "A fully trust-minimized Bitcoin bridge would improve the core security claim, but current Bitcoin scripting cannot reproduce every PowPeg availability and recovery property without new tradeoffs.",
+        "outlook": {"bull": "Institutional Bitcoin finance and better bridges revive liquidity on a proven EVM network.", "base": "Rootstock remains a durable but modest Bitcoin DeFi venue.", "bear": "Users prefer newer Bitcoin layers or native protocols and PowPeg trust limits institutional adoption.", "most_likely": "base"},
+        "cause_tags": ["bitcoin_sidechain", "merge_mining", "powpeg", "rbtc", "evm_compatibility"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 82,
+      "confidence": "high",
+      "unsourced_fields": ["capital.total_raised_usd", "capital.treasury_usd", "team.regulatory_status", "risk.audit_status", "risk.current_pegnatory_roster_and_threshold", "risk.archived_sanctions_check", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.current_merge_miner_concentration"],
+      "last_reviewed": "2026-07-29"
+    }
+  },
+  {
+    "chain": "Berachain",
+    "source_catalog": {
+      "coverage": {"title": "Chaindump top-50 chain coverage snapshot", "url": "https://chaindump.xyz/api/chains"},
+      "launch": {"title": "Berachain mainnet launch support announcement", "url": "https://www.okx.com/help/okx-wallet-to-support-berachain-network"},
+      "overview": {"title": "Berachain protocol documentation", "url": "https://docs.berachain.com/"},
+      "pol": {"title": "Berachain Proof-of-Liquidity overview", "url": "https://docs.berachain.com/general/proof-of-liquidity/overview"},
+      "bera": {"title": "BERA token economics and allocation", "url": "https://docs.berachain.com/general/tokens/bera"},
+      "bgt": {"title": "BGT governance and reward token", "url": "https://docs.berachain.com/general/tokens/bgt"},
+      "beaconkit": {"title": "Berachain BeaconKit consensus architecture", "url": "https://docs.berachain.com/nodes/architecture/beaconkit-consensus"},
+      "funding": {"title": "Berachain $100M Series B financing", "url": "https://www.berachain.com/news/"},
+      "incident": {"title": "Berachain Balancer-linked halt and emergency hard fork", "url": "https://www.coindesk.com/markets/2025/11/03/berachain-halts-network-to-contain-balancer-linked-exploit-to-conduct-emergency-hard-fork"},
+      "contracts": {"title": "Berachain deployed core contracts and audit references", "url": "https://docs.berachain.com/build/getting-started/deployed-contracts"},
+      "token": {"title": "CoinGecko Berachain market-data API", "url": "https://api.coingecko.com/api/v3/coins/berachain-bera"},
+      "tvl": {"title": "DefiLlama Berachain historical TVL API", "url": "https://api.llama.fi/v2/historicalChainTvl/Berachain"},
+      "fees": {"title": "DefiLlama Berachain fees API", "url": "https://api.llama.fi/overview/fees/Berachain?dataType=dailyFees"},
+      "revenue": {"title": "DefiLlama Berachain revenue API", "url": "https://api.llama.fi/overview/fees/Berachain?dataType=dailyRevenue"},
+      "volume": {"title": "DefiLlama Berachain DEX-volume API", "url": "https://api.llama.fi/overview/dexs/Berachain?dataType=dailyVolume"},
+      "stables": {"title": "DefiLlama stablecoin supply by chain API", "url": "https://stablecoins.llama.fi/stablecoinchains"},
+      "ofac": {"title": "OFAC SDN list data formats", "url": "https://ofac.treasury.gov/specially-designated-nationals-list-data-formats-data-schemas"}
+    },
+    "dimension_sources": {
+      "identity": ["coverage", "launch", "overview", "beaconkit"],
+      "token": ["bera", "bgt", "token"],
+      "capital": ["funding"],
+      "onchain": ["tvl", "fees", "revenue", "volume", "stables"],
+      "team": ["funding", "overview"],
+      "narrative": ["overview", "pol", "bera", "bgt"],
+      "risk": ["pol", "beaconkit", "contracts", "incident", "ofac"],
+      "synthesis": ["pol", "incident", "token", "tvl", "fees", "revenue", "volume", "stables"]
+    },
+    "dimensions": {
+      "identity": {
+        "as_of": "2026-07-29",
+        "chain": "Berachain",
+        "aliases": ["Bera Chain"],
+        "category": "L1",
+        "vm": "EVM",
+        "launched": "2025-02-06",
+        "launch_date_precision": "day",
+        "status": "declining",
+        "top50_rank": 40,
+        "lifecycle": [
+          {"date": "2025-02-06", "type": "launch", "description": "Berachain opened its EVM-identical Proof-of-Liquidity mainnet and BERA gas asset.", "source_url": "https://www.okx.com/help/okx-wallet-to-support-berachain-network"},
+          {"date": "2025-03-27", "type": "tvl_peak", "description": "DefiLlama's reviewed history reached $3.31B of TVL during the initial PoL liquidity cycle.", "source_url": "https://api.llama.fi/v2/historicalChainTvl/Berachain"},
+          {"date": "2025-11-03", "type": "emergency_halt", "description": "Validators deliberately halted the network for an emergency hard fork after Balancer V2-derived BEX pools were exploited.", "source_url": "https://www.coindesk.com/markets/2025/11/03/berachain-halts-network-to-contain-balancer-linked-exploit-to-conduct-emergency-hard-fork"},
+          {"date": "2025-11-04", "type": "fund_recovery", "description": "Berachain's official newsroom records that all affected user funds were recovered after the Balancer-linked incident.", "source_url": "https://www.berachain.com/news/"},
+          {"date": "2026-07-29", "type": "current_snapshot", "description": "Berachain remained top-50, but tracked TVL stood 98.58% below peak and BERA traded about 99% below its high.", "source_url": "https://chaindump.xyz/api/chains"}
+        ]
+      },
+      "token": {
+        "as_of": "2026-07-29",
+        "launch_status": "launched",
+        "token_symbol": "BERA",
+        "gas_token": "BERA",
+        "launch_date": "2025-02-06",
+        "launch_date_precision": "day",
+        "launch_relation": "BERA launched with mainnet for gas and validator security. Non-transferable BGT governs and directs PoL rewards and burns one-way 1:1 into BERA; HONEY is a separate collateral-backed stablecoin.",
+        "token_cg_id": "berachain-bera",
+        "token_current_usd": 0.148911,
+        "token_ath_usd": 14.83,
+        "token_ath_date": "2025-02-06",
+        "price_drawdown_pct": 99,
+        "market_cap_usd": 45029284,
+        "fdv_usd": 82746206,
+        "circulating_supply": 301281744.7662686,
+        "total_supply": 553639459.1439638,
+        "max_supply": null,
+        "genesis_supply": 500000000,
+        "annual_inflation_target_pct": 5,
+        "unlock_overhang_pct": 45.58,
+        "source_url": "https://api.coingecko.com/api/v3/coins/berachain-bera"
+      },
+      "capital": {
+        "as_of": "2026-07-29",
+        "total_raised_usd": 100000000,
+        "rounds": [
+          {"date": "2024-04-12", "type": "Series B", "amount_usd": 100000000, "lead": "Brevan Howard Digital Abu Dhabi and Framework Ventures", "participants": ["Polychain Capital", "Hack VC", "Tribe Capital"], "source_url": "https://www.berachain.com/news/"}
+        ],
+        "treasury_usd": null,
+        "backers_tier": "tier1",
+        "notes": "This conservative total includes the official newsroom's $100M Series B item only; earlier financing and current Foundation assets require reconciliation before aggregation."
+      },
+      "onchain": {
+        "as_of": "2026-07-29",
+        "tvl_peak_usd": 3307489893,
+        "tvl_peak_date": "2025-03-27",
+        "tvl_current_usd": 46938699,
+        "tvl_drawdown_pct": 98.58,
+        "stablecoin_tvl_usd": 64630615.59,
+        "spot_dex_volume_24h_usd": 972598.22,
+        "spot_dex_volume_30d_usd": 34489042.27,
+        "fees_24h_usd": 2395.93,
+        "fees_30d_usd": 138907.51,
+        "revenue_24h_usd": 588.25,
+        "revenue_30d_usd": 71200.83,
+        "active_addresses_daily": null,
+        "dev_activity_monthly": null,
+        "tvl_concentration": null,
+        "source_url": "https://api.llama.fi/v2/historicalChainTvl/Berachain",
+        "fees_source_url": "https://api.llama.fi/overview/fees/Berachain?dataType=dailyFees",
+        "revenue_source_url": "https://api.llama.fi/overview/fees/Berachain?dataType=dailyRevenue",
+        "volume_source_url": "https://api.llama.fi/overview/dexs/Berachain?dataType=dailyVolume",
+        "stablecoin_source_url": "https://stablecoins.llama.fi/stablecoinchains",
+        "methodology_note": "Peak TVL includes the launch-era PoL capital cycle. Stablecoin supply can exceed tracked protocol TVL and BGT reward emissions are not interchangeable with user-paid fees."
+      },
+      "team": {
+        "as_of": "2026-07-29",
+        "founders": [],
+        "entity": "Berachain Foundation and Big Bera Labs/core contributors; governance also uses BGT holders, Guardians, and onchain contracts.",
+        "key_events": [
+          {"date": "2024-04-12", "type": "series_b", "description": "Berachain announced a $100M Series B co-led by Brevan Howard Digital Abu Dhabi and Framework Ventures.", "source_url": "https://www.berachain.com/news/"},
+          {"date": "2025-11-03", "type": "incident_response", "description": "Core contributors and validators coordinated an emergency hard fork after the BEX/Balancer V2 exploit.", "source_url": "https://www.coindesk.com/markets/2025/11/03/berachain-halts-network-to-contain-balancer-linked-exploit-to-conduct-emergency-hard-fork"}
+        ],
+        "regulatory_status": null
+      },
+      "narrative": {
+        "as_of": "2026-07-29",
+        "purpose": "Align validator rewards with application liquidity by directing BGT emissions through governance-approved reward vaults.",
+        "positioning": "An EVM-identical CometBFT L1 whose Proof-of-Liquidity model separates gas/security BERA from non-transferable governance/reward BGT.",
+        "competitors": [
+          {"name": "Ethereum", "relationship": "EVM liquidity and validator-security benchmark"},
+          {"name": "Katana", "relationship": "chain-level liquidity coordination competitor"},
+          {"name": "Avalanche", "relationship": "EVM L1 application and validator competitor"}
+        ],
+        "narrative_arc": "Berachain converted a community and liquidity flywheel into a multibillion-dollar launch, then suffered extreme capital and token contraction; the Balancer-linked halt demonstrated both effective emergency recovery and concentrated coordination power.",
+        "media_sentiment": "negative"
+      },
+      "risk": {
+        "as_of": "2026-07-29",
+        "exploits": [
+          {"date": "2025-11-03", "name": "BEX Balancer V2-derived pool exploit", "loss_usd": 12800000, "recovered": true, "chain_halted": true, "root_cause": "Balancer V2-related access-control vulnerability affected BEX pools; validators halted and deployed an emergency hard fork to isolate and recover assets.", "source_url": "https://www.coindesk.com/markets/2025/11/03/berachain-halts-network-to-contain-balancer-linked-exploit-to-conduct-emergency-hard-fork"}
+        ],
+        "sanctions": {"flagged": false, "detail": "No chain-level designation is asserted; an archived exact-name SDN review remains an explicit gap."},
+        "extraction_flags": ["validator_coordination", "emergency_hard_fork", "pol_reflexivity", "token_inflation", "reward_vault_governance"],
+        "audit_status": "Core contract documentation links multiple third-party audits, but this dossier does not map each deployed version to an audit commit.",
+        "risks": [
+          {"type": "emergency_governance", "detail": "The validator set could intentionally halt and censor exploited assets through a coordinated emergency fork; this protected users but proves material intervention capacity.", "source_url": "https://www.coindesk.com/markets/2025/11/03/berachain-halts-network-to-contain-balancer-linked-exploit-to-conduct-emergency-hard-fork"},
+          {"type": "pol_reflexivity", "detail": "BGT emissions, validator boosts, protocol incentives, reward-vault whitelisting, and liquidity returns form a circular system vulnerable to mercenary capital and governance capture.", "source_url": "https://docs.berachain.com/general/proof-of-liquidity/overview"},
+          {"type": "validator_concentration", "detail": "Only the top 69 validators by BERA stake enter the active set, with 250K minimum and 10M maximum stake and block probability proportional to BERA.", "source_url": "https://docs.berachain.com/general/proof-of-liquidity/overview"},
+          {"type": "supply_and_inflation", "detail": "BERA began with 500M genesis supply, has about 5% annual inflation subject to governance, and 34.3% of genesis supply was allocated to investors.", "source_url": "https://docs.berachain.com/general/tokens/bera"}
+        ]
+      },
+      "synthesis": {
+        "as_of": "2026-07-29",
+        "situation": "Berachain's $46.9M TVL was 98.58% below its $3.31B peak, BERA was about 99% below ATH, and 30-day revenue was only $71.2K despite continuing PoL complexity.",
+        "postmortem": "PoL solved the cold-start problem spectacularly but did not keep launch capital in place. The 2025 BEX incident then exposed application-fork risk and demonstrated that validators could halt and alter execution to recover funds.",
+        "why": "Berachain attracted extraordinary liquidity by paying BGT emissions to productive capital and letting validators, applications, and LPs negotiate incentive flow; the same reflexivity reversed when token price, yields, and marginal incentives weakened.",
+        "success_mechanism": "BERA stake selects validators, BGT boosts determine emission weight, validators route BGT to whitelisted vaults, protocols return incentives, and LPs chase the resulting yield.",
+        "strategic_choices": [
+          "Separate gas/security BERA from non-transferable governance and reward BGT.",
+          "Make BGT one-way redeemable into BERA and distribute it through liquidity activity.",
+          "Use EVM-identical execution with BeaconKit and CometBFT single-slot finality.",
+          "Coordinate an emergency network halt and hard fork to recover Balancer-linked user funds."
+        ],
+        "unknowns": [
+          "Current validator stake, BGT boost, guardian, governance, and reward-vault concentration.",
+          "How much peak TVL represented Boyco/pre-deposit incentives versus sticky productive capital.",
+          "The complete independently verified Balancer/BEX postmortem and exact recovered-loss accounting.",
+          "Whether emissions and protocol incentives can reach equilibrium without continued BERA dilution."
+        ],
+        "lessons_learned": [
+          "Liquidity incentives can solve cold starts while creating violent reflexivity on exit.",
+          "Emergency intervention can save users and simultaneously reveal governance centralization.",
+          "EVM-identical execution imports application compatibility and inherited application-fork risk."
+        ],
+        "could_differ": "Refusing to halt would preserve stronger immutability but likely strand exploited funds; slower or narrower PoL emissions could reduce the boom-bust amplitude at the cost of launch liquidity.",
+        "outlook": {"bull": "PoL stabilizes at sustainable yields and Berachain rebuilds trust after full recovery.", "base": "A smaller core survives with materially lower capital and ongoing governance complexity.", "bear": "Inflation, weak fees, and intervention concerns continue the liquidity and validator-concentration spiral.", "most_likely": "base"},
+        "cause_tags": ["proof_of_liquidity", "incentive_reflexivity", "emergency_halt", "bgt_governance", "tvl_collapse"],
+        "confidence": "high"
+      }
+    },
+    "meta": {
+      "dimension_completeness_pct": 100,
+      "data_completeness_pct": 88,
+      "confidence": "high",
+      "unsourced_fields": ["capital.earlier_round_total", "capital.treasury_usd", "team.complete_founder_roster", "team.regulatory_status", "risk.audit_version_mapping", "risk.archived_sanctions_check", "onchain.active_addresses_daily", "onchain.dev_activity_monthly", "onchain.tvl_concentration", "synthesis.current_validator_and_boost_concentration"],
+      "last_reviewed": "2026-07-29"
+    }
+  }
+]
