@@ -248,5 +248,9 @@ describe('GET /api/dex', () => {
     expect(body.dexs[0].name).toBe('Uniswap V3');
     expect(body.dexs[0].rank).toBe(1);
     expect(body.dexs[1].name).toBe('Meteora');
+
+    const tiersRes = await worker.fetch(new Request('http://localhost/api/dex-tiers'), {}, ctx());
+    const tiersBody = await tiersRes.json();
+    expect(tiersBody).not.toHaveProperty('criteria');
   });
 });

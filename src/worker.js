@@ -1493,6 +1493,29 @@ function flattenTierMetrics(tierData) {
 }
 export const priorMetricsByChain = (tierData) => flattenTierMetrics(tierData);
 
+function summarizeMetricHistory(series, current) {
+  let peak = current;
+  let peakDate = null;
+  let launched = null;
+  let ago90 = null;
+  let spanDays = 0;
+  if (series.length) {
+    launched = series[0].d;
+    spanDays = (series[series.length - 1].d - series[0].d) / 86400;
+    for (const point of series) if (point.v > peak) { peak = point.v; peakDate = point.d; }
+    const last = series[series.length - 1].d;
+    const target = last - 90 * 86400;
+    let closest = series[0];
+    for (const point of series) { if (point.d <= target) closest = point; else break; }
+    ago90 = closest.v;
+  }
+  const drawdown = peak > 0 ? ((peak - current) / peak) * 100 : 0;
+  const change90 = spanDays >= CHANGE_90D_MIN_SPAN_DAYS && baselineOk(ago90, peak)
+    ? ((current - ago90) / ago90) * 100
+    : null;
+  return { peak, peakDate, launched, spanDays, drawdown, change90 };
+}
+
 export async function classifyChains(priorMetrics = {}) {
   const all = await fetchJson(CHAINS_URL);
   if (!Array.isArray(all)) throw new Error('chains feed unavailable');
@@ -1525,20 +1548,7 @@ export async function classifyChains(priorMetrics = {}) {
         stale: true,
       };
     }
-    let peak = cur, peakDate = null, launched = null, ago90 = null, spanDays = 0;
-    if (series.length) {
-      launched = series[0].d;
-      spanDays = (series[series.length - 1].d - series[0].d) / 86400;
-      for (const p of series) if (p.v > peak) { peak = p.v; peakDate = p.d; }
-      const last = series[series.length - 1].d, target = last - 90 * 86400;
-      let closest = series[0];
-      for (const p of series) { if (p.d <= target) closest = p; else break; }
-      ago90 = closest.v;
-    }
-    const drawdown = peak > 0 ? ((peak - cur) / peak) * 100 : 0;
-    // 90d change only when there's ≥90d of history AND a non-trivial baseline (guards new-chain blowups)
-    let change90 = null;
-    if (spanDays >= CHANGE_90D_MIN_SPAN_DAYS && baselineOk(ago90, peak)) change90 = ((cur - ago90) / ago90) * 100;
+    const { peak, peakDate, launched, spanDays, drawdown, change90 } = summarizeMetricHistory(series, cur);
     return {
       chain: c.name, symbol: c.tokenSymbol || null, tvl: cur, spanDays: Math.round(spanDays),
       peak_tvl: peak, peak_date: peakDate ? toISO(peakDate) : null, current_tvl: cur,
@@ -1724,19 +1734,7 @@ export async function classifyDexTiers(priorMetrics = {}) {
         stale: true,
       };
     }
-    let peak = cur, peakDate = null, launched = null, ago90 = null, spanDays = 0;
-    if (series.length) {
-      launched = series[0].d;
-      spanDays = (series[series.length - 1].d - series[0].d) / 86400;
-      for (const p of series) if (p.v > peak) { peak = p.v; peakDate = p.d; }
-      const last = series[series.length - 1].d, target = last - 90 * 86400;
-      let closest = series[0];
-      for (const p of series) { if (p.d <= target) closest = p; else break; }
-      ago90 = closest.v;
-    }
-    const drawdown = peak > 0 ? ((peak - cur) / peak) * 100 : 0;
-    let change90 = null;
-    if (spanDays >= CHANGE_90D_MIN_SPAN_DAYS && baselineOk(ago90, peak)) change90 = ((cur - ago90) / ago90) * 100;
+    const { peak, peakDate, launched, spanDays, drawdown, change90 } = summarizeMetricHistory(series, cur);
     return {
       chain: r.key, name: r.name, chains: r.chains, volume24h: cur, spanDays: Math.round(spanDays),
       peak_metric: peak, peak_date: peakDate ? toISO(peakDate) : null, current_metric: cur,
@@ -1769,7 +1767,11 @@ async function getDexTiers() {
 app.get('/api/dex-tiers', wrap(async (req, res) => {
   try {
     const b = await getDexTiers();
-    res.json({ ...b, criteria: TIER_CRITERIA, meta: { updated_at: dexTiersCache.ts } });
+    // TIER_CRITERIA describes blockchain TVL/activity classification. The DEX
+    // classifier reuses its numeric thresholds over trading-volume history, so
+    // publishing the chain-specific prose here would be false. Omit criteria
+    // until a separately-authored DEX methodology is reviewed and cited.
+    res.json({ ...b, meta: { updated_at: dexTiersCache.ts } });
   } catch (e) {
     res.json({ error: e.message });
   }
