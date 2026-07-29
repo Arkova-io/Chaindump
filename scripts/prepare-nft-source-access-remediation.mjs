@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { readFileSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { isAbsolute, relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const ACCESS_CLASS_TO_STATE = {
@@ -16,6 +16,17 @@ const EXPECTED_AUDIT_COUNTS = {
   unverified: 5,
   dead: 1,
 };
+
+const workspaceRoot = resolve(process.cwd());
+
+function workspacePath(requestedPath, label) {
+  const candidate = resolve(workspaceRoot, requestedPath);
+  const relation = relative(workspaceRoot, candidate);
+  if (relation.startsWith('..') || isAbsolute(relation)) {
+    throw new Error(`${label} must stay inside the workspace`);
+  }
+  return candidate;
+}
 
 const REPAIR_SOURCES = [
   {
@@ -201,7 +212,9 @@ export function prepareRemediationDocument(rawAudit) {
     .map(({ dossier_slug: slug, replaces_source_id: id }) => `${slug}:${id}`);
   const criticalTargets = auditRecords.filter(({ remediation_priority: priority }) => priority === 'critical')
     .map(({ dossier_slug: slug, source_id: id }) => `${slug}:${id}`);
-  if (JSON.stringify(repairTargets.sort()) !== JSON.stringify(criticalTargets.sort())) {
+  const sortedRepairTargets = repairTargets.toSorted((left, right) => left.localeCompare(right));
+  const sortedCriticalTargets = criticalTargets.toSorted((left, right) => left.localeCompare(right));
+  if (JSON.stringify(sortedRepairTargets) !== JSON.stringify(sortedCriticalTargets)) {
     throw new Error('Every critical source must have one replacement');
   }
 
@@ -241,8 +254,13 @@ function main() {
   if (!input || !output) {
     throw new Error('Usage: prepare-nft-source-access-remediation.mjs <raw-audit.json> <output.json>');
   }
-  const document = prepareRemediationDocument(JSON.parse(readFileSync(resolve(input), 'utf8')));
-  writeFileSync(resolve(output), `${JSON.stringify(document, null, 2)}\n`);
+  const document = prepareRemediationDocument(
+    JSON.parse(readFileSync(workspacePath(input, 'Input path'), 'utf8')),
+  );
+  writeFileSync(
+    workspacePath(output, 'Output path'),
+    `${JSON.stringify(document, null, 2)}\n`,
+  );
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();
