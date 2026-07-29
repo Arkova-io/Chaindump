@@ -5,7 +5,11 @@ CREATE TABLE IF NOT EXISTS research_desk_runs (
   started_at TEXT NOT NULL,
   completed_at TEXT,
   status TEXT NOT NULL CHECK (status IN ('running', 'completed', 'failed')),
-  proposals_queued INTEGER NOT NULL DEFAULT 0 CHECK (proposals_queued >= 0)
+  proposals_queued INTEGER NOT NULL DEFAULT 0 CHECK (proposals_queued >= 0),
+  CHECK (
+    (status = 'running' AND completed_at IS NULL)
+    OR (status IN ('completed', 'failed') AND completed_at IS NOT NULL)
+  )
 );
 
 CREATE INDEX IF NOT EXISTS idx_research_desk_runs_started

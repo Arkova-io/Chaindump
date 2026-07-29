@@ -863,7 +863,7 @@ function sourceArray(value) {
       verification_note: source.verification_note || '',
       evidence_scope: source.evidence_scope || '',
       stale_after: source.stale_after || '',
-      stale: source.stale === true,
+      stale: typeof source.stale === 'boolean' ? source.stale : null,
       reference_id: source.reference_id || '',
     };
   }).filter(Boolean);

@@ -1325,8 +1325,29 @@ app.post('/api/desk/run-status', wrap(async (req, res) => {
       ).bind(status, proposalsQueued, runId);
     const result = await statement.run();
     const changes = Number(result?.meta?.changes ?? result?.changes ?? 0);
-    if (changes !== 1) return res.status(409).json({ error: 'invalid run transition' });
-    res.json({ ok: true, run_id: runId, status, proposals_queued: status === 'running' ? 0 : proposalsQueued });
+    const effectiveProposals = status === 'running' ? 0 : proposalsQueued;
+    if (changes === 0) {
+      const existing = await ENV.DB.prepare(
+        `SELECT status, completed_at, proposals_queued
+           FROM research_desk_runs WHERE run_id = ?`,
+      ).bind(runId).first();
+      const sameTerminalState = status === 'running'
+        ? existing?.completed_at == null
+        : Boolean(existing?.completed_at);
+      const isIdempotent = existing?.status === status
+        && Number(existing?.proposals_queued) === effectiveProposals
+        && sameTerminalState;
+      if (!isIdempotent) return res.status(409).json({ error: 'invalid run transition' });
+    } else if (changes !== 1) {
+      return res.status(409).json({ error: 'invalid run transition' });
+    }
+    res.json({
+      ok: true,
+      run_id: runId,
+      status,
+      proposals_queued: effectiveProposals,
+      idempotent: changes === 0,
+    });
   } catch (error) {
     res.status(500).json({ error: error?.message || 'run status write failed' });
   }
@@ -2519,7 +2540,7 @@ app.get('/api/forensics-refresh-status', wrap(async (req, res) => {
     const rows = await dbQuery(
       `SELECT run_id, started_at, completed_at, status, proposals_queued
          FROM research_desk_runs
-        ORDER BY started_at DESC LIMIT 1`,
+        ORDER BY started_at DESC, run_id DESC LIMIT 1`,
     );
     proposalAgent = rows[0] || null;
   } catch {

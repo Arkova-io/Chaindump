@@ -16,7 +16,11 @@ function fixture() {
       started_at TEXT NOT NULL,
       completed_at TEXT,
       status TEXT NOT NULL,
-      proposals_queued INTEGER NOT NULL DEFAULT 0
+      proposals_queued INTEGER NOT NULL DEFAULT 0,
+      CHECK (
+        (status = 'running' AND completed_at IS NULL)
+        OR (status IN ('completed', 'failed') AND completed_at IS NOT NULL)
+      )
     );
   `);
   const DB = {
@@ -69,6 +73,11 @@ describe('/api/desk/run-status', () => {
       ctx(),
     );
     expect(started.status).toBe(200);
+    expect((await worker.fetch(
+      statusRequest({ run_id, status: 'running' }),
+      env,
+      ctx(),
+    )).status).toBe(200);
 
     const completed = await worker.fetch(
       statusRequest({ run_id, status: 'completed', proposals_queued: 3 }),
@@ -76,6 +85,11 @@ describe('/api/desk/run-status', () => {
       ctx(),
     );
     expect(completed.status).toBe(200);
+    expect((await worker.fetch(
+      statusRequest({ run_id, status: 'completed', proposals_queued: 3 }),
+      env,
+      ctx(),
+    )).status).toBe(200);
     expect(database.prepare(`
       SELECT run_id, status, proposals_queued,
              completed_at IS NOT NULL AS has_completed

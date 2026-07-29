@@ -18,6 +18,7 @@ import { z } from "zod";
 import { PROPOSAL_DATASETS, sanitizeSlug, buildRecord } from "./proposal.js";
 import { buildResearchSystemPrompt, DEFAULT_RESEARCH_TASK } from "./research.js";
 import { buildResearchRunId, postResearchRunStatus } from "./run-status.js";
+import { runResearchDeskLifecycle } from "./lifecycle.js";
 
 const MCP_URL = process.env.CHAINDUMP_MCP_URL || "https://chaindump-mcp-270018525501.us-central1.run.app/mcp";
 const QUEUE_DIR = process.env.DESK_QUEUE_DIR || "./proposals";
@@ -162,44 +163,24 @@ async function runDesk(task: string): Promise<number> {
 
 const TASK = process.env.DESK_TASK || DEFAULT_RESEARCH_TASK;
 const RESEARCH_RUN_ID = buildResearchRunId();
-let runStatusStarted = false;
 
 try {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error("ANTHROPIC_API_KEY is not set (in prod, load it from GCP Secret Manager `Anthropic`).");
-  }
-  if (DESK_PROPOSAL_TOKEN) {
-    await postResearchRunStatus({
-      baseUrl: CHAINDUMP_BASE,
-      token: DESK_PROPOSAL_TOKEN,
-      runId: RESEARCH_RUN_ID,
-      status: "running",
-    });
-    runStatusStarted = true;
-  }
-  const proposalsQueued = await runDesk(TASK);
-  if (runStatusStarted) {
-    await postResearchRunStatus({
-      baseUrl: CHAINDUMP_BASE,
-      token: DESK_PROPOSAL_TOKEN,
-      runId: RESEARCH_RUN_ID,
-      status: "completed",
-      proposalsQueued,
-    });
-  }
-} catch (e) {
-  if (runStatusStarted) {
-    try {
-      await postResearchRunStatus({
-        baseUrl: CHAINDUMP_BASE,
-        token: DESK_PROPOSAL_TOKEN,
-        runId: RESEARCH_RUN_ID,
-        status: "failed",
-      });
-    } catch (statusError) {
+  await runResearchDeskLifecycle({
+    baseUrl: CHAINDUMP_BASE,
+    token: DESK_PROPOSAL_TOKEN,
+    runId: RESEARCH_RUN_ID,
+    assertReady: () => {
+      if (!process.env.ANTHROPIC_API_KEY) {
+        throw new Error("ANTHROPIC_API_KEY is not set (in prod, load it from GCP Secret Manager `Anthropic`).");
+      }
+    },
+    runDesk: () => runDesk(TASK),
+    postStatus: postResearchRunStatus,
+    onTerminalStatusError: (statusError) => {
       console.error("[desk] failed to record terminal run status:", statusError instanceof Error ? statusError.message : statusError);
-    }
-  }
+    },
+  });
+} catch (e) {
   console.error("[desk] fatal:", e instanceof Error ? e.message : e);
   process.exit(1);
 }

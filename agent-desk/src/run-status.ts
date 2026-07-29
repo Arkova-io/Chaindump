@@ -14,6 +14,7 @@ type RunStatusOptions = {
   status: RunStatus;
   proposalsQueued?: number;
   fetchImpl?: typeof fetch;
+  timeoutMs?: number;
 };
 
 export function buildResearchRunId(env: RunEnvironment = process.env): string {
@@ -32,25 +33,35 @@ export async function postResearchRunStatus({
   status,
   proposalsQueued = 0,
   fetchImpl = fetch,
+  timeoutMs = 10_000,
 }: RunStatusOptions): Promise<boolean> {
   if (!token) return false;
-  const response = await fetchImpl(
-    `${baseUrl.replace(/\/$/, "")}/api/desk/run-status`,
-    {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${token}`,
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(
+    new Error(`research run status timed out after ${timeoutMs}ms`),
+  ), timeoutMs);
+  try {
+    const response = await fetchImpl(
+      `${baseUrl.replace(/\/$/, "")}/api/desk/run-status`,
+      {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          run_id: runId,
+          status,
+          proposals_queued: Math.max(0, Math.trunc(proposalsQueued)),
+        }),
+        signal: controller.signal,
       },
-      body: JSON.stringify({
-        run_id: runId,
-        status,
-        proposals_queued: Math.max(0, Math.trunc(proposalsQueued)),
-      }),
-    },
-  );
-  if (!response.ok) {
-    throw new Error(`research run status returned HTTP ${response.status}`);
+    );
+    if (!response.ok) {
+      throw new Error(`research run status returned HTTP ${response.status}`);
+    }
+    return true;
+  } finally {
+    clearTimeout(timeout);
   }
-  return true;
 }

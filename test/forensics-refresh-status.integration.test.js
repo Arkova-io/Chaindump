@@ -146,6 +146,34 @@ describe('forensic refresh status route', () => {
     });
   });
 
+  it('uses run_id as a deterministic tie-breaker for equal start times', async () => {
+    database = new DatabaseSync(':memory:');
+    database.exec(`
+      CREATE TABLE research_desk_runs (
+        run_id TEXT PRIMARY KEY,
+        started_at TEXT NOT NULL,
+        completed_at TEXT,
+        status TEXT NOT NULL,
+        proposals_queued INTEGER NOT NULL
+      );
+      INSERT INTO research_desk_runs VALUES
+        ('github-100-1', '2026-07-29 18:00:00', '2026-07-29 18:05:00', 'completed', 1),
+        ('github-200-1', '2026-07-29 18:00:00', '2026-07-29 18:06:00', 'completed', 2);
+    `);
+    const worker = await freshWorker();
+
+    const response = await worker.fetch(
+      new Request('http://localhost/api/forensics-refresh-status'),
+      { DB: d1Adapter(database) },
+      ctx(),
+    );
+
+    expect((await response.json()).proposal_agent).toMatchObject({
+      run_id: 'github-200-1',
+      proposals_queued: 2,
+    });
+  });
+
   it('runs immediately, honors dossier deadlines, and recovers missed six-hour boundaries', async () => {
     database = freshnessFixture();
     const DB = d1Adapter(database);

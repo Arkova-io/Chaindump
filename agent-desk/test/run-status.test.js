@@ -46,4 +46,27 @@ describe("proposal research run status", () => {
       fetchImpl: vi.fn(async () => new Response("no", { status: 503 })),
     })).rejects.toThrow("HTTP 503");
   });
+
+  it("aborts a status request that exceeds its timeout", async () => {
+    vi.useFakeTimers();
+    const fetchImpl = vi.fn((_url, options) => new Promise((_resolve, reject) => {
+      options.signal.addEventListener("abort", () => reject(options.signal.reason));
+    }));
+    const request = postResearchRunStatus({
+      baseUrl: "https://chaindump.xyz",
+      token: "secret",
+      runId: "github-1-1",
+      status: "running",
+      fetchImpl,
+      timeoutMs: 25,
+    });
+    const rejection = expect(request).rejects.toThrow(
+      "research run status timed out after 25ms",
+    );
+
+    await vi.advanceTimersByTimeAsync(25);
+    await rejection;
+    expect(fetchImpl.mock.calls[0][1].signal.aborted).toBe(true);
+    vi.useRealTimers();
+  });
 });
