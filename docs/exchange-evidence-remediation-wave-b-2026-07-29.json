@@ -1,0 +1,1950 @@
+{
+  "schema": "chaindump-exchange-evidence-remediation-wave-b-v1",
+  "as_of": "2026-07-29",
+  "research_as_of": "2026-07-29",
+  "reviewed_at": "2026-07-29T20:00:00-04:00",
+  "reviewer": "codex-research-agent",
+  "status": "implementation-prepared-no-migration-number-assigned",
+  "selection": {
+    "method": "The fifteen highest-risk DEX/CEX dossiers in the publication-depth inventory that were not already assigned to the ten-case high-risk remediation wave.",
+    "dossier_count": 15,
+    "required_claim_topics": [
+      "outcome",
+      "why",
+      "strategic_choices",
+      "token",
+      "chain_dependence",
+      "legal_or_loss"
+    ]
+  },
+  "publication_boundary": "This is an evidence-remediation checkpoint, not a publication migration. Reviewed means the cited evidence locator was inspected, not merely that the URL returned HTTP 200. Unresolved claims and inaccessible sources must remain visible until a later publication-depth migration is assigned.",
+  "cases": [
+    {
+      "dossier_id": "dex:successful:thorchain",
+      "current_table": "successful_exchanges",
+      "review": {
+        "state": "partially_reviewed",
+        "reviewer": "codex-research-agent",
+        "reviewed_at": "2026-07-29T20:00:00-04:00",
+        "as_of": "2026-07-29"
+      },
+      "sources": [
+        {
+          "id": "thorchain-q2-2026",
+          "title": "THORChain Quarterly Report Q2 2026",
+          "publisher": "THORChain",
+          "url": "https://blog.thorchain.org/thorchain-quarterly-report-q2-2026",
+          "source_tier": "B",
+          "source_role": "primary",
+          "independence_group": "thorchain_operator",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Published 2026-07-17; Q2 volume and fee summary plus the May 15 exploit, approximately $10.7M drain, five-week halt, June 22 restart, and unresolved financial recovery.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T18:45:00-04:00"
+        },
+        {
+          "id": "thorchain-exploit-report-2",
+          "title": "THORChain Exploit Report #2",
+          "publisher": "THORChain",
+          "url": "https://blog.thorchain.org/thorchain-exploit-report-2",
+          "source_tier": "B",
+          "source_role": "primary",
+          "independence_group": "thorchain_operator",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Published 2026-07-03; documents one-vault loss, GG20 signing exploit, 864 failed rounds, reconstructed key, and the chain-specific cryptographic boundary.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T18:45:00-04:00"
+        },
+        {
+          "id": "thorchain-coindesk-2026-exploit",
+          "title": "THORChain Halts Trading After $10 Million Cross-Chain Exploit",
+          "publisher": "CoinDesk",
+          "url": "https://www.coindesk.com/tech/2026/05/15/thorchain-halts-trading-after-usd10-million-cross-chain-exploit-rune-token-drops-12",
+          "source_tier": "C",
+          "source_role": "independent",
+          "independence_group": "coindesk_reporting",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Contemporaneous 2026-05-15 report of the roughly $10.8M loss and trading halt; written before the later technical postmortem.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T18:45:00-04:00"
+        },
+        {
+          "id": "thorchain-decrypt-thorfi",
+          "title": "DeFi Network THORChain Has $200 Million in Debt—What's Going On?",
+          "publisher": "Decrypt",
+          "url": "https://decrypt.co/302688/defi-network-thorchain-200-million-debt-whats-going-on",
+          "source_tier": "C",
+          "source_role": "independent",
+          "independence_group": "decrypt_reporting",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "2025-01-24 report on roughly $200M of THORFi liabilities, pause, and the reflexive RUNE mint-and-sell mechanism.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T18:45:00-04:00"
+        }
+      ],
+      "claims": {
+        "outcome": {
+          "value": "Active and recovering native-asset cross-chain exchange rail after a five-week 2026 halt; the label is not an uncomplicated success claim.",
+          "as_of": "2026-07-29",
+          "source_ids": ["thorchain-q2-2026", "thorchain-coindesk-2026-exploit"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "why": {
+          "value": "Native-asset routing and wallet integrations created durable demand, while RUNE-coupled liquidity/security and adjacent THORFi balance-sheet products created reflexive and operational risk.",
+          "as_of": "2026-07-29",
+          "source_ids": ["thorchain-exploit-report-2", "thorchain-decrypt-thorfi"],
+          "confidence": "medium",
+          "review_state": "reviewed"
+        },
+        "strategic_choices": {
+          "value": [
+            "Use sovereign threshold-signed vaults for native L1 settlement.",
+            "Couple pools and node bonds through RUNE.",
+            "Expand from swaps into lending and savers products.",
+            "Restart in phases after the 2026 cryptographic exploit."
+          ],
+          "as_of": "2026-07-29",
+          "source_ids": ["thorchain-q2-2026", "thorchain-exploit-report-2", "thorchain-decrypt-thorfi"],
+          "confidence": "medium",
+          "review_state": "reviewed"
+        },
+        "token": {
+          "value": "RUNE is integral to pool routing, node bonding, and the reflexive risk identified during the THORFi crisis; current supply and valuation fields still need fresh field-level verification.",
+          "as_of": "2026-07-29",
+          "source_ids": ["thorchain-decrypt-thorfi"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "chain_dependence": {
+          "value": "Protocol operation depends on chain-specific observer and signing paths; the 2026 GG20 failure affected the exposed signing system, while the report states Solana/EdDSA was outside that exploit boundary.",
+          "as_of": "2026-07-29",
+          "source_ids": ["thorchain-exploit-report-2"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "legal_or_loss": {
+          "value": "Approximately $10.7M was drained in May 2026 and financial recovery remained unresolved at the Q2 report; separate THORFi liabilities were reported near $200M in 2025.",
+          "as_of": "2026-07-29",
+          "source_ids": ["thorchain-q2-2026", "thorchain-coindesk-2026-exploit", "thorchain-decrypt-thorfi"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        }
+      },
+      "counterevidence": [
+        "Current operation and Q2 volume do not erase the five-week halt, exploit loss, or unresolved recovery.",
+        "THORFi failure is evidence about an adjacent product and shared risk architecture, not proof that the swap rail ceased to function."
+      ],
+      "unknowns": [
+        "Final exploit and THORFi claimant recoveries.",
+        "Current economic-security margin under correlated RUNE, liquidity, and node-bond stress.",
+        "Fresh field-level RUNE supply, price, and concentration metrics."
+      ]
+    },
+    {
+      "dossier_id": "dex:successful:hyperliquid",
+      "current_table": "successful_exchanges",
+      "review": {
+        "state": "partially_reviewed",
+        "reviewer": "codex-research-agent",
+        "reviewed_at": "2026-07-29T20:00:00-04:00",
+        "as_of": "2026-07-29"
+      },
+      "sources": [
+        {
+          "id": "hyperliquid-defillama",
+          "title": "Hyperliquid protocol dashboard",
+          "publisher": "DefiLlama",
+          "url": "https://defillama.com/protocol/hyperliquid",
+          "source_tier": "B",
+          "source_role": "aggregator",
+          "independence_group": "defillama_adapter",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Live snapshot reviewed 2026-07-29: 30-day fees, revenue, spot and perpetual volume, and open interest shown as distinct metrics.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T18:50:00-04:00"
+        },
+        {
+          "id": "hyperliquid-oak-jelly",
+          "title": "Hyperliquid JELLY Attack: Context, Vulnerability, Team Solution",
+          "publisher": "OAK Research",
+          "url": "https://oakresearch.io/en/analyses/investigations/hyperliquid-jelly-attack-context-vulnerability-team-solution",
+          "source_tier": "C",
+          "source_role": "independent",
+          "independence_group": "oak_research",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Documents the oversized illiquid JELLY position, roughly $12M HLP unrealized exposure, validator/oracle intervention, mitigations, and the centralization tradeoff.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T18:50:00-04:00"
+        },
+        {
+          "id": "hyperliquid-docs",
+          "title": "Hyperliquid documentation",
+          "publisher": "Hyperliquid",
+          "url": "https://hyperliquid.gitbook.io/hyperliquid-docs",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "hyperliquid_operator",
+          "access_state": "unsupported_content_type",
+          "access_method": "indexed_browser_attempt",
+          "evidence_reviewed": false,
+          "evidence_locator": "GitBook returned text/markdown in the review path; fee, HIP-3, validator, and HLP claims require direct-text re-review before publication."
+        },
+        {
+          "id": "hyperliquid-bitwise-filing",
+          "title": "Bitwise Hyperliquid ETF registration statement",
+          "publisher": "Bitwise Asset Management filing hosted by SEC",
+          "url": "https://www.sec.gov/Archives/edgar/data/2088139/000121390026052317/ea0288809-s1a3_bitwise.htm",
+          "source_tier": "C",
+          "source_role": "independent_issuer_disclosure",
+          "independence_group": "bitwise_issuer_disclosure",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Issuer risk disclosure discusses JELLY-related intervention and governance/validator risks; SEC hosting is not an SEC finding.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T18:50:00-04:00"
+        }
+      ],
+      "claims": {
+        "outcome": {
+          "value": "High-volume operating perpetual and spot exchange with material live fees, revenue, volume, and open interest.",
+          "as_of": "2026-07-29",
+          "source_ids": ["hyperliquid-defillama"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "why": {
+          "value": "Product-first vertical integration plausibly produced CEX-like execution and fee capture, but the reviewed sources do not isolate architecture from leverage cycle, distribution, or incentive effects.",
+          "as_of": "2026-07-29",
+          "source_ids": ["hyperliquid-defillama", "hyperliquid-oak-jelly"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "strategic_choices": {
+          "value": [
+            "Build a purpose-optimized L1 and onchain order book.",
+            "Use HLP as protocol-managed liquidity and stress absorption.",
+            "Permit validator intervention during exceptional market risk.",
+            "Open market deployment through HIP-3."
+          ],
+          "as_of": "2026-07-29",
+          "source_ids": ["hyperliquid-oak-jelly", "hyperliquid-docs"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "token": {
+          "value": "HYPE is described as the network and economic token, but fee-flow and supply fields remain blocked on direct review of the first-party documentation.",
+          "as_of": "2026-07-29",
+          "source_ids": ["hyperliquid-docs", "hyperliquid-bitwise-filing"],
+          "confidence": "low",
+          "review_state": "unresolved"
+        },
+        "chain_dependence": {
+          "value": "The venue is vertically dependent on its own L1, validator set, oracle behavior, and HLP risk engine rather than an external settlement chain.",
+          "as_of": "2026-07-29",
+          "source_ids": ["hyperliquid-oak-jelly", "hyperliquid-bitwise-filing"],
+          "confidence": "medium",
+          "review_state": "reviewed"
+        },
+        "legal_or_loss": {
+          "value": "The JELLY incident created roughly $12M of unrealized HLP exposure before validator intervention; the reviewed set establishes risk and intervention, not an adjudicated legal finding.",
+          "as_of": "2026-07-29",
+          "source_ids": ["hyperliquid-oak-jelly", "hyperliquid-bitwise-filing"],
+          "confidence": "medium",
+          "review_state": "reviewed"
+        }
+      },
+      "counterevidence": [
+        "JELLY showed that onchain execution can still depend on discretionary validator action during stress.",
+        "Current volume and fee scale do not establish decentralization or durability through a prolonged deleveraging cycle."
+      ],
+      "unknowns": [
+        "Validator/Foundation stake concentration.",
+        "Sustainable HLP behavior under correlated liquidations.",
+        "Directly reviewed HYPE supply, allocation, and fee-flow fields."
+      ]
+    },
+    {
+      "dossier_id": "dex:successful:meteora",
+      "current_table": "successful_exchanges",
+      "review": {
+        "state": "partially_reviewed",
+        "reviewer": "codex-research-agent",
+        "reviewed_at": "2026-07-29T20:00:00-04:00",
+        "as_of": "2026-07-29"
+      },
+      "sources": [
+        {
+          "id": "meteora-defillama-volume",
+          "title": "Meteora DEX adapter",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/summary/dexs/meteora?dataType=dailyVolume",
+          "source_tier": "B",
+          "source_role": "aggregator",
+          "independence_group": "defillama_adapter",
+          "access_state": "accessible",
+          "access_method": "direct_json_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Adapter response reviewed for current daily, 30-day, and all-time DEX volume fields without summing incompatible windows.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T18:55:00-04:00"
+        },
+        {
+          "id": "meteora-q1-2026-report",
+          "title": "Meteora Q1 2026 Token Holder Report",
+          "publisher": "Meteora",
+          "url": "https://ir.meteora.ag/assets/Meteora_Q1_2026_Token_Holder_Report.pdf",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "meteora_operator",
+          "access_state": "fetch_failed",
+          "access_method": "indexed_browser_attempt",
+          "evidence_reviewed": false,
+          "evidence_locator": "Existing corpus attributes quarterly volume and MET buybacks to this PDF; the review path failed, so those fields remain unresolved."
+        },
+        {
+          "id": "meteora-justia-docket",
+          "title": "Order in Meteora-related putative class action",
+          "publisher": "U.S. District Court filing via Justia",
+          "url": "https://docs.justia.com/cases/federal/district-courts/new-york/nysdce/1%3A2025cv03268/640898/17",
+          "source_tier": "A",
+          "source_role": "authority",
+          "independence_group": "sdny_docket",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Order confirms a complaint and asserted legal sections; it does not find that the allegations are true or impose liability.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T18:55:00-04:00"
+        },
+        {
+          "id": "meteora-decrypt-lawsuit",
+          "title": "Solana DEX Meteora Sued Over Alleged Pump-and-Dump Meme Coin Launch",
+          "publisher": "Decrypt",
+          "url": "https://decrypt.co/315860/solana-dex-meteora-sued-alleged-pump-dump-meme-coin-launch",
+          "source_tier": "C",
+          "source_role": "independent",
+          "independence_group": "decrypt_reporting",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Reports putative-class allegations of roughly $69M in loss and insider wallets; allegations remain unadjudicated.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T18:55:00-04:00"
+        }
+      ],
+      "claims": {
+        "outcome": {
+          "value": "Large operating Solana liquidity and token-launch venue; success is supported by current adapter volume, while the inaccessible quarterly issuer report cannot be used as reviewed evidence.",
+          "as_of": "2026-07-29",
+          "source_ids": ["meteora-defillama-volume", "meteora-q1-2026-report"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "why": {
+          "value": "DLMM, dynamic fee, and launch-stack integration plausibly fit Solana token price discovery, but independent causal evidence remains thin.",
+          "as_of": "2026-07-29",
+          "source_ids": ["meteora-defillama-volume"],
+          "confidence": "low",
+          "review_state": "unresolved"
+        },
+        "strategic_choices": {
+          "value": [
+            "Use discrete-bin concentrated liquidity and volatility-responsive fees.",
+            "Expand into token-launch and bonding-curve infrastructure.",
+            "Concentrate integrations on Solana.",
+            "Describe treasury accumulation and MET buybacks after token launch."
+          ],
+          "as_of": "2026-07-29",
+          "source_ids": ["meteora-q1-2026-report"],
+          "confidence": "low",
+          "review_state": "unresolved"
+        },
+        "token": {
+          "value": "MET buyback and holder-report claims remain unreviewed because the cited first-party PDF could not be retrieved in the review path.",
+          "as_of": "2026-07-29",
+          "source_ids": ["meteora-q1-2026-report"],
+          "confidence": "low",
+          "review_state": "unresolved"
+        },
+        "chain_dependence": {
+          "value": "Observed activity is Solana-specific and likely sensitive to Solana token-launch and memecoin cycles; the causal share is not identified.",
+          "as_of": "2026-07-29",
+          "source_ids": ["meteora-defillama-volume"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "legal_or_loss": {
+          "value": "A putative class action alleges approximately $69M in losses tied to a meme-coin launch; the docket confirms the litigation, not the truth of the allegations or liability.",
+          "as_of": "2026-07-29",
+          "source_ids": ["meteora-justia-docket", "meteora-decrypt-lawsuit"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        }
+      },
+      "counterevidence": [
+        "High venue volume does not prove token-holder value capture or sustainable demand outside token-launch cycles.",
+        "The lawsuit is a material risk signal but cannot be used as adjudicated causal proof."
+      ],
+      "unknowns": [
+        "Reviewed Q1 2026 quarterly metrics and MET buyback fields.",
+        "Volume share that persists through a sustained contraction in Solana token launches.",
+        "Program-upgrade, treasury, and launch-partner concentration."
+      ]
+    },
+    {
+      "dossier_id": "cex:dead:ascendex",
+      "current_table": "dead_exchanges",
+      "review": {
+        "state": "partially_reviewed",
+        "reviewer": "codex-research-agent",
+        "reviewed_at": "2026-07-29T20:00:00-04:00",
+        "as_of": "2026-07-29"
+      },
+      "sources": [
+        {
+          "id": "ascendex-notice-120932",
+          "title": "Corpus-linked AscendEX wind-down notice",
+          "publisher": "AscendEX",
+          "url": "https://ascendex.com/en/support/articles/120932",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "ascendex_operator",
+          "access_state": "wrong_content",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": false,
+          "evidence_locator": "The URL currently resolves to an unrelated VINE listing; it cannot support a wind-down claim."
+        },
+        {
+          "id": "ascendex-notice-138693",
+          "title": "Corpus-linked AscendEX withdrawal notice",
+          "publisher": "AscendEX",
+          "url": "https://ascendex.com/en/support/articles/138693",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "ascendex_operator",
+          "access_state": "not_found",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": false,
+          "evidence_locator": "The URL returned a not-found page in the review path."
+        },
+        {
+          "id": "ascendex-theblock-closure",
+          "title": "AscendEX shuts down",
+          "publisher": "The Block",
+          "url": "https://www.theblock.co/post/407654/ascendex-shuts-down",
+          "source_tier": "C",
+          "source_role": "independent",
+          "independence_group": "theblock_reporting",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "2026-07-09 report: cessation effective July 1, no MiCA authorization, financial/operational issues, failed strategic transaction, manual withdrawals, and no payout assurance; formal insolvency not confirmed.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:00:00-04:00"
+        },
+        {
+          "id": "ascendex-esma-mica",
+          "title": "Markets in Crypto-Assets Regulation (MiCA)",
+          "publisher": "European Securities and Markets Authority",
+          "url": "https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/markets-crypto-assets-regulation-mica",
+          "source_tier": "A",
+          "source_role": "authority",
+          "independence_group": "esma",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Explains CASP scope and that national transitional periods could run to 2026-07-01; this page alone does not prove AscendEX was absent from the authorization register.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:00:00-04:00"
+        }
+      ],
+      "claims": {
+        "outcome": {
+          "value": "Independent reporting states the exchange ceased operations effective 2026-07-01 and moved withdrawals to manual offboarding; official corpus URLs are currently unusable.",
+          "as_of": "2026-07-29",
+          "source_ids": ["ascendex-theblock-closure", "ascendex-notice-120932", "ascendex-notice-138693"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "why": {
+          "value": "Reported contributors are lack of MiCA authorization, broader financial and operational pressure, and a failed strategic liquidity transaction; audited causal weights are unavailable.",
+          "as_of": "2026-07-29",
+          "source_ids": ["ascendex-theblock-closure", "ascendex-esma-mica"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "strategic_choices": {
+          "value": [
+            "Operate toward the MiCA transition endpoint without reported authorization.",
+            "Rely on a third-party strategic transaction for liquidity.",
+            "Replace automated withdrawals with manual review during wind-down.",
+            "Limit the platform to offboarding after operations ceased."
+          ],
+          "as_of": "2026-07-29",
+          "source_ids": ["ascendex-theblock-closure"],
+          "confidence": "medium",
+          "review_state": "reviewed"
+        },
+        "token": {
+          "value": "ASD existed as an exchange utility/rewards token, but launch, supply, treasury, and failure-impact fields are not field-verified in the reviewed source set.",
+          "as_of": "2026-07-29",
+          "source_ids": [],
+          "confidence": "low",
+          "review_state": "unresolved"
+        },
+        "chain_dependence": {
+          "value": "As a custodial multi-product CEX, closure is not attributable to one host chain; wallet-by-wallet asset coverage and liabilities remain unknown.",
+          "as_of": "2026-07-29",
+          "source_ids": ["ascendex-theblock-closure"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "legal_or_loss": {
+          "value": "No audited customer shortfall or bankruptcy filing is confirmed in the reviewed set; manual withdrawals and lack of payout assurance are unresolved exposure signals, not proof of a $240M loss.",
+          "as_of": "2026-07-29",
+          "source_ids": ["ascendex-theblock-closure"],
+          "confidence": "medium",
+          "review_state": "reviewed"
+        }
+      },
+      "counterevidence": [
+        "MiCA timing is regulatory context, not standalone proof that licensing caused closure.",
+        "Hot-wallet observations cannot resolve entity-level solvency or customer liabilities."
+      ],
+      "unknowns": [
+        "Audited assets, liabilities, and customer recovery percentage.",
+        "Strategic-transaction counterparty and contractual terms.",
+        "Whether a formal insolvency proceeding will begin.",
+        "Archived or corrected official wind-down notices."
+      ]
+    },
+    {
+      "dossier_id": "dex:successful:dydx",
+      "current_table": "successful_exchanges",
+      "review": {
+        "state": "partially_reviewed",
+        "reviewer": "codex-research-agent",
+        "reviewed_at": "2026-07-29T20:00:00-04:00",
+        "as_of": "2026-07-29"
+      },
+      "sources": [
+        {
+          "id": "dydx-annual-report-2025",
+          "title": "dYdX Ecosystem Annual Report 2025",
+          "publisher": "dYdX Foundation",
+          "url": "https://www.dydx.foundation/blog/dydx-ecosystem-annual-report-2025",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "dydx_foundation",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Foundation-reported cumulative trading and v4 fee metrics plus 2025 lifecycle context; figures remain first-party.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:05:00-04:00"
+        },
+        {
+          "id": "dydx-chain-launch",
+          "title": "The dYdX Chain",
+          "publisher": "dYdX",
+          "url": "https://www.dydx.xyz/blog/dydx-chain",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "dydx_operator",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Describes the move to a sovereign Cosmos chain, validator-maintained order book, and chain-level fee model.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:05:00-04:00"
+        },
+        {
+          "id": "dydx-token-mechanics",
+          "title": "DYDX token mechanics",
+          "publisher": "dYdX Foundation",
+          "url": "https://www.dydx.foundation/blog/dydx-token-mechanics",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "dydx_foundation",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Describes ethDYDX migration and native DYDX governance, staking, and network utility.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:05:00-04:00"
+        },
+        {
+          "id": "dydx-four-pillars-chain",
+          "title": "Why did dYdX choose to launch its own chain?",
+          "publisher": "Four Pillars",
+          "url": "https://research.4pillars.io/en/research/why-did-dydx-choose-to-launch-its-own-chain",
+          "source_tier": "C",
+          "source_role": "independent",
+          "independence_group": "four_pillars_research",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Independent architecture analysis of the sovereign-chain choice, performance rationale, and migration tradeoffs.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:05:00-04:00"
+        }
+      ],
+      "claims": {
+        "outcome": {
+          "value": "Operating derivatives venue and category builder with large first-party cumulative volume, but no assumption that it retained market leadership.",
+          "as_of": "2026-07-29",
+          "source_ids": ["dydx-annual-report-2025"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "why": {
+          "value": "Early perpetual product-market fit and professional order-book execution built scale; the sovereign-chain migration increased stack control while adding user, liquidity, token, and infrastructure migration costs.",
+          "as_of": "2026-07-29",
+          "source_ids": ["dydx-chain-launch", "dydx-four-pillars-chain"],
+          "confidence": "medium",
+          "review_state": "reviewed"
+        },
+        "strategic_choices": {
+          "value": [
+            "Move from Ethereum/StarkEx to a sovereign Cosmos-based chain.",
+            "Place order-book maintenance with validators.",
+            "Fund network security from trading and gas economics.",
+            "Migrate utility from ethDYDX to native DYDX."
+          ],
+          "as_of": "2026-07-29",
+          "source_ids": ["dydx-chain-launch", "dydx-token-mechanics", "dydx-four-pillars-chain"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "token": {
+          "value": "DYDX migrated from Ethereum representation to native chain utility for governance and staking; current supply, concentration, and event-study fields need fresh independent verification.",
+          "as_of": "2026-07-29",
+          "source_ids": ["dydx-token-mechanics"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "chain_dependence": {
+          "value": "The core venue now depends on dYdX Chain validators and Cosmos infrastructure by design; the migration separated it from Ethereum execution while creating a dedicated operational dependency.",
+          "as_of": "2026-07-29",
+          "source_ids": ["dydx-chain-launch", "dydx-four-pillars-chain"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "legal_or_loss": {
+          "value": "No case-specific adjudicated legal or loss event was established in the reviewed set; this is an unresolved search result, not a claim that none exists.",
+          "as_of": "2026-07-29",
+          "source_ids": [],
+          "confidence": "low",
+          "review_state": "unresolved"
+        }
+      },
+      "counterevidence": [
+        "First-party cumulative metrics cannot establish current market leadership or organic retention.",
+        "A sovereign chain can improve control while increasing validator, bridge, and migration dependencies."
+      ],
+      "unknowns": [
+        "Current organic volume after incentives and market-maker support.",
+        "Chain-adjusted migration effects versus competitor execution and distribution.",
+        "Independent current token concentration and fee-value-capture measurements.",
+        "Completed case-specific legal and loss search."
+      ]
+    },
+    {
+      "dossier_id": "dex:dead:platypus-finance",
+      "current_table": "dead_exchanges",
+      "review": {
+        "state": "reviewed",
+        "reviewer": "codex-research-agent",
+        "reviewed_at": "2026-07-29T20:00:00-04:00",
+        "as_of": "2026-07-29"
+      },
+      "sources": [
+        {
+          "id": "platypus-recovery-update",
+          "title": "Update on Recovery Efforts After the Exploitation",
+          "publisher": "Platypus Finance",
+          "url": "https://medium.com/platypus-finance/update-on-recovery-efforts-after-the-exploitation-a8f64acd5aa5",
+          "source_tier": "B",
+          "source_role": "primary",
+          "independence_group": "platypus_operator",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "2023-02-23 update reports approximately $9.1M taken in three attacks, the USP solvency-check logic error, recoveries, and compensation work.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:10:00-04:00"
+        },
+        {
+          "id": "platypus-immunefi-analysis",
+          "title": "Hack Analysis: Platypus Finance",
+          "publisher": "Immunefi",
+          "url": "https://medium.com/immunefi/hack-analysis-platypus-finance-february-2023-d11fce37d861",
+          "source_tier": "B",
+          "source_role": "security_research",
+          "independence_group": "immunefi_research",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Independent technical reconstruction identifies roughly $8.5M of collateral loss and the emergency-withdraw/solvency-check logic defect.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:10:00-04:00"
+        },
+        {
+          "id": "platypus-lemonde-acquittal",
+          "title": "Platypus hacking defendants acquitted",
+          "publisher": "Le Monde",
+          "url": "https://www.lemonde.fr/pixels/article/2023/12/01/piratage-de-la-plate-forme-de-cryptomonnaies-platypus-les-deux-accuses-relaxes-par-la-justice_6203417_4408996.html",
+          "source_tier": "C",
+          "source_role": "independent",
+          "independence_group": "lemonde_reporting",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "2023-12-01 report on criminal acquittal and the remaining debt/civil context; acquittal is not proof that no exploit occurred or that all liability vanished.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:10:00-04:00"
+        },
+        {
+          "id": "platypus-defillama",
+          "title": "Platypus Finance protocol adapter",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/protocol/platypus-finance",
+          "source_tier": "B",
+          "source_role": "aggregator",
+          "independence_group": "defillama_adapter",
+          "access_state": "accessible",
+          "access_method": "direct_json_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Current protocol TVL and historical peak series reviewed 2026-07-29; residual contract balances are not treated as meaningful exchange activity.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:10:00-04:00"
+        }
+      ],
+      "claims": {
+        "outcome": {
+          "value": "Economically inactive Avalanche stableswap with residual balances roughly 99.998% below the corpus peak; contracts remaining observable does not equal a functioning venue.",
+          "as_of": "2026-07-29",
+          "source_ids": ["platypus-defillama"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "why": {
+          "value": "The USP emergency-withdraw solvency defect enabled collateral removal with debt outstanding; repeated incidents, stablecoin impairment, compensation complexity, and capital flight destroyed the liquidity network effect.",
+          "as_of": "2026-07-29",
+          "source_ids": ["platypus-recovery-update", "platypus-immunefi-analysis", "platypus-defillama"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "strategic_choices": {
+          "value": [
+            "Use single-sided stablecoin pools and coverage-ratio pricing on Avalanche.",
+            "Add USP borrowing against staked LP collateral.",
+            "Permit an emergency-withdraw path without complete debt repayment enforcement.",
+            "Continue recovery and pool work after the February 2023 attack."
+          ],
+          "as_of": "2026-07-29",
+          "source_ids": ["platypus-recovery-update", "platypus-immunefi-analysis"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "token": {
+          "value": "PTP and USP were integral to incentives and borrowing, but current redeemability, supply, and residual liability fields are not completely resolved.",
+          "as_of": "2026-07-29",
+          "source_ids": ["platypus-recovery-update"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "chain_dependence": {
+          "value": "The venue was Avalanche-native, but the primary failure evidence identifies protocol logic and repeated control failures rather than a host-chain outage.",
+          "as_of": "2026-07-29",
+          "source_ids": ["platypus-recovery-update", "platypus-immunefi-analysis"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "legal_or_loss": {
+          "value": "The operator reported about $9.1M taken across three February attacks; criminal defendants were later acquitted, which must not be rewritten as a finding that the exploit or losses did not occur.",
+          "as_of": "2026-07-29",
+          "source_ids": ["platypus-recovery-update", "platypus-immunefi-analysis", "platypus-lemonde-acquittal"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        }
+      },
+      "counterevidence": [
+        "The operator and security researcher use different loss scopes; amounts must retain their source and definition.",
+        "Criminal acquittal does not resolve civil recovery, protocol controls, or economic viability."
+      ],
+      "unknowns": [
+        "Final recovery by affected LP cohort.",
+        "Residual USP liabilities and enforceable redemption rights.",
+        "Current upgrade, pause, treasury, and token-administration authority."
+      ]
+    },
+    {
+      "dossier_id": "cex:dead:ftx",
+      "current_table": "dead_exchanges",
+      "review": {
+        "state": "reviewed",
+        "reviewer": "codex-research-agent",
+        "reviewed_at": "2026-07-29T20:00:00-04:00",
+        "as_of": "2026-07-29"
+      },
+      "sources": [
+        {
+          "id": "ftx-cftc-judgment",
+          "title": "CFTC Obtains $12.7 Billion Judgment Against FTX and Alameda",
+          "publisher": "Commodity Futures Trading Commission",
+          "url": "https://www.cftc.gov/PressRoom/PressReleases/8938-24",
+          "source_tier": "A",
+          "source_role": "authority",
+          "independence_group": "cftc",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "2024 judgment announcement states customer assets were commingled and misappropriated and sets $8.7B restitution plus $4B disgorgement.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:15:00-04:00"
+        },
+        {
+          "id": "ftx-doj-sentence",
+          "title": "Samuel Bankman-Fried Sentenced to 25 Years in Prison",
+          "publisher": "U.S. Department of Justice",
+          "url": "https://www.justice.gov/usao-sdny/pr/samuel-bankman-fried-sentenced-25-years-prison",
+          "source_tier": "A",
+          "source_role": "authority",
+          "independence_group": "doj_sdny",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Sentencing release summarizes conviction, customer-fund misappropriation, fraudulent concealment, and sentence.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:15:00-04:00"
+        },
+        {
+          "id": "ftx-support-distributions",
+          "title": "Distributions Dashboard FAQs",
+          "publisher": "FTX Recovery Trust",
+          "url": "https://support.ftx.com/hc/en-us/articles/34522100742804-Distributions-Dashboard-FAQs",
+          "source_tier": "B",
+          "source_role": "primary",
+          "independence_group": "ftx_recovery_trust",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Distribution process and status page; any 2026-07-31 fifth distribution was still future as of this 2026-07-29 review and cannot be marked completed.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:15:00-04:00"
+        },
+        {
+          "id": "ftx-ap-appeal-2026",
+          "title": "Appeals court upholds Sam Bankman-Fried conviction",
+          "publisher": "Associated Press",
+          "url": "https://apnews.com/article/e709df4a152e9b3b52a266dd81eb44cc",
+          "source_tier": "C",
+          "source_role": "independent",
+          "independence_group": "associated_press",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "June 2026 independent report that the Second Circuit upheld the conviction.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:15:00-04:00"
+        }
+      ],
+      "claims": {
+        "outcome": {
+          "value": "Non-operating exchange in bankruptcy recovery; creditor distributions do not constitute a venue relaunch.",
+          "as_of": "2026-07-29",
+          "source_ids": ["ftx-cftc-judgment", "ftx-support-distributions"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "why": {
+          "value": "Insiders gave Alameda privileged access to customer assets, commingled and spent those assets, concealed exposure, and operated without effective independent governance or financial controls; withdrawals exposed the existing hole.",
+          "as_of": "2026-07-29",
+          "source_ids": ["ftx-cftc-judgment", "ftx-doj-sentence"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "strategic_choices": {
+          "value": [
+            "Grant Alameda effectively privileged withdrawal access.",
+            "Concentrate control in a small insider group.",
+            "Allow liquidity and affiliated solvency to depend heavily on FTT.",
+            "Operate without reliable segregation, statements, and independent risk controls."
+          ],
+          "as_of": "2026-07-29",
+          "source_ids": ["ftx-cftc-judgment", "ftx-doj-sentence"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "token": {
+          "value": "FTT was an exchange token and material affiliated-balance-sheet dependency; it amplified fragility but is not a substitute explanation for the adjudicated misuse of customer assets.",
+          "as_of": "2026-07-29",
+          "source_ids": ["ftx-cftc-judgment", "ftx-doj-sentence"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "chain_dependence": {
+          "value": "The custodial failure crossed many supported chains and assets; the decisive dependency was centralized control of customer assets, not one host blockchain.",
+          "as_of": "2026-07-29",
+          "source_ids": ["ftx-cftc-judgment"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "legal_or_loss": {
+          "value": "The CFTC obtained a $12.7B judgment and Bankman-Fried's conviction and sentence were upheld; future distribution announcements must remain future until completed.",
+          "as_of": "2026-07-29",
+          "source_ids": ["ftx-cftc-judgment", "ftx-doj-sentence", "ftx-ap-appeal-2026", "ftx-support-distributions"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        }
+      },
+      "counterevidence": [
+        "Estate recoveries do not reverse the exchange failure.",
+        "Petition-date dollar recoveries are not equivalent to restoring the crypto assets customers originally held."
+      ],
+      "unknowns": [
+        "Final recovery by creditor class after taxes, disputes, and expenses.",
+        "Final duration and cost of the Recovery Trust.",
+        "Remaining cross-border and avoidance proceedings."
+      ]
+    },
+    {
+      "dossier_id": "dex:successful:raydium",
+      "current_table": "successful_exchanges",
+      "review": {
+        "state": "partially_reviewed",
+        "reviewer": "codex-research-agent",
+        "reviewed_at": "2026-07-29T20:00:00-04:00",
+        "as_of": "2026-07-29"
+      },
+      "sources": [
+        {
+          "id": "raydium-docs-overview",
+          "title": "What is Raydium",
+          "publisher": "Raydium",
+          "url": "https://docs.raydium.io/introduction/what-is-raydium",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "raydium_operator",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Current product overview documents Solana-native AMM, CLMM, routing, and LP range-management tradeoffs.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:20:00-04:00"
+        },
+        {
+          "id": "raydium-docs-fees",
+          "title": "Protocol fees",
+          "publisher": "Raydium",
+          "url": "https://docs.raydium.io/raydium/protocol/protocol-fees",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "raydium_operator",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Documents product-specific swap-fee splits among LPs, RAY buybacks, and treasury; 12% is a share of fees, not 12% of swap volume.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:20:00-04:00"
+        },
+        {
+          "id": "raydium-defillama-volume",
+          "title": "Raydium DEX adapter",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/summary/dexs/raydium?dataType=dailyVolume",
+          "source_tier": "B",
+          "source_role": "aggregator",
+          "independence_group": "defillama_adapter",
+          "access_state": "accessible",
+          "access_method": "direct_json_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Daily and 30-day spot-volume fields reviewed without mixing them with TVL or perpetual notional.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:20:00-04:00"
+        },
+        {
+          "id": "raydium-coindesk-exploit",
+          "title": "Solana-based decentralized exchange Raydium victim of exploit",
+          "publisher": "CoinDesk",
+          "url": "https://www.coindesk.com/business/2022/12/16/solana-based-decentralized-exchange-raydium-victim-of-exploit",
+          "source_tier": "C",
+          "source_role": "independent",
+          "independence_group": "coindesk_reporting",
+          "access_state": "canonical_url_unverified",
+          "access_method": "search_index_review",
+          "evidence_reviewed": false,
+          "evidence_locator": "Search evidence identifies contemporaneous exploit reporting, but the canonical article URL and body require re-review before attachment."
+        }
+      ],
+      "claims": {
+        "outcome": {
+          "value": "Operating Solana liquidity venue with substantial current spot volume across AMM and concentrated-liquidity products.",
+          "as_of": "2026-07-29",
+          "source_ids": ["raydium-defillama-volume", "raydium-docs-overview"],
+          "confidence": "medium",
+          "review_state": "reviewed"
+        },
+        "why": {
+          "value": "Solana-native liquidity products, wallet/aggregator routing, and repeated product adaptation plausibly sustained order flow; the individual causal effects are not independently isolated.",
+          "as_of": "2026-07-29",
+          "source_ids": ["raydium-docs-overview", "raydium-defillama-volume"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "strategic_choices": {
+          "value": [
+            "Build a Solana-native liquidity stack.",
+            "Support constant-product and concentrated-liquidity pools.",
+            "Distribute liquidity through client and aggregator routing.",
+            "Split protocol fees among LPs, treasury, and RAY buybacks."
+          ],
+          "as_of": "2026-07-29",
+          "source_ids": ["raydium-docs-overview", "raydium-docs-fees"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "token": {
+          "value": "RAY receives buybacks funded by a disclosed share of swap fees; the share is of the fee bucket, not gross volume, and current token event-study fields remain missing.",
+          "as_of": "2026-07-29",
+          "source_ids": ["raydium-docs-fees"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "chain_dependence": {
+          "value": "The core liquidity stack is Solana-native, so performance, distribution, fees, and program risk are materially tied to the Solana ecosystem.",
+          "as_of": "2026-07-29",
+          "source_ids": ["raydium-docs-overview"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "legal_or_loss": {
+          "value": "A 2022 exploit is known in the corpus, but its independent article URL/body and a first-party postmortem were not fully reviewed in this wave; loss mechanics remain unresolved here.",
+          "as_of": "2026-07-29",
+          "source_ids": ["raydium-coindesk-exploit"],
+          "confidence": "low",
+          "review_state": "unresolved"
+        }
+      },
+      "counterevidence": [
+        "High routed volume can overlap aggregator and underlying-pool activity and does not prove LP profitability.",
+        "First-party fee mechanics establish design, not the causal contribution of buybacks to venue success."
+      ],
+      "unknowns": [
+        "Primary and independently reviewed 2022 exploit postmortem.",
+        "Organic volume and retention after launch incentives.",
+        "RAY holder concentration and fixed-window token event study."
+      ]
+    },
+    {
+      "dossier_id": "dex:successful:jupiter",
+      "current_table": "successful_exchanges",
+      "review": {
+        "state": "partially_reviewed",
+        "reviewer": "codex-research-agent",
+        "reviewed_at": "2026-07-29T20:00:00-04:00",
+        "as_of": "2026-07-29"
+      },
+      "sources": [
+        {
+          "id": "jupiter-genesis",
+          "title": "JUP: The Genesis Post",
+          "publisher": "Jupiter",
+          "url": "https://discuss.jup.ag/t/jup-the-genesis-post/478/1",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "jupiter_operator",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "First-party launch rationale and JUP allocation/governance framing.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:25:00-04:00"
+        },
+        {
+          "id": "jupiter-tokenomics",
+          "title": "JUP tokenomics",
+          "publisher": "Jupiter",
+          "url": "https://docs.jup.ag/user-docs/more/jup-token/tokenomics",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "jupiter_operator",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "First-party token supply, allocation, and community/governance mechanics.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:25:00-04:00"
+        },
+        {
+          "id": "jupiter-defillama-aggregator",
+          "title": "Jupiter aggregator adapter",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/summary/aggregators/jupiter?dataType=dailyVolume",
+          "source_tier": "B",
+          "source_role": "aggregator",
+          "independence_group": "defillama_adapter",
+          "access_state": "accessible",
+          "access_method": "direct_json_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Aggregator-routed volume reviewed as its own metric; it must not be summed with underlying DEX volume.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:25:00-04:00"
+        },
+        {
+          "id": "jupiter-21shares-research",
+          "title": "How Raydium and Jupiter Are Powering Solana DeFi",
+          "publisher": "21Shares",
+          "url": "https://www.21shares.com/en-uk/research/how-raydium-and-jupiter-are-powering-solana-defi",
+          "source_tier": "C",
+          "source_role": "independent_issuer_research",
+          "independence_group": "21shares_issuer_research",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Issuer research discusses Jupiter's aggregation role and Solana ecosystem position; use as contextual analysis, not a regulator or disinterested academic finding.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:25:00-04:00"
+        }
+      ],
+      "claims": {
+        "outcome": {
+          "value": "Operating high-volume Solana aggregator; routed volume is a distribution metric and overlaps the underlying liquidity venues it selects.",
+          "as_of": "2026-07-29",
+          "source_ids": ["jupiter-defillama-aggregator", "jupiter-21shares-research"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "why": {
+          "value": "Routing across fragmented Solana liquidity reduced quote-discovery friction and made Jupiter a distribution layer; product breadth and ecosystem activity likely reinforce it, but causal shares are not isolated.",
+          "as_of": "2026-07-29",
+          "source_ids": ["jupiter-defillama-aggregator", "jupiter-21shares-research"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "strategic_choices": {
+          "value": [
+            "Aggregate rather than own all underlying liquidity.",
+            "Concentrate first on Solana routing and user distribution.",
+            "Expand the product surface around the routing relationship.",
+            "Launch JUP with governance and community allocation."
+          ],
+          "as_of": "2026-07-29",
+          "source_ids": ["jupiter-genesis", "jupiter-tokenomics", "jupiter-21shares-research"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "token": {
+          "value": "JUP launched as a governance/community token; launch allocation is first-party verified, while causal impact and fixed-window market outcomes require independent event-study data.",
+          "as_of": "2026-07-29",
+          "source_ids": ["jupiter-genesis", "jupiter-tokenomics"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "chain_dependence": {
+          "value": "Core distribution and order flow are materially tied to Solana wallet usage and liquidity fragmentation, even if routing can include multiple onchain venues.",
+          "as_of": "2026-07-29",
+          "source_ids": ["jupiter-defillama-aggregator", "jupiter-21shares-research"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "legal_or_loss": {
+          "value": "No case-specific adjudicated legal or loss event was established in the reviewed set; this remains an explicit search gap.",
+          "as_of": "2026-07-29",
+          "source_ids": [],
+          "confidence": "low",
+          "review_state": "unresolved"
+        }
+      },
+      "counterevidence": [
+        "Aggregator-routed volume is not additive to the volume of underlying DEXes.",
+        "Issuer research is independent of Jupiter's operator but is not equivalent to neutral academic or regulatory evidence."
+      ],
+      "unknowns": [
+        "Organic user retention and routing share after incentives.",
+        "JUP fixed-window launch impact and current holder concentration.",
+        "Completed case-specific legal and loss search."
+      ]
+    },
+    {
+      "dossier_id": "dex:mid:spiritswap",
+      "current_table": "mid_exchanges",
+      "review": {
+        "state": "partially_reviewed",
+        "reviewer": "codex-research-agent",
+        "reviewed_at": "2026-07-29T20:00:00-04:00",
+        "as_of": "2026-07-29"
+      },
+      "sources": [
+        {
+          "id": "spiritswap-website",
+          "title": "SpiritSwap",
+          "publisher": "SpiritSwap",
+          "url": "https://www.spiritswap.finance/",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "spiritswap_operator",
+          "access_state": "accessible_interface_only",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Current website/interface exists, but interface availability alone does not prove live swaps, liquidity, governance activity, or an active operator.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:30:00-04:00"
+        },
+        {
+          "id": "spiritswap-cointelegraph-rescue",
+          "title": "Fantom DEX rescued at eleventh hour following planned shutdown",
+          "publisher": "Cointelegraph",
+          "url": "https://cointelegraph.com/news/fantom-dex-rescued-at-eleventh-hour-following-planned-shutdown",
+          "source_tier": "C",
+          "source_role": "independent",
+          "independence_group": "cointelegraph_reporting",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Reports Multichain-related treasury harm, planned shutdown, and community rescue/transition.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:30:00-04:00"
+        },
+        {
+          "id": "spiritswap-inspirit",
+          "title": "inSPIRIT",
+          "publisher": "SpiritSwap",
+          "url": "https://www.spiritswap.finance/chain/ftm/inspirit",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "spiritswap_operator",
+          "access_state": "accessible_interface_only",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Interface describes SPIRIT locking/inSPIRIT mechanics; current usage and governance activity are not established.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:30:00-04:00"
+        }
+      ],
+      "claims": {
+        "outcome": {
+          "value": "Brand and interface remain observable after a planned shutdown and rescue, but current economically meaningful swaps, TVL, and operator activity are not established.",
+          "as_of": "2026-07-29",
+          "source_ids": ["spiritswap-website", "spiritswap-cointelegraph-rescue"],
+          "confidence": "low",
+          "review_state": "partially_reviewed"
+        },
+        "why": {
+          "value": "Fantom ecosystem concentration and Multichain-related treasury damage created existential fragility; a community rescue preserved continuity but does not prove restored product-market fit.",
+          "as_of": "2026-07-29",
+          "source_ids": ["spiritswap-cointelegraph-rescue"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "strategic_choices": {
+          "value": [
+            "Concentrate the DEX on Fantom.",
+            "Use vote-escrow-like SPIRIT locking and inSPIRIT governance.",
+            "Depend materially on Multichain-linked ecosystem infrastructure.",
+            "Transfer continuity to a community team instead of immediate closure."
+          ],
+          "as_of": "2026-07-29",
+          "source_ids": ["spiritswap-inspirit", "spiritswap-cointelegraph-rescue"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "token": {
+          "value": "SPIRIT/inSPIRIT locking mechanics remain documented at the interface, but current emissions, governance participation, supply, and value capture are unresolved.",
+          "as_of": "2026-07-29",
+          "source_ids": ["spiritswap-inspirit"],
+          "confidence": "low",
+          "review_state": "partially_reviewed"
+        },
+        "chain_dependence": {
+          "value": "The case is materially Fantom-dependent and demonstrates ecosystem-counterparty risk through Multichain exposure.",
+          "as_of": "2026-07-29",
+          "source_ids": ["spiritswap-cointelegraph-rescue"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "legal_or_loss": {
+          "value": "Multichain-related treasury harm and planned shutdown are reported; no adjudicated case-specific liability or final recovery was established in the reviewed set.",
+          "as_of": "2026-07-29",
+          "source_ids": ["spiritswap-cointelegraph-rescue"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        }
+      },
+      "counterevidence": [
+        "A loadable website does not establish an operating exchange.",
+        "A rescue event establishes continuity intent, not sustainable liquidity or governance."
+      ],
+      "unknowns": [
+        "Current swaps, TVL, fees, and active users.",
+        "Current operator and governance participation.",
+        "Treasury recovery and remaining Multichain-linked claims."
+      ]
+    },
+    {
+      "dossier_id": "dex:dead:kyberswap",
+      "current_table": "dead_exchanges",
+      "review": {
+        "state": "reviewed",
+        "reviewer": "codex-research-agent",
+        "reviewed_at": "2026-07-29T20:00:00-04:00",
+        "as_of": "2026-07-29"
+      },
+      "sources": [
+        {
+          "id": "kyberswap-postmortem",
+          "title": "Post-Mortem: KyberSwap Elastic Exploit",
+          "publisher": "KyberSwap",
+          "url": "https://blog.kyberswap.com/post-mortem-kyberswap-elastic-exploit/",
+          "source_tier": "B",
+          "source_role": "primary",
+          "independence_group": "kyberswap_operator",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Documents approximately $55.23M removed from affected Elastic pools, approximately $48.67M attributed to the primary exploiter, incident mechanics, recoveries, and grant plan.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:35:00-04:00"
+        },
+        {
+          "id": "kyberswap-2026-product-update",
+          "title": "KyberSwap 2026 Product Updates",
+          "publisher": "KyberSwap",
+          "url": "https://blog.kyberswap.com/kyberswap-2026-product-updates/",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "kyberswap_operator",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Current first-party product update establishes that the KyberSwap brand/aggregator continued after Elastic was retired.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:35:00-04:00"
+        },
+        {
+          "id": "kyberswap-irs-indictment",
+          "title": "Indictment announced in alleged $65 million DeFi exploits",
+          "publisher": "IRS Criminal Investigation",
+          "url": "https://www.irs.gov/pub/irs-ci/j5-media-release-2-10-25.pdf",
+          "source_tier": "A",
+          "source_role": "authority",
+          "independence_group": "doj_irs_investigation",
+          "access_state": "accessible",
+          "access_method": "pdf_text_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Indictment announcement alleges approximately $48.8M taken from 77 KyberSwap Elastic pools; allegations are not a conviction.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:35:00-04:00"
+        },
+        {
+          "id": "kyberswap-elpais-indictment",
+          "title": "A 22-year-old crypto hacker charged over alleged $65 million theft",
+          "publisher": "El País",
+          "url": "https://cincodias.elpais.com/criptoactivos/2025-02-04/un-criptopirata-de-22-anos-imputado-por-robar-65-millones-de-dolares-manipulando-plataformas-cripto.html",
+          "source_tier": "C",
+          "source_role": "independent",
+          "independence_group": "elpais_reporting",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Independent reporting on the indictment and alleged manipulation across KyberSwap and another protocol.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:35:00-04:00"
+        }
+      ],
+      "claims": {
+        "outcome": {
+          "value": "KyberSwap Elastic is a failed/retired product scope after the 2023 exploit; the surviving KyberSwap brand and aggregator must not be mislabeled as wholly dead.",
+          "as_of": "2026-07-29",
+          "source_ids": ["kyberswap-postmortem", "kyberswap-2026-product-update"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "why": {
+          "value": "A concentrated-liquidity arithmetic/state-transition weakness enabled artificial liquidity manipulation and repeated extraction; loss and confidence damage ended the Elastic product.",
+          "as_of": "2026-07-29",
+          "source_ids": ["kyberswap-postmortem", "kyberswap-irs-indictment"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "strategic_choices": {
+          "value": [
+            "Offer a concentrated-liquidity Elastic product across multiple chains.",
+            "Retire Elastic after the exploit rather than treat residual contracts as a live venue.",
+            "Use recovery and grant mechanisms for affected users.",
+            "Continue the brand through aggregation and newer products."
+          ],
+          "as_of": "2026-07-29",
+          "source_ids": ["kyberswap-postmortem", "kyberswap-2026-product-update"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "token": {
+          "value": "KNC is a broader Kyber ecosystem token; this wave does not establish that token design caused Elastic's failure or quantify the exploit event study.",
+          "as_of": "2026-07-29",
+          "source_ids": ["kyberswap-2026-product-update"],
+          "confidence": "low",
+          "review_state": "unresolved"
+        },
+        "chain_dependence": {
+          "value": "The affected product was multichain, and the exploit was product-logic-specific rather than evidence of a single host-chain failure.",
+          "as_of": "2026-07-29",
+          "source_ids": ["kyberswap-postmortem", "kyberswap-irs-indictment"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "legal_or_loss": {
+          "value": "The operator reports approximately $55.23M removed from affected pools; the indictment alleges approximately $48.8M from 77 Kyber pools, and remains an allegation rather than conviction.",
+          "as_of": "2026-07-29",
+          "source_ids": ["kyberswap-postmortem", "kyberswap-irs-indictment", "kyberswap-elpais-indictment"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        }
+      },
+      "counterevidence": [
+        "Loss totals differ by scope and actor attribution and must not be flattened into one unexplained number.",
+        "Retirement of Elastic does not establish death of the parent KyberSwap brand."
+      ],
+      "unknowns": [
+        "Final recovery and grant outcome by user cohort.",
+        "Final disposition of the criminal case.",
+        "KNC fixed-window exploit impact and current value-capture fields."
+      ]
+    },
+    {
+      "dossier_id": "dex:successful:uniswap",
+      "current_table": "successful_exchanges",
+      "review": {
+        "state": "reviewed",
+        "reviewer": "codex-research-agent",
+        "reviewed_at": "2026-07-29T20:00:00-04:00",
+        "as_of": "2026-07-29"
+      },
+      "sources": [
+        {
+          "id": "uniswap-v3-launch",
+          "title": "Introducing Uniswap v3",
+          "publisher": "Uniswap Labs",
+          "url": "https://blog.uniswap.org/launch-uniswap-v3",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "uniswap_labs",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Documents concentrated liquidity, flexible fee tiers, and capital-efficiency design choices.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:40:00-04:00"
+        },
+        {
+          "id": "uniswap-v4-launch",
+          "title": "Uniswap v4 is here",
+          "publisher": "Uniswap Labs",
+          "url": "https://blog.uniswap.org/uniswap-v4-is-here",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "uniswap_labs",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Documents hooks, singleton architecture, custom accounting, and continued product evolution.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:40:00-04:00"
+        },
+        {
+          "id": "uniswap-defillama",
+          "title": "Uniswap protocol dashboard",
+          "publisher": "DefiLlama",
+          "url": "https://defillama.com/protocol/uniswap",
+          "source_tier": "B",
+          "source_role": "aggregator",
+          "independence_group": "defillama_adapter",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Live protocol TVL, volume, and fee fields reviewed as separate dimensions at the 2026-07-29 snapshot.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:40:00-04:00"
+        },
+        {
+          "id": "uniswap-cftc-order",
+          "title": "CFTC Orders Uniswap Labs to Pay $175,000 for Illegal Digital Asset Derivatives Trading",
+          "publisher": "Commodity Futures Trading Commission",
+          "url": "https://www.cftc.gov/PressRoom/PressReleases/8961-24",
+          "source_tier": "A",
+          "source_role": "authority",
+          "independence_group": "cftc",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "2024 settled order and $175,000 civil monetary penalty concerning leveraged token transactions.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:40:00-04:00"
+        },
+        {
+          "id": "uniswap-axios-cftc",
+          "title": "Uniswap Labs settles with commodities regulator",
+          "publisher": "Axios",
+          "url": "https://www.axios.com/2024/09/04/uniswap-labs-regulators-cftc",
+          "source_tier": "C",
+          "source_role": "independent",
+          "independence_group": "axios_reporting",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Independent contemporaneous coverage of the CFTC settlement and its scope.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:40:00-04:00"
+        }
+      ],
+      "claims": {
+        "outcome": {
+          "value": "Large operating multichain AMM protocol with sustained current TVL, volume, and fees across product versions.",
+          "as_of": "2026-07-29",
+          "source_ids": ["uniswap-defillama", "uniswap-v4-launch"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "why": {
+          "value": "Permissionless liquidity primitives, composability, broad distribution, and repeated product evolution created a durable liquidity network effect; current metrics do not isolate each contributor.",
+          "as_of": "2026-07-29",
+          "source_ids": ["uniswap-v3-launch", "uniswap-v4-launch", "uniswap-defillama"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "strategic_choices": {
+          "value": [
+            "Use permissionless AMM pools rather than an order-book intermediary.",
+            "Introduce concentrated liquidity and flexible fee tiers in v3.",
+            "Introduce hooks and singleton/custom accounting in v4.",
+            "Expand deployment across multiple chains while retaining shared protocol primitives."
+          ],
+          "as_of": "2026-07-29",
+          "source_ids": ["uniswap-v3-launch", "uniswap-v4-launch"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "token": {
+          "value": "UNI is a governance token; current fee-switch/value-capture status, holder concentration, and fixed-window launch outcomes require separate fresh field-level review.",
+          "as_of": "2026-07-29",
+          "source_ids": [],
+          "confidence": "low",
+          "review_state": "unresolved"
+        },
+        "chain_dependence": {
+          "value": "Uniswap began on Ethereum and is now multichain; execution and liquidity remain deployment-specific even when the brand and governance span chains.",
+          "as_of": "2026-07-29",
+          "source_ids": ["uniswap-defillama", "uniswap-v4-launch"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "legal_or_loss": {
+          "value": "The CFTC entered a settled order and $175,000 penalty concerning leveraged token transactions; any SEC investigation closure is only first-party unless an SEC record is separately retrieved.",
+          "as_of": "2026-07-29",
+          "source_ids": ["uniswap-cftc-order", "uniswap-axios-cftc"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        }
+      },
+      "counterevidence": [
+        "Protocol-wide metrics can obscure chain, version, pool, and LP-performance differences.",
+        "Product innovation and observed scale do not establish that UNI captures protocol economics."
+      ],
+      "unknowns": [
+        "Current UNI fee/value-capture configuration and holder concentration.",
+        "Chain-adjusted causal contribution of each version transition.",
+        "Authority record for any claimed SEC investigation closure."
+      ]
+    },
+    {
+      "dossier_id": "dex:successful:pancakeswap",
+      "current_table": "successful_exchanges",
+      "review": {
+        "state": "partially_reviewed",
+        "reviewer": "codex-research-agent",
+        "reviewed_at": "2026-07-29T20:00:00-04:00",
+        "as_of": "2026-07-29"
+      },
+      "sources": [
+        {
+          "id": "pancakeswap-2025-recap",
+          "title": "PancakeSwap 2025 Recap",
+          "publisher": "PancakeSwap",
+          "url": "https://blog.pancakeswap.finance/articles/2025-recap",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "pancakeswap_operator",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "First-party 2025 product, chain expansion, and activity recap; numeric claims remain self-reported unless independently matched.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:45:00-04:00"
+        },
+        {
+          "id": "pancakeswap-cake-tokenomics",
+          "title": "CAKE tokenomics",
+          "publisher": "PancakeSwap",
+          "url": "https://docs.pancakeswap.finance/protocol/cake-tokenomics",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "pancakeswap_operator",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Documents CAKE emissions, burns, utility, and tokenomics policy; current supply still requires a time-stamped metric source.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:45:00-04:00"
+        },
+        {
+          "id": "pancakeswap-defillama-volume",
+          "title": "PancakeSwap DEX adapter",
+          "publisher": "DefiLlama",
+          "url": "https://api.llama.fi/summary/dexs/pancakeswap?dataType=dailyVolume",
+          "source_tier": "B",
+          "source_role": "aggregator",
+          "independence_group": "defillama_adapter",
+          "access_state": "accessible",
+          "access_method": "direct_json_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Daily and 30-day DEX volume reviewed as distinct windows at the 2026-07-29 snapshot.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:45:00-04:00"
+        },
+        {
+          "id": "pancakeswap-tokenomics-analysis",
+          "title": "PancakeSwap Tokenomics: How CAKE Captures Protocol Fees",
+          "publisher": "Tokenomics.com",
+          "url": "https://tokenomics.com/articles/pancakeswap-tokenomics-how-cake-captures-28m-monthly-across-bnb-chain",
+          "source_tier": "C",
+          "source_role": "independent",
+          "independence_group": "tokenomics_com",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Third-party tokenomics analysis of CAKE fee capture and BNB Chain activity; exact monthly figures require window matching before aggregation.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:45:00-04:00"
+        }
+      ],
+      "claims": {
+        "outcome": {
+          "value": "Large operating multichain DEX with substantial current adapter volume and a historically strong BNB Chain distribution base.",
+          "as_of": "2026-07-29",
+          "source_ids": ["pancakeswap-defillama-volume", "pancakeswap-2025-recap"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "why": {
+          "value": "Low-cost BNB Chain distribution, broad retail product surface, liquidity incentives, and later multichain expansion plausibly explain scale; first-party recap data cannot isolate these effects.",
+          "as_of": "2026-07-29",
+          "source_ids": ["pancakeswap-2025-recap", "pancakeswap-defillama-volume", "pancakeswap-tokenomics-analysis"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "strategic_choices": {
+          "value": [
+            "Launch into the BNB Chain retail ecosystem.",
+            "Use CAKE incentives across swaps, farms, and adjacent products.",
+            "Expand from AMM swaps into a broad retail product suite.",
+            "Deploy across additional chains while retaining the PancakeSwap brand."
+          ],
+          "as_of": "2026-07-29",
+          "source_ids": ["pancakeswap-2025-recap", "pancakeswap-cake-tokenomics"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "token": {
+          "value": "CAKE combines incentives, utility, emissions, and burns; current net inflation, supply, concentration, and fixed-window launch impact still require time-aligned observations.",
+          "as_of": "2026-07-29",
+          "source_ids": ["pancakeswap-cake-tokenomics", "pancakeswap-tokenomics-analysis"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "chain_dependence": {
+          "value": "The venue's original network effect is materially BNB Chain-linked, while multichain deployments reduce but do not eliminate ecosystem concentration.",
+          "as_of": "2026-07-29",
+          "source_ids": ["pancakeswap-2025-recap", "pancakeswap-defillama-volume"],
+          "confidence": "medium",
+          "review_state": "reviewed"
+        },
+        "legal_or_loss": {
+          "value": "No case-specific adjudicated legal or loss event was established in the reviewed set; this remains an explicit search gap.",
+          "as_of": "2026-07-29",
+          "source_ids": [],
+          "confidence": "low",
+          "review_state": "unresolved"
+        }
+      },
+      "counterevidence": [
+        "BNB-affiliated ecosystem research would not be independent of the host-chain distribution thesis and is excluded from the independent gate here.",
+        "Gross volume and burns do not establish sustainable net token-holder returns after emissions."
+      ],
+      "unknowns": [
+        "CAKE net issuance, current concentration, and fixed-window event study.",
+        "Chain-adjusted activity and organic retention after incentives.",
+        "Completed case-specific legal and loss search."
+      ]
+    },
+    {
+      "dossier_id": "cex:mid:okx",
+      "current_table": "mid_exchanges",
+      "review": {
+        "state": "reviewed",
+        "reviewer": "codex-research-agent",
+        "reviewed_at": "2026-07-29T20:00:00-04:00",
+        "as_of": "2026-07-29"
+      },
+      "sources": [
+        {
+          "id": "okx-doj-plea",
+          "title": "OKX Pleads Guilty to Violating U.S. Anti-Money Laundering Laws",
+          "publisher": "U.S. Department of Justice",
+          "url": "https://www.justice.gov/usao-sdny/pr/okx-pleads-guilty-violating-us-anti-money-laundering-laws-and-agrees-pay-penalties",
+          "source_tier": "A",
+          "source_role": "authority",
+          "independence_group": "doj_sdny",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "2025-02-24: Aux Cayes FinTech pleaded guilty to operating an unlicensed money transmitting business and agreed to more than $504M in penalties and forfeiture.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:50:00-04:00"
+        },
+        {
+          "id": "okx-axios-plea",
+          "title": "OKX pleads guilty and agrees to more than $500 million in penalties",
+          "publisher": "Axios",
+          "url": "https://www.axios.com/2025/02/24/okx-guilty-fine",
+          "source_tier": "C",
+          "source_role": "independent",
+          "independence_group": "axios_reporting",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Independent contemporaneous report on the guilty plea, more than $504M in penalties, and cooperation context.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:50:00-04:00"
+        },
+        {
+          "id": "okx-us-relaunch",
+          "title": "Bringing OKX to the United States",
+          "publisher": "OKX",
+          "url": "https://www.okx.com/en-us/learn/bringing-okx-to-the-united-states-a-new-era-for-crypto-and-web3-innovation",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "okx_operator",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "First-party description of the later U.S. market strategy and compliance posture; not independent proof of compliance effectiveness.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:50:00-04:00"
+        },
+        {
+          "id": "okx-proof-of-reserves",
+          "title": "Proof of Reserves",
+          "publisher": "OKX",
+          "url": "https://www.okx.com/es-la/proof-of-reserves",
+          "source_tier": "D",
+          "source_role": "primary",
+          "independence_group": "okx_operator",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Self-reported reserve coverage for scoped assets; it is not a consolidated audit of all entities, liabilities, encumbrances, or solvency.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:50:00-04:00"
+        }
+      ],
+      "claims": {
+        "outcome": {
+          "value": "Operating global CEX with material regulatory remediation history; a middling label reflects compliance and transparency risk, not cessation.",
+          "as_of": "2026-07-29",
+          "source_ids": ["okx-doj-plea", "okx-us-relaunch"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "why": {
+          "value": "Product breadth and international distribution sustained scale, while U.S.-facing activity without required registration produced a major guilty plea and remediation burden.",
+          "as_of": "2026-07-29",
+          "source_ids": ["okx-doj-plea", "okx-axios-plea", "okx-us-relaunch"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "strategic_choices": {
+          "value": [
+            "Build a broad spot, derivatives, and Web3 product stack.",
+            "Serve U.S. customers without required money-transmitter registration during the charged period.",
+            "Accept a guilty plea, forfeiture, fine, and compliance remediation.",
+            "Later pursue a formal U.S. market strategy."
+          ],
+          "as_of": "2026-07-29",
+          "source_ids": ["okx-doj-plea", "okx-us-relaunch"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "token": {
+          "value": "OKB is an exchange ecosystem token, but current utility, liabilities, treasury concentration, and causal contribution are not field-verified in this reviewed set.",
+          "as_of": "2026-07-29",
+          "source_ids": [],
+          "confidence": "low",
+          "review_state": "unresolved"
+        },
+        "chain_dependence": {
+          "value": "The custodial CEX is not dependent on one settlement chain; supported-asset and wallet risk is multichain, while proof-of-reserves coverage remains scoped.",
+          "as_of": "2026-07-29",
+          "source_ids": ["okx-proof-of-reserves"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
+        },
+        "legal_or_loss": {
+          "value": "Aux Cayes FinTech pleaded guilty and agreed to more than $504M in penalties and forfeiture; this is an adjudicated corporate event, not an allegation.",
+          "as_of": "2026-07-29",
+          "source_ids": ["okx-doj-plea", "okx-axios-plea"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        }
+      },
+      "counterevidence": [
+        "Proof of reserves is scoped self-reporting and cannot establish consolidated solvency.",
+        "A later U.S. launch statement does not itself prove remediation effectiveness."
+      ],
+      "unknowns": [
+        "Entity-resolved audited assets, liabilities, and encumbrances.",
+        "OKB concentration, treasury dependence, and value-capture event study.",
+        "Long-run effectiveness of post-plea compliance controls."
+      ]
+    },
+    {
+      "dossier_id": "cex:dead:quadrigacx",
+      "current_table": "dead_exchanges",
+      "review": {
+        "state": "reviewed",
+        "reviewer": "codex-research-agent",
+        "reviewed_at": "2026-07-29T20:00:00-04:00",
+        "as_of": "2026-07-29"
+      },
+      "sources": [
+        {
+          "id": "quadriga-osc-report",
+          "title": "QuadrigaCX: A Review by Staff of the Ontario Securities Commission",
+          "publisher": "Ontario Securities Commission",
+          "url": "https://www.osc.ca/quadrigacxreport/web/files/QuadrigaCX-A-Review-by-Staff-of-the-Ontario-Securities-Commission.pdf",
+          "source_tier": "A",
+          "source_role": "authority",
+          "independence_group": "ontario_securities_commission",
+          "access_state": "accessible",
+          "access_method": "pdf_text_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "OSC staff report documents approximately C$215M owed, C$46M recovered or identified, an approximately C$169M shortfall, asset misuse, false trading, and control failures; it is a regulator staff report, not a criminal conviction.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:55:00-04:00"
+        },
+        {
+          "id": "quadriga-ey-distribution",
+          "title": "Notice of Interim Dividend",
+          "publisher": "Ernst & Young, Bankruptcy Trustee",
+          "url": "https://documentcentre.ey.com/api/Document/download?docId=37250&language=EN",
+          "source_tier": "A",
+          "source_role": "authority",
+          "independence_group": "quadriga_bankruptcy_trustee",
+          "access_state": "accessible",
+          "access_method": "pdf_text_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "May 2023 trustee notice states an interim distribution of 13.094156% of each proven claim, subject to statutory levy.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:55:00-04:00"
+        },
+        {
+          "id": "quadriga-coindesk-distribution",
+          "title": "QuadrigaCX Bankruptcy Claimants to Get 13% on the Dollar",
+          "publisher": "CoinDesk",
+          "url": "https://www.coindesk.com/business/2023/05/12/quadriga-cx-bankruptcy-claimants-to-get-13-on-the-dollar",
+          "source_tier": "C",
+          "source_role": "independent",
+          "independence_group": "coindesk_reporting",
+          "access_state": "accessible",
+          "access_method": "indexed_browser_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Independent reporting of the trustee's approximately 13% interim distribution.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:55:00-04:00"
+        }
+      ],
+      "claims": {
+        "outcome": {
+          "value": "Failed Canadian custodial exchange in bankruptcy, with only partial interim creditor recovery.",
+          "as_of": "2026-07-29",
+          "source_ids": ["quadriga-osc-report", "quadriga-ey-distribution", "quadriga-coindesk-distribution"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "why": {
+          "value": "Founder-controlled custody, absent segregation and accounting, false trading, and misuse of customer assets created the shortfall; the founder's death exposed rather than fully explains the failure.",
+          "as_of": "2026-07-29",
+          "source_ids": ["quadriga-osc-report"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "strategic_choices": {
+          "value": [
+            "Concentrate custody and operational control with the founder.",
+            "Operate without adequate segregation, books, and independent oversight.",
+            "Use customer assets and platform accounts for proprietary activity.",
+            "Represent internal trading and balances without reliable controls."
+          ],
+          "as_of": "2026-07-29",
+          "source_ids": ["quadriga-osc-report"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "token": {
+          "value": "QuadrigaCX did not require a native exchange token for the failure mechanism; token reflexivity is not a causal factor in this case.",
+          "as_of": "2026-07-29",
+          "source_ids": ["quadriga-osc-report"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "chain_dependence": {
+          "value": "The failure crossed multiple customer assets and arose from centralized custody and governance, not one blockchain's technical failure.",
+          "as_of": "2026-07-29",
+          "source_ids": ["quadriga-osc-report"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        },
+        "legal_or_loss": {
+          "value": "OSC staff reported approximately C$215M owed, C$46M recovered or identified, and a C$169M shortfall; the trustee later announced a 13.094156% interim dividend.",
+          "as_of": "2026-07-29",
+          "source_ids": ["quadriga-osc-report", "quadriga-ey-distribution", "quadriga-coindesk-distribution"],
+          "confidence": "high",
+          "review_state": "reviewed"
+        }
+      },
+      "counterevidence": [
+        "The OSC document is a regulator staff report and should not be described as a criminal conviction.",
+        "An interim dividend is not the final recovery rate."
+      ],
+      "unknowns": [
+        "Final creditor recovery after remaining administration and claims.",
+        "Final disposition of unrecovered assets and related proceedings.",
+        "Whether later evidence materially changes the OSC staff reconstruction."
+      ]
+    }
+  ]
+}
