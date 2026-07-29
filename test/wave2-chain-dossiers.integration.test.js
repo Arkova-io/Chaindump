@@ -134,6 +134,7 @@ describe('wave-two dossiers through the public chain API', () => {
     for (const chain of WAVE_TWO) {
       const boardRow = board.chains.find((row) => row.name === chain);
       expect(boardRow?.dossier, chain).toMatchObject({ dimensionCount: 8, expectedDimensionCount: 8 });
+      expect(boardRow?.dossier?.freshness, chain).toMatchObject({ status: 'current', lastReviewedAt: '2026-07-29', nextReviewAt: '2026-10-27', derived: true });
       const response = await worker.fetch(new Request(`http://localhost/api/chain/${encodeURIComponent(chain)}`), env, context);
       expect(response.status, chain).toBe(200);
       const body = await response.json();

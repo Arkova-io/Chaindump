@@ -4,6 +4,8 @@
 // cohort, metric type, unit, and measurement window all match. The helpers in
 // this module intentionally never sum or average metric values.
 
+import { normalizeForensicAnalysis } from './forensic-analysis.js';
+
 function parse(value, fallback) {
   if (value == null) return fallback;
   if (typeof value === 'object') return value;
@@ -43,6 +45,16 @@ export function normalizeExchangeCase(row) {
     if (!replacement) return source;
     return typeof source === 'string' ? replacement : { ...source, url: replacement };
   });
+  const sourceById = Object.fromEntries(sources.flatMap((source) => (
+    source && typeof source !== 'string' && source.id && source.url ? [[source.id, source]] : []
+  )));
+  const forensicResult = profile.forensic_analysis
+    ? normalizeForensicAnalysis(profile.forensic_analysis, {
+      resolveRef: (reference) => sourceById[reference] || sources.find((source) => (
+        (typeof source === 'string' ? source : source?.url) === reference
+      )),
+    })
+    : null;
   const qualityIssues = parse(row.feature_quality_issues, ['normalized_feature_record_missing']);
   const metricType = row.feature_metric_type || row.metric_type || 'unknown';
   const metricUnit = String(row.feature_metric_unit || row.metric_unit || 'unknown').toLowerCase();
@@ -97,6 +109,11 @@ export function normalizeExchangeCase(row) {
         comparability_key: comparisonKey,
       },
       evidence,
+      forensic_analysis: forensicResult && forensicResult.errors.length === 0
+        ? forensicResult.value : null,
+      forensic_analysis_status: forensicResult
+        ? (forensicResult.errors.length ? 'pending_review' : 'published')
+        : 'pending',
       data_quality: {
         label: row.feature_quality_label || 'limited',
         issues: Array.isArray(qualityIssues) ? qualityIssues : ['invalid_quality_issues'],

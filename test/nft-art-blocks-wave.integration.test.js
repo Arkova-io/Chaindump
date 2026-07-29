@@ -39,6 +39,12 @@ describe('Art Blocks field-cited lifecycle wave', () => {
     ]);
   });
 
+  it('keeps platform-level supply descriptive so the public UI does not imply a numeric collection supply', () => {
+    const [dossier] = document.dossiers;
+    expect(typeof dossier.profile.supply).toBe('string');
+    expect(dossier.profile.supply).toContain('no aggregate supply is asserted');
+  });
+
   it('commits the generated migration rather than a hand-edited SQL variant', () => {
     expect(migration).toBe(renderNftMigration(document));
   });
