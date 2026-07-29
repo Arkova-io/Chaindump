@@ -188,7 +188,8 @@ to `canonical_url`, `source_tier`, and `source_role`.
 opened the cited material and confirmed that its locator supports the mapped
 field. A reachable URL is not proof that the page supports a claim. The initial
 candidate ledger has **no** editor-reviewed source evidence and therefore no
-publishable cases.
+publishable cases. Persist the reviewer identity and review time with each
+positive review so a later URL change can trigger a re-review.
 
 Claims:
 

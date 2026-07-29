@@ -110,6 +110,11 @@ CREATE TABLE IF NOT EXISTS casino_sources (
   )),
   content_hash TEXT,
   resolving INTEGER NOT NULL DEFAULT 1 CHECK (resolving IN (0, 1)),
+  evidence_reviewed INTEGER NOT NULL DEFAULT 0 CHECK (
+    evidence_reviewed IN (0, 1)
+  ),
+  evidence_reviewed_at TEXT,
+  evidence_reviewer TEXT,
   notes TEXT
 );
 

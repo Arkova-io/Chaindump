@@ -19,6 +19,9 @@ describe('casino research cohort', () => {
     expect(migration).toContain('CREATE TABLE IF NOT EXISTS casino_licences');
     expect(migration).toContain('CREATE TABLE IF NOT EXISTS casino_syntheses');
     expect(migration).toContain('source_claim_ids TEXT NOT NULL');
+    expect(migration).toContain('evidence_reviewed INTEGER NOT NULL DEFAULT 0');
+    expect(migration).toContain('evidence_reviewed_at TEXT');
+    expect(migration).toContain('evidence_reviewer TEXT');
   });
 
   it('has 25 distinct, citation-mapped candidates and no publishable drafts', () => {
