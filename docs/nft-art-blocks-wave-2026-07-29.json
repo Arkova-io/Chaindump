@@ -1,0 +1,154 @@
+{
+  "schema": "chaindump-nft-field-v1",
+  "research_as_of": "2026-07-29",
+  "method": "Citation-first NFT/Ordinals lifecycle addition using forensic-freshness-v1. Art Blocks is classified only for documented platform continuity. This does not assert collection-level price performance, aggregate market liquidity, revenue, artist outcomes, or founder economics where the reviewed primary evidence does not support those claims.",
+  "dossiers": [
+    {
+      "slug": "art-blocks-generative-art",
+      "name": "Art Blocks / onchain generative art",
+      "chain": "ethereum",
+      "category": "generative-art-platform",
+      "status": "thriving",
+      "profile": {
+        "citation_schema": "field-v1",
+        "evidence_policy": {
+          "schema": "forensic-freshness-v1",
+          "status_basis": "direct_current",
+          "status_as_of": "2026-06-09",
+          "last_verified_at": "2026-07-29",
+          "next_review_at": "2026-10-07",
+          "stale": false
+        },
+        "launched": "2020 — Art Blocks dates its founding to 2020 and identifies Erick Calderon (Snowfro) as founder.",
+        "supply": "Platform-level rather than a fixed collection: artists release deterministic ERC-721 outputs from onchain generative scripts; no aggregate supply is asserted.",
+        "benefits": "The Studio offering documents a V3 Engine deployment, creator dashboard, Sepolia QA, rendering integration, minter suite, and ERC-2981 royalty plumbing via 0xSplits.",
+        "business": "Art Blocks documents an onchain generative-art release platform: its generator can reconstruct compatible artworks from contract data, while the documentation distinguishes fully onchain projects from projects with distributed-CDN dependencies.",
+        "analysis": "Classified thriving only for current platform continuity: Art Blocks published a June 2026 exhibition update and currently presents its Studio creator-release offering. That evidence does not establish market prices, liquidity, revenue, aggregate supply, holder retention, or founder economics.",
+        "evidence": [
+          {
+            "field": "launch",
+            "value": "2020 — Art Blocks dates its founding to 2020 and identifies Erick Calderon (Snowfro) as founder",
+            "as_of": "2020-11-27",
+            "basis": "operator",
+            "source_ids": ["art-blocks-history"]
+          },
+          {
+            "field": "supply_or_mint",
+            "value": "Platform-level deterministic ERC-721 outputs from onchain generative scripts; no aggregate supply asserted",
+            "as_of": "2026-07-29",
+            "basis": "operator",
+            "source_ids": ["art-blocks-studio"]
+          },
+          {
+            "field": "lifecycle_status",
+            "value": "thriving — current operating-platform continuity supported by a June 2026 Art Blocks exhibition publication and active Studio offering; not a market-performance conclusion",
+            "as_of": "2026-06-09",
+            "basis": "operator",
+            "source_ids": ["art-blocks-william-mapan", "art-blocks-studio"]
+          },
+          {
+            "field": "benefits",
+            "value": "Studio documents V3 Engine deployment, dashboard, Sepolia QA, rendering integration, minter suite, and ERC-2981 royalty plumbing via 0xSplits",
+            "as_of": "2026-07-29",
+            "basis": "operator",
+            "source_ids": ["art-blocks-studio", "art-blocks-royalties"]
+          },
+          {
+            "field": "business",
+            "value": "The onchain generator can reconstruct compatible works from contract data; documentation says roughly 90% of flagship projects are fully onchain while roughly 10% reference distributed-CDN dependencies",
+            "as_of": "2026-07-29",
+            "basis": "operator",
+            "source_ids": ["art-blocks-onchain-generator"]
+          },
+          {
+            "field": "analysis",
+            "value": "The thriving label is limited to current platform continuity and deliberately withholds market, holder, revenue, and founder-economics conclusions",
+            "as_of": "2026-06-09",
+            "basis": "analyst",
+            "source_ids": ["art-blocks-william-mapan", "art-blocks-studio"]
+          }
+        ]
+      },
+      "sources": [
+        {
+          "id": "art-blocks-history",
+          "title": "Art Blocks — About Art Blocks",
+          "url": "https://www.artblocks.io/articles/about-art-blocks",
+          "publisher": "Art Blocks",
+          "source_date": "2020-11-27",
+          "source_date_kind": "published",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "historical_event",
+          "stale_after": null,
+          "stale": false,
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "art-blocks-studio",
+          "title": "Art Blocks Documentation — Creative Offerings / Studio",
+          "url": "https://docs.artblocks.io/creator-onboarding/offerings/",
+          "publisher": "Art Blocks",
+          "source_date": null,
+          "source_date_kind": "unknown",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "current_state",
+          "stale_after": "2026-10-07",
+          "stale": false,
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "art-blocks-royalties",
+          "title": "Art Blocks Documentation — Core Contract / ERC-2981 Royalties",
+          "url": "https://docs.artblocks.io/developer/core-contract/",
+          "publisher": "Art Blocks",
+          "source_date": null,
+          "source_date_kind": "unknown",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "mechanism",
+          "stale_after": null,
+          "stale": false,
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "art-blocks-onchain-generator",
+          "title": "Art Blocks Documentation — The On-Chain Generator",
+          "url": "https://docs.artblocks.io/protocol/on-chain-generator/",
+          "publisher": "Art Blocks",
+          "source_date": null,
+          "source_date_kind": "unknown",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "mechanism",
+          "stale_after": null,
+          "stale": false,
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "art-blocks-art-basel",
+          "title": "Art Blocks — Art Basel Hong Kong 2026 recap",
+          "url": "https://www.artblocks.io/articles/art-basel-hk-2026-recap",
+          "publisher": "Art Blocks",
+          "source_date": "2026-04-02",
+          "source_date_kind": "published",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "current_state",
+          "stale_after": "2026-10-07",
+          "stale": false,
+          "checked_at": "2026-07-29"
+        },
+        {
+          "id": "art-blocks-william-mapan",
+          "title": "Art Blocks — William Mapan: Paysages Plausibles",
+          "url": "https://www.artblocks.io/articles/william-mapan-paysages-plausibles",
+          "publisher": "Art Blocks",
+          "source_date": "2026-06-09",
+          "source_date_kind": "published",
+          "last_verified_at": "2026-07-29",
+          "evidence_scope": "current_state",
+          "stale_after": "2026-10-07",
+          "stale": false,
+          "checked_at": "2026-07-29"
+        }
+      ]
+    }
+  ]
+}
