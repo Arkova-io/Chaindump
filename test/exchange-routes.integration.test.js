@@ -30,7 +30,8 @@ function stubFeed() {
 }
 
 // Minimal D1 stub: serves dead_exchanges/mid_exchanges rows filtered by the
-// bound `kind` and the route's exchange-only venue scope, plus a generic
+// bound `kind`. DEX remains exchange-only; CEX includes the exchange-adjacent
+// lender, broker, and custodian cases shown in the same forensic product.
 // snapshot_cache key='cex' single-row lookup.
 function makeDB({ dead = [], mid = [], successful = [], features = [], cexCache = null } = {}) {
   return {
@@ -58,7 +59,9 @@ function makeDB({ dead = [], mid = [], successful = [], features = [], cexCache 
                 ...r, kind: r.type, lifecycle: 'successful', peak_metric: null,
                 drawdown_pct: null, event_date: null, summary: r.why_successful,
               })),
-            ].filter((r) => r.kind === kind && r.venue_type === 'exchange');
+            ].filter((r) => (
+              r.kind === kind && (r.venue_type === 'exchange' || r.kind === 'cex')
+            ));
             const featureKeys = [
               'operating_model', 'product_cohort', 'custody_model', 'primary_chain',
               'chains', 'token_status', 'token_symbol', 'token_launch_date',
@@ -80,7 +83,13 @@ function makeDB({ dead = [], mid = [], successful = [], features = [], cexCache 
           }
           if (sql.includes('FROM dead_exchanges')) {
             const kind = this.binds[0];
-            const rows = dead.filter((r) => r.kind === kind && (!sql.includes(`venue_type = 'exchange'`) || r.venue_type === 'exchange'));
+            const rows = dead.filter((r) => (
+              r.kind === kind && (
+                !sql.includes(`venue_type = 'exchange'`)
+                || r.venue_type === 'exchange'
+                || (sql.includes(`OR kind = 'cex'`) && r.kind === 'cex')
+              )
+            ));
             // Mirror the route's real ORDER BY so a dropped or incompatible
             // ordering clause actually fails the route-level sort tests below
             // (D1 sorts server-side; this stub has to do it explicitly).
@@ -96,7 +105,13 @@ function makeDB({ dead = [], mid = [], successful = [], features = [], cexCache 
           }
           if (sql.includes('FROM mid_exchanges')) {
             const kind = this.binds[0];
-            const rows = mid.filter((r) => r.kind === kind && (!sql.includes(`venue_type = 'exchange'`) || r.venue_type === 'exchange'));
+            const rows = mid.filter((r) => (
+              r.kind === kind && (
+                !sql.includes(`venue_type = 'exchange'`)
+                || r.venue_type === 'exchange'
+                || (sql.includes(`OR kind = 'cex'`) && r.kind === 'cex')
+              )
+            ));
             if (sql.includes('ORDER BY')) {
               rows.sort((a, b) => (
                 (a.kind === 'cex' ? `${a.metric_type}:${a.metric_unit}` : '')
@@ -108,7 +123,14 @@ function makeDB({ dead = [], mid = [], successful = [], features = [], cexCache 
             return { results: rows };
           }
           if (sql.includes('FROM successful_exchanges')) {
-            let rows = successful.filter((r) => r.type === this.binds[0]);
+            let rows = successful.filter((r) => (
+              r.type === this.binds[0]
+              && (
+                !sql.includes(`venue_type = 'exchange'`)
+                || r.venue_type === 'exchange'
+                || (sql.includes(`OR type = 'cex'`) && r.type === 'cex')
+              )
+            ));
             let bindIndex = 1;
             if (sql.includes('primary_chain = ?')) {
               const chain = this.binds[bindIndex++];
@@ -278,11 +300,11 @@ describe('GET /api/dead-exchanges', () => {
     const res = await worker.fetch(new Request('http://localhost/api/dead-exchanges?kind=cex'), { DB: makeDB({ dead: [DEAD_DEX, DEAD_CEX, DEAD_LENDER] }) }, ctx());
     const body = await res.json();
     expect(body.kind).toBe('cex');
-    expect(body.exchanges).toHaveLength(1);
-    expect(body.exchanges[0].slug).toBe('ftx');
-    expect(body.exchanges.some((row) => row.venue_type !== 'exchange')).toBe(false);
-    // commingled_funds + insider_fraud are both FRAUDY — one row still counts once.
-    expect(body.trends.fraudCount).toBe(1);
+    expect(body.exchanges).toHaveLength(2);
+    expect(body.exchanges.map((row) => row.slug)).toEqual(['celsius', 'ftx']);
+    expect(body.exchanges.find((row) => row.slug === 'celsius').venue_type).toBe('lender');
+    // Each row counts once even when it carries multiple fraud-related tags.
+    expect(body.trends.fraudCount).toBe(2);
   });
 
   it('degrades to an empty list, never a 500, when D1 has no table', async () => {
