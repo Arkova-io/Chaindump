@@ -153,7 +153,10 @@ export function normalizePublicationSource(sourceValue) {
   const host = normalizeHost(url);
   const byHost = classifyByHost(source, host);
   const tier = explicitTier(source) || byHost.tier;
-  const role = explicitRole(source) || byHost.role;
+  const declaredRole = explicitRole(source);
+  const role = byHost.role === 'authority'
+    ? 'authority'
+    : declaredRole || byHost.role;
   const publisher = source.publisher || host || source.title || null;
   const state = accessState(source);
   return {
@@ -170,9 +173,10 @@ export function normalizePublicationSource(sourceValue) {
     access_state: state,
     resolving: state === 'resolving',
     evidence_reviewed: source.evidence_reviewed === true
-      || source.evidence_reviewed === 1
-      || Boolean(source.checked_at || source.last_verified_at),
-    classification_basis: explicitTier(source) || explicitRole(source)
+      || source.evidence_reviewed === 1,
+    classification_basis: byHost.role === 'authority'
+      ? 'host_policy'
+      : explicitTier(source) || declaredRole
       ? 'declared_metadata'
       : byHost.basis,
   };
@@ -297,29 +301,43 @@ export function evaluatePublicationClaim(claim, registeredSources) {
   }
   const unique = uniqueSources(resolved);
   const accessible = unique.filter((source) => source.resolving && source.evidence_reviewed);
-  const authoritative = accessible.filter((source) => (
-    source.tier === 'T1' || source.tier === 'T2'
+  const tierOneAuthority = accessible.filter((source) => (
+    source.tier === 'T1' && source.role === 'authority'
+  ));
+  const tierTwoIndependent = accessible.filter((source) => (
+    source.tier === 'T2' && source.role === 'independent'
+  ));
+  const tierTwoPrimaryLifecycle = accessible.filter((source) => (
+    source.tier === 'T2' && source.role === 'primary'
   ));
   const independentTierThree = new Set(accessible
     .filter((source) => source.tier === 'T3' && source.role === 'independent')
     .map((source) => source.independence_key)
     .filter(Boolean));
   const passes = !claim.high_risk
-    || authoritative.length >= 1
+    || tierOneAuthority.length >= 1
+    || tierTwoIndependent.length >= 1
     || independentTierThree.size >= 2;
+  const passesWithOperatorLifecycle = passes || (
+    claim.type === 'lifecycle' && tierTwoPrimaryLifecycle.length >= 1
+  );
   const gaps = [];
   if (unresolvedRefs.length) gaps.push('unregistered_source_reference');
   if (unique.length === 0) gaps.push('no_registered_evidence');
   if (unique.length > 0 && accessible.length === 0) gaps.push('no_resolving_reviewed_evidence');
-  if (claim.high_risk && !passes) gaps.push('high_risk_evidence_threshold_not_met');
+  if (claim.high_risk && !passesWithOperatorLifecycle) {
+    gaps.push('high_risk_evidence_threshold_not_met');
+  }
   return {
     ...claim,
     source_count: unique.length,
     resolving_reviewed_source_count: accessible.length,
-    t1_t2_source_count: authoritative.length,
+    t1_authority_source_count: tierOneAuthority.length,
+    t2_independent_source_count: tierTwoIndependent.length,
+    t2_primary_lifecycle_source_count: tierTwoPrimaryLifecycle.length,
     independent_t3_publisher_count: independentTierThree.size,
     unresolved_refs: unresolvedRefs,
-    passes,
+    passes: passesWithOperatorLifecycle,
     gaps: [...new Set(gaps)],
   };
 }
@@ -380,7 +398,9 @@ function inspectDossier({ vertical, id, name, sources, claims }) {
       type: claim.type,
       source_count: claim.source_count,
       resolving_reviewed_source_count: claim.resolving_reviewed_source_count,
-      t1_t2_source_count: claim.t1_t2_source_count,
+      t1_authority_source_count: claim.t1_authority_source_count,
+      t2_independent_source_count: claim.t2_independent_source_count,
+      t2_primary_lifecycle_source_count: claim.t2_primary_lifecycle_source_count,
       independent_t3_publisher_count: claim.independent_t3_publisher_count,
       unresolved_refs: claim.unresolved_refs,
       gaps: claim.gaps,
@@ -556,8 +576,9 @@ export function buildPublicationDepthInventory(database, options = {}) {
     as_of: options.asOf || null,
     policy: {
       high_risk_claim_types: [...HIGH_RISK_CLAIM_TYPES].sort(),
-      passing_rule: 'At least one resolving, reviewed T1/T2 source OR two resolving, reviewed independent T3 publishers.',
+      passing_rule: 'High-risk claims require one resolving/reviewed T1 authority, one resolving/reviewed independent T2, or two resolving/reviewed independent T3 publishers. A T2 operator/primary source can pass only a narrow lifecycle/status claim that the operator reports about itself.',
       access_rule: 'Missing resolving/access metadata is reported as not_recorded and never silently treated as accessible.',
+      review_rule: 'Access timestamps never imply editorial evidence review; evidence_reviewed must be explicit.',
       reference_rule: 'Direct URL references must also exist in the dossier source registry; unmatched refs remain explicit gaps.',
     },
     summary: summarize(dossiers),

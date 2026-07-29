@@ -3,7 +3,11 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { validateForensicAnalysis } from '../src/lib/forensic-analysis.js';
 import { validateFieldCitedNft } from '../src/lib/nft-citation.mjs';
-import { buildPublicationDepthInventory } from '../src/lib/publication-depth.mjs';
+import {
+  buildPublicationDepthInventory,
+  evaluatePublicationClaim,
+  normalizePublicationSource,
+} from '../src/lib/publication-depth.mjs';
 import {
   buildPublicationDepthManifest,
   renderPublicationDepthMigration,
@@ -39,14 +43,6 @@ function createCorpus(options) {
   return database;
 }
 
-function canonicalDocument() {
-  const match = migration.match(
-    /-- canonical-payload-start[\s\S]*?VALUES \('([\s\S]*?)'\) -- NOSONAR:[^\n]*\n\)/,
-  );
-  if (!match) throw new Error('0063 canonical payload not found');
-  return JSON.parse(match[1].replaceAll("''", "'"));
-}
-
 function dossier(inventory, id) {
   return inventory.dossiers.find((item) => item.id === id);
 }
@@ -56,6 +52,27 @@ function resolver(sources) {
     [source.id || source.source_id, source],
     [source.url || source.canonical_url, source],
   ]));
+}
+
+function forensicReferences(analysis) {
+  return [
+    ...analysis.outcome.source_refs,
+    ...analysis.why.source_refs,
+    ...analysis.strategic_choices.flatMap(({ source_refs: refs }) => refs),
+    ...analysis.counterfactual.source_refs,
+    ...analysis.watch.flatMap(({ source_refs: refs }) => refs),
+  ].map((reference) => (
+    typeof reference === 'string'
+      ? reference
+      : reference.ref || reference.source_id || reference.id || reference.url
+  ));
+}
+
+function registeredSourceKeys(sources) {
+  return new Set(sources.flatMap((source) => {
+    if (typeof source === 'string') return [source];
+    return [source.id, source.source_id, source.url, source.canonical_url].filter(Boolean);
+  }));
 }
 
 function d1Adapter(database) {
@@ -93,19 +110,104 @@ afterEach(() => {
 });
 
 describe('publication-depth Wave A migration 0063', () => {
+  it('does not infer editorial review from access dates', () => {
+    for (const timestampField of ['checked_at', 'last_verified_at']) {
+      const source = normalizePublicationSource({
+        id: timestampField,
+        url: `https://independent.example/${timestampField}`,
+        publisher: 'Independent Example',
+        source_tier: 'T2',
+        source_role: 'independent',
+        resolving: true,
+        [timestampField]: '2026-07-29',
+      });
+      expect(source.resolving).toBe(true);
+      expect(source.evidence_reviewed).toBe(false);
+      const evaluated = evaluatePublicationClaim({
+        path: 'forensic_analysis.why',
+        type: 'causal',
+        high_risk: true,
+        source_refs: [timestampField],
+      }, new Map([[timestampField, source]]));
+      expect(evaluated.passes).toBe(false);
+      expect(evaluated.gaps).toContain('no_resolving_reviewed_evidence');
+    }
+  });
+
+  it('applies a role-aware high-risk source threshold', () => {
+    const source = (id, tier, role) => normalizePublicationSource({
+      id,
+      url: `https://${id}.example/evidence`,
+      publisher: id,
+      source_tier: tier,
+      source_role: role,
+      resolving: true,
+      evidence_reviewed: true,
+    });
+    const primary = source('operator', 'T2', 'primary');
+    const independent = source('independent', 'T2', 'independent');
+    const tierOnePrimary = source('tier-one-operator', 'T1', 'primary');
+    const assess = (type, ...evidence) => evaluatePublicationClaim({
+      path: `forensic_analysis.${type}`,
+      type,
+      high_risk: true,
+      source_refs: evidence.map(({ id }) => id),
+    }, new Map(evidence.map((item) => [item.id, item])));
+
+    expect(assess('causal', primary).passes).toBe(false);
+    expect(assess('legal', primary).passes).toBe(false);
+    expect(assess('loss', primary).passes).toBe(false);
+    expect(assess('lifecycle', primary).passes).toBe(true);
+    expect(assess('causal', independent).passes).toBe(true);
+    expect(assess('legal', tierOnePrimary).passes).toBe(false);
+
+    const firstTierThree = source('tier-three-one', 'T3', 'independent');
+    const secondTierThree = source('tier-three-two', 'T3', 'independent');
+    expect(assess('causal', firstTierThree).passes).toBe(false);
+    expect(assess('causal', firstTierThree, secondTierThree).passes).toBe(true);
+    const samePublisher = {
+      ...secondTierThree,
+      id: 'tier-three-same-publisher',
+      publisher: firstTierThree.publisher,
+      independence_key: firstTierThree.independence_key,
+    };
+    expect(assess('causal', firstTierThree, samePublisher).passes).toBe(false);
+
+    const authority = normalizePublicationSource({
+      id: 'authority',
+      url: 'https://www.sec.gov/example',
+      publisher: 'SEC',
+      source_tier: 'T1',
+      source_role: 'independent',
+      resolving: true,
+      evidence_reviewed: true,
+    });
+    expect(authority.role).toBe('authority');
+    expect(assess('legal', authority).passes).toBe(true);
+  });
+
   it('keeps its risk-first manifest and generated migration deterministic', () => {
     expect(buildPublicationDepthManifest()).toEqual(manifest);
-    expect(canonicalDocument()).toEqual(manifest);
     expect(migration).toBe(renderPublicationDepthMigration(manifest));
     expect(migration).not.toMatch(/\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i);
+    expect(migration).toContain('-- batched-payload-start');
+    expect(migration.match(
+      /INSERT OR REPLACE INTO publication_depth_wave_a_0063 \(vertical, dossier_id, patch\)/g,
+    )).toHaveLength(45);
     expect(manifest.exchange_patches.map(({ slug }) => slug)).toEqual(['bitmex', 'kucoin']);
     expect(manifest.casino_patches.map(({ case_id: id }) => id))
       .toEqual(['bc-game-curacao-small-house']);
     expect(manifest.nft_patches.map(({ slug }) => slug)).toEqual(['f1-delta-time']);
+    expect(manifest.reference_repairs.summary).toEqual({
+      dossier_count: 40,
+      source_ref_count: 179,
+      resolving_source_ref_count: 161,
+      unavailable_source_ref_count: 18,
+    });
   });
 
   it('records tier, role, access, editorial review, and field-level locators for every new source', () => {
-    expect(manifest.source_verification.results).toHaveLength(10);
+    expect(manifest.source_verification.results).toHaveLength(11);
     expect(manifest.source_verification.results.every(({ http_status: status }) => status === 200))
       .toBe(true);
     const exchangeAndNftSources = [
@@ -131,9 +233,54 @@ describe('publication-depth Wave A migration 0063', () => {
       expect(source.accessed_at).toBe('2026-07-29');
       expect(source.notes).toBeTruthy();
     }
+    const referenceSources = manifest.reference_repairs.exchange_patches
+      .flatMap(({ sources }) => sources);
+    expect(referenceSources).toHaveLength(178);
+    expect(referenceSources.filter(({ resolving }) => resolving)).toHaveLength(160);
+    expect(referenceSources.filter(({ resolving }) => !resolving)).toHaveLength(18);
+    for (const source of referenceSources) {
+      expect(source).toMatchObject({
+        title: expect.any(String),
+        publisher: expect.any(String),
+        checked_at: '2026-07-29',
+        source_tier: expect.stringMatching(/^T[1-4]$/),
+        source_role: expect.stringMatching(
+          /^(authority|primary|independent|aggregator|data)$/,
+        ),
+        evidence_reviewed: source.resolving,
+      });
+      expect(source.url).toMatch(/^https:\/\//);
+      if (source.resolving) expect(source.access_state).toBe('resolving');
+      else expect(source.access_state).toEqual(expect.any(String));
+      expect(source.verification_note).toBeTruthy();
+    }
+    const casinoReference = manifest.reference_repairs.casino_patches[0];
+    expect(casinoReference.sources[0]).toMatchObject({
+      canonical_url: 'https://doc.winklink.org/v2/doc/',
+      resolving: 1,
+      evidence_reviewed: 1,
+      accessed_at: '2026-07-29',
+    });
+    expect(casinoReference.claims[0]).toMatchObject({
+      field_path: 'scope.successor_documentation',
+      checked_at: '2026-07-29',
+    });
+    const zkasino = manifest.reference_repairs.casino_strengthening_patches[0];
+    expect(zkasino).toMatchObject({
+      case_id: 'zkasino-alleged-platform',
+      sources: [{
+        publisher: 'Dutch Public Prosecution Service',
+        source_tier: 'A',
+        resolving: 1,
+        evidence_reviewed: 1,
+      }],
+    });
+    expect(zkasino.claims).toHaveLength(2);
+    expect(Object.values(zkasino.analysis_updates).every((refs) => refs.length === 2))
+      .toBe(true);
   });
 
-  it('inventories the complete corpus and clears the selected high-risk cohort without hiding legacy gaps', () => {
+  it('inventories the complete corpus and reports role-aware repairs without hiding gaps', () => {
     database = createCorpus({ exclude: ['0063_publication_depth_wave_a.sql'] });
     const before = buildPublicationDepthInventory(database, { asOf: '2026-07-29' });
     database.exec(migration);
@@ -145,33 +292,36 @@ describe('publication-depth Wave A migration 0063', () => {
     expect(before.summary).toMatchObject({
       dossier_count: 139,
       high_risk_claim_count: 1039,
-      unresolved_high_risk_claim_count: 812,
-      dossiers_with_unresolved_high_risk_claims: 114,
+      unresolved_high_risk_claim_count: 975,
+      dossiers_with_unresolved_high_risk_claims: 138,
       dossiers_with_unmatched_source_refs: 41,
     });
     expect(after.summary).toMatchObject({
       dossier_count: 139,
-      high_risk_claim_count: 1041,
-      unresolved_high_risk_claim_count: 785,
-      dossiers_with_unresolved_high_risk_claims: 110,
-      dossiers_with_unmatched_source_refs: 40,
+      high_risk_claim_count: 1043,
+      unresolved_high_risk_claim_count: 869,
+      dossiers_with_unresolved_high_risk_claims: 132,
+      dossiers_with_unmatched_source_refs: 0,
     });
+    expect(after.dossiers.every(({ unmatched_source_ref_count: count }) => count === 0))
+      .toBe(true);
     expect(inventoryDocument.before_summary).toEqual(before.summary);
     expect(inventoryDocument.after_summary).toEqual(after.summary);
     expect(inventoryDocument.dossiers).toEqual(after.dossiers);
     expect(inventoryDocument.delta).toEqual({
-      high_risk_claim_count: 2,
-      passing_high_risk_claim_count: 29,
-      unresolved_high_risk_claim_count: -27,
-      dossiers_with_unresolved_high_risk_claims: -4,
-      dossiers_with_unmatched_source_refs: -1,
+      high_risk_claim_count: 4,
+      passing_high_risk_claim_count: 110,
+      unresolved_high_risk_claim_count: -106,
+      dossiers_with_unresolved_high_risk_claims: -6,
+      dossiers_with_unmatched_source_refs: -41,
     });
 
     const expectedRepairs = {
-      'cex:dead:bitmex': [6, 0],
-      'cex:mid:kucoin': [7, 0],
-      'bc-game-curacao-small-house': [3, 0],
-      'f1-delta-time': [11, 0],
+      'cex:dead:bitmex': [6, 3],
+      'cex:mid:kucoin': [7, 1],
+      'bc-game-curacao-small-house': [7, 9],
+      'f1-delta-time': [11, 6],
+      'zkasino-alleged-platform': [0, 0],
     };
     for (const [id, [beforeCount, afterCount]] of Object.entries(expectedRepairs)) {
       expect(dossier(before, id).unresolved_high_risk_claim_count, `${id} before`)
@@ -182,20 +332,24 @@ describe('publication-depth Wave A migration 0063', () => {
     expect(after.summary.unresolved_high_risk_claim_count).toBeGreaterThan(0);
   });
 
-  it('patches only the selected dossiers, stays validator-clean, and is idempotent', () => {
+  it('patches only the manifest targets, stays validator-clean, and is idempotent', () => {
     database = createCorpus({ exclude: ['0063_publication_depth_wave_a.sql'] });
     const untouchedBefore = {
       exchange: database.prepare(`
         SELECT profile, sources FROM dead_exchanges
-        WHERE kind = 'cex' AND slug = 'ftx'
+        WHERE kind = 'cex' AND slug = 'fcoin'
       `).get(),
       casino: database.prepare(`
         SELECT c.*, s.outlook
         FROM casino_cases AS c JOIN casino_syntheses AS s USING (case_id)
-        WHERE c.case_id = 'zkasino-alleged-platform'
+        WHERE c.case_id = 'stake-dot-com'
       `).get(),
       nft: database.prepare(`
         SELECT profile, sources FROM nft_collections WHERE slug = 'azuki'
+      `).get(),
+      referenceRepair: database.prepare(`
+        SELECT sources FROM dead_exchanges
+        WHERE kind = 'cex' AND slug = 'ftx'
       `).get(),
     };
 
@@ -217,6 +371,10 @@ describe('publication-depth Wave A migration 0063', () => {
       nft: database.prepare(`
         SELECT profile, sources FROM nft_collections WHERE slug = 'f1-delta-time'
       `).get(),
+      referenceRepair: database.prepare(`
+        SELECT sources FROM dead_exchanges
+        WHERE kind = 'cex' AND slug = 'ftx'
+      `).get(),
     };
     database.exec(migration);
     const second = {
@@ -235,6 +393,10 @@ describe('publication-depth Wave A migration 0063', () => {
       `).get(),
       nft: database.prepare(`
         SELECT profile, sources FROM nft_collections WHERE slug = 'f1-delta-time'
+      `).get(),
+      referenceRepair: database.prepare(`
+        SELECT sources FROM dead_exchanges
+        WHERE kind = 'cex' AND slug = 'ftx'
       `).get(),
     };
     expect(second).toEqual(first);
@@ -259,16 +421,18 @@ describe('publication-depth Wave A migration 0063', () => {
 
     expect(database.prepare(`
       SELECT profile, sources FROM dead_exchanges
-      WHERE kind = 'cex' AND slug = 'ftx'
+      WHERE kind = 'cex' AND slug = 'fcoin'
     `).get()).toEqual(untouchedBefore.exchange);
     expect(database.prepare(`
       SELECT c.*, s.outlook
       FROM casino_cases AS c JOIN casino_syntheses AS s USING (case_id)
-      WHERE c.case_id = 'zkasino-alleged-platform'
+      WHERE c.case_id = 'stake-dot-com'
     `).get()).toEqual(untouchedBefore.casino);
     expect(database.prepare(`
       SELECT profile, sources FROM nft_collections WHERE slug = 'azuki'
     `).get()).toEqual(untouchedBefore.nft);
+    expect(JSON.parse(first.referenceRepair.sources).length)
+      .toBeGreaterThan(JSON.parse(untouchedBefore.referenceRepair.sources).length);
   });
 
   it('publishes every repaired dossier through the APIs that back the existing UI routes', async () => {
@@ -319,5 +483,94 @@ describe('publication-depth Wave A migration 0063', () => {
     expect(nft.collections).toHaveLength(1);
     expect(JSON.parse(nft.collections[0].sources).map(({ id }) => id))
       .toEqual(['f1dt-closure', 'f1dt-racefans']);
+  });
+
+  it('publishes every forensic contract and registers every cited reference at the API boundary', async () => {
+    database = createCorpus();
+    const worker = await freshWorker();
+    const env = { DB: d1Adapter(database) };
+    const exchangeCases = [];
+    for (const kind of ['dex', 'cex']) {
+      const response = await worker.fetch(
+        new Request(`http://localhost/api/exchange-analysis?kind=${kind}`),
+        env,
+        ctx(),
+      );
+      expect(response.status, kind).toBe(200);
+      exchangeCases.push(...(await response.json()).cases);
+    }
+    expect(exchangeCases).toHaveLength(59);
+    for (const item of exchangeCases) {
+      expect(item.analysis.forensic_analysis_status, item.slug).toBe('published');
+      const analysis = item.analysis.forensic_analysis;
+      expect(analysis, item.slug).toBeTruthy();
+      const registered = registeredSourceKeys(item.sources);
+      for (const reference of forensicReferences(analysis)) {
+        expect(registered.has(reference), `${item.slug}: ${reference}`).toBe(true);
+      }
+    }
+
+    const casinoIds = database.prepare(`
+      SELECT case_id FROM casino_cases
+      WHERE quality_passed = 1
+      ORDER BY case_id
+    `).all().map(({ case_id: caseId }) => caseId);
+    expect(casinoIds).toHaveLength(29);
+    for (const caseId of casinoIds) {
+      const response = await worker.fetch(
+        new Request(`http://localhost/api/casino/${caseId}`),
+        env,
+        ctx(),
+      );
+      expect(response.status, caseId).toBe(200);
+      const item = await response.json();
+      expect(item.synthesis.forensic_analysis, caseId).toBeTruthy();
+      const registered = registeredSourceKeys(item.sources);
+      for (const reference of forensicReferences(item.synthesis.forensic_analysis)) {
+        expect(registered.has(reference), `${caseId}: ${reference}`).toBe(true);
+      }
+      if (caseId === 'zkasino-alleged-platform') {
+        expect(item.case.source_count).toBeGreaterThanOrEqual(2);
+        expect(item.sources.some(({ url }) => (
+          url === 'https://www.prosecutionservice.nl/latest/news/2025/07/03/'
+            + 'arrest-in-the-uae-in-criminal-case-involving-gambling-platform-zkasino'
+        ))).toBe(true);
+        expect(item.synthesis.forensic_analysis.why.source_refs).toHaveLength(2);
+      }
+    }
+
+    const coverageResponse = await worker.fetch(
+      new Request('http://localhost/api/casino-coverage'),
+      env,
+      ctx(),
+    );
+    expect(coverageResponse.status).toBe(200);
+    expect((await coverageResponse.json()).coverage).toMatchObject({
+      cohort_id: 'web3-casino-full-corpus-2026-07-29',
+      target_count: 29,
+      quality_passed_count: 29,
+      partial_count: 0,
+      missing_count: 0,
+    });
+
+    const nftResponse = await worker.fetch(
+      new Request('http://localhost/api/nft'),
+      env,
+      ctx(),
+    );
+    expect(nftResponse.status).toBe(200);
+    const nftPayload = await nftResponse.json();
+    expect(nftPayload.collections).toHaveLength(51);
+    for (const item of nftPayload.collections) {
+      const sources = JSON.parse(item.sources);
+      const analysis = item.profile.forensic_analysis;
+      expect(analysis, item.slug).toBeTruthy();
+      expect(validateForensicAnalysis(analysis, { resolver: resolver(sources) }), item.slug)
+        .toEqual({ errors: [], warnings: [], withheld_sections: [] });
+      const registered = registeredSourceKeys(sources);
+      for (const reference of forensicReferences(analysis)) {
+        expect(registered.has(reference), `${item.slug}: ${reference}`).toBe(true);
+      }
+    }
   });
 });

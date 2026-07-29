@@ -52,6 +52,7 @@ if (options.compare) {
     'cex:mid:kucoin',
     'bc-game-curacao-small-house',
     'f1-delta-time',
+    'zkasino-alleged-platform',
   ];
   const dossierById = (source, id) => source.dossiers.find((dossier) => dossier.id === id);
   report = {

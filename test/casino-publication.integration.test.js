@@ -51,14 +51,14 @@ function makeDB({ published = [PUBLISHED_CASE] } = {}) {
             const [caseId] = this.binds || [];
             return { results: published.filter((item) => item.case_id === caseId) };
           }
-          if (sql.includes('FROM casino_coverage')) {
+          if (sql.includes("'web3-casino-full-corpus-2026-07-29' AS cohort_id")) {
             return {
               results: [{
-                cohort_id: 'web3-casino-initial-2026-07-29',
+                cohort_id: 'web3-casino-full-corpus-2026-07-29',
                 universe_as_of: '2026-07-29',
-                target_count: 25,
-                quality_passed_count: 2,
-                partial_count: 23,
+                target_count: 29,
+                quality_passed_count: 29,
+                partial_count: 0,
                 missing_count: 0,
               }],
             };
@@ -148,7 +148,7 @@ describe('casino publication routes', () => {
     expect((await response.json()).error).toBe('published casino dossier not found');
   });
 
-  it('returns the honest cohort coverage separately from the public cases', async () => {
+  it('returns truthful full-corpus coverage separately from the public cases', async () => {
     const worker = await freshWorker();
     const response = await worker.fetch(
       new Request('http://localhost/api/casino-coverage'),
@@ -158,9 +158,10 @@ describe('casino publication routes', () => {
 
     expect(response.status).toBe(200);
     expect((await response.json()).coverage).toMatchObject({
-      target_count: 25,
-      quality_passed_count: 2,
-      partial_count: 23,
+      cohort_id: 'web3-casino-full-corpus-2026-07-29',
+      target_count: 29,
+      quality_passed_count: 29,
+      partial_count: 0,
     });
   });
 });

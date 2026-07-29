@@ -2507,7 +2507,18 @@ app.get('/api/casinos', wrap(async (req, res) => {
 }));
 app.get('/api/casino-coverage', wrap(async (req, res) => {
   try {
-    const rows = await dbQuery(`SELECT cohort_id, universe_as_of, target_count, quality_passed_count, partial_count, missing_count, methodology_version, updated_at FROM casino_coverage WHERE cohort_id = 'web3-casino-initial-2026-07-29' LIMIT 1`);
+    const rows = await dbQuery(`
+      SELECT
+        'web3-casino-full-corpus-2026-07-29' AS cohort_id,
+        MAX(selection_as_of) AS universe_as_of,
+        COUNT(*) AS target_count,
+        SUM(CASE WHEN quality_passed = 1 THEN 1 ELSE 0 END) AS quality_passed_count,
+        SUM(CASE WHEN quality_passed = 0 THEN 1 ELSE 0 END) AS partial_count,
+        0 AS missing_count,
+        'casino-dossier-v1+forensic-analysis-v1' AS methodology_version,
+        MAX(updated_at) AS updated_at
+      FROM casino_cases
+    `);
     res.json({ coverage: rows[0] || null });
   } catch {
     res.json({ coverage: null, error: 'casino coverage unavailable' });
