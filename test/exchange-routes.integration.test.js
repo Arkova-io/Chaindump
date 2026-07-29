@@ -32,7 +32,7 @@ function stubFeed() {
 // Minimal D1 stub: serves dead_exchanges/mid_exchanges rows filtered by the
 // bound `kind` and the route's exchange-only venue scope, plus a generic
 // snapshot_cache key='cex' single-row lookup.
-function makeDB({ dead = [], mid = [], cexCache = null } = {}) {
+function makeDB({ dead = [], mid = [], successful = [], cexCache = null } = {}) {
   return {
     prepare(sql) {
       return {
@@ -66,6 +66,26 @@ function makeDB({ dead = [], mid = [], cexCache = null } = {}) {
               rows.sort((a, b) => (
                 (a.kind === 'cex' ? `${a.metric_type}:${a.metric_unit}` : '')
                   .localeCompare(b.kind === 'cex' ? `${b.metric_type}:${b.metric_unit}` : '')
+                || ((b.metric || 0) - (a.metric || 0))
+                || a.name.localeCompare(b.name)
+              ));
+            }
+            return { results: rows };
+          }
+          if (sql.includes('FROM successful_exchanges')) {
+            let rows = successful.filter((r) => r.type === this.binds[0]);
+            let bindIndex = 1;
+            if (sql.includes('primary_chain = ?')) {
+              const chain = this.binds[bindIndex++];
+              rows = rows.filter((r) => r.primary_chain === chain);
+            }
+            if (sql.includes('metric_type = ?')) {
+              const metricType = this.binds[bindIndex];
+              rows = rows.filter((r) => r.metric_type === metricType);
+            }
+            if (sql.includes('ORDER BY')) {
+              rows.sort((a, b) => (
+                `${a.metric_type}:${a.metric_unit}`.localeCompare(`${b.metric_type}:${b.metric_unit}`)
                 || ((b.metric || 0) - (a.metric || 0))
                 || a.name.localeCompare(b.name)
               ));
@@ -122,6 +142,13 @@ const MID_CEX = {
   metric_label: 'quarterly spot trading volume', metric_type: 'trading_volume', metric_unit: 'usd',
   metric: 133.6e9, verdict: 'declining', why_stuck: 'Losing licensed jurisdictions.', outlook: 'Structural decline.',
   sources: '[]', profile: '{"cause_tags":["regulatory","declining_volume"]}', updated_at: '2026-07-27',
+};
+const SUCCESS_DEX = {
+  slug: 'uniswap', type: 'dex', venue_type: 'exchange', name: 'Uniswap', launched: '2018-11', primary_chain: 'Ethereum',
+  status: 'successful_established', metric_label: '24h spot volume', metric_type: 'spot_volume_24h', metric_unit: 'usd',
+  metric: 2.1e9, why_successful: 'Permissionless liquidity.', outlook: 'Durable with competition risk.',
+  profile: '{"token":{"launched":true,"symbol":"UNI"},"success_factors":["first_mover_amm"]}',
+  sources: '[{"title":"DefiLlama","url":"https://api.llama.fi/summary/dexs/uniswap?dataType=dailyVolume"}]', updated_at: '2026-07-29',
 };
 
 describe('GET /api/dead-exchanges', () => {
@@ -241,6 +268,50 @@ describe('GET /api/mid-exchanges', () => {
     const body = await res.json();
     expect(body.kind).toBe('cex');
     expect(body.topGaps.find((g) => g.tag === 'regulatory')).toBeTruthy();
+  });
+});
+
+describe('GET /api/successful-exchanges', () => {
+  it('serves parseable, cited success dossiers without aggregating unlike metrics', async () => {
+    stubFeed();
+    const worker = await freshWorker();
+    const perps = {
+      ...SUCCESS_DEX,
+      slug: 'hyperliquid', name: 'Hyperliquid', primary_chain: 'Hyperliquid L1',
+      metric_label: '24h perpetual notional volume', metric_type: 'perpetual_notional_volume_24h', metric: 3.4e9,
+    };
+    const res = await worker.fetch(new Request('http://localhost/api/successful-exchanges'), { DB: makeDB({ successful: [SUCCESS_DEX, perps] }) }, ctx());
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.kind).toBe('dex');
+    expect(body.count).toBe(2);
+    expect(body.exchanges.find((row) => row.slug === 'uniswap').profile.token.symbol).toBe('UNI');
+    expect(body.exchanges.find((row) => row.slug === 'uniswap').sources[0].url).toContain('llama.fi');
+    expect(body.metricGroups).toEqual(expect.arrayContaining([
+      { metricType: 'spot_volume_24h', metricUnit: 'usd', count: 1 },
+      { metricType: 'perpetual_notional_volume_24h', metricUnit: 'usd', count: 1 },
+    ]));
+    expect(body).not.toHaveProperty('totalMetric');
+  });
+
+  it('filters on canonical primary chain and metric class through bound values', async () => {
+    stubFeed();
+    const worker = await freshWorker();
+    const other = { ...SUCCESS_DEX, slug: 'raydium', name: 'Raydium', primary_chain: 'Solana', metric: 74e6 };
+    const res = await worker.fetch(new Request('http://localhost/api/successful-exchanges?chain=Solana&metric_type=spot_volume_24h'), { DB: makeDB({ successful: [SUCCESS_DEX, other] }) }, ctx());
+    const body = await res.json();
+    expect(body.exchanges.map((row) => row.slug)).toEqual(['raydium']);
+    expect(body.filters).toEqual({ chain: 'Solana', metricType: 'spot_volume_24h' });
+  });
+
+  it('degrades to an empty envelope when the migration is not yet present', async () => {
+    stubFeed();
+    const worker = await freshWorker();
+    const res = await worker.fetch(new Request('http://localhost/api/successful-exchanges'), {}, ctx());
+    expect(res.status).toBe(200);
+    const body = await res.json();
+    expect(body.exchanges).toEqual([]);
+    expect(body.count).toBe(0);
   });
 });
 
