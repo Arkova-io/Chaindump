@@ -169,7 +169,7 @@ export function renderNftForensicNormalizationMigration(document) {
 -- Adds the shared causal-analysis contract to the final 18 field-cited NFT dossiers.
 
 DROP TABLE IF EXISTS nft_forensic_normalization_0058;
-CREATE TEMP TABLE nft_forensic_normalization_0058 (
+CREATE TABLE nft_forensic_normalization_0058 (
   slug TEXT PRIMARY KEY,
   status TEXT NOT NULL,
   profile_patch TEXT NOT NULL,

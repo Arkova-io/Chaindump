@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // Migration guard — run in CI and locally before adding a migration.
 //
-// Enforces the two rules that have actually bitten this project (CLAUDE.md §3.4):
+// Enforces the rules that have actually bitten this project (CLAUDE.md §3.4):
 //   1. Sequential, gap-free, unique NNNN_ numbering.
 //   2. No literal "BEGIN TRANSACTION" / "COMMIT;" text anywhere in the file —
 //      `wrangler d1 migrations apply` wraps each migration in its own transaction,
@@ -13,6 +13,9 @@
 //      "No BEGIN TRANSACTION / COMMIT" and that phrase alone broke
 //      `wrangler d1 migrations apply --local` for every fresh environment. Fixed by
 //      rewording the comment; the rule below is what would have caught it.
+//   3. No TEMP tables. Cloudflare D1's remote query authorizer rejects
+//      CREATE TEMP TABLE with SQLITE_AUTH even though local SQLite accepts it.
+//      Generated staging tables must use a normal table bracketed by DROP TABLE.
 //
 // Migrations 0001–0009 predate this guard and were loaded out-of-band (0001 is a
 // bulk backup dump). None of them actually contain the literal text this guard
@@ -23,6 +26,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const TRANSACTION_TEXT_RE = /\bBEGIN\s+TRANSACTION\b|\bCOMMIT\s*;/i;
+const TEMP_TABLE_RE = /\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i;
 
 export function checkMigrationsDir(dir) {
   const files = readdirSync(dir)
@@ -44,8 +48,9 @@ export function checkMigrationsDir(dir) {
     }
   });
 
-  // Rule 2: no literal BEGIN TRANSACTION / COMMIT; text anywhere in the file,
-  // including comments — wrangler's own check can't tell the difference.
+  // Rules 2 and 3 inspect raw migration text. The transaction check must include
+  // comments because Wrangler's own check does; the TEMP-table check is also raw
+  // so generated migrations cannot silently reintroduce a remote-only failure.
   for (const f of files) {
     const sql = readFileSync(join(dir, f), 'utf8');
     if (TRANSACTION_TEXT_RE.test(sql)) {
@@ -54,6 +59,12 @@ export function checkMigrationsDir(dir) {
           `comment) — wrangler's multi-transaction guard does a raw substring search ` +
           `and will fail with "several transactions" on \`wrangler d1 migrations apply\`. ` +
           `Reword to avoid that exact phrase.`,
+      );
+    }
+    if (TEMP_TABLE_RE.test(sql)) {
+      errors.push(
+        `${f}: contains CREATE TEMP TABLE, which Cloudflare D1 rejects remotely with ` +
+          `SQLITE_AUTH. Use a normal staging table with DROP TABLE before and after it.`,
       );
     }
   }
