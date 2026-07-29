@@ -18,7 +18,13 @@ const citedProfile = {
 const citedRow = {
   slug: 'citation-test', name: 'Citation Test', chain: 'ethereum', category: 'pfp', status: 'middling',
   profile: JSON.stringify(citedProfile),
-  sources: JSON.stringify([{ id: 'operator', title: 'Operator record', url: 'https://example.org/operator' }]),
+  sources: JSON.stringify([{
+    id: 'operator',
+    title: 'Operator record',
+    url: 'https://example.org/operator',
+    access_state: 'accessible',
+    access_checked_at: '2026-07-29',
+  }]),
   updated_at: '2026-07-29',
 };
 
@@ -47,7 +53,12 @@ describe('NFT / Ordinals citation-ready surface', () => {
     expect(body.analysis).toMatchObject({
       schema: 'nft-lifecycle-cohort-v1',
       cohort: { total: 1 },
-      coverage: { field_cited: 1 },
+      coverage: {
+        field_cited: 1,
+        field_claims: 3,
+        field_claims_access_anchored: 3,
+      },
+      evidenceWindow: { source_access_checked_through: '2026-07-29' },
     });
   });
 
@@ -59,6 +70,10 @@ describe('NFT / Ordinals citation-ready surface', () => {
     expect(html).toContain('source ${esc(sourceDate)} · inspected ${esc(inspected)}');
     expect(html).toContain('source.verification_note');
     expect(html).toContain('access ${esc(access)}');
+    expect(html).toContain('access checked ${esc(source.access_checked_at)}');
+    expect(html).toContain('retrieval note: ${esc(source.access_note)}');
+    expect(html).toContain("source.access_state || 'not recorded'");
+    expect(html).not.toContain("source.access_state || (verified ? 'verified' : 'not recorded')");
     expect(html).toContain('evidence_scope: source.evidence_scope');
     expect(html).toContain('stale_after: source.stale_after');
     expect(html).toContain("stale: typeof source.stale === 'boolean' ? source.stale : null");
@@ -67,6 +82,11 @@ describe('NFT / Ordinals citation-ready surface', () => {
     expect(html).toContain('legacy dossier');
     expect(html).toContain('function nftAggregateAnalysisHtml');
     expect(html).toContain('Aggregate evidence:');
+    expect(html).toContain('sources explicitly accessible');
+    expect(html).toContain('field claims access-anchored');
+    expect(html).toContain('forensic sections access-anchored');
+    expect(html).toContain('sources not access-confirmed');
+    expect(html).toContain('Ledger matching and HTTP access prove linkage and reachability—not claim truth.');
     expect(html).not.toContain('Across 16 notable collections');
   });
 });

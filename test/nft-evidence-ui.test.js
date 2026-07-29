@@ -50,6 +50,40 @@ function narrativeRenderer() {
 }
 
 describe('NFT field-evidence UI', () => {
+  it('renders source retrieval and editorial-review state as separate visible facts', () => {
+    const nftEvidenceHtml = renderer();
+    const output = nftEvidenceHtml({
+      citation_schema: 'field-v1',
+      evidence: [{
+        field: 'launch',
+        value: '2024-01',
+        as_of: '2024-01-31',
+        basis: 'operator',
+        source_ids: ['review-boundary'],
+      }],
+    }, [{
+      id: 'review-boundary',
+      title: 'Reviewed boundary source',
+      url: 'https://operator.example/review-boundary',
+      access_state: 'accessible',
+      access_checked_at: '2026-07-29',
+      access_note: 'HTTP 200; retrieval observed without claim re-review.',
+      resolving: true,
+      evidence_reviewed: false,
+      source_tier: 'T2',
+      source_role: 'primary',
+    }], null, {
+      claim_support: [],
+      unresolved_high_risk_claims: [],
+    });
+
+    expect(output).toContain('access accessible · access checked 2026-07-29');
+    expect(output).toContain('retrieval note: HTTP 200; retrieval observed without claim re-review.');
+    expect(output).toContain('registered · reachable · editor review pending');
+    expect(output).toContain('Reviewed boundary source');
+    expect(output).toContain('2024-01');
+  });
+
   it('withholds an unsupported high-risk value while preserving source state', () => {
     const nftEvidenceHtml = renderer();
     const output = nftEvidenceHtml({

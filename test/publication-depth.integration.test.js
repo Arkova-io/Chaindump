@@ -500,7 +500,12 @@ describe('publication-depth Wave A migration 0063', () => {
   });
 
   it('inventories the complete corpus and reports role-aware repairs without hiding gaps', () => {
-    database = createCorpus({ exclude: ['0063_publication_depth_wave_a.sql'] });
+    database = createCorpus({
+      exclude: [
+        '0063_publication_depth_wave_a.sql',
+        '0064_nft_source_access_remediation.sql',
+      ],
+    });
     const before = buildPublicationDepthInventory(database, { asOf: '2026-07-29' });
     database.exec(migration);
     const after = buildPublicationDepthInventory(database, { asOf: '2026-07-29' });
@@ -552,7 +557,12 @@ describe('publication-depth Wave A migration 0063', () => {
   });
 
   it('patches only the manifest targets, stays validator-clean, and is idempotent', () => {
-    database = createCorpus({ exclude: ['0063_publication_depth_wave_a.sql'] });
+    database = createCorpus({
+      exclude: [
+        '0063_publication_depth_wave_a.sql',
+        '0064_nft_source_access_remediation.sql',
+      ],
+    });
     const untouchedBefore = {
       exchange: database.prepare(`
         SELECT profile, sources FROM dead_exchanges
@@ -857,8 +867,8 @@ describe('publication-depth Wave A migration 0063', () => {
     expect(nftPayload.collections).toHaveLength(51);
     expect(nftPayload.claim_support).toMatchObject({
       high_risk_claim_count: 550,
-      passing_high_risk_claim_count: 0,
-      unresolved_high_risk_claim_count: 550,
+      passing_high_risk_claim_count: 5,
+      unresolved_high_risk_claim_count: 545,
     });
     for (const item of nftPayload.collections) {
       const sources = JSON.parse(item.sources);
@@ -869,7 +879,7 @@ describe('publication-depth Wave A migration 0063', () => {
       expect(item.publication_depth, item.slug).toMatchObject({
         status: 'claim_support_pending',
         high_risk_claim_count: expect.any(Number),
-        passing_high_risk_claim_count: 0,
+        passing_high_risk_claim_count: expect.any(Number),
         unresolved_high_risk_claim_count: expect.any(Number),
         registered_source_count: expect.any(Number),
         reachable_source_count: expect.any(Number),
@@ -880,14 +890,21 @@ describe('publication-depth Wave A migration 0063', () => {
         reachable: item.publication_depth.reachable_source_count,
         editor_reviewed: item.publication_depth.reviewed_source_count,
       });
-      expect(analysis.outcome, item.slug).toMatchObject({
-        publication_support: 'pending_independent_support',
-      });
-      expect(analysis.outcome, item.slug).not.toHaveProperty('summary');
-      expect(analysis.why, item.slug).toMatchObject({
-        publication_support: 'pending_independent_support',
-      });
-      expect(analysis.why, item.slug).not.toHaveProperty('summary');
+      for (const section of ['outcome', 'why']) {
+        const support = item.publication_depth.claim_support.find(({ path }) => (
+          path === `forensic_analysis.${section}`
+        ));
+        if (support?.passes) {
+          expect(analysis[section].summary, `${item.slug}:${section}`).toEqual(expect.any(String));
+          expect(analysis[section], `${item.slug}:${section}`)
+            .not.toHaveProperty('publication_support');
+        } else {
+          expect(analysis[section], `${item.slug}:${section}`).toMatchObject({
+            publication_support: 'pending_independent_support',
+          });
+          expect(analysis[section], `${item.slug}:${section}`).not.toHaveProperty('summary');
+        }
+      }
       const registered = registeredSourceKeys(sources);
       for (const reference of forensicReferences(analysis)) {
         expect(registered.has(reference), `${item.slug}: ${reference}`).toBe(true);
