@@ -104,6 +104,9 @@ describe('Web3 Casino Analysis data surface', () => {
   it('follows the Blockchain Analysis index contract with search, filters, sources, and direct dossier links', () => {
     expect(html).toContain('id="casinoAnalysisSearch"');
     expect(html).toContain('id="casinoAnalysisStatus"');
+    expect(html).toContain('id="casinoAnalysisKind"');
+    expect(html).toContain('id="casinoAnalysisSubtype"');
+    expect(html).toContain('id="casinoAnalysisToken"');
     expect(html).toContain('Cited sources: ${esc(item.source_count)}');
     expect(html).toContain('Open dossier →');
     expect(html).toContain('Open coverage ledger →');
@@ -115,6 +118,9 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('intentionally not presented as analyses');
     expect(html).toContain('No cross-case “largest casino” ranking is computed.');
     expect(html).toContain('No licence observation is published. Do not infer global legality from this dossier.');
+    expect(html).toContain('Lifecycle timeline');
+    expect(html).toContain('Cohort evidence map');
+    expect(html).toContain('metric scope, gaps, and review date');
   });
 });
 

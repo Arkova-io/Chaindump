@@ -672,7 +672,7 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   exchangeAnalysisCohort: 'all', exchangeAnalysisQuality: 'all',
   exchangeAnalysisDir: 1, exchangeAnalysisExpanded: null,
   casinoAnalysisData: null, casinoCoverage: null, casinoAnalysisError: '', casinoAnalysisQuery: '', casinoAnalysisSort: 'reviewed',
-  casinoAnalysisStatus: 'all', casinoAnalysisExpanded: null, casinoAnalysisDetails: {},
+  casinoAnalysisStatus: 'all', casinoAnalysisKind: 'all', casinoAnalysisSubtype: 'all', casinoAnalysisToken: 'all', casinoAnalysisExpanded: null, casinoAnalysisDetails: {},
   nftCaseSort: 'name', nftCaseStatus: 'all', nftCaseChain: 'all' };
 
 const fmtUsd = (n) => n == null ? '—' : (n < 0 ? '-' : '') + '$' + Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 2 }).format(Math.abs(n));
@@ -1188,7 +1188,21 @@ function casinoLabel(value) { return String(value || 'unknown').replaceAll('_', 
 function casinoObservationHtml(observation) {
   const unit = observation.unit ? ` ${esc(observation.unit)}` : '';
   const value = observation.value == null ? '—' : `${fmtNum(observation.value)}${unit}`;
-  return `<div class="gfield"><span class="gfl">${esc(casinoLabel(observation.metric_dimension))}</span>${value} · ${esc(observation.window_definition || 'snapshot')} · as of ${esc(observation.as_of || '—')}<div class="muted" style="margin:3px 0 0 68px">${esc(observation.method || '')}</div></div>`;
+  const scope = [observation.product_scope, ...(observation.chain_scope || [])].filter(Boolean).join(' · ');
+  const formula = observation.formula ? `<div class="muted" style="margin:3px 0 0 68px">Formula: ${esc(observation.formula)}</div>` : '';
+  const flags = (observation.quality_flags || []).length ? `<div class="muted" style="margin:3px 0 0 68px">Limits: ${esc((observation.quality_flags || []).map(casinoLabel).join(' · '))}</div>` : '';
+  return `<div class="gfield"><span class="gfl">${esc(casinoLabel(observation.metric_dimension))}</span>${value} · ${esc(observation.window_definition || 'snapshot')} · as of ${esc(observation.as_of || '—')}<div class="muted" style="margin:3px 0 0 68px">Scope: ${esc(scope || 'not published')} · ${esc(observation.method || '')}</div>${formula}${flags}</div>`;
+}
+function casinoEventHtml(event) {
+  const amount = event.amount_usd == null ? '' : ` · ${fmtUsd(event.amount_usd)}`;
+  return `<div class="gfield"><span class="gfl">${esc(casinoLabel(event.event_type))}</span>${esc(event.event_date || 'date unknown')} · ${esc(event.description || '')}${amount}</div>`;
+}
+function casinoOutlookText(outlook) {
+  if (!outlook) return '';
+  if (typeof outlook === 'string') return outlook;
+  const asOf = outlook.as_of ? `As of ${outlook.as_of}. ` : '';
+  const watch = Array.isArray(outlook.watch) && outlook.watch.length ? `Watch: ${outlook.watch.join(' · ')}` : '';
+  return `${asOf}${watch}`.trim();
 }
 function casinoDetailBody(item, detail) {
   if (detail === 'loading') return '<div class="gexp"><div class="skel">Loading cited dossier…</div></div>';
@@ -1196,20 +1210,32 @@ function casinoDetailBody(item, detail) {
   if (!detail) return '';
   const synthesis = detail.synthesis || {};
   const sections = [
-    ['Current documented situation', synthesis.present_situation],
-    ['Operating model', synthesis.business_mechanism],
+    ['Lifecycle &amp; current situation', synthesis.present_situation],
+    ['Operating model &amp; distribution', synthesis.business_mechanism],
+    ['Token &amp; value-capture evidence', synthesis.token_contribution],
+    ['Chain dependence', synthesis.chain_dependence],
     ['Legal scope &amp; evidence limit', synthesis.risk_legal_posture],
+    ['Success / failure hypotheses', synthesis.success_failure_hypotheses],
+    ['Counterfactual', synthesis.counterfactual],
+    ['Outlook &amp; review triggers', casinoOutlookText(synthesis.outlook)],
+    ['Lessons from this case', Array.isArray(synthesis.lessons_learned) ? synthesis.lessons_learned.join(' ') : synthesis.lessons_learned],
   ].map(([label, text]) => text ? `<div class="gsec">${label}</div>${proseBox(text)}` : '').join('');
   const observations = (detail.observations || []).map(casinoObservationHtml).join('') || '<div class="muted">No comparable operating metric is published in this dossier.</div>';
-  const licenceRows = (detail.licences || []).map((licence) => `<div class="gfield"><span class="gfl">Licence</span>${esc(licence.authority)} · ${esc(licence.jurisdiction)} · ${esc(licence.licence_status)} · as of ${esc(licence.as_of)}</div>`).join('');
+  const events = (detail.events || []).map(casinoEventHtml).join('') || '<div class="muted">No independently scoped lifecycle event is published in this dossier.</div>';
+  const licenceRows = (detail.licences || []).map((licence) => `<div class="gfield"><span class="gfl">Licence</span>${esc(licence.authority)} · ${esc(licence.jurisdiction)} · ${esc(licence.licence_status)} · ${esc(licence.legal_entity || 'entity not published')} · ${esc((licence.activities || []).join(', ') || 'activity not published')} · as of ${esc(licence.as_of)}</div>`).join('');
   const licences = licenceRows || '<div class="muted">No licence observation is published. Do not infer global legality from this dossier.</div>';
   const claimRows = (detail.claims || []).map((claim) => `<div class="gfield"><span class="gfl">${esc(claim.field_path)}</span><a href="${esc(safeUrl(claim.url))}" target="_blank" rel="noopener noreferrer">${esc(claim.title)} ↗</a><div class="muted" style="margin:3px 0 0 68px">${esc(claim.support_direction)} · ${esc(claim.evidence_locator)}</div></div>`).join('') || '<div class="muted">No reviewed claim evidence is available.</div>';
   const domain = safeUrl(`https://${item.primary_domain}`);
   return `<div class="gexp">
     <div class="gfield"><span class="gfl">Domain</span><a href="${esc(domain)}" target="_blank" rel="noopener noreferrer">${esc(item.primary_domain)} ↗</a></div>
+    <div class="gfield"><span class="gfl">Operator</span>${esc(item.legal_operator || 'not published')} · parent ${esc(item.parent_entity || 'not published')}</div>
+    <div class="gfield"><span class="gfl">Launch</span>${esc(item.launched || 'unknown')} · evidence precision ${esc(item.date_precision || 'unknown')}</div>
     <div class="gfield"><span class="gfl">Custody</span>${esc(casinoLabel(item.custody_model))}</div>
     <div class="gfield"><span class="gfl">Token</span>${esc(item.token_status === 'documented' ? (item.token_symbol || 'Documented token') : casinoLabel(item.token_status))}</div>
-    ${sections}<div class="gsec">Documented metrics</div>${observations}
+    <div class="gfield"><span class="gfl">Research status</span>${esc(item.confidence || 'unknown')} confidence · ${esc(item.completeness_pct)}% evidence completeness · reviewed ${esc(item.last_reviewed || '—')}</div>
+    <div class="gfield"><span class="gfl">Known gaps</span>${esc((item.unsourced_fields || []).map(casinoLabel).join(' · ') || 'none published')}</div>
+    ${sections}<div class="gsec">Documented metrics &amp; comparability limits</div>${observations}
+    <div class="gsec">Lifecycle timeline</div>${events}
     <div class="gsec">Licence observations</div>${licences}
     <div class="gsec">Field evidence</div>${claimRows}
     ${srcHtml(detail.sources, 'Cited sources: ')}<div class="muted" style="margin-top:8px">Last manually reviewed ${esc(item.last_reviewed || '—')}</div>
@@ -1226,7 +1252,7 @@ function casinoAnalysisCard(item) {
   return `<div class="gcard ${open ? 'open' : ''}" role="button" tabindex="0" data-casino-case="${esc(item.case_id)}">
     <div class="ghead"><div class="gname">${esc(item.brand_name)} <span class="gverdict ${item.status === 'active' ? 'recover' : 'declining'}">${esc(casinoLabel(item.status))}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${item.source_count}<span class="gddl">reviewed sources</span></div></div>
-    <div class="gmeta">${esc(casinoLabel(item.entity_kind))} · ${esc(casinoLabel(item.product_subtype))} · ${esc(chains)} · ${esc(casinoLabel(item.outcome_label || 'outcome unknown'))} · ${esc(item.completeness_pct)}% complete · last reviewed ${esc(item.last_reviewed || '—')}</div>
+    <div class="gmeta">${esc(casinoLabel(item.entity_kind))} · ${esc(casinoLabel(item.product_subtype))} · ${esc(chains)} · ${esc(casinoLabel(item.outcome_label || 'outcome unknown'))} · ${esc(item.completeness_pct)}% complete · status evidence ${esc(item.status_as_of || '—')} · last reviewed ${esc(item.last_reviewed || '—')}</div>
     <div class="gbody">${esc(item.product_scope_note || 'Scoped research dossier.')}</div>
     ${sourcePreview}
     ${body}<div class="gexpand">${open ? 'Hide dossier ▲' : 'Full cited dossier ▾'} · <a href="${esc(dossierLink)}" target="_blank" rel="noopener noreferrer">Open dossier →</a></div>
@@ -1242,9 +1268,18 @@ function renderCasinoAnalysis() {
   const q = state.casinoAnalysisQuery.toLowerCase();
   const filtered = cases.filter((item) => (
     (state.casinoAnalysisStatus === 'all' || item.status === state.casinoAnalysisStatus) &&
+    (state.casinoAnalysisKind === 'all' || item.entity_kind === state.casinoAnalysisKind) &&
+    (state.casinoAnalysisSubtype === 'all' || item.product_subtype === state.casinoAnalysisSubtype) &&
+    (state.casinoAnalysisToken === 'all' || item.token_status === state.casinoAnalysisToken) &&
     (!q || `${item.brand_name} ${item.entity_kind} ${item.product_subtype} ${item.status} ${item.outcome_label} ${(item.chains || []).join(' ')} ${item.product_scope_note}`.toLowerCase().includes(q))
   ));
   const statuses = [...new Set(cases.map((item) => item.status).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  const kinds = [...new Set(cases.map((item) => item.entity_kind).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  const subtypes = [...new Set(cases.map((item) => item.product_subtype).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  const tokens = [...new Set(cases.map((item) => item.token_status).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  const breakdown = (label, values) => `<div class="gfield"><span class="gfl">${esc(label)}</span>${values.map(([key, count]) => `${esc(casinoLabel(key))} ${count}`).join(' · ') || '—'}</div>`;
+  const byStatus = [...new Map(statuses.map((value) => [value, cases.filter((item) => item.status === value).length]))];
+  const byOutcome = [...new Map([...new Set(cases.map((item) => item.outcome_label || 'unclassified'))].sort().map((value) => [value, cases.filter((item) => (item.outcome_label || 'unclassified') === value).length]))];
   if (!cases.length) {
     const emptyCopy = coverage.target_count ? `${esc(coverage.target_count)} candidates remain research pending and are intentionally not presented as analyses.` : 'Cases appear only after sources and claims pass the publication gate.';
     const unavailable = state.casinoAnalysisError ? '<br/><span class="muted">The public dossier service is temporarily unavailable; candidates remain withheld.</span>' : '';
@@ -1254,6 +1289,7 @@ function renderCasinoAnalysis() {
   el.innerHTML = `${head}
     <div class="analysis-note">Only records with reviewed primary evidence, explicit scope, status evidence, an as-of metric, no blockers, and a defined outcome rule appear here. No cross-case “largest casino” ranking is computed.</div>
     <div class="gstats">${gstat(cases.length, 'published dossiers')}${gstat(unpublished, 'candidates withheld')}${gstat(cases.filter(item=>item.token_status==='documented').length, 'documented tokens')}${gstat(cases.filter(item=>item.outcome_label==='unclassified').length, 'outcomes unclassified')}</div>
+    <div class="gcols"><div class="gbox"><div class="gsec">Cohort evidence map</div>${breakdown('Operating status', byStatus)}${breakdown('Outcome labels', byOutcome)}</div><div class="gbox"><div class="gsec">Publication rule</div><div class="muted">The index does not treat candidate inclusion, a named chain, a token, or an interface as proof of success. Open a dossier to inspect field-level sources, lifecycle events, metric scope, gaps, and review date.</div></div></div>
     <div class="toolbar"><div class="analysis-controls">
       <input id="casinoAnalysisSearch" class="search" placeholder="Search casinos, chains or findings…" value="${esc(state.casinoAnalysisQuery)}" />
       <label class="muted" for="casinoAnalysisStatus">Status</label>
@@ -1261,6 +1297,12 @@ function renderCasinoAnalysis() {
         <option value="all">All statuses</option>
         ${statuses.map((status) => exchangeOption(status, casinoLabel(status), state.casinoAnalysisStatus === status)).join('')}
       </select>
+      <label class="muted" for="casinoAnalysisKind">Model</label>
+      <select id="casinoAnalysisKind" class="analysis-select"><option value="all">All models</option>${kinds.map((value) => exchangeOption(value, casinoLabel(value), state.casinoAnalysisKind === value)).join('')}</select>
+      <label class="muted" for="casinoAnalysisSubtype">Product</label>
+      <select id="casinoAnalysisSubtype" class="analysis-select"><option value="all">All products</option>${subtypes.map((value) => exchangeOption(value, casinoLabel(value), state.casinoAnalysisSubtype === value)).join('')}</select>
+      <label class="muted" for="casinoAnalysisToken">Token</label>
+      <select id="casinoAnalysisToken" class="analysis-select"><option value="all">All token states</option>${tokens.map((value) => exchangeOption(value, casinoLabel(value), state.casinoAnalysisToken === value)).join('')}</select>
       <span class="analysis-spacer"></span>
       <label class="muted" for="casinoAnalysisSort">Sort</label>
       <select id="casinoAnalysisSort" class="analysis-select"><option value="reviewed"${state.casinoAnalysisSort==='reviewed'?' selected':''}>Last reviewed</option><option value="name"${state.casinoAnalysisSort==='name'?' selected':''}>Name</option><option value="sources"${state.casinoAnalysisSort==='sources'?' selected':''}>Reviewed source count</option></select>
@@ -1363,8 +1405,9 @@ document.getElementById('casinoanalysisview').addEventListener('change', (e) => 
     loadCasinoAnalysis();
     return;
   }
-  if (e.target.id === 'casinoAnalysisStatus') {
-    state.casinoAnalysisStatus = e.target.value;
+  if (e.target.id === 'casinoAnalysisStatus' || e.target.id === 'casinoAnalysisKind' || e.target.id === 'casinoAnalysisSubtype' || e.target.id === 'casinoAnalysisToken') {
+    const stateKey = { casinoAnalysisStatus: 'casinoAnalysisStatus', casinoAnalysisKind: 'casinoAnalysisKind', casinoAnalysisSubtype: 'casinoAnalysisSubtype', casinoAnalysisToken: 'casinoAnalysisToken' }[e.target.id];
+    state[stateKey] = e.target.value;
     renderCasinoAnalysis();
   }
 });
