@@ -14,6 +14,8 @@
 - Current local PR-in-progress: `codex/nft-wave2-freshness-20260729`. It cherry-picks the staged NFT/Ordinals wave 2 onto current main, adds generated migration `0019_nft_freshness_wave2.sql`, and publishes 10 freshness-gated, field-cited NFT/Ordinals lifecycle dossiers.
 - Local validation for `codex/nft-wave2-freshness-20260729`: `npm run check:nft-dossiers -- docs/nft-citation-wave-2-2026-07-29.json` passed for 10 dossiers; focused freshness/NFT tests passed with 3 files / 12 tests; full `npm test` passed with 37 files / 457 tests; `npm run lint` passed; `npm run check:worker` passed; `npm run check:migrations` passed with 19 migrations OK; direct inline SPA parse passed (`Parsed 1 inline script(s)`).
 - Main deployment workflow state from the PR/CI audit: PR mergeability is not blocked, but the latest Deploy workflow was waiting on an approval/environment gate. If production has not updated, approve/resume the waiting Deploy run rather than looking for a PR merge blocker.
+- Current local implementation branch: `codex/top50-chain-dossiers-20260729`, based on current `origin/main`. It adds migration `0020_chain_dossiers_wave2.sql` plus an API/integration test for five complete, field-cited blockchain dossiers: Tron, Monad, Avalanche, OP Mainnet, and Mantle. These are real public `/chain/:name` dossiers and board-card coverage, not an internal research artifact.
+- Wave 2 explicit evidence boundary: live CoinGecko/DefiLlama fields were observed on 2026-07-29; source URLs and dates are stored per dimension. Unknown capital, treasury, founder, developer, active-address, concentration, and stablecoin fields remain `null` and appear in each dossier’s `unsourced_fields` rather than being inferred.
 
 ## Original user objective
 
