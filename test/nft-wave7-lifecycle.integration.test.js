@@ -87,6 +87,8 @@ describe('NFT and Ordinals Wave-7 lifecycle dossiers', () => {
         .toBe('2026-07-29');
       expect(dossier.sources.every(({ last_verified_at }) => last_verified_at === '2026-07-29'))
         .toBe(true);
+      expect(dossier.sources.every(({ checked_at }) => checked_at === '2026-07-29'))
+        .toBe(true);
       expect(dossier.sources.every(({ evidence_scope }) => Boolean(evidence_scope))).toBe(true);
       expect(dossier.sources.every(({ source_date_kind }) => Boolean(source_date_kind))).toBe(true);
       expect(dossier.sources.every(({ stale }) => typeof stale === 'boolean')).toBe(true);
