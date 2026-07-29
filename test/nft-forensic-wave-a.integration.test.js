@@ -187,7 +187,7 @@ describe('NFT forensic causal wave A', () => {
     expect(snapshot(database)).toEqual(first);
     expect(database.prepare(`
       SELECT COUNT(*) AS count
-      FROM sqlite_temp_master
+      FROM sqlite_master
       WHERE type = 'table' AND name = 'nft_forensic_wave_a_0057'
     `).get().count).toBe(0);
   });
