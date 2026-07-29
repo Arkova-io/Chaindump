@@ -399,6 +399,15 @@
   .kindbtn { font:inherit; font-size:12px; padding:5px 12px; border-radius:20px; border:1px solid var(--border2); background:transparent; color:var(--muted2); cursor:pointer; }
   .kindbtn:hover { color:var(--text); }
   .kindbtn.active { background:var(--accent); color:#05070b; border-color:var(--accent); font-weight:600; }
+  .analysis-select { background:var(--surface); border:1px solid var(--border2); border-radius:9px; padding:7px 10px; color:var(--text); font:inherit; font-size:12px; }
+  .analysis-select:focus { outline:2px solid var(--accent); outline-offset:1px; }
+  .analysis-controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; width:100%; }
+  .analysis-controls .search { max-width:360px; }
+  .analysis-spacer { flex:1; }
+  .analysis-note { border-left:3px solid var(--accent); background:var(--surface2); padding:12px 14px; border-radius:8px; color:var(--muted2); font-size:12.5px; line-height:1.6; margin-bottom:16px; }
+  .analysis-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
+  .analysis-src-preview .asrc { margin-top:8px; padding-top:7px; }
+  .analysis-empty { background:var(--surface); border:1px dashed var(--border2); border-radius:12px; padding:28px; color:var(--muted2); line-height:1.65; }
   .watchgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:8px; }
   .watchrow { display:flex; align-items:baseline; gap:8px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:9px 11px; }
   .watchrow .wn { font-weight:600; font-size:13px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -562,12 +571,12 @@
     <div class="navgroup-h">Chains</div>
     <button class="tab active" data-view="live">Live · Top 50</button>
     <div class="navgroup-h">🔬 Forensics</div>
-    <button class="tab" data-view="traces">Scam Tracker</button>
-    <button class="tab" data-view="grave">Dead &amp; Dying</button>
-    <button class="tab" data-view="mid">Stuck / Mid</button>
+    <button class="tab" data-view="blockchain-analysis">Blockchain Analysis</button>
+    <button class="tab" data-view="exchange-analysis">DEX/CEX Analysis</button>
+    <button class="tab" data-view="casino-analysis">Web3 Casino Analysis</button>
+    <button class="tab" data-view="nft-analysis">NFT and Ordinals Analysis</button>
     <div class="navgroup-h">Markets &amp; assets</div>
     <button class="tab" data-view="stables">Stablecoins</button>
-    <button class="tab" data-view="nft">NFTs &amp; Ordinals</button>
     <button class="tab" data-view="rwa">RWA · DePIN</button>
     <button class="tab" data-view="infra">Storage / Verify</button>
     <button class="tab" data-view="markets">Treasuries · Miners · ETFs</button>
@@ -584,6 +593,9 @@
   <div id="midview" style="display:none"></div>
   <div id="apiview" style="display:none"></div>
   <div id="graveview" style="display:none"></div>
+  <div id="blockchainanalysisview" style="display:none"></div>
+  <div id="exchangeanalysisview" style="display:none"></div>
+  <div id="casinoanalysisview" style="display:none"></div>
   <div id="nftview" style="display:none"></div>
   <div id="infraview" style="display:none"></div>
   <div id="marketsview" style="display:none"></div>
@@ -650,7 +662,11 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   // DEX/CEX graveyard — the `kind` toggle shared by the grave + mid views (switching
   // kind on one carries over to the other, matching how graveFilter persists).
   xKind: 'chain', deadDexData: null, deadCexData: null, midDexData: null, midCexData: null,
-  dexBoard: null, cexBoard: null, graveExExpanded: null, graveExOpenGroups: null, midExExpanded: null, midExOpenGroups: null };
+  dexBoard: null, cexBoard: null, graveExExpanded: null, graveExOpenGroups: null, midExExpanded: null, midExOpenGroups: null,
+  blockchainAnalysisData: null, blockchainAnalysisQuery: '', blockchainAnalysisSort: 'name',
+  exchangeAnalysisData: null, exchangeAnalysisErrors: [], exchangeAnalysisQuery: '',
+  exchangeAnalysisKind: 'all', exchangeAnalysisLifecycle: 'all', exchangeAnalysisSort: 'name',
+  exchangeAnalysisDir: 1, exchangeAnalysisExpanded: null };
 
 const fmtUsd = (n) => n == null ? '—' : (n < 0 ? '-' : '') + '$' + Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 2 }).format(Math.abs(n));
 const fmtNum = (n) => n == null ? '—' : Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(n);
@@ -702,6 +718,326 @@ function srcHtml(sources, label) {
   if (!links.length) return '';
   return `<div class="asrc">${label || 'Sources: '}${links.join(' · ')}</div>`;
 }
+
+function parsedObject(value) {
+  if (!value) return {};
+  if (typeof value === 'object') return value;
+  try { const parsed = JSON.parse(value); return parsed && typeof parsed === 'object' ? parsed : {}; }
+  catch (e) { return {}; }
+}
+function sourceArray(value) {
+  let arr = value;
+  if (typeof value === 'string') { try { arr = JSON.parse(value); } catch (e) { return []; } }
+  if (!Array.isArray(arr)) return [];
+  const seen = new Set();
+  return arr.map((source) => {
+    const url = typeof source === 'string' ? source : source && source.url;
+    if (!url || seen.has(url) || safeUrl(url) === '#') return null;
+    seen.add(url);
+    return typeof source === 'string' ? { url } : { title: source.title || '', url };
+  }).filter(Boolean);
+}
+function analysisButton(view, label) {
+  return `<button type="button" class="kindbtn" data-analysis-route="${view}">${label}</button>`;
+}
+function analysisText(value) {
+  if (Array.isArray(value)) return value.map(String).join(' · ');
+  return value == null ? '' : String(value);
+}
+
+// ---------------------------------------------------------------------------
+// Blockchain Analysis — a single sortable index across the live board and the
+// researched mid/dead cohorts. Live-only rows are labeled as such; being in the
+// top 50 is not presented as a completed research dossier.
+// ---------------------------------------------------------------------------
+function normalizeBlockchainAnalysis(live, mid, dead) {
+  const byName = new Map();
+  (live.chains || []).forEach((row) => {
+    const name = row.name || row.chain;
+    if (!name) return;
+    byName.set(String(name).toLowerCase(), {
+      name, lifecycle: 'live', coverage: 'Live metrics', metric: row.tvl,
+      metricLabel: 'TVL', summary: '', sources: [], updatedAt: row.updated_at,
+    });
+  });
+  (mid.chains || []).forEach((row) => {
+    const p = parsedObject(row.profile);
+    byName.set(String(row.chain).toLowerCase(), {
+      name: row.chain, lifecycle: 'mid', coverage: 'Research dossier',
+      metric: row.tvl, metricLabel: 'TVL', summary: row.why_stuck || p.situation || '',
+      sources: sourceArray(row.sources), updatedAt: row.updated_at,
+    });
+  });
+  (dead.chains || []).forEach((row) => {
+    const p = parsedObject(row.profile);
+    byName.set(String(row.chain).toLowerCase(), {
+      name: row.chain, lifecycle: 'dead', coverage: 'Research dossier',
+      metric: row.current_tvl, metricLabel: 'Current TVL', summary: row.why || p.postmortem || '',
+      sources: sourceArray(row.sources), updatedAt: row.updated_at,
+    });
+  });
+  return [...byName.values()];
+}
+function renderBlockchainAnalysis() {
+  const el = document.getElementById('blockchainanalysisview');
+  const head = pageHead('Blockchain Analysis', 'One sortable index for live, stuck, dying and dead chains. Research coverage is labeled separately from live market coverage.');
+  const rows = state.blockchainAnalysisData;
+  if (!rows) { el.innerHTML = `${head}<div class="skel">Loading the blockchain index…</div>`; return; }
+  const q = state.blockchainAnalysisQuery.toLowerCase();
+  const filtered = rows.filter((row) => !q || `${row.name} ${row.lifecycle} ${row.coverage}`.toLowerCase().includes(q));
+  const order = { live: 0, mid: 1, dead: 2 };
+  filtered.sort((a, b) => {
+    if (state.blockchainAnalysisSort === 'lifecycle') return (order[a.lifecycle] - order[b.lifecycle]) || a.name.localeCompare(b.name);
+    if (state.blockchainAnalysisSort === 'citations') return (b.sources.length - a.sources.length) || a.name.localeCompare(b.name);
+    return a.name.localeCompare(b.name);
+  });
+  const researched = rows.filter((row) => row.coverage === 'Research dossier').length;
+  const cards = filtered.map((row) => `<div class="gcard">
+    <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${row.lifecycle === 'dead' ? 'dead' : row.lifecycle === 'mid' ? 'declining' : 'recover'}">${esc(row.lifecycle)}</span></div>
+    <div class="gdd" style="color:var(--muted2);font-size:14px">${row.metric == null ? '—' : fmtUsd(row.metric)}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
+    <div class="gmeta">${esc(row.coverage)} · ${row.sources.length} cited source${row.sources.length === 1 ? '' : 's'}</div>
+    ${row.summary ? `<div class="gbody">${esc(row.summary)}</div>` : '<div class="gbody muted">Live market row; a completed research dossier is not yet published.</div>'}
+    ${srcHtml(row.sources.slice(0, 3), 'Cited sources: ')}
+  </div>`).join('');
+  el.innerHTML = `${head}
+    <div class="analysis-note">This index deliberately distinguishes live coverage from researched coverage. A chain appearing in the live top 50 is not automatically counted as analyzed.</div>
+    <div class="gstats">${gstat(rows.length, 'chains indexed')}${gstat(researched, 'research dossiers')}${gstat(rows.filter(r=>r.lifecycle==='mid').length, 'stuck / mid')}${gstat(rows.filter(r=>r.lifecycle==='dead').length, 'dead / dying')}</div>
+    <div class="toolbar"><div class="analysis-controls">
+      <input id="blockchainAnalysisSearch" class="search" placeholder="Search chains or lifecycle…" value="${esc(state.blockchainAnalysisQuery)}" />
+      <span class="analysis-spacer"></span>
+      <label class="muted" for="blockchainAnalysisSort">Sort</label>
+      <select id="blockchainAnalysisSort" class="analysis-select">
+        <option value="name"${state.blockchainAnalysisSort==='name'?' selected':''}>Name</option>
+        <option value="lifecycle"${state.blockchainAnalysisSort==='lifecycle'?' selected':''}>Lifecycle</option>
+        <option value="citations"${state.blockchainAnalysisSort==='citations'?' selected':''}>Citation count</option>
+      </select>
+    </div></div>
+    <div class="analysis-actions">${analysisButton('live','Live top 50')}${analysisButton('mid','Stuck / mid dossiers')}${analysisButton('grave','Dead & dying dossiers')}</div>
+    <div class="dsec" style="margin:20px 0 10px">${filtered.length} chain${filtered.length===1?'':'s'} shown</div>
+    <div class="gwrap">${cards || '<div class="skel">No chains match.</div>'}</div>`;
+}
+async function loadBlockchainAnalysis() {
+  renderBlockchainAnalysis();
+  try {
+    const [live, mid, dead] = await Promise.all([
+      fetch('/api/chains').then((r) => { if (!r.ok) throw new Error('live chains'); return r.json(); }),
+      fetch('/api/mid').then((r) => { if (!r.ok) throw new Error('mid chains'); return r.json(); }),
+      fetch('/api/dead').then((r) => { if (!r.ok) throw new Error('dead chains'); return r.json(); }),
+    ]);
+    state.blockchainAnalysisData = normalizeBlockchainAnalysis(live, mid, dead);
+    renderBlockchainAnalysis();
+  } catch (e) {
+    blockchainAnalysisLoaded = false;
+    document.getElementById('blockchainanalysisview').innerHTML = `${pageHead('Blockchain Analysis', 'One sortable index for live, stuck, dying and dead chains.')}<div class="skel">Couldn't load the blockchain index: ${esc(e.message)}</div>`;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// DEX/CEX Analysis — a lifecycle-wide research surface. It combines successful,
+// mid and dead datasets without aggregating unlike metrics. Every card exposes
+// its citations before expansion so a reader can verify claims immediately.
+// ---------------------------------------------------------------------------
+function normalizeExchangeAnalysis(kind, lifecycle, payload) {
+  return (payload.exchanges || []).map((row) => {
+    const profile = parsedObject(row.profile);
+    const successful = lifecycle === 'successful';
+    const dead = lifecycle === 'dead';
+    return {
+      slug: row.slug || row.name, kind, venueType: row.venue_type || profile.venue_type || kind,
+      name: row.name || row.slug || 'Unnamed venue', lifecycle, status: row.status || row.verdict || lifecycle,
+      launched: row.launched || profile.founded || profile.launched || '',
+      primaryChain: row.primary_chain || profile.primary_chain || profile.chain || '',
+      metric: dead ? row.current_metric : row.metric,
+      peakMetric: dead ? row.peak_metric : null,
+      metricLabel: row.metric_label || 'Metric',
+      metricType: row.metric_type || '', metricUnit: row.metric_unit || 'usd',
+      summary: successful ? (row.why_successful || profile.why_successful || profile.thesis || '') :
+        lifecycle === 'mid' ? (row.why_stuck || profile.whats_not || profile.situation || '') :
+        (row.why || profile.postmortem || ''),
+      outlook: row.outlook || profile.outlook || '',
+      profile, sources: sourceArray(row.sources), updatedAt: row.updated_at || '',
+    };
+  });
+}
+function exchangeMetric(row) {
+  if (row.metric == null) return '—';
+  const unit = String(row.metricUnit || '').toLowerCase();
+  if (unit === 'usd' || !unit) return fmtUsd(row.metric);
+  if (unit === 'percent') return `${Number(row.metric).toLocaleString()}%`;
+  return `${fmtNum(row.metric)} ${esc(row.metricUnit)}`;
+}
+function lifecycleLabel(value) {
+  return value === 'successful' ? 'successful' : value === 'mid' ? 'stuck / mid' : 'dead / winding down';
+}
+function lifecycleClass(value) {
+  return value === 'successful' ? 'recover' : value === 'mid' ? 'declining' : 'dead';
+}
+function exchangeAnalysisCard(row) {
+  const p = row.profile || {};
+  const open = state.exchangeAnalysisExpanded === `${row.kind}:${row.lifecycle}:${row.slug}`;
+  const token = p.token && typeof p.token === 'object' ? p.token : {};
+  const tokenSymbol = analysisText(p.token_symbol || token.symbol || token.ticker || (typeof p.token === 'string' ? p.token : ''));
+  const tokenLine = tokenSymbol
+    ? `${esc(tokenSymbol)}${token.role ? ` — ${esc(token.role)}` : ''}`
+    : token.launched === false ? 'No venue token' : 'No venue token identified in this dossier';
+  const sourcePreview = srcHtml(row.sources.slice(0, 3), 'Cited sources: ');
+  const details = open ? `<div class="gexp">
+    ${row.launched ? `<div class="gfield"><span class="gfl">Launched</span> ${esc(row.launched)}</div>` : ''}
+    <div class="gfield"><span class="gfl">Venue</span> ${esc(String(row.venueType).toUpperCase())}${row.primaryChain ? ` · ${esc(row.primaryChain)}` : ''}</div>
+    <div class="gfield"><span class="gfl">Token</span> ${tokenLine}</div>
+    ${p.purpose || p.what_it_does ? `<div class="gsec">Purpose</div>${proseBox(analysisText(p.purpose || p.what_it_does))}` : ''}
+    ${p.business_model || p.operational_model || p.operating_model || p.how_it_works ? `<div class="gsec">Operating model</div>${proseBox(analysisText(p.business_model || p.operational_model || p.operating_model || p.how_it_works))}` : ''}
+    ${row.summary ? `<div class="gsec">${row.lifecycle === 'successful' ? 'Why it succeeded' : row.lifecycle === 'mid' ? 'Why it is stuck' : 'What happened'}</div>${proseBox(row.summary)}` : ''}
+    ${p.success_factors ? `<div class="gsec">Success factors</div>${proseBox(analysisText(p.success_factors))}` : ''}
+    ${p.risks || p.risk_factors ? `<div class="gsec">Risks</div>${proseBox(analysisText(p.risks || p.risk_factors))}` : ''}
+    ${p.synthesis ? `<div class="gsec">Research synthesis</div>${proseBox(analysisText(p.synthesis))}` : ''}
+    ${row.outlook ? `<div class="gsec">Outlook</div>${proseBox(row.outlook)}` : ''}
+    ${srcHtml(row.sources, 'Cited sources: ')}${stamp(row.updatedAt)}
+  </div>` : '';
+  const metricContext = row.peakMetric != null ? `Peak ${fmtUsd(row.peakMetric)} → ${exchangeMetric(row)}` : exchangeMetric(row);
+  return `<div class="gcard ${open?'open':''}" role="button" tabindex="0" data-exchange-analysis-key="${esc(`${row.kind}:${row.lifecycle}:${row.slug}`)}">
+    <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${lifecycleClass(row.lifecycle)}">${esc(lifecycleLabel(row.lifecycle))}</span></div>
+    <div class="gdd" style="color:var(--muted2);font-size:14px">${metricContext}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
+    <div class="gmeta">${esc(row.kind.toUpperCase())}${row.primaryChain ? ` · ${esc(row.primaryChain)}` : ''}${row.launched ? ` · launched ${esc(row.launched)}` : ''} · ${row.sources.length} source${row.sources.length===1?'':'s'}</div>
+    ${row.summary ? `<div class="gbody">${esc(row.summary)}</div>` : ''}
+    <div class="analysis-src-preview">${sourcePreview || '<div class="asrc">No cited sources published for this row.</div>'}</div>
+    ${details}<div class="gexpand">${open?'Hide dossier ▲':'Full dossier ▾'}</div>
+  </div>`;
+}
+function renderExchangeAnalysis() {
+  const el = document.getElementById('exchangeanalysisview');
+  const head = pageHead('DEX/CEX Analysis', 'Cited lifecycle research across successful, middling and failed decentralized and centralized exchanges.');
+  const rows = state.exchangeAnalysisData;
+  if (!rows) { el.innerHTML = `${head}<div class="skel">Loading exchange dossiers…</div>`; return; }
+  const q = state.exchangeAnalysisQuery.toLowerCase();
+  let filtered = rows.filter((row) =>
+    (state.exchangeAnalysisKind === 'all' || row.kind === state.exchangeAnalysisKind) &&
+    (state.exchangeAnalysisLifecycle === 'all' || row.lifecycle === state.exchangeAnalysisLifecycle) &&
+    (!q || `${row.name} ${row.kind} ${row.lifecycle} ${row.primaryChain} ${row.summary}`.toLowerCase().includes(q))
+  );
+  const lifecycleOrder = { successful: 0, mid: 1, dead: 2 };
+  const cmp = {
+    name: (a,b) => a.name.localeCompare(b.name),
+    lifecycle: (a,b) => (lifecycleOrder[a.lifecycle]-lifecycleOrder[b.lifecycle]) || a.name.localeCompare(b.name),
+    launched: (a,b) => String(a.launched||'').localeCompare(String(b.launched||'')) || a.name.localeCompare(b.name),
+    citations: (a,b) => (a.sources.length-b.sources.length) || a.name.localeCompare(b.name),
+    updated: (a,b) => String(a.updatedAt||'').localeCompare(String(b.updatedAt||'')) || a.name.localeCompare(b.name),
+  }[state.exchangeAnalysisSort] || ((a,b) => a.name.localeCompare(b.name));
+  filtered = [...filtered].sort((a,b) => cmp(a,b) * state.exchangeAnalysisDir);
+  const filterButton = (attr, value, label, active) => `<button type="button" class="kindbtn${active?' active':''}" ${attr}="${value}">${label}</button>`;
+  const errors = state.exchangeAnalysisErrors.length
+    ? `<div class="analysis-note">Some cohorts could not be loaded: ${esc(state.exchangeAnalysisErrors.join(', '))}. Available cited dossiers are shown below.</div>` : '';
+  const cited = rows.filter((row) => row.sources.length).length;
+  el.innerHTML = `${head}${errors}
+    <div class="gstats">${gstat(rows.length, 'dossiers')}${gstat(rows.filter(r=>r.lifecycle==='successful').length, 'successful')}${gstat(rows.filter(r=>r.lifecycle==='mid').length, 'stuck / mid')}${gstat(rows.filter(r=>r.lifecycle==='dead').length, 'dead / winding down')}</div>
+    <div class="analysis-note">${cited} of ${rows.length} dossiers expose at least one citation. Metrics are shown with their own labels and units; unlike measures are never added together.</div>
+    <div class="toolbar"><div class="analysis-controls">
+      <input id="exchangeAnalysisSearch" class="search" placeholder="Search exchanges, chains or findings…" value="${esc(state.exchangeAnalysisQuery)}" />
+      <div class="kindtoggle">
+        ${filterButton('data-exchange-kind','all','All venues',state.exchangeAnalysisKind==='all')}
+        ${filterButton('data-exchange-kind','dex','DEX',state.exchangeAnalysisKind==='dex')}
+        ${filterButton('data-exchange-kind','cex','CEX',state.exchangeAnalysisKind==='cex')}
+      </div>
+      <div class="kindtoggle">
+        ${filterButton('data-exchange-lifecycle','all','All outcomes',state.exchangeAnalysisLifecycle==='all')}
+        ${filterButton('data-exchange-lifecycle','successful','Successful',state.exchangeAnalysisLifecycle==='successful')}
+        ${filterButton('data-exchange-lifecycle','mid','Mid',state.exchangeAnalysisLifecycle==='mid')}
+        ${filterButton('data-exchange-lifecycle','dead','Dead / closing',state.exchangeAnalysisLifecycle==='dead')}
+      </div>
+      <span class="analysis-spacer"></span>
+      <label class="muted" for="exchangeAnalysisSort">Sort</label>
+      <select id="exchangeAnalysisSort" class="analysis-select">
+        <option value="name"${state.exchangeAnalysisSort==='name'?' selected':''}>Name</option>
+        <option value="lifecycle"${state.exchangeAnalysisSort==='lifecycle'?' selected':''}>Lifecycle</option>
+        <option value="launched"${state.exchangeAnalysisSort==='launched'?' selected':''}>Launch date</option>
+        <option value="citations"${state.exchangeAnalysisSort==='citations'?' selected':''}>Citation count</option>
+        <option value="updated"${state.exchangeAnalysisSort==='updated'?' selected':''}>Last verified</option>
+      </select>
+      <button type="button" class="kindbtn" data-exchange-sort-dir="${state.exchangeAnalysisDir}">${state.exchangeAnalysisDir === 1 ? 'Ascending ↑' : 'Descending ↓'}</button>
+    </div></div>
+    <div class="dsec" style="margin:18px 0 10px">${filtered.length} dossier${filtered.length===1?'':'s'} shown</div>
+    <div class="gwrap">${filtered.map(exchangeAnalysisCard).join('') || '<div class="skel">No dossiers match these filters.</div>'}</div>`;
+}
+async function fetchResearchCohort(url, kind, lifecycle) {
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`${kind.toUpperCase()} ${lifecycle}`);
+  return normalizeExchangeAnalysis(kind, lifecycle, await response.json());
+}
+async function loadExchangeAnalysis() {
+  renderExchangeAnalysis();
+  const requests = [
+    ['/api/successful-exchanges?kind=dex','dex','successful'],
+    ['/api/successful-exchanges?kind=cex','cex','successful'],
+    ['/api/mid-exchanges?kind=dex','dex','mid'],
+    ['/api/mid-exchanges?kind=cex','cex','mid'],
+    ['/api/dead-exchanges?kind=dex','dex','dead'],
+    ['/api/dead-exchanges?kind=cex','cex','dead'],
+  ];
+  const settled = await Promise.allSettled(requests.map(([url,kind,lifecycle]) => fetchResearchCohort(url,kind,lifecycle)));
+  state.exchangeAnalysisData = settled.flatMap((result) => result.status === 'fulfilled' ? result.value : []);
+  state.exchangeAnalysisErrors = settled.flatMap((result) => result.status === 'rejected' ? [result.reason.message] : []);
+  exchangeAnalysisLoaded = state.exchangeAnalysisErrors.length === 0;
+  renderExchangeAnalysis();
+}
+
+function renderCasinoAnalysis() {
+  document.getElementById('casinoanalysisview').innerHTML =
+    `${pageHead('Web3 Casino Analysis', 'A lifecycle research library for crypto-native casinos, their operating models, tokens, jurisdictions and outcomes.')}
+    <div class="analysis-empty"><b>No casino dossiers are published yet.</b><br/>The section is visible now so its research state is honest and inspectable. Cases will appear only after sources and claims pass the same verification standard as the blockchain and exchange libraries.</div>`;
+}
+
+document.getElementById('blockchainanalysisview').addEventListener('input', (e) => {
+  if (e.target.id !== 'blockchainAnalysisSearch') return;
+  state.blockchainAnalysisQuery = e.target.value;
+  const caret = e.target.selectionStart;
+  renderBlockchainAnalysis();
+  const input = document.getElementById('blockchainAnalysisSearch');
+  if (input) { input.focus(); try { input.setSelectionRange(caret, caret); } catch (err) {} }
+});
+document.getElementById('blockchainanalysisview').addEventListener('change', (e) => {
+  if (e.target.id !== 'blockchainAnalysisSort') return;
+  state.blockchainAnalysisSort = e.target.value;
+  renderBlockchainAnalysis();
+});
+document.getElementById('exchangeanalysisview').addEventListener('input', (e) => {
+  if (e.target.id !== 'exchangeAnalysisSearch') return;
+  state.exchangeAnalysisQuery = e.target.value;
+  const caret = e.target.selectionStart;
+  renderExchangeAnalysis();
+  const input = document.getElementById('exchangeAnalysisSearch');
+  if (input) { input.focus(); try { input.setSelectionRange(caret, caret); } catch (err) {} }
+});
+document.getElementById('exchangeanalysisview').addEventListener('change', (e) => {
+  if (e.target.id !== 'exchangeAnalysisSort') return;
+  state.exchangeAnalysisSort = e.target.value;
+  renderExchangeAnalysis();
+});
+document.getElementById('exchangeanalysisview').addEventListener('click', (e) => {
+  const kind = e.target.closest('[data-exchange-kind]');
+  if (kind) { state.exchangeAnalysisKind = kind.dataset.exchangeKind; renderExchangeAnalysis(); return; }
+  const lifecycle = e.target.closest('[data-exchange-lifecycle]');
+  if (lifecycle) { state.exchangeAnalysisLifecycle = lifecycle.dataset.exchangeLifecycle; renderExchangeAnalysis(); return; }
+  const direction = e.target.closest('[data-exchange-sort-dir]');
+  if (direction) { state.exchangeAnalysisDir *= -1; renderExchangeAnalysis(); return; }
+  if (e.target.closest('a') || e.target.closest('.prosetoggle')) return;
+  const card = e.target.closest('[data-exchange-analysis-key]');
+  if (!card) return;
+  state.exchangeAnalysisExpanded = state.exchangeAnalysisExpanded === card.dataset.exchangeAnalysisKey ? null : card.dataset.exchangeAnalysisKey;
+  const y = window.scrollY;
+  renderExchangeAnalysis();
+  window.scrollTo(0, y);
+});
+document.getElementById('exchangeanalysisview').addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const card = e.target.closest('[data-exchange-analysis-key]');
+  if (!card || e.target.closest('a,button,select,input')) return;
+  e.preventDefault();
+  card.click();
+});
+document.addEventListener('click', (e) => {
+  const route = e.target.closest('[data-analysis-route]');
+  if (route) switchView(route.dataset.analysisRoute);
+});
 
 function delta(v) {
   if (v == null || isNaN(v)) return '';
@@ -1488,8 +1824,9 @@ function applyViewGating(){
     h.hidden = !any;
   });
 }
-let graveLoaded = false, midLoaded = false, nftLoaded = false, infraLoaded = false, marketsLoaded = false, stablesLoaded = false, geoLoaded = false, rwaLoaded = false, usLoaded = false, newsLoaded = false, powerLoaded = false, tracesLoaded = false;
+let graveLoaded = false, midLoaded = false, nftLoaded = false, infraLoaded = false, marketsLoaded = false, stablesLoaded = false, geoLoaded = false, rwaLoaded = false, usLoaded = false, newsLoaded = false, powerLoaded = false, tracesLoaded = false, blockchainAnalysisLoaded = false, exchangeAnalysisLoaded = false;
 function switchView(view, push){
+  if (view === 'nft') view = 'nft-analysis'; // preserve the legacy /nft route
   // a deep-link to a disabled section falls back to the board rather than 404ing
   if (!isEnabledView(view)) view = 'live';
   state.activeView = view;
@@ -1498,7 +1835,10 @@ function switchView(view, push){
   document.querySelectorAll('.liveonly').forEach(el => { el.style.display = view === 'live' ? '' : 'none'; });
   document.getElementById('midview').style.display = view === 'mid' ? 'block' : 'none';
   document.getElementById('graveview').style.display = view === 'grave' ? 'block' : 'none';
-  document.getElementById('nftview').style.display = view === 'nft' ? 'block' : 'none';
+  document.getElementById('blockchainanalysisview').style.display = view === 'blockchain-analysis' ? 'block' : 'none';
+  document.getElementById('exchangeanalysisview').style.display = view === 'exchange-analysis' ? 'block' : 'none';
+  document.getElementById('casinoanalysisview').style.display = view === 'casino-analysis' ? 'block' : 'none';
+  document.getElementById('nftview').style.display = view === 'nft-analysis' ? 'block' : 'none';
   document.getElementById('infraview').style.display = view === 'infra' ? 'block' : 'none';
   document.getElementById('marketsview').style.display = view === 'markets' ? 'block' : 'none';
   document.getElementById('stablesview').style.display = view === 'stables' ? 'block' : 'none';
@@ -1515,7 +1855,10 @@ function switchView(view, push){
   if (view === 'traces') { state.scamGraph = null; loadTraces(); }
   if (view === 'grave') ensureGraveKind(state.xKind);
   if (view === 'mid') ensureMidKind(state.xKind);
-  if (view === 'nft' && !nftLoaded) loadNft();
+  if (view === 'blockchain-analysis' && !blockchainAnalysisLoaded) { blockchainAnalysisLoaded = true; loadBlockchainAnalysis(); }
+  if (view === 'exchange-analysis' && !exchangeAnalysisLoaded) { exchangeAnalysisLoaded = true; loadExchangeAnalysis(); }
+  if (view === 'casino-analysis') renderCasinoAnalysis();
+  if (view === 'nft-analysis' && !nftLoaded) loadNft();
   if (view === 'infra' && !infraLoaded) loadInfra();
   if (view === 'markets' && !marketsLoaded) loadMarkets();
   if (view === 'stables' && !stablesLoaded) loadStables();
@@ -1810,7 +2153,7 @@ function mktUrl(c){
 const CHAIN_ICON = { ethereum:'⟠', solana:'◎', 'bitcoin-ordinals':'₿', ordinals:'₿', polygon:'⬡', 'polygon-pos':'⬡', avalanche:'🔺', berachain:'🐻', abstract:'✦', 'binance-smart-chain':'◈', apechain:'🦍', base:'🔵', ronin:'⚔', hyperevm:'💧', blast:'💥', stargaze:'✧', 'optimistic-ethereum':'🔴', arbitrum:'🔷' };
 const CHAIN_LABEL = { 'polygon-pos':'Polygon', 'binance-smart-chain':'BNB Chain', 'optimistic-ethereum':'Optimism', ordinals:'Bitcoin Ordinals', hyperevm:'HyperEVM', apechain:'ApeChain' };
 function chainLabel(c){ c=(c||'').toString(); return CHAIN_LABEL[c] || c.replace(/-/g,' ').replace(/\b\w/g, m=>m.toUpperCase()); }
-const NFT_HEAD = pageHead('NFTs & Ordinals', 'A lifecycle library for NFT &amp; Ordinals collections — mint raise vs secondary, holder and founder engagement, royalty capture, and how long projects actually last.');
+const NFT_HEAD = pageHead('NFT and Ordinals Analysis', 'A lifecycle library for NFT &amp; Ordinals collections — mint raise vs secondary, holder and founder engagement, royalty capture, and how long projects actually last.');
 function renderNft(data){
   const el = document.getElementById('nftview');
   state.nftData = data;
@@ -3175,7 +3518,7 @@ document.addEventListener('click', (e) => {
 });
 
 // ---- deep-link routing (History API) ----
-const KNOWN_VIEWS = ['live','mid','grave','nft','stables','rwa','infra','markets','geo','uspolicy','power','news','traces','api'];
+const KNOWN_VIEWS = ['live','blockchain-analysis','exchange-analysis','casino-analysis','nft-analysis','mid','grave','nft','stables','rwa','infra','markets','geo','uspolicy','power','news','traces','api'];
 function applyRoute(){
   const parts = location.pathname.split('/').filter(Boolean);
   if (!parts.length) { switchView('live', false); return; }
@@ -3188,7 +3531,7 @@ function applyRoute(){
     state.tracesExpanded = decodeURIComponent(rest); // renderTraces opens it
     switchView('traces', false);
   } else if (seg === 'collection' && rest) {
-    switchView('nft', false); // lands on NFT tab; server OG describes the collection
+    switchView('nft-analysis', false); // lands on NFT analysis; server OG describes the collection
   } else if (KNOWN_VIEWS.includes(seg)) {
     switchView(seg, false);
   } else {
@@ -3203,7 +3546,7 @@ load();
 applyRoute();
 setInterval(load, 30000);
 // real-time refresh of whichever live-data tab is open (research tabs are static, skip them)
-const LIVE_REFRESH = { stables: loadStables, nft: loadNft, news: loadNews, markets: loadMarkets, power: loadPower };
+const LIVE_REFRESH = { stables: loadStables, 'nft-analysis': loadNft, news: loadNews, markets: loadMarkets, power: loadPower };
 setInterval(() => {
   const v = state.activeView;
   const fn = LIVE_REFRESH[v];
