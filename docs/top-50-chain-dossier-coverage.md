@@ -2,6 +2,14 @@
 
 Audit date: **2026-07-29**
 
+> **Implementation update — 2026-07-29.** Migrations `0015` and `0020` have
+> since promoted the first 13 board chains into complete schema-v1 dossiers:
+> Ethereum, Solana, BSC, Base, Robinhood Chain, Hyperliquid L1, Polygon,
+> Arbitrum, Tron, Monad, Avalanche, OP Mainnet, and Mantle. The counts below
+> remain the pre-promotion audit baseline so that the gap is not rewritten out
+> of history. Re-run the machine-readable audit against the deployed D1 dataset
+> before publishing a new top-50 completion percentage.
+
 Board snapshot: **2026-07-29T15:35:40.123Z**
 
 The [machine-readable manifest](./top-50-chain-dossier-coverage-2026-07-29.json)
@@ -91,14 +99,14 @@ a resolving `source_url` and `as_of`; unsupported fields remain `null`; derived
 values name their inputs; chain launch, token generation, migrations, rebrands,
 and gas-token identity remain distinct events.
 
-## Priorities after the first batch
+## Priorities after the first two batches
 
 1. Finish Robinhood Chain’s single missing block and Soneium’s missing
-   `synthesis`.
+   `synthesis` if they were not completed by the first promotion wave.
 2. Build XDC and Fluent from zero so every current board member has at least one
    researched dossier path.
-3. Complete the next activity-ranked cohort: Tron, Monad, Avalanche, OP Mainnet,
-   Mantle, Plasma, TON, and Ink.
+3. Complete the next activity-ranked cohort: Plasma, TON, Ink, and the remaining
+   current-board names after a fresh board snapshot.
 4. Work down the manifest by missing-dimension count, refreshing the snapshot
    before each cohort because board membership is volatile.
 
