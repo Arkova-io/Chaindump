@@ -19,8 +19,15 @@ describe('production deployment readiness', () => {
     expect(deployWorkflow).toMatch(
       /group:\s*deploy-production[\s\S]*cancel-in-progress:\s*true/,
     );
+    const currentMainChecks = deployWorkflow.match(
+      /test "\$GITHUB_SHA" = "\$current_main_sha"/g,
+    );
+    expect(currentMainChecks).toHaveLength(2);
     expect(deployWorkflow).toMatch(
-      /Reject a superseded main revision[\s\S]*refs\/heads\/main:refs\/remotes\/origin\/main[\s\S]*test "\$GITHUB_SHA" = "\$current_main_sha"/,
+      /Reject a superseded main revision before migration[\s\S]*Apply D1 migrations/,
+    );
+    expect(deployWorkflow).toMatch(
+      /Apply D1 migrations[\s\S]*Re-check the main revision before Worker deploy[\s\S]*Deploy Worker/,
     );
   });
 
