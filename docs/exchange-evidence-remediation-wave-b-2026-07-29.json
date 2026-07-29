@@ -103,7 +103,7 @@
           "as_of": "2026-07-29",
           "source_ids": ["thorchain-exploit-report-2", "thorchain-decrypt-thorfi"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "strategic_choices": {
           "value": [
@@ -115,7 +115,7 @@
           "as_of": "2026-07-29",
           "source_ids": ["thorchain-q2-2026", "thorchain-exploit-report-2", "thorchain-decrypt-thorfi"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "token": {
           "value": "RUNE is integral to pool routing, node bonding, and the reflexive risk identified during the THORFi crisis; current supply and valuation fields still need fresh field-level verification.",
@@ -208,7 +208,7 @@
           "publisher": "Bitwise Asset Management filing hosted by SEC",
           "url": "https://www.sec.gov/Archives/edgar/data/2088139/000121390026052317/ea0288809-s1a3_bitwise.htm",
           "source_tier": "C",
-          "source_role": "independent_issuer_disclosure",
+          "source_role": "primary",
           "independence_group": "bitwise_issuer_disclosure",
           "access_state": "accessible",
           "access_method": "indexed_browser_review",
@@ -223,8 +223,8 @@
           "value": "High-volume operating perpetual and spot exchange with material live fees, revenue, volume, and open interest.",
           "as_of": "2026-07-29",
           "source_ids": ["hyperliquid-defillama"],
-          "confidence": "high",
-          "review_state": "reviewed"
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
         },
         "why": {
           "value": "Product-first vertical integration plausibly produced CEX-like execution and fee capture, but the reviewed sources do not isolate architecture from leverage cycle, distribution, or incentive effects.",
@@ -257,14 +257,14 @@
           "as_of": "2026-07-29",
           "source_ids": ["hyperliquid-oak-jelly", "hyperliquid-bitwise-filing"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "legal_or_loss": {
           "value": "The JELLY incident created roughly $12M of unrealized HLP exposure before validator intervention; the reviewed set establishes risk and intervention, not an adjudicated legal finding.",
           "as_of": "2026-07-29",
           "source_ids": ["hyperliquid-oak-jelly", "hyperliquid-bitwise-filing"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         }
       },
       "counterevidence": [
@@ -310,10 +310,12 @@
           "source_tier": "D",
           "source_role": "primary",
           "independence_group": "meteora_operator",
-          "access_state": "fetch_failed",
-          "access_method": "indexed_browser_attempt",
-          "evidence_reviewed": false,
-          "evidence_locator": "Existing corpus attributes quarterly volume and MET buybacks to this PDF; the review path failed, so those fields remain unresolved."
+          "access_state": "accessible",
+          "access_method": "direct_pdf_text_and_visual_review",
+          "evidence_reviewed": true,
+          "evidence_locator": "Seventeen-page issuer report reviewed in extracted text and rendered pages 3-13: it reports Q1 volume, fees, revenue, treasury cash flow, MET vesting, and $1M of Q1 buybacks for 7,007,042 MET. These remain first-party figures despite the report's attribution of some protocol metrics to Blockworks Research.",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_reviewed_at": "2026-07-29T19:32:00-04:00"
         },
         {
           "id": "meteora-justia-docket",
@@ -348,18 +350,18 @@
       ],
       "claims": {
         "outcome": {
-          "value": "Large operating Solana liquidity and token-launch venue; success is supported by current adapter volume, while the inaccessible quarterly issuer report cannot be used as reviewed evidence.",
+          "value": "Large operating Solana liquidity and token-launch venue; current adapter volume and the reviewed quarterly report support activity, while the report's financial and treasury figures remain first-party claims.",
           "as_of": "2026-07-29",
           "source_ids": ["meteora-defillama-volume", "meteora-q1-2026-report"],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
         "why": {
-          "value": "DLMM, dynamic fee, and launch-stack integration plausibly fit Solana token price discovery, but independent causal evidence remains thin.",
+          "value": "DLMM, volatility-responsive fees, and launch-stack integration plausibly fit Solana token price discovery; the issuer report documents those mechanics and launch-partner contribution, but independent causal evidence remains thin.",
           "as_of": "2026-07-29",
-          "source_ids": ["meteora-defillama-volume"],
-          "confidence": "low",
-          "review_state": "unresolved"
+          "source_ids": ["meteora-defillama-volume", "meteora-q1-2026-report"],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
         },
         "strategic_choices": {
           "value": [
@@ -370,15 +372,15 @@
           ],
           "as_of": "2026-07-29",
           "source_ids": ["meteora-q1-2026-report"],
-          "confidence": "low",
-          "review_state": "unresolved"
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
         },
         "token": {
-          "value": "MET buyback and holder-report claims remain unreviewed because the cited first-party PDF could not be retrieved in the review path.",
+          "value": "The reviewed issuer report states that Meteora deployed $1M in Q1 2026 to acquire 7,007,042 MET and describes vesting and cumulative buybacks; independent confirmation and current post-quarter fields remain unresolved.",
           "as_of": "2026-07-29",
           "source_ids": ["meteora-q1-2026-report"],
-          "confidence": "low",
-          "review_state": "unresolved"
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
         },
         "chain_dependence": {
           "value": "Observed activity is Solana-specific and likely sensitive to Solana token-launch and memecoin cycles; the causal share is not identified.",
@@ -397,10 +399,11 @@
       },
       "counterevidence": [
         "High venue volume does not prove token-holder value capture or sustainable demand outside token-launch cycles.",
-        "The lawsuit is a material risk signal but cannot be used as adjudicated causal proof."
+        "The lawsuit is a material risk signal but cannot be used as adjudicated causal proof.",
+        "The Q1 report is issuer-authored; direct review makes its fields citable but does not make its treasury, runway, or buyback claims independent."
       ],
       "unknowns": [
-        "Reviewed Q1 2026 quarterly metrics and MET buyback fields.",
+        "Independent verification of Q1 2026 treasury, revenue, and MET buyback fields.",
         "Volume share that persists through a sustained contraction in Solana token launches.",
         "Program-upgrade, treasury, and launch-partner concentration."
       ]
@@ -497,7 +500,7 @@
           "as_of": "2026-07-29",
           "source_ids": ["ascendex-theblock-closure"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "token": {
           "value": "ASD existed as an exchange utility/rewards token, but launch, supply, treasury, and failure-impact fields are not field-verified in the reviewed source set.",
@@ -518,7 +521,7 @@
           "as_of": "2026-07-29",
           "source_ids": ["ascendex-theblock-closure"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         }
       },
       "counterevidence": [
@@ -616,7 +619,7 @@
           "as_of": "2026-07-29",
           "source_ids": ["dydx-chain-launch", "dydx-four-pillars-chain"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "strategic_choices": {
           "value": [
@@ -627,8 +630,8 @@
           ],
           "as_of": "2026-07-29",
           "source_ids": ["dydx-chain-launch", "dydx-token-mechanics", "dydx-four-pillars-chain"],
-          "confidence": "high",
-          "review_state": "reviewed"
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
         },
         "token": {
           "value": "DYDX migrated from Ethereum representation to native chain utility for governance and staking; current supply, concentration, and event-study fields need fresh independent verification.",
@@ -667,7 +670,7 @@
       "dossier_id": "dex:dead:platypus-finance",
       "current_table": "dead_exchanges",
       "review": {
-        "state": "reviewed",
+        "state": "partially_reviewed",
         "reviewer": "codex-research-agent",
         "reviewed_at": "2026-07-29T20:00:00-04:00",
         "as_of": "2026-07-29"
@@ -694,7 +697,7 @@
           "publisher": "Immunefi",
           "url": "https://medium.com/immunefi/hack-analysis-platypus-finance-february-2023-d11fce37d861",
           "source_tier": "B",
-          "source_role": "security_research",
+          "source_role": "independent",
           "independence_group": "immunefi_research",
           "access_state": "accessible",
           "access_method": "indexed_browser_review",
@@ -739,8 +742,8 @@
           "value": "Economically inactive Avalanche stableswap with residual balances roughly 99.998% below the corpus peak; contracts remaining observable does not equal a functioning venue.",
           "as_of": "2026-07-29",
           "source_ids": ["platypus-defillama"],
-          "confidence": "high",
-          "review_state": "reviewed"
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
         },
         "why": {
           "value": "The USP emergency-withdraw solvency defect enabled collateral removal with debt outstanding; repeated incidents, stablecoin impairment, compensation complexity, and capital flight destroyed the liquidity network effect.",
@@ -952,16 +955,16 @@
           "id": "raydium-docs-fees",
           "title": "Protocol fees",
           "publisher": "Raydium",
-          "url": "https://docs.raydium.io/raydium/protocol/protocol-fees",
+          "url": "https://docs.raydium.io/ray/protocol-fees",
           "source_tier": "D",
           "source_role": "primary",
           "independence_group": "raydium_operator",
           "access_state": "accessible",
-          "access_method": "indexed_browser_review",
+          "access_method": "direct_browser_review",
           "evidence_reviewed": true,
-          "evidence_locator": "Documents product-specific swap-fee splits among LPs, RAY buybacks, and treasury; 12% is a share of fees, not 12% of swap volume.",
+          "evidence_locator": "Canonical live page re-reviewed at lines 53-99 and 172-177: CLMM/CPMM fees split 84% to LPs, 12% to RAY buybacks, and 4% to treasury; the 12% is explicitly a share of the trading fee, not gross swap volume.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T19:20:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T19:32:00-04:00"
         },
         {
           "id": "raydium-defillama-volume",
@@ -998,7 +1001,7 @@
           "as_of": "2026-07-29",
           "source_ids": ["raydium-defillama-volume", "raydium-docs-overview"],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "why": {
           "value": "Solana-native liquidity products, wallet/aggregator routing, and repeated product adaptation plausibly sustained order flow; the individual causal effects are not independently isolated.",
@@ -1016,8 +1019,8 @@
           ],
           "as_of": "2026-07-29",
           "source_ids": ["raydium-docs-overview", "raydium-docs-fees"],
-          "confidence": "high",
-          "review_state": "reviewed"
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
         },
         "token": {
           "value": "RAY receives buybacks funded by a disclosed share of swap fees; the share is of the fee bucket, not gross volume, and current token event-study fields remain missing.",
@@ -1112,7 +1115,7 @@
           "publisher": "21Shares",
           "url": "https://www.21shares.com/en-uk/research/how-raydium-and-jupiter-are-powering-solana-defi",
           "source_tier": "C",
-          "source_role": "independent_issuer_research",
+          "source_role": "primary",
           "independence_group": "21shares_issuer_research",
           "access_state": "accessible",
           "access_method": "indexed_browser_review",
@@ -1127,8 +1130,8 @@
           "value": "Operating high-volume Solana aggregator; routed volume is a distribution metric and overlaps the underlying liquidity venues it selects.",
           "as_of": "2026-07-29",
           "source_ids": ["jupiter-defillama-aggregator", "jupiter-21shares-research"],
-          "confidence": "high",
-          "review_state": "reviewed"
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
         },
         "why": {
           "value": "Routing across fragmented Solana liquidity reduced quote-discovery friction and made Jupiter a distribution layer; product breadth and ecosystem activity likely reinforce it, but causal shares are not isolated.",
@@ -1300,7 +1303,7 @@
       "dossier_id": "dex:dead:kyberswap",
       "current_table": "dead_exchanges",
       "review": {
-        "state": "reviewed",
+        "state": "partially_reviewed",
         "reviewer": "codex-research-agent",
         "reviewed_at": "2026-07-29T20:00:00-04:00",
         "as_of": "2026-07-29"
@@ -1391,8 +1394,8 @@
           ],
           "as_of": "2026-07-29",
           "source_ids": ["kyberswap-postmortem", "kyberswap-2026-product-update"],
-          "confidence": "high",
-          "review_state": "reviewed"
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
         },
         "token": {
           "value": "KNC is a broader Kyber ecosystem token; this wave does not establish that token design caused Elastic's failure or quantify the exploit event study.",
@@ -1430,7 +1433,7 @@
       "dossier_id": "dex:successful:uniswap",
       "current_table": "successful_exchanges",
       "review": {
-        "state": "reviewed",
+        "state": "partially_reviewed",
         "reviewer": "codex-research-agent",
         "reviewed_at": "2026-07-29T20:00:00-04:00",
         "as_of": "2026-07-29"
@@ -1517,8 +1520,8 @@
           "value": "Large operating multichain AMM protocol with sustained current TVL, volume, and fees across product versions.",
           "as_of": "2026-07-29",
           "source_ids": ["uniswap-defillama", "uniswap-v4-launch"],
-          "confidence": "high",
-          "review_state": "reviewed"
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
         },
         "why": {
           "value": "Permissionless liquidity primitives, composability, broad distribution, and repeated product evolution created a durable liquidity network effect; current metrics do not isolate each contributor.",
@@ -1536,8 +1539,8 @@
           ],
           "as_of": "2026-07-29",
           "source_ids": ["uniswap-v3-launch", "uniswap-v4-launch"],
-          "confidence": "high",
-          "review_state": "reviewed"
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
         },
         "token": {
           "value": "UNI is a governance token; current fee-switch/value-capture status, holder concentration, and fixed-window launch outcomes require separate fresh field-level review.",
@@ -1647,8 +1650,8 @@
           "value": "Large operating multichain DEX with substantial current adapter volume and a historically strong BNB Chain distribution base.",
           "as_of": "2026-07-29",
           "source_ids": ["pancakeswap-defillama-volume", "pancakeswap-2025-recap"],
-          "confidence": "high",
-          "review_state": "reviewed"
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
         },
         "why": {
           "value": "Low-cost BNB Chain distribution, broad retail product surface, liquidity incentives, and later multichain expansion plausibly explain scale; first-party recap data cannot isolate these effects.",
@@ -1705,7 +1708,7 @@
       "dossier_id": "cex:mid:okx",
       "current_table": "mid_exchanges",
       "review": {
-        "state": "reviewed",
+        "state": "partially_reviewed",
         "reviewer": "codex-research-agent",
         "reviewed_at": "2026-07-29T20:00:00-04:00",
         "as_of": "2026-07-29"

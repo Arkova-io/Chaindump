@@ -1,5 +1,10 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import {
+  evaluatePublicationClaim,
+  isIsoReviewTimestamp,
+  normalizePublicationSource,
+} from '../src/lib/publication-depth.mjs';
 
 export const ARTIFACT_URL = new URL(
   '../docs/exchange-evidence-remediation-wave-b-2026-07-29.json',
@@ -28,6 +33,20 @@ const ACCESSIBLE_STATES = new Set([
   'accessible_interface_only',
 ]);
 
+const SOURCE_ROLES = new Set([
+  'aggregator',
+  'authority',
+  'independent',
+  'primary',
+]);
+
+const HIGH_RISK_TOPIC_TYPES = new Map([
+  ['outcome', 'lifecycle'],
+  ['why', 'causal'],
+  ['strategic_choices', 'causal'],
+  ['legal_or_loss', 'loss'],
+]);
+
 function assert(condition, message) {
   if (!condition) {
     throw new Error(message);
@@ -38,7 +57,48 @@ function isNonEmptyString(value) {
   return typeof value === 'string' && value.trim().length > 0;
 }
 
-function validateSource(source, dossierId) {
+function isSemanticallyValidIsoTimestamp(value) {
+  if (!isIsoReviewTimestamp(value)) return false;
+  const match = /^(\d{4})-(\d{2})-(\d{2})(?:T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|[+-](\d{2}):(\d{2})))?$/.exec(
+    String(value),
+  );
+  if (!match) return false;
+  const [, yearText, monthText, dayText, hourText, minuteText, secondText,
+    offsetHourText, offsetMinuteText] = match;
+  const year = Number(yearText);
+  const month = Number(monthText);
+  const day = Number(dayText);
+  const calendarDate = new Date(Date.UTC(year, month - 1, day));
+  if (
+    calendarDate.getUTCFullYear() !== year
+    || calendarDate.getUTCMonth() + 1 !== month
+    || calendarDate.getUTCDate() !== day
+  ) return false;
+  if (hourText === undefined) return true;
+  return Number(hourText) <= 23
+    && Number(minuteText) <= 59
+    && Number(secondText) <= 59
+    && Number(offsetHourText ?? 0) <= 23
+    && Number(offsetMinuteText ?? 0) <= 59;
+}
+
+function isIssuerAuthored(source) {
+  return /issuer/i.test([
+    source.title,
+    source.publisher,
+    source.independence_group,
+    source.evidence_locator,
+  ].filter(Boolean).join(' '));
+}
+
+function policySource(source) {
+  return normalizePublicationSource({
+    ...source,
+    resolving: ACCESSIBLE_STATES.has(source.access_state),
+  });
+}
+
+function validateSource(source, dossierId, artifact) {
   const prefix = `${dossierId} source ${source.id ?? '<missing-id>'}`;
 
   for (const field of [
@@ -61,6 +121,22 @@ function validateSource(source, dossierId) {
     `${prefix} has invalid source_tier`,
   );
   assert(
+    SOURCE_ROLES.has(source.source_role),
+    `${prefix} has non-semantic source_role=${source.source_role}`,
+  );
+  if (source.source_role === 'authority') {
+    assert(
+      source.source_tier === 'A',
+      `${prefix} authority evidence must be tier A`,
+    );
+  }
+  if (isIssuerAuthored(source)) {
+    assert(
+      source.source_role === 'primary',
+      `${prefix} issuer-authored disclosure must remain primary, not authority or independent`,
+    );
+  }
+  assert(
     source.url.startsWith('https://'),
     `${prefix} must use a canonical HTTPS URL`,
   );
@@ -74,8 +150,12 @@ function validateSource(source, dossierId) {
       `${prefix} reviewed evidence needs evidence_reviewer`,
     );
     assert(
-      /^\d{4}-\d{2}-\d{2}T/.test(source.evidence_reviewed_at ?? ''),
-      `${prefix} reviewed evidence needs evidence_reviewed_at`,
+      isSemanticallyValidIsoTimestamp(source.evidence_reviewed_at),
+      `${prefix} reviewed evidence needs a semantically valid evidence_reviewed_at`,
+    );
+    assert(
+      Date.parse(source.evidence_reviewed_at) <= Date.parse(artifact.reviewed_at),
+      `${prefix} evidence review cannot postdate the artifact review`,
     );
     assert(
       ACCESSIBLE_STATES.has(source.access_state),
@@ -85,6 +165,30 @@ function validateSource(source, dossierId) {
       source.evidence_locator.length >= 35,
       `${prefix} reviewed evidence locator is too shallow`,
     );
+    const normalized = policySource(source);
+    assert(
+      normalized.evidence_reviewed,
+      `${prefix} review metadata does not satisfy publication-depth semantics`,
+    );
+    assert(
+      normalized.tier === {
+        A: 'T1',
+        B: 'T2',
+        C: 'T3',
+        D: 'T4',
+      }[source.source_tier],
+      `${prefix} tier does not normalize to publication-depth semantics`,
+    );
+    assert(
+      normalized.role === source.source_role,
+      `${prefix} role does not normalize to publication-depth semantics`,
+    );
+    if (source.source_role === 'authority' || source.source_role === 'independent') {
+      assert(
+        isNonEmptyString(normalized.independence_key),
+        `${prefix} reviewed ${source.source_role} evidence needs independence identity`,
+      );
+    }
   } else {
     assert(
       source.evidence_reviewer === undefined &&
@@ -98,7 +202,7 @@ function validateSource(source, dossierId) {
   );
 }
 
-function validateClaim(claim, topic, dossierId, sourceById) {
+function validateClaim(claim, topic, dossierId, sourceById, policySourceById, artifact) {
   const prefix = `${dossierId} claim ${topic}`;
 
   assert(claim && typeof claim === 'object', `${prefix} must be an object`);
@@ -120,8 +224,8 @@ function validateClaim(claim, topic, dossierId, sourceById) {
   }
 
   assert(
-    /^\d{4}-\d{2}-\d{2}$/.test(claim.as_of),
-    `${prefix} must have an explicit as_of date`,
+    isSemanticallyValidIsoTimestamp(claim.as_of) && claim.as_of === artifact.as_of,
+    `${prefix} must have a semantically valid canonical as_of date`,
   );
   assert(
     CONFIDENCE_LEVELS.has(claim.confidence),
@@ -147,19 +251,19 @@ function validateClaim(claim, topic, dossierId, sourceById) {
       citedSources.every((source) => source.evidence_reviewed),
       `${prefix} reviewed claim cites unreviewed evidence`,
     );
-  }
-
-  if (topic === 'why' && claim.review_state === 'reviewed') {
-    const hasAuthority = citedSources.some(
-      (source) => source.source_tier === 'A',
-    );
-    const independenceGroups = new Set(
-      citedSources.map((source) => source.independence_group),
-    );
-    assert(
-      hasAuthority || independenceGroups.size >= 2,
-      `${prefix} causal review needs an authority or two independence groups`,
-    );
+    const highRiskType = HIGH_RISK_TOPIC_TYPES.get(topic);
+    if (highRiskType) {
+      const assessment = evaluatePublicationClaim({
+        path: `claims.${topic}`,
+        type: highRiskType,
+        high_risk: true,
+        source_refs: claim.source_ids,
+      }, policySourceById);
+      assert(
+        assessment.passes,
+        `${prefix} reviewed high-risk ${highRiskType} claim does not meet publication-depth policy: ${assessment.gaps.join(', ')}`,
+      );
+    }
   }
 
   if (citedSources.length === 0) {
@@ -177,7 +281,7 @@ function validateClaim(claim, topic, dossierId, sourceById) {
   }
 }
 
-function validateCase(caseStudy) {
+function validateCase(caseStudy, artifact) {
   const dossierId = caseStudy.dossier_id ?? '<missing-dossier-id>';
 
   assert(
@@ -192,12 +296,13 @@ function validateCase(caseStudy) {
   );
   assert(caseStudy.review?.reviewer, `${dossierId} missing reviewer`);
   assert(
-    /^\d{4}-\d{2}-\d{2}T/.test(caseStudy.review?.reviewed_at ?? ''),
-    `${dossierId} missing review timestamp`,
+    isSemanticallyValidIsoTimestamp(caseStudy.review?.reviewed_at),
+    `${dossierId} missing semantically valid review timestamp`,
   );
   assert(
-    /^\d{4}-\d{2}-\d{2}$/.test(caseStudy.review?.as_of ?? ''),
-    `${dossierId} missing review as_of`,
+    isSemanticallyValidIsoTimestamp(caseStudy.review?.as_of) &&
+      caseStudy.review.as_of === artifact.as_of,
+    `${dossierId} missing canonical review as_of`,
   );
   assert(
     ['reviewed', 'partially_reviewed'].includes(caseStudy.review?.state),
@@ -209,10 +314,14 @@ function validateCase(caseStudy) {
     `${dossierId} needs at least three source records`,
   );
   const sourceById = new Map();
+  const policySourceById = new Map();
   for (const source of caseStudy.sources) {
     assert(!sourceById.has(source.id), `${dossierId} duplicates source ${source.id}`);
     sourceById.set(source.id, source);
-    validateSource(source, dossierId);
+    const normalized = policySource(source);
+    policySourceById.set(source.id, normalized);
+    policySourceById.set(source.url, normalized);
+    validateSource(source, dossierId, artifact);
   }
 
   assert(
@@ -230,8 +339,22 @@ function validateCase(caseStudy) {
     `${dossierId} must map exactly the six required claim topics`,
   );
   for (const topic of REQUIRED_CLAIM_TOPICS) {
-    validateClaim(caseStudy.claims[topic], topic, dossierId, sourceById);
+    validateClaim(
+      caseStudy.claims[topic],
+      topic,
+      dossierId,
+      sourceById,
+      policySourceById,
+      artifact,
+    );
   }
+  const expectedReviewState = Object.values(caseStudy.claims).every(
+    (claim) => claim.review_state === 'reviewed',
+  ) ? 'reviewed' : 'partially_reviewed';
+  assert(
+    caseStudy.review.state === expectedReviewState,
+    `${dossierId} case review.state must be ${expectedReviewState} to match claim states`,
+  );
 
   assert(
     Array.isArray(caseStudy.counterevidence) &&
@@ -265,6 +388,12 @@ export function validateArtifact(artifact) {
     'research_as_of must explicitly match the canonical as_of date',
   );
   assert(
+    isSemanticallyValidIsoTimestamp(artifact.as_of) &&
+      isSemanticallyValidIsoTimestamp(artifact.research_as_of) &&
+      isSemanticallyValidIsoTimestamp(artifact.reviewed_at),
+    'Artifact dates and review timestamp must be semantically valid ISO values',
+  );
+  assert(
     JSON.stringify([...artifact.selection.required_claim_topics].toSorted(
       (left, right) => left.localeCompare(right),
     )) ===
@@ -289,7 +418,7 @@ export function validateArtifact(artifact) {
       `Duplicate dossier ${caseStudy.dossier_id}`,
     );
     dossierIds.add(caseStudy.dossier_id);
-    validateCase(caseStudy);
+    validateCase(caseStudy, artifact);
   }
 
   const claimCount = artifact.cases.reduce(
