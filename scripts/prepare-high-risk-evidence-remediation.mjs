@@ -1,11 +1,21 @@
 #!/usr/bin/env node
 import { readFileSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { isAbsolute, relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 const REVIEWER = 'codex-research-agent';
 const REVIEW_DAY = '2026-07-29';
+const workspaceRoot = resolve(process.cwd());
+
+function workspacePath(requestedPath, label) {
+  const candidate = resolve(workspaceRoot, requestedPath);
+  const relation = relative(workspaceRoot, candidate);
+  if (relation.startsWith('..') || isAbsolute(relation)) {
+    throw new Error(`${label} must stay inside the workspace`);
+  }
+  return candidate;
+}
 
 const RAW_FETCH_BLOCKED = new Set([
   'https://www.theblock.co/linked/136545/fantom-tvl-slumps-as-colleague-tweets-andre-cronje-is-quitting-defi',
@@ -240,8 +250,13 @@ function main() {
   if (!input || !output) {
     throw new Error('Usage: prepare-high-risk-evidence-remediation.mjs <manifest.json> <output.json>');
   }
-  const prepared = prepareHighRiskRemediation(JSON.parse(readFileSync(resolve(input), 'utf8')));
-  writeFileSync(resolve(output), `${JSON.stringify(prepared, null, 2)}\n`);
+  const prepared = prepareHighRiskRemediation(
+    JSON.parse(readFileSync(workspacePath(input, 'Input path'), 'utf8')),
+  );
+  writeFileSync(
+    workspacePath(output, 'Output path'),
+    `${JSON.stringify(prepared, null, 2)}\n`,
+  );
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) main();

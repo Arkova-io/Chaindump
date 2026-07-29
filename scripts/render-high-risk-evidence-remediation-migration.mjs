@@ -7,6 +7,8 @@ import {
 } from 'node:fs';
 import {
   dirname,
+  isAbsolute,
+  relative,
   resolve,
 } from 'node:path';
 import {
@@ -20,6 +22,15 @@ const defaultDocumentPath = resolve(
   'docs/high-risk-evidence-remediation-2026-07-29.json',
 );
 const MIGRATION_ID = /^\d{4}$/;
+
+function repositoryPath(requestedPath, label) {
+  const candidate = resolve(root, requestedPath);
+  const relation = relative(root, candidate);
+  if (relation.startsWith('..') || isAbsolute(relation)) {
+    throw new Error(`${label} must stay inside the repository`);
+  }
+  return candidate;
+}
 const EXCHANGE_TARGETS = Object.freeze({
   'dex:mid:sushiswap': {
     table: 'mid_exchanges',
@@ -471,12 +482,15 @@ export function applyRepositoryMigrations(database, throughExclusive = Infinity)
     .filter((file) => Number(file.slice(0, 4)) < throughExclusive)
     .sort();
   for (const file of files) {
-    database.exec(readFileSync(resolve(migrationDirectory, file), 'utf8'));
+    database.exec(readFileSync(repositoryPath(resolve(migrationDirectory, file), 'Migration path'), 'utf8'));
   }
 }
 
 function main() {
-  const documentPath = resolve(process.argv[2] || defaultDocumentPath);
+  const documentPath = repositoryPath(
+    process.argv[2] || defaultDocumentPath,
+    'Remediation document path',
+  );
   const document = JSON.parse(readFileSync(documentPath, 'utf8'));
   const assignedId = document.migration_sequence?.assigned_id;
   if (!MIGRATION_ID.test(assignedId || '')) {
