@@ -672,7 +672,7 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   // kind on one carries over to the other, matching how graveFilter persists).
   xKind: 'chain', deadDexData: null, deadCexData: null, midDexData: null, midCexData: null,
   dexBoard: null, cexBoard: null, graveExExpanded: null, graveExOpenGroups: null, midExExpanded: null, midExOpenGroups: null,
-  blockchainAnalysisData: null, blockchainAnalysisQuery: '', blockchainAnalysisSort: 'name',
+  blockchainAnalysisData: null, blockchainAnalysisQuery: '', blockchainAnalysisSort: 'name', blockchainAnalysisStatus: 'all',
   exchangeAnalysisData: null, exchangeAnalysisSummaries: {}, exchangeAnalysisErrors: [], exchangeAnalysisQuery: '',
   exchangeAnalysisKind: 'all', exchangeAnalysisLifecycle: 'all', exchangeAnalysisSort: 'name',
   exchangeAnalysisCohort: 'all', exchangeAnalysisQuality: 'all', exchangeAnalysisForensic: 'all',
@@ -680,7 +680,8 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   casinoAnalysisData: null, casinoCoverage: null, casinoAnalysisError: '', casinoAnalysisQuery: '', casinoAnalysisSort: 'reviewed',
   casinoAnalysisStatus: 'all', casinoAnalysisKind: 'all', casinoAnalysisSubtype: 'all', casinoAnalysisToken: 'all', casinoAnalysisExpanded: null, casinoAnalysisDetails: {},
   nftCaseSort: 'name', nftCaseStatus: 'all', nftCaseChain: 'all',
-  forensicsRefresh: null, forensicsRefreshStatus: 'loading' };
+  forensicsRefresh: null, forensicsRefreshStatus: 'loading',
+  forensicsProposalAgent: null, forensicsProposalAgentStatus: 'loading' };
 
 const fmtUsd = (n) => n == null ? '—' : (n < 0 ? '-' : '') + '$' + Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 2 }).format(Math.abs(n));
 const fmtNum = (n) => n == null ? '—' : Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(n);
@@ -702,11 +703,29 @@ const safeUrl = (u) => { const s = String(u == null ? '' : u).trim(); return /^(
 // ---------------------------------------------------------------------------
 function forensicsRefreshText() {
   const refresh = state.forensicsRefresh;
-  if (state.forensicsRefreshStatus === 'loading') return 'Six-hour review scan: loading evidence-governance status…';
-  if (state.forensicsRefreshStatus === 'unavailable') return 'Six-hour review scan: status unavailable · human promotion required';
-  if (!refresh) return 'Six-hour review scan: no completed scan recorded · human promotion required';
-  const due = Number(refresh.due_nft || 0) + Number(refresh.due_exchange || 0) + Number(refresh.due_casino || 0) + Number(refresh.due_chain || 0);
-  return `Six-hour review scan: ${esc(refresh.completed_at || 'completed')} · ${esc(due)} dossier(s) due · human promotion required`;
+  let scan = 'Six-hour review scan: no completed scan recorded';
+  if (state.forensicsRefreshStatus === 'loading') scan = 'Six-hour review scan: loading evidence-governance status…';
+  else if (state.forensicsRefreshStatus === 'unavailable') scan = 'Six-hour review scan: status unavailable';
+  else if (refresh) {
+    const due = Number(refresh.due_nft || 0) + Number(refresh.due_exchange || 0) + Number(refresh.due_casino || 0) + Number(refresh.due_chain || 0);
+    scan = `Six-hour review scan: ${esc(refresh.completed_at || 'completed')} · ${esc(due)} dossier(s) due`;
+  }
+
+  const run = state.forensicsProposalAgent;
+  let agent = 'Proposal research agent: no run recorded (opt-in workflow)';
+  if (state.forensicsProposalAgentStatus === 'loading') agent = 'Proposal research agent: loading run status…';
+  else if (state.forensicsProposalAgentStatus === 'unavailable') agent = 'Proposal research agent: status unavailable';
+  else if (run?.status === 'running') {
+    const elapsed = Date.now() - Date.parse(run.started_at || '');
+    agent = Number.isFinite(elapsed) && elapsed > 45 * 60 * 1000
+      ? `Proposal research agent: interrupted or stale run since ${esc(run.started_at || 'unknown')}`
+      : `Proposal research agent: running since ${esc(run.started_at || 'unknown')}`;
+  } else if (run?.status === 'completed') {
+    agent = `Proposal research agent: completed ${esc(run.completed_at || run.started_at || 'unknown')} · ${esc(run.proposals_queued || 0)} candidate(s) queued`;
+  } else if (run?.status === 'failed') {
+    agent = `Proposal research agent: failed ${esc(run.completed_at || run.started_at || 'unknown')}`;
+  }
+  return `${scan}<br>${agent} · proposal-only; human promotion required`;
 }
 function renderForensicsRefreshStatus() {
   document.querySelectorAll('[data-forensics-refresh]').forEach((node) => {
@@ -718,10 +737,14 @@ async function loadForensicsRefreshStatus() {
     const response = await fetch('/api/forensics-refresh-status');
     const payload = response.ok ? await response.json() : {};
     state.forensicsRefresh = payload.refresh || null;
+    state.forensicsProposalAgent = payload.proposal_agent || null;
     state.forensicsRefreshStatus = response.ok ? 'loaded' : 'unavailable';
+    state.forensicsProposalAgentStatus = response.ok && !payload.proposal_agent_error ? 'loaded' : 'unavailable';
   } catch {
     state.forensicsRefresh = null;
+    state.forensicsProposalAgent = null;
     state.forensicsRefreshStatus = 'unavailable';
+    state.forensicsProposalAgentStatus = 'unavailable';
   }
   renderForensicsRefreshStatus();
 }
@@ -741,6 +764,17 @@ function kindToggle(kind){
 }
 // Robust source renderer — handles both plain URL strings ["https://…"] and
 // {title,url} objects, dedups, and derives a clean domain label when no title.
+function sourceMetadataHtml(source) {
+  if (!source || typeof source !== 'object') return '';
+  const metadata = [];
+  if (source.source_date) metadata.push(`source ${esc(source.source_date)}`);
+  if (source.checked_at || source.accessed_at) metadata.push(`inspected ${esc(source.checked_at || source.accessed_at)}`);
+  if (source.last_verified_at) metadata.push(`verified ${esc(source.last_verified_at)}`);
+  if (source.access_state) metadata.push(`access ${esc(String(source.access_state).replaceAll('_', ' '))}`);
+  if (source.verification_note) metadata.push(esc(source.verification_note));
+  return metadata.length ? `<span class="muted"> · ${metadata.join(' · ')}</span>` : '';
+}
+
 function srcHtml(sources, label) {
   if (!sources) return '';
   let arr; try { arr = typeof sources === 'string' ? JSON.parse(sources) : sources; } catch (e) { return ''; }
@@ -750,9 +784,10 @@ function srcHtml(sources, label) {
     const u = typeof s === 'string' ? s : (s && s.url);
     if (!u || seen.has(u)) return ''; seen.add(u);
     const t = (s && typeof s === 'object' && s.title) || String(u).replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+    const metadataHtml = sourceMetadataHtml(s);
     // safeUrl() first: esc() blocks attribute breakout but not a javascript:/data:
     // scheme, and these URLs are research-agent/third-party authored.
-    return `<a href="${esc(safeUrl(u))}" target="_blank" rel="noopener noreferrer">${esc(t)} ↗</a>`;
+    return `<a href="${esc(safeUrl(u))}" target="_blank" rel="noopener noreferrer">${esc(t)} ↗</a>${metadataHtml}`;
   }).filter(Boolean);
   if (!links.length) return '';
   return `<div class="asrc">${label || 'Sources: '}${links.join(' · ')}</div>`;
@@ -772,11 +807,15 @@ function nftEvidenceHtml(profile, sources, freshnessState) {
       const source = byId.get(id);
       if (!source || !source.url) return '';
       const sourceDate = source.source_date || 'unknown';
-      const verified = source.last_verified_at || source.checked_at || 'unknown';
+      const inspected = source.checked_at || 'unknown';
+      const verified = source.last_verified_at;
+      const access = String(source.access_state || (verified ? 'verified' : 'not recorded')).replaceAll('_', ' ');
+      const verification = verified ? `verified ${esc(verified)}` : 'verification not recorded';
+      const note = source.verification_note ? ` · ${esc(source.verification_note)}` : '';
       const today = new Date().toISOString().slice(0, 10);
       const stale = source.stale === true || (source.evidence_scope === 'current_state' && source.stale_after && today > source.stale_after);
       const freshness = typeof source.stale === 'boolean' ? (stale ? 'STALE' : 'fresh') : 'freshness not rated';
-      return `<a href="${esc(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title || id)} ↗</a><span class="muted"> · source ${esc(sourceDate)} · verified ${esc(verified)} · ${esc(freshness)}</span>`;
+      return `<a href="${esc(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title || id)} ↗</a><span class="muted"> · source ${esc(sourceDate)} · inspected ${esc(inspected)} · ${verification} · access ${esc(access)} · ${esc(freshness)}${note}</span>`;
     }).filter(Boolean).join(' · ');
     if (!links) return '';
     const value = item.field === 'lifecycle_status' && freshnessState?.statusWithheld ? 'unknown — evidence review required' : item.value;
@@ -812,7 +851,22 @@ function sourceArray(value) {
     const url = typeof source === 'string' ? source : source && source.url;
     if (!url || seen.has(url) || safeUrl(url) === '#') return null;
     seen.add(url);
-    return typeof source === 'string' ? { url } : { title: source.title || '', url };
+    return typeof source === 'string' ? { url } : {
+      id: source.id || '',
+      title: source.title || '',
+      url,
+      publisher: source.publisher || '',
+      source_date: source.source_date || '',
+      checked_at: source.checked_at || '',
+      accessed_at: source.accessed_at || '',
+      last_verified_at: source.last_verified_at || '',
+      access_state: source.access_state || '',
+      verification_note: source.verification_note || '',
+      evidence_scope: source.evidence_scope || '',
+      stale_after: source.stale_after || '',
+      stale: typeof source.stale === 'boolean' ? source.stale : null,
+      reference_id: source.reference_id || '',
+    };
   }).filter(Boolean);
 }
 // Published forensic conclusions carry their own source references. Surface
@@ -1014,7 +1068,8 @@ function normalizeBlockchainAnalysis(live, mid, dead) {
     const sources = sourceArray(dossier.sources);
     const hasDossier = Number(dossier.dimensionCount || 0) > 0;
     byName.set(String(name).toLowerCase(), {
-      name, lifecycle: 'live', coverage: hasDossier ? 'Research dossier' : 'Live metrics', metric: row.tvl,
+      name, lifecycle: 'live', dossierStatus: dossier.status || (hasDossier ? 'unknown' : 'live_only'),
+      coverage: hasDossier ? 'Research dossier' : 'Live metrics', metric: row.tvl,
       metricLabel: 'TVL', summary: '', sources, updatedAt: row.updated_at,
       dimensionCount: Number(dossier.dimensionCount || 0),
       expectedDimensionCount: Number(dossier.expectedDimensionCount || 8),
@@ -1027,6 +1082,7 @@ function normalizeBlockchainAnalysis(live, mid, dead) {
     const p = parsedObject(row.profile);
     byName.set(String(row.chain).toLowerCase(), {
       name: row.chain, lifecycle: 'mid', coverage: 'Legacy postmortem',
+      dossierStatus: p.forensic_analysis?.outcome?.label || p.status || 'mid',
       metric: row.tvl, metricLabel: 'TVL', summary: row.why_stuck || p.situation || '',
       sources: sourceArray(row.sources), updatedAt: row.updated_at,
       dimensionCount: 0, expectedDimensionCount: 8,
@@ -1038,6 +1094,7 @@ function normalizeBlockchainAnalysis(live, mid, dead) {
     const p = parsedObject(row.profile);
     byName.set(String(row.chain).toLowerCase(), {
       name: row.chain, lifecycle: 'dead', coverage: 'Legacy postmortem',
+      dossierStatus: p.forensic_analysis?.outcome?.label || p.status || 'dead',
       metric: row.current_tvl, metricLabel: 'Current TVL', summary: row.why || p.postmortem || '',
       sources: sourceArray(row.sources), updatedAt: row.updated_at,
       dimensionCount: 0, expectedDimensionCount: 8,
@@ -1048,8 +1105,8 @@ function normalizeBlockchainAnalysis(live, mid, dead) {
   return [...byName.values()];
 }
 function blockchainLifecycleClass(lifecycle) {
-  if (lifecycle === 'dead') return 'dead';
-  if (lifecycle === 'mid') return 'declining';
+  if (/dead|failed|defunct/.test(lifecycle)) return 'dead';
+  if (/mid|declining|stuck|dying|fading/.test(lifecycle)) return 'declining';
   return 'recover';
 }
 function blockchainSummary(row) {
@@ -1065,10 +1122,17 @@ function renderBlockchainAnalysis() {
   const rows = state.blockchainAnalysisData;
   if (!rows) { el.innerHTML = `${head}<div class="skel">Loading the blockchain index…</div>`; return; }
   const q = state.blockchainAnalysisQuery.toLowerCase();
-  const filtered = rows.filter((row) => !q || `${row.name} ${row.lifecycle} ${row.coverage}`.toLowerCase().includes(q));
-  const order = { live: 0, mid: 1, dead: 2 };
+  const filtered = rows.filter((row) => (
+    (state.blockchainAnalysisStatus === 'all' || row.dossierStatus === state.blockchainAnalysisStatus)
+    && (!q || `${row.name} ${row.lifecycle} ${row.dossierStatus} ${row.coverage}`.toLowerCase().includes(q))
+  ));
+  const order = {
+    thriving: 0, established: 1, emerging: 2, recovering: 3,
+    middling: 4, mid: 4, declining: 5, stuck: 6, dying: 7,
+    dead: 8, failed: 8, defunct: 8, unknown: 9, live_only: 10,
+  };
   filtered.sort((a, b) => {
-    if (state.blockchainAnalysisSort === 'lifecycle') return (order[a.lifecycle] - order[b.lifecycle]) || a.name.localeCompare(b.name);
+    if (state.blockchainAnalysisSort === 'lifecycle') return ((order[a.dossierStatus] ?? 9) - (order[b.dossierStatus] ?? 9)) || a.name.localeCompare(b.name);
     if (state.blockchainAnalysisSort === 'citations') return (b.citationCount - a.citationCount) || a.name.localeCompare(b.name);
     if (state.blockchainAnalysisSort === 'review') {
       const reviewOrder = { review_due: 0, unknown: 1, current: 2 };
@@ -1082,14 +1146,14 @@ function renderBlockchainAnalysis() {
   const researched = rows.filter((row) => row.coverage === 'Research dossier').length;
   const legacy = rows.filter((row) => row.coverage === 'Legacy postmortem').length;
   const cohortPanel = analysisCohortPanel(
-    'Lifecycle mix',
-    distributionItems(rows, (row) => row.lifecycle, { live: 'live / top 50', mid: 'stuck / mid', dead: 'dead / dying' }),
+    'Dossier status mix',
+    distributionItems(rows, (row) => row.dossierStatus, { live_only: 'live metrics only', mid: 'stuck / mid', dead: 'dead / dying' }),
     'Review freshness',
     distributionItems(rows, (row) => row.freshness?.status || 'unknown', { review_due: 'review due', unknown: 'no review schedule' }),
     'Counts use the same rows shown by this index; research freshness follows each dossier’s published review metadata.',
   );
   const cards = filtered.map((row) => `<div class="gcard">
-    <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${blockchainLifecycleClass(row.lifecycle)}">${esc(row.lifecycle)}</span></div>
+    <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${blockchainLifecycleClass(row.dossierStatus)}">${esc(row.dossierStatus.replaceAll('_', ' '))}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${row.metric == null ? '—' : fmtUsd(row.metric)}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
     <div class="gmeta">${esc(row.coverage)} · ${row.dimensionCount ? `${row.dimensionCount}/${row.expectedDimensionCount} dimensions · ` : ''}${row.dataCompletenessPct != null ? `${row.dataCompletenessPct}% field coverage · ` : ''}${row.citationCount} cited source${row.citationCount === 1 ? '' : 's'}${row.freshness ? ` · review ${esc(row.freshness.status)}${row.freshness.nextReviewAt ? ` by ${esc(row.freshness.nextReviewAt)}` : ''}${row.freshness.derived ? ' (90d policy)' : ''}` : ''}</div>
     ${blockchainSummary(row)}
@@ -1102,11 +1166,16 @@ function renderBlockchainAnalysis() {
     ${cohortPanel}
     <div class="toolbar"><div class="analysis-controls">
       <input id="blockchainAnalysisSearch" class="search" placeholder="Search chains or lifecycle…" value="${esc(state.blockchainAnalysisQuery)}" />
+      <label class="muted" for="blockchainAnalysisStatus">Status</label>
+      <select id="blockchainAnalysisStatus" class="analysis-select">
+        <option value="all"${state.blockchainAnalysisStatus==='all'?' selected':''}>All dossier statuses</option>
+        ${[...new Set(rows.map((row) => row.dossierStatus))].sort().map((status) => `<option value="${esc(status)}"${state.blockchainAnalysisStatus===status?' selected':''}>${esc(status.replaceAll('_', ' '))}</option>`).join('')}
+      </select>
       <span class="analysis-spacer"></span>
       <label class="muted" for="blockchainAnalysisSort">Sort</label>
       <select id="blockchainAnalysisSort" class="analysis-select">
         <option value="name"${state.blockchainAnalysisSort==='name'?' selected':''}>Name</option>
-        <option value="lifecycle"${state.blockchainAnalysisSort==='lifecycle'?' selected':''}>Lifecycle</option>
+        <option value="lifecycle"${state.blockchainAnalysisSort==='lifecycle'?' selected':''}>Dossier status</option>
         <option value="dossier"${state.blockchainAnalysisSort==='dossier'?' selected':''}>Dossier coverage</option>
         <option value="citations"${state.blockchainAnalysisSort==='citations'?' selected':''}>Citation count</option>
         <option value="review"${state.blockchainAnalysisSort==='review'?' selected':''}>Review freshness</option>
@@ -1706,8 +1775,9 @@ document.getElementById('blockchainanalysisview').addEventListener('input', (e) 
   if (input) { input.focus(); try { input.setSelectionRange(caret, caret); } catch (err) {} }
 });
 document.getElementById('blockchainanalysisview').addEventListener('change', (e) => {
-  if (e.target.id !== 'blockchainAnalysisSort') return;
-  state.blockchainAnalysisSort = e.target.value;
+  if (e.target.id === 'blockchainAnalysisSort') state.blockchainAnalysisSort = e.target.value;
+  else if (e.target.id === 'blockchainAnalysisStatus') state.blockchainAnalysisStatus = e.target.value;
+  else return;
   renderBlockchainAnalysis();
 });
 document.getElementById('exchangeanalysisview').addEventListener('input', (e) => {

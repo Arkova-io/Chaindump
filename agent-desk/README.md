@@ -18,6 +18,17 @@ Chaindump has three deliberately separate freshness layers:
 | Review-debt scan | Worker records which blockchain, exchange, casino, and NFT/Ordinals dossiers are due for review at `/api/forensics-refresh-status`. | No | No; it only records debt counts |
 | Proposal agent | `.github/workflows/research-desk.yml` researches overdue/material changes and queues verified evidence candidates. | Yes, when enabled | No; human review is mandatory |
 
+The public `/api/forensics-refresh-status` response reports these as two
+separate systems:
+
+- `refresh` is the free six-hour review-debt scanner.
+- `proposal_agent` is the latest paid model-backed proposal run, including
+  running/completed/failed state and the number of candidates queued.
+
+The analysis page header renders both states. A completed proposal run never
+means a dossier was published; promotion still requires the separate reviewer
+credential and human action.
+
 The GitHub Action is scheduled at minute 17 every six hours and also supports
 manual dispatch. Both paths are skipped unless the repository variable
 `RESEARCH_DESK_ENABLED` is exactly `true`. Paid runs are therefore **off by

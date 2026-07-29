@@ -17,13 +17,15 @@ import { query, tool, createSdkMcpServer } from "@anthropic-ai/claude-agent-sdk"
 import { z } from "zod";
 import { PROPOSAL_DATASETS, sanitizeSlug, buildRecord } from "./proposal.js";
 import { buildResearchSystemPrompt, DEFAULT_RESEARCH_TASK } from "./research.js";
+import { buildResearchRunId, postResearchRunStatus } from "./run-status.js";
+import { runResearchDeskLifecycle } from "./lifecycle.js";
 
 const MCP_URL = process.env.CHAINDUMP_MCP_URL || "https://chaindump-mcp-270018525501.us-central1.run.app/mcp";
 const QUEUE_DIR = process.env.DESK_QUEUE_DIR || "./proposals";
 const MODEL = process.env.DESK_MODEL || "claude-sonnet-5";
 const MAX_TURNS = Number(process.env.DESK_MAX_TURNS) || 20;
 const CHAINDUMP_BASE = (process.env.CHAINDUMP_BASE_URL || "https://chaindump.xyz").replace(/\/$/, "");
-const DESK_PROPOSAL_TOKEN = process.env.DESK_PROPOSAL_TOKEN || process.env.DESK_TOKEN;
+const DESK_PROPOSAL_TOKEN = process.env.DESK_PROPOSAL_TOKEN || process.env.DESK_TOKEN || "";
 let proposalPersistenceFailures = 0;
 
 // Persist a proposal to the durable, human-reviewed queue via the Worker's
@@ -106,7 +108,25 @@ const SYSTEM_PROMPT = buildResearchSystemPrompt(CHAINDUMP_BASE);
 
 // ---- one desk run -----------------------------------------------------------
 
-async function runDesk(task: string): Promise<void> {
+type DeskMessage = Awaited<ReturnType<typeof query>> extends AsyncIterable<infer T>
+  ? T
+  : never;
+
+function queuedProposalCount(message: DeskMessage): number {
+  if (message.type !== "assistant") return 0;
+  return message.message.content.filter((block) => (
+    block.type === "tool_use" && block.name === "mcp__desk__queue_proposal"
+  )).length;
+}
+
+function logDeskResult(message: DeskMessage, proposals: number): void {
+  if (message.type !== "result") return;
+  const cost = "total_cost_usd" in message ? message.total_cost_usd : undefined;
+  const costText = cost == null ? "" : ` — $${cost.toFixed(4)}`;
+  console.error(`[desk] run finished: ${proposals} proposal(s) queued to ${QUEUE_DIR}${costText}`);
+}
+
+async function runDesk(task: string): Promise<number> {
   let proposals = 0;
   const run = query({
     prompt: task,
@@ -139,18 +159,15 @@ async function runDesk(task: string): Promise<void> {
 
   for await (const message of run) {
     if (message.type === "result") {
-      const cost = "total_cost_usd" in message ? message.total_cost_usd : undefined;
-      console.error(`[desk] run finished: ${proposals} proposal(s) queued to ${QUEUE_DIR}` + (cost != null ? ` — $${cost.toFixed(4)}` : ""));
+      logDeskResult(message, proposals);
       continue;
     }
-    if (message.type !== "assistant") continue;
-    for (const block of message.message.content) {
-      if (block.type === "tool_use" && block.name === "mcp__desk__queue_proposal") proposals += 1;
-    }
+    proposals += queuedProposalCount(message);
   }
   if (proposalPersistenceFailures > 0) {
     throw new Error(`${proposalPersistenceFailures} proposal queue write(s) failed; no ephemeral fallback was accepted`);
   }
+  return proposals;
 }
 
 // ---- entry ------------------------------------------------------------------
@@ -159,12 +176,24 @@ async function runDesk(task: string): Promise<void> {
 // pass across all four analysis surfaces, not an instruction to rewrite them.
 
 const TASK = process.env.DESK_TASK || DEFAULT_RESEARCH_TASK;
+const RESEARCH_RUN_ID = buildResearchRunId();
 
 try {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error("ANTHROPIC_API_KEY is not set (in prod, load it from GCP Secret Manager `Anthropic`).");
-  }
-  await runDesk(TASK);
+  await runResearchDeskLifecycle({
+    baseUrl: CHAINDUMP_BASE,
+    token: DESK_PROPOSAL_TOKEN,
+    runId: RESEARCH_RUN_ID,
+    assertReady: () => {
+      if (!process.env.ANTHROPIC_API_KEY) {
+        throw new Error("ANTHROPIC_API_KEY is not set (in prod, load it from GCP Secret Manager `Anthropic`).");
+      }
+    },
+    runDesk: () => runDesk(TASK),
+    postStatus: postResearchRunStatus,
+    onTerminalStatusError: (statusError) => {
+      console.error("[desk] failed to record terminal run status:", statusError instanceof Error ? statusError.message : statusError);
+    },
+  });
 } catch (e) {
   console.error("[desk] fatal:", e instanceof Error ? e.message : e);
   process.exit(1);

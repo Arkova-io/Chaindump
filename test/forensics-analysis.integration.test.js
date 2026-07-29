@@ -40,6 +40,9 @@ describe('Forensics analysis navigation', () => {
     expect(html).toContain('citationCount');
     expect(html).toContain('value="dossier"');
     expect(html).toContain('Dossier coverage');
+    expect(html).toContain('id="blockchainAnalysisStatus"');
+    expect(html).toContain('row.dossierStatus');
+    expect(html).toContain('Dossier status mix');
     expect(html).toContain('Open chain dossier →');
     expect(html).toContain("coverage: 'Legacy postmortem'");
     expect(html).toContain('structural dossiers');
@@ -192,7 +195,9 @@ describe('six-hour forensic review surface', () => {
     expect(html).toContain('function loadForensicsRefreshStatus()');
     expect(html).toContain("fetch('/api/forensics-refresh-status')");
     expect(html).toContain('Six-hour review scan:');
-    expect(html).toContain('no completed scan recorded · human promotion required');
+    expect(html).toContain('Proposal research agent:');
+    expect(html).toContain('no run recorded (opt-in workflow)');
+    expect(html).toContain('proposal-only; human promotion required');
     expect(html).toContain("forensicsRefreshStatus = response.ok ? 'loaded' : 'unavailable'");
     expect(html).toContain('human promotion required');
     expect(html).toContain('Open review status →');

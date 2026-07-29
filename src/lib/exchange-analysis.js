@@ -258,9 +258,12 @@ export function normalizeExchangeCase(row) {
   };
 }
 
-export function summarizeExchangeCases(cases, kind) {
+export function summarizeExchangeCases(
+  cases,
+  kind,
+  asOfDate = new Date().toISOString().slice(0, 10),
+) {
   const scoped = cases.filter((row) => row.kind === kind);
-  const asOfDate = new Date().toISOString().slice(0, 10);
   const comparison = new Map();
   const products = new Map();
   const chains = new Map();

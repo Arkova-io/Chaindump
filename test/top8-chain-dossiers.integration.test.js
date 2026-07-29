@@ -204,6 +204,7 @@ describe('top-eight dossiers through the production API contract', () => {
       expect(row.dossier.dataCompletenessPct, chain).toBeLessThan(100);
       expect(row.dossier.citationCount, chain).toBeGreaterThan(0);
       expect(row.dossier.sources[0].url, chain).toMatch(/^https:\/\//);
+      expect(row.dossier.status, chain).toMatch(/^(established|emerging|declining)$/);
     }
 
     for (const chain of TOP_EIGHT) {
