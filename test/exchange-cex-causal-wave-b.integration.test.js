@@ -311,7 +311,7 @@ describe('exchange CEX causal Wave B migration 0060', () => {
       'voyager-digital': 'broker',
       'prime-trust': 'custodian',
     });
-    expect(publicUi).toContain('`venue: ${exchangeLabel(row.venueType)}`');
+    expect(publicUi).toContain('`where: ${exchangeLabel(row.venueType)}`');
 
     const legacyList = await worker.fetch(
       new Request('http://localhost/api/dead-exchanges?kind=cex'),

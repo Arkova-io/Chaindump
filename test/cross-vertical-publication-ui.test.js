@@ -192,7 +192,7 @@ describe('cross-vertical publication-depth UI', () => {
     });
 
     expect(output).toContain('support pending');
-    expect(output).toContain('indexed cohort: dead');
+    expect(output).toContain('outcome: dead / winding down');
     expect(output).not.toContain('>dead / winding down<');
   });
 });

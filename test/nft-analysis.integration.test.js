@@ -66,7 +66,7 @@ describe('NFT / Ordinals citation-ready surface', () => {
     const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
     expect(html).toContain('function nftEvidenceHtml');
     expect(html).toContain('function nftFreshnessHtml');
-    expect(html).toContain('Evidence freshness');
+    expect(html).toContain('Report freshness');
     expect(html).toContain('source ${esc(sourceDate)} · inspected ${esc(inspected)}');
     expect(html).toContain('source.verification_note');
     expect(html).toContain('access ${esc(access)}');
@@ -78,8 +78,8 @@ describe('NFT / Ordinals citation-ready surface', () => {
     expect(html).toContain('stale_after: source.stale_after');
     expect(html).toContain("stale: typeof source.stale === 'boolean' ? source.stale : null");
     expect(html).toContain('Field-level evidence');
-    expect(html).toContain('Evidence coverage:');
-    expect(html).toContain('legacy dossier');
+    expect(html).toContain('How well the reports are sourced:');
+    expect(html).toContain('earlier report');
     expect(html).toContain('function nftAggregateAnalysisHtml');
     expect(html).toContain('Aggregate evidence:');
     expect(html).toContain('sources explicitly accessible');
