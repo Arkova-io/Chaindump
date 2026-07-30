@@ -1,0 +1,421 @@
+import { DatabaseSync } from 'node:sqlite';
+import { Buffer } from 'node:buffer';
+import process from 'node:process';
+import {
+  existsSync,
+  readFileSync,
+} from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { unstable_splitSqlQuery } from 'wrangler';
+import {
+  applyRepositoryMigrations,
+  buildHighRiskEvidenceRemediation,
+  renderHighRiskEvidenceRemediationMigration,
+} from '../scripts/render-high-risk-evidence-remediation-migration.mjs';
+import {
+  buildPublicationDepthInventory,
+  evaluatePublicationClaim,
+  normalizePublicationSource,
+} from '../src/lib/publication-depth.mjs';
+
+const documentUrl = new URL(
+  '../docs/high-risk-evidence-remediation-2026-07-29.json',
+  import.meta.url,
+);
+const rendererUrl = new URL(
+  '../scripts/render-high-risk-evidence-remediation-migration.mjs',
+  import.meta.url,
+);
+const document = JSON.parse(readFileSync(documentUrl, 'utf8'));
+const sameOriginPairs = [
+  ['dex:successful:aerodrome', 'aerodrome-coindesk-aero', 'aerodrome-theblock-aero'],
+  ['dex:dead:solidly', 'solidly-decrypt-exit', 'solidly-theblock-exit'],
+  ['cex:dead:bitmart', 'bitmart-theblock-winddown', 'bitmart-decrypt-winddown'],
+];
+
+function createCorpus() {
+  const database = new DatabaseSync(':memory:');
+  applyRepositoryMigrations(database, 65);
+  return database;
+}
+
+function exchangeIdentity(entry) {
+  const [, lifecycle, slug] = entry.dossier_id.split(':');
+  const kind = entry.dossier_id.split(':')[0];
+  const table = {
+    dead: 'dead_exchanges',
+    mid: 'mid_exchanges',
+    successful: 'successful_exchanges',
+  }[lifecycle];
+  return {
+    kind,
+    lifecycle,
+    slug,
+    table,
+    kindColumn: lifecycle === 'successful' ? 'type' : 'kind',
+  };
+}
+
+function currentExchange(database, entry) {
+  const target = exchangeIdentity(entry);
+  return database.prepare(`
+    SELECT profile, sources
+    FROM ${target.table}
+    WHERE ${target.kindColumn} = ? AND slug = ?
+  `).get(target.kind, target.slug);
+}
+
+function casinoUnknowns(database, caseId) {
+  const row = database.prepare(`
+    SELECT outlook FROM casino_syntheses WHERE case_id = ?
+  `).get(caseId);
+  return JSON.parse(row.outlook).forensic_analysis.unknowns;
+}
+
+function d1Adapter(database) {
+  return {
+    prepare(sql) {
+      let bindings = [];
+      return {
+        bind(...values) {
+          bindings = values;
+          return this;
+        },
+        async all() {
+          return { results: database.prepare(sql).all(...bindings) };
+        },
+        async first() {
+          return database.prepare(sql).get(...bindings) ?? null;
+        },
+      };
+    },
+  };
+}
+
+const ctx = () => ({ waitUntil() {}, passThroughOnException() {} });
+
+let database;
+
+afterEach(() => {
+  database?.close();
+  database = undefined;
+  vi.resetModules();
+});
+
+describe('high-risk evidence remediation migration 0065', () => {
+  it('records the contiguous rendered integration and preserves all thirty-seven honest gaps', () => {
+    expect(document.schema).toBe('chaindump-high-risk-remediation-implementation-v1');
+    expect(document.status).toBe('integrated-migration-0065-rendered');
+    expect(document.migration_sequence).toMatchObject({
+      assigned_id: '0065',
+      reserved_after: '0064',
+      rendered: true,
+      rendered_file: 'migrations/0065_high_risk_evidence_remediation.sql',
+    });
+    expect(document.cases).toHaveLength(10);
+    expect(document.unresolved_claims).toHaveLength(37);
+    expect(document.unresolved_claims.every(
+      ({ publication_support: support }) => support === 'unresolved',
+    )).toBe(true);
+    expect(document.cases.reduce(
+      (sum, entry) => sum + entry.remains_unresolved.length,
+      0,
+    )).toBe(37);
+    expect(existsSync(new URL(
+      '../migrations/0065_high_risk_evidence_remediation.sql',
+      import.meta.url,
+    ))).toBe(true);
+  });
+
+  it('publishes real source review, access, role, tier, and locator provenance', () => {
+    const sources = document.cases.flatMap((entry) => entry.source_additions);
+    expect(sources).toHaveLength(14);
+    expect(sources.filter(({ access_state: state }) => state === 'accessible')).toHaveLength(10);
+    expect(sources.filter(
+      ({ access_state: state }) => state === 'bot_blocked_raw_fetch',
+    )).toHaveLength(4);
+
+    for (const source of sources) {
+      expect(source.url || source.canonical_url).toMatch(/^https:\/\//);
+      expect(source.source_tier).toBeTruthy();
+      expect(source.source_role).toBeTruthy();
+      expect(source.evidence_scope).toBeTruthy();
+      expect(source.evidence_locator.length).toBeGreaterThan(30);
+      expect(source.checked_at).toBe('2026-07-29');
+      expect(source.last_verified_at).toBe('2026-07-29');
+      expect(source.evidence_reviewed).toBe(true);
+      expect(source.evidence_reviewer).toBe('codex-research-agent');
+      expect(source.evidence_reviewed_at).toBe('2026-07-29');
+      expect(source.access_checked_at).toBe('2026-07-29');
+      expect(source.verification_note).toContain(source.evidence_locator);
+      const normalized = normalizePublicationSource(source);
+      if (normalized.tier === 'T3' && normalized.role === 'independent') {
+        expect(normalized.independence_group).toBeTruthy();
+      }
+    }
+  });
+
+  it('counts evidence origins rather than publishers for every same-event pair', () => {
+    for (const [dossierId, leftId, rightId] of sameOriginPairs) {
+      const entry = document.cases.find(({ dossier_id: id }) => id === dossierId);
+      const sources = entry.source_additions.filter(({ id }) => (
+        id === leftId || id === rightId
+      ));
+      const normalized = sources.map(normalizePublicationSource);
+      expect(new Set(normalized.map(({ independence_key: key }) => key)).size).toBe(1);
+      const registered = new Map(sources.flatMap((source) => {
+        const value = normalizePublicationSource(source);
+        return [[value.id, value], [value.url, value]];
+      }));
+      const support = evaluatePublicationClaim({
+        path: 'mutation.same_event',
+        type: 'causal',
+        high_risk: true,
+        source_refs: sources.map(({ url }) => url),
+      }, registered);
+      expect(support.independent_t3_publisher_count).toBe(1);
+      expect(support.passes).toBe(false);
+    }
+  });
+
+  it('rejects a publisher-diversity mutation that invents a second evidence origin', () => {
+    database = createCorpus();
+    const mutated = structuredClone(document);
+    const aerodrome = mutated.cases.find(
+      ({ dossier_id: id }) => id === 'dex:successful:aerodrome',
+    );
+    aerodrome.source_additions.find(
+      ({ id }) => id === 'aerodrome-theblock-aero',
+    ).independence_group = 'invented-independent-origin';
+    expect(() => buildHighRiskEvidenceRemediation(mutated, database))
+      .toThrow(/projected publication support does not match the shared evaluator/);
+  });
+
+  it('retains the adversarial boundaries instead of converting inference into fact', () => {
+    const byId = Object.fromEntries(document.cases.map((entry) => [
+      entry.dossier_id,
+      entry,
+    ]));
+    expect(byId['dex:successful:aerodrome'].remains_unresolved.join(' '))
+      .toMatch(/token\/emission mechanics|value distribution/);
+    expect(byId['cex:dead:bitmart'].remains_unresolved.join(' '))
+      .toContain('does not establish a causal connection');
+    expect(byId['cex:successful:binance'].remains_unresolved.join(' '))
+      .toMatch(/BNB contribution|proof-of-reserves/);
+    expect(byId['cex:mid:htx'].remains_unresolved.join(' '))
+      .toMatch(/venue-token utility|proof-of-reserves/);
+    expect(byId['stake-dot-com'].casino_claim_additions[0].analyst_note)
+      .toContain('Great Britain');
+    expect(byId['stake-dot-com'].casino_claim_additions[0].analyst_note)
+      .toContain('does not classify Stake globally');
+    expect(byId['dex:mid:sushiswap'].source_additions.find(
+      ({ id }) => id === 'sushi-certik-routeprocessor2',
+    ).evidence_locator).toContain("outside CertiK's prior audit scope");
+  });
+
+  it('builds all ten patches while preserving every existing forensic unknown', () => {
+    database = createCorpus();
+    const exchangeCases = document.cases.filter(({ dossier_id: id }) => id.includes(':'));
+    const casinoCases = document.cases.filter(({ dossier_id: id }) => !id.includes(':'));
+    const exchangeUnknownsBefore = Object.fromEntries(exchangeCases.map((entry) => [
+      entry.dossier_id,
+      JSON.parse(currentExchange(database, entry).profile).forensic_analysis.unknowns,
+    ]));
+    const casinoUnknownsBefore = Object.fromEntries(casinoCases.map((entry) => [
+      entry.dossier_id,
+      casinoUnknowns(database, entry.dossier_id),
+    ]));
+
+    const state = buildHighRiskEvidenceRemediation(document, database);
+    expect(state.exchange_rows).toHaveLength(6);
+    expect(state.casino_rows).toHaveLength(4);
+
+    for (const row of state.exchange_rows) {
+      expect(row.profile.forensic_analysis.unknowns)
+        .toEqual(exchangeUnknownsBefore[row.dossier_id]);
+      const entry = exchangeCases.find(({ dossier_id: id }) => id === row.dossier_id);
+      const registered = new Set(row.sources.flatMap((source) => [
+        source.id,
+        source.source_id,
+        source.url,
+        source.canonical_url,
+      ]).filter(Boolean));
+      for (const patch of entry.forensic_claim_patches || []) {
+        for (const reference of patch.append_source_refs || []) {
+          expect(registered.has(reference), `${entry.dossier_id}: ${reference}`).toBe(true);
+        }
+      }
+    }
+    for (const row of state.casino_rows) {
+      expect(row.outlook.forensic_analysis.unknowns)
+        .toEqual(casinoUnknownsBefore[row.case_id]);
+    }
+  });
+
+  it('renders a bounded, replay-safe candidate and applies every UI-backed data patch', () => {
+    database = createCorpus();
+    const state = buildHighRiskEvidenceRemediation(document, database);
+    const sql = renderHighRiskEvidenceRemediationMigration(document, state, '0065');
+    const statements = unstable_splitSqlQuery(sql);
+
+    expect(statements.length).toBeGreaterThan(10);
+    expect(Math.max(...statements.map((statement) => Buffer.byteLength(statement))))
+      .toBeLessThan(95_000);
+    database.exec(sql);
+    const inventory = buildPublicationDepthInventory(database);
+    for (const entry of document.cases) {
+      const dossier = inventory.dossiers.find(({ id }) => id === entry.dossier_id);
+      expect(
+        dossier?.unresolved_high_risk_claim_count,
+        `${entry.dossier_id}: shared publication-depth count`,
+      ).toBe(entry.support_summary.high_risk_after_projected);
+    }
+
+    const sushi = database.prepare(`
+      SELECT profile, sources
+      FROM mid_exchanges
+      WHERE kind = 'dex' AND slug = 'sushiswap'
+    `).get();
+    expect(JSON.parse(sushi.profile).forensic_analysis.why.source_refs)
+      .toContain('https://www.banqueducanada.ca/wp-content/uploads/2024/07/sdp2024-12.pdf');
+    expect(JSON.parse(sushi.sources).some(
+      ({ id, evidence_reviewed: reviewed }) => (
+        id === 'sushi-bank-of-canada-amm-ecology' && reviewed === true
+      ),
+    )).toBe(true);
+
+    expect(database.prepare(`
+      SELECT claim_type, support_direction
+      FROM casino_claims
+      WHERE claim_id = 'casino:claim:stake:claimed-licence'
+    `).get()).toEqual({
+      claim_type: 'context',
+      support_direction: 'context_only',
+    });
+    expect(database.prepare(`
+      SELECT COUNT(*) AS count
+      FROM casino_claims
+      WHERE claim_id = 'casino:claim:stake:ukgc-gb-exit-2025'
+    `).get().count).toBe(1);
+    const ukgc = database.prepare(`
+      SELECT source_tier, source_role, evidence_reviewed, notes
+      FROM casino_sources
+      WHERE source_id = 'casino:source:stake:ukgc-exit-2025'
+    `).get();
+    expect(ukgc).toMatchObject({
+      source_tier: 'A',
+      source_role: 'independent',
+      evidence_reviewed: 1,
+    });
+    expect(JSON.parse(ukgc.notes)).toMatchObject({
+      authority_class: 'regulator',
+      evidence_scope: 'jurisdictional_market_exit',
+      access_state: 'accessible',
+    });
+
+    const once = database.prepare(`
+      SELECT profile, sources
+      FROM successful_exchanges
+      WHERE type = 'cex' AND slug = 'binance'
+    `).get();
+    database.exec(sql);
+    expect(database.prepare(`
+      SELECT profile, sources
+      FROM successful_exchanges
+      WHERE type = 'cex' AND slug = 'binance'
+    `).get()).toEqual(once);
+    expect(database.prepare(`
+      SELECT COUNT(*) AS count
+      FROM casino_claims
+      WHERE claim_id = 'casino:claim:stake:ukgc-gb-exit-2025'
+    `).get().count).toBe(1);
+  });
+
+  it('publishes corrected support counts through the existing exchange and casino UI APIs', async () => {
+    database = new DatabaseSync(':memory:');
+    applyRepositoryMigrations(database);
+    const worker = (await import('../src/worker.js')).default;
+    const env = { DB: d1Adapter(database) };
+    const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
+    expect(html).toContain('function renderExchangeAnalysis()');
+    expect(html).toContain('function renderCasinoAnalysis()');
+    expect(html).toContain('publicationDepthSectionHtml(');
+    expect(html).toContain('casinoPublicationDepthBanner(depth)');
+
+    for (const entry of document.cases.filter(({ dossier_id: id }) => id.includes(':'))) {
+      const { kind, lifecycle, slug } = exchangeIdentity(entry);
+      const response = await worker.fetch(
+        new Request(
+          `http://localhost/api/exchange-analysis?kind=${kind}`
+          + `&lifecycle=${lifecycle}&slug=${slug}`,
+        ),
+        env,
+        ctx(),
+      );
+      expect(response.status, entry.dossier_id).toBe(200);
+      const payload = await response.json();
+      expect(payload.cases).toHaveLength(1);
+      expect(payload.cases[0].publication_depth).toMatchObject({
+        status: 'claim_support_pending',
+        unresolved_high_risk_claim_count: entry.support_summary.high_risk_after_projected,
+      });
+      const pair = sameOriginPairs.find(([dossierId]) => dossierId === entry.dossier_id);
+      if (pair) {
+        const runtimeSources = payload.cases[0].sources.filter(({ id }) => pair.includes(id));
+        expect(runtimeSources).toHaveLength(2);
+        expect(new Set(runtimeSources.map(
+          ({ independence_key: key }) => key,
+        )).size).toBe(1);
+        expect(runtimeSources.every((source) => (
+          source.source_tier === 'T3'
+          && source.source_role === 'independent'
+          && source.source_dependency
+          && source.independence_group
+        ))).toBe(true);
+      }
+    }
+
+    for (const entry of document.cases.filter(({ dossier_id: id }) => !id.includes(':'))) {
+      const response = await worker.fetch(
+        new Request(`http://localhost/api/casino/${entry.dossier_id}`),
+        env,
+        ctx(),
+      );
+      expect(response.status, entry.dossier_id).toBe(200);
+      const payload = await response.json();
+      expect(payload.publication_depth.unresolved_high_risk_claim_count)
+        .toBe(entry.support_summary.high_risk_after_projected);
+    }
+  });
+
+  it('regenerates the committed migration exactly from the reviewed document', () => {
+    database = createCorpus();
+    const state = buildHighRiskEvidenceRemediation(document, database);
+    const rendered = renderHighRiskEvidenceRemediationMigration(document, state, '0065');
+    const committed = readFileSync(
+      new URL('../migrations/0065_high_risk_evidence_remediation.sql', import.meta.url),
+      'utf8',
+    );
+    expect(committed).toBe(rendered);
+    const run = spawnSync(
+      process.execPath,
+      [fileURLToPath(rendererUrl), fileURLToPath(documentUrl)],
+      { encoding: 'utf8' },
+    );
+    expect(run.status).toBe(0);
+    expect(run.stdout).toContain('0065_high_risk_evidence_remediation.sql');
+    expect(readFileSync(
+      new URL('../migrations/0065_high_risk_evidence_remediation.sql', import.meta.url),
+      'utf8',
+    )).toBe(rendered);
+  });
+
+  it('cannot consume the migration ids reserved for publication depth or NFT remediation', () => {
+    database = createCorpus();
+    const state = buildHighRiskEvidenceRemediation(document, database);
+    expect(() => renderHighRiskEvidenceRemediationMigration(document, state, '0064'))
+      .toThrow('violates reserved sequence after 0064');
+  });
+});

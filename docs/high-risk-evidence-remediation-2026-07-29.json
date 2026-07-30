@@ -1,0 +1,1085 @@
+{
+  "schema": "chaindump-high-risk-remediation-implementation-v1",
+  "as_of": "2026-07-29",
+  "status": "integrated-migration-0065-rendered",
+  "selection": {
+    "rule": "Ten high-risk unresolved dossiers balanced across DEX, CEX, and casino; successful, mid/declining, failed, and explicitly unclassified outcomes are represented.",
+    "dossier_count": 10,
+    "verticals": {
+      "dex": 3,
+      "cex": 3,
+      "casino": 4
+    }
+  },
+  "publication_policy": {
+    "high_risk_pass": "One resolving/reviewed T1 authority; one resolving/reviewed independent T1/T2 source; or two resolving/reviewed independent T3 evidence origins. Publisher diversity does not create origin independence. A T2 primary can pass only a narrow lifecycle/status claim.",
+    "review_identity": "codex-research-agent",
+    "review_date": "2026-07-29",
+    "guardrail": "Source attachment is claim-specific. A source is not attached merely to make a gate pass, and unsupported causal attribution remains unresolved."
+  },
+  "baseline": {
+    "inventory_command": "node scripts/check-publication-depth.mjs --json",
+    "selected_unresolved_high_risk_claims": 60
+  },
+  "cases": [
+    {
+      "dossier_id": "dex:mid:sushiswap",
+      "unresolved_before": 8,
+      "unresolved_after_projected": 1,
+      "source_additions": [
+        {
+          "id": "sushi-bank-of-canada-amm-ecology",
+          "title": "The Ecology of Automated Market Makers",
+          "publisher": "Bank of Canada",
+          "url": "https://www.banqueducanada.ca/wp-content/uploads/2024/07/sdp2024-12.pdf",
+          "source_tier": "T2",
+          "source_role": "independent",
+          "resolving": true,
+          "evidence_reviewed": true,
+          "evidence_locator": "pp. 8–10 documents the case-study method and SushiSwap TVL decline from $3.1B to $0.3B; pp. 23–26 documents governance concentration, multisigs, fee incentives, and continuity/accountability risks; pp. 49–50 gives Sushi multisig and xSUSHI fee mechanics.",
+          "evidence_scope": "lifecycle_and_governance",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "codex-research-agent",
+          "access_state": "accessible",
+          "access_checked_at": "2026-07-29",
+          "access_http_status": 200,
+          "access_method": "direct_http_retrieval",
+          "verification_note": "Direct retrieval returned HTTP 200 and the stated locator was editorially inspected. pp. 8–10 documents the case-study method and SushiSwap TVL decline from $3.1B to $0.3B; pp. 23–26 documents governance concentration, multisigs, fee incentives, and continuity/accountability risks; pp. 49–50 gives Sushi multisig and xSUSHI fee mechanics."
+        },
+        {
+          "id": "sushi-peer-reviewed-governance",
+          "title": "The Blockchain Treasury Governance Dilemma",
+          "publisher": "Regulation & Governance (Wiley)",
+          "url": "https://darcyallen.com/wp-content/uploads/2025/02/allen-berg-lane-treasury-governance-dilemma.pdf",
+          "source_tier": "T2",
+          "source_role": "independent",
+          "resolving": true,
+          "evidence_reviewed": true,
+          "evidence_locator": "pp. 10–11 documents vampire mining, treasury control changes, governance crises, leadership conflict, and the failed Frog Nation governance route.",
+          "evidence_scope": "governance_and_causal_context",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "codex-research-agent",
+          "access_state": "accessible",
+          "access_checked_at": "2026-07-29",
+          "access_http_status": 200,
+          "access_method": "direct_http_retrieval",
+          "verification_note": "Direct retrieval returned HTTP 200 and the stated locator was editorially inspected. pp. 10–11 documents vampire mining, treasury control changes, governance crises, leadership conflict, and the failed Frog Nation governance route."
+        },
+        {
+          "id": "sushi-coindesk-kanpai",
+          "title": "DeFi Protocol SushiSwap Proposes 'Immediate' Action to Support Its Treasury",
+          "publisher": "CoinDesk",
+          "url": "https://www.coindesk.com/tech/2022/12/07/defi-protocol-sushi-proposes-immediate-action-to-support-its-treasury",
+          "source_tier": "T3",
+          "source_role": "independent",
+          "resolving": true,
+          "evidence_reviewed": true,
+          "evidence_locator": "Reports the treasury deficit, approximately 18 months of runway, and proposal to divert 100% of platform fees to the treasury multisig.",
+          "evidence_scope": "treasury_event",
+          "independence_group": "sushiswap-kanpai-proposal-2022-12",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "codex-research-agent",
+          "access_state": "accessible",
+          "access_checked_at": "2026-07-29",
+          "access_http_status": 200,
+          "access_method": "direct_http_retrieval",
+          "verification_note": "Direct retrieval returned HTTP 200 and the stated locator was editorially inspected. Reports the treasury deficit, approximately 18 months of runway, and proposal to divert 100% of platform fees to the treasury multisig."
+        },
+        {
+          "id": "sushi-theblock-kanpai",
+          "title": "Sushi DAO implements proposal to direct xSUSHI revenue to treasury",
+          "publisher": "The Block",
+          "url": "https://www.theblock.co/post/204593/sushi-dao-implements-proposal-to-direct-all-trading-fees-to-treasury",
+          "source_tier": "T3",
+          "source_role": "independent",
+          "resolving": true,
+          "evidence_reviewed": true,
+          "evidence_locator": "Reports the implemented fee diversion, temporary one-year term, token-holder fee removal, and concentrated vote.",
+          "evidence_scope": "treasury_event_and_vote_concentration",
+          "independence_group": "sushiswap-kanpai-implementation-vote-2023-01",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "codex-research-agent",
+          "access_state": "bot_blocked_raw_fetch",
+          "access_checked_at": "2026-07-29",
+          "access_http_status": 403,
+          "access_method": "indexed_browser_retrieval",
+          "verification_note": "Direct automated retrieval returned HTTP 403; the article body and the stated locator were reviewed through an indexed browser snapshot. Reports the implemented fee diversion, temporary one-year term, token-holder fee removal, and concentrated vote."
+        },
+        {
+          "id": "sushi-certik-routeprocessor2",
+          "title": "Post Mortem: Sushiswap",
+          "publisher": "CertiK",
+          "url": "https://www.certik.com/blog/post-mortem-sushiswap",
+          "source_tier": "T2",
+          "source_role": "security-research",
+          "resolving": true,
+          "evidence_reviewed": true,
+          "evidence_locator": "Independent incident analysis identifies the RouteProcessor2 validation defect, approximately $3.3M loss, and that the affected router was outside CertiK's prior audit scope.",
+          "evidence_scope": "security_incident",
+          "independence_caveat": "CertiK had a prior commercial audit relationship with Sushi. Its postmortem states the affected RouteProcessor2 router was outside that audit scope; use it for incident mechanics, not as cleanly independent proof of broader causality.",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "codex-research-agent",
+          "access_state": "accessible",
+          "access_checked_at": "2026-07-29",
+          "access_http_status": 200,
+          "access_method": "direct_http_retrieval",
+          "verification_note": "Direct retrieval returned HTTP 200 and the stated locator was editorially inspected. Independent incident analysis identifies the RouteProcessor2 validation defect, approximately $3.3M loss, and that the affected router was outside CertiK's prior audit scope."
+        }
+      ],
+      "forensic_claim_patches": [
+        {
+          "path": "forensic_analysis.outcome",
+          "append_source_refs": [
+            "https://www.banqueducanada.ca/wp-content/uploads/2024/07/sdp2024-12.pdf"
+          ]
+        },
+        {
+          "path": "forensic_analysis.why",
+          "append_source_refs": [
+            "https://darcyallen.com/wp-content/uploads/2025/02/allen-berg-lane-treasury-governance-dilemma.pdf",
+            "https://www.banqueducanada.ca/wp-content/uploads/2024/07/sdp2024-12.pdf"
+          ]
+        },
+        {
+          "path": "forensic_analysis.strategic_choices[0]",
+          "append_source_refs": [
+            "https://darcyallen.com/wp-content/uploads/2025/02/allen-berg-lane-treasury-governance-dilemma.pdf"
+          ]
+        },
+        {
+          "path": "forensic_analysis.strategic_choices[2]",
+          "append_source_refs": [
+            "https://darcyallen.com/wp-content/uploads/2025/02/allen-berg-lane-treasury-governance-dilemma.pdf",
+            "https://www.banqueducanada.ca/wp-content/uploads/2024/07/sdp2024-12.pdf"
+          ]
+        },
+        {
+          "path": "forensic_analysis.strategic_choices[3]",
+          "append_source_refs": [
+            "https://www.coindesk.com/tech/2022/12/07/defi-protocol-sushi-proposes-immediate-action-to-support-its-treasury",
+            "https://www.theblock.co/post/204593/sushi-dao-implements-proposal-to-direct-all-trading-fees-to-treasury"
+          ]
+        },
+        {
+          "path": "forensic_analysis.strategic_choices[4]",
+          "append_source_refs": [
+            "https://www.certik.com/blog/post-mortem-sushiswap"
+          ]
+        },
+        {
+          "path": "forensic_analysis.counterfactual",
+          "append_source_refs": [
+            "https://darcyallen.com/wp-content/uploads/2025/02/allen-berg-lane-treasury-governance-dilemma.pdf"
+          ]
+        }
+      ],
+      "remains_unresolved": [
+        "forensic_analysis.strategic_choices[1] — current aggregation pivot is documented only by first-party sources in the reviewed set"
+      ],
+      "source_metadata_patches": [],
+      "casino_claim_additions": [],
+      "evidence_boundary": null,
+      "support_summary": {
+        "high_risk_before": 8,
+        "high_risk_after_projected": 1,
+        "resolved_projected": 7,
+        "unresolved_preserved": 1
+      }
+    },
+    {
+      "dossier_id": "dex:successful:aerodrome",
+      "unresolved_before": 7,
+      "unresolved_after_projected": 7,
+      "source_additions": [
+        {
+          "id": "aerodrome-coindesk-aero",
+          "title": "Aero DEX aims to fix liquidity fragmentation and dethrone the incumbents",
+          "publisher": "CoinDesk",
+          "url": "https://www.coindesk.com/business/2026/01/29/aero-dex-aims-to-fix-liquidity-fragmentation-and-dethrone-the-incumbents",
+          "source_tier": "T3",
+          "source_role": "independent",
+          "resolving": true,
+          "evidence_reviewed": true,
+          "evidence_locator": "Reports Aerodrome's Base position, TVL context, and the planned Aerodrome/Velodrome consolidation into Aero.",
+          "evidence_scope": "lifecycle_and_strategy_event",
+          "independence_group": "aero-project-announcement-2026-01",
+          "source_dependency": "Substantially reports the same project-announcement event as the paired The Block coverage; publisher diversity does not make the underlying causal evidence independent.",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "codex-research-agent",
+          "access_state": "accessible",
+          "access_checked_at": "2026-07-29",
+          "access_http_status": 200,
+          "access_method": "direct_http_retrieval",
+          "verification_note": "Direct retrieval returned HTTP 200 and the stated locator was editorially inspected. Reports Aerodrome's Base position, TVL context, and the planned Aerodrome/Velodrome consolidation into Aero."
+        },
+        {
+          "id": "aerodrome-theblock-aero",
+          "title": "Top Base DEX Aerodrome launches upgrade suite, expands to Ethereum and Circle's Arc",
+          "publisher": "The Block",
+          "url": "https://www.theblock.co/post/378634/aerodrome-upgrades-evm-extensions-circles-arc-metadex",
+          "source_tier": "T3",
+          "source_role": "independent",
+          "resolving": true,
+          "evidence_reviewed": true,
+          "evidence_locator": "Reports Aerodrome as a successful Base DEX and describes the Aero central-liquidity-hub, merger, chain expansion, and token conversion.",
+          "evidence_scope": "lifecycle_and_strategy_event",
+          "independence_group": "aero-project-announcement-2026-01",
+          "source_dependency": "Substantially reports the same project-announcement event as the paired CoinDesk coverage; publisher diversity does not make the underlying causal evidence independent.",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "codex-research-agent",
+          "access_state": "bot_blocked_raw_fetch",
+          "access_checked_at": "2026-07-29",
+          "access_http_status": 403,
+          "access_method": "indexed_browser_retrieval",
+          "verification_note": "Direct automated retrieval returned HTTP 403; the article body and the stated locator were reviewed through an indexed browser snapshot. Reports Aerodrome as a successful Base DEX and describes the Aero central-liquidity-hub, merger, chain expansion, and token conversion."
+        }
+      ],
+      "forensic_claim_patches": [
+        {
+          "path": "forensic_analysis.outcome",
+          "append_source_refs": [
+            "https://www.coindesk.com/business/2026/01/29/aero-dex-aims-to-fix-liquidity-fragmentation-and-dethrone-the-incumbents",
+            "https://www.theblock.co/post/378634/aerodrome-upgrades-evm-extensions-circles-arc-metadex"
+          ]
+        },
+        {
+          "path": "forensic_analysis.why",
+          "append_source_refs": [
+            "https://www.coindesk.com/business/2026/01/29/aero-dex-aims-to-fix-liquidity-fragmentation-and-dethrone-the-incumbents",
+            "https://www.theblock.co/post/378634/aerodrome-upgrades-evm-extensions-circles-arc-metadex"
+          ]
+        },
+        {
+          "path": "forensic_analysis.strategic_choices[0]",
+          "append_source_refs": [
+            "https://www.coindesk.com/business/2026/01/29/aero-dex-aims-to-fix-liquidity-fragmentation-and-dethrone-the-incumbents",
+            "https://www.theblock.co/post/378634/aerodrome-upgrades-evm-extensions-circles-arc-metadex"
+          ]
+        },
+        {
+          "path": "forensic_analysis.strategic_choices[3]",
+          "append_source_refs": [
+            "https://www.coindesk.com/business/2026/01/29/aero-dex-aims-to-fix-liquidity-fragmentation-and-dethrone-the-incumbents",
+            "https://www.theblock.co/post/378634/aerodrome-upgrades-evm-extensions-circles-arc-metadex"
+          ]
+        },
+        {
+          "path": "forensic_analysis.counterfactual",
+          "append_source_refs": [
+            "https://www.coindesk.com/business/2026/01/29/aero-dex-aims-to-fix-liquidity-fragmentation-and-dethrone-the-incumbents",
+            "https://www.theblock.co/post/378634/aerodrome-upgrades-evm-extensions-circles-arc-metadex"
+          ]
+        }
+      ],
+      "remains_unresolved": [
+        "forensic_analysis.outcome — the two T3 reports share one project-announcement evidence origin",
+        "forensic_analysis.why — the two T3 reports share one project-announcement evidence origin",
+        "forensic_analysis.strategic_choices[0] — the two T3 reports share one project-announcement evidence origin",
+        "forensic_analysis.strategic_choices[1] — token/emission mechanics need independent economic evidence",
+        "forensic_analysis.strategic_choices[2] — value distribution claim remains first-party",
+        "forensic_analysis.strategic_choices[3] — the two T3 reports share one project-announcement evidence origin",
+        "forensic_analysis.counterfactual — the two T3 reports share one project-announcement evidence origin"
+      ],
+      "source_metadata_patches": [],
+      "casino_claim_additions": [],
+      "evidence_boundary": "The two event reports substantially derive from the same project announcement. They support the AERO expansion event and current strategy framing, but not independent proof that token or emission design caused success.",
+      "support_summary": {
+        "high_risk_before": 7,
+        "high_risk_after_projected": 7,
+        "resolved_projected": 0,
+        "unresolved_preserved": 7
+      }
+    },
+    {
+      "dossier_id": "dex:dead:solidly",
+      "unresolved_before": 7,
+      "unresolved_after_projected": 7,
+      "source_additions": [
+        {
+          "id": "solidly-decrypt-exit",
+          "title": "YFI, FTM Tank After Andre Cronje, Anton Nell Claim They're Leaving Crypto",
+          "publisher": "Decrypt",
+          "url": "https://decrypt.co/94483/yfi-ftm-tank-after-andre-cronje-anton-nell-claim-theyre-leaving-crypto",
+          "source_tier": "T3",
+          "source_role": "independent",
+          "resolving": true,
+          "evidence_reviewed": true,
+          "evidence_locator": "Reports the Solidly launch/snapshot-driven Fantom TVL surge, Cronje/Nell exit, planned service termination, and immediate SOLID price shock.",
+          "evidence_scope": "lifecycle_event",
+          "independence_group": "cronje-nell-defi-exit-announcement-2022-03",
+          "source_dependency": "Reports the same Cronje/Nell departure announcement as the paired The Block coverage; separate newsrooms do not create a second evidence origin for the exit event.",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "codex-research-agent",
+          "access_state": "accessible",
+          "access_checked_at": "2026-07-29",
+          "access_http_status": 200,
+          "access_method": "direct_http_retrieval",
+          "verification_note": "Direct retrieval returned HTTP 200 and the stated locator was editorially inspected. Reports the Solidly launch/snapshot-driven Fantom TVL surge, Cronje/Nell exit, planned service termination, and immediate SOLID price shock."
+        },
+        {
+          "id": "solidly-theblock-exit",
+          "title": "Fantom TVL slumps as colleague tweets Andre Cronje is quitting DeFi",
+          "publisher": "The Block",
+          "url": "https://www.theblock.co/linked/136545/fantom-tvl-slumps-as-colleague-tweets-andre-cronje-is-quitting-defi",
+          "source_tier": "T3",
+          "source_role": "independent",
+          "resolving": true,
+          "evidence_reviewed": true,
+          "evidence_locator": "Reports Solidly's contribution to Fantom's temporary TVL rank, termination announcement, and more than 30% one-day liquidity decline in Solidly/Solidex.",
+          "evidence_scope": "lifecycle_event_and_liquidity_response",
+          "independence_group": "cronje-nell-defi-exit-announcement-2022-03",
+          "source_dependency": "Reports the same Cronje/Nell departure announcement as the paired Decrypt coverage; separate newsrooms do not create a second evidence origin for the exit event.",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "codex-research-agent",
+          "access_state": "bot_blocked_raw_fetch",
+          "access_checked_at": "2026-07-29",
+          "access_http_status": 403,
+          "access_method": "indexed_browser_retrieval",
+          "verification_note": "Direct automated retrieval returned HTTP 403; the article body and the stated locator were reviewed through an indexed browser snapshot. Reports Solidly's contribution to Fantom's temporary TVL rank, termination announcement, and more than 30% one-day liquidity decline in Solidly/Solidex."
+        }
+      ],
+      "forensic_claim_patches": [
+        {
+          "path": "forensic_analysis.outcome",
+          "append_source_refs": [
+            "https://decrypt.co/94483/yfi-ftm-tank-after-andre-cronje-anton-nell-claim-theyre-leaving-crypto",
+            "https://www.theblock.co/linked/136545/fantom-tvl-slumps-as-colleague-tweets-andre-cronje-is-quitting-defi"
+          ]
+        },
+        {
+          "path": "forensic_analysis.why",
+          "append_source_refs": [
+            "https://decrypt.co/94483/yfi-ftm-tank-after-andre-cronje-anton-nell-claim-theyre-leaving-crypto",
+            "https://www.theblock.co/linked/136545/fantom-tvl-slumps-as-colleague-tweets-andre-cronje-is-quitting-defi"
+          ]
+        },
+        {
+          "path": "forensic_analysis.strategic_choices[0]",
+          "append_source_refs": [
+            "https://decrypt.co/94483/yfi-ftm-tank-after-andre-cronje-anton-nell-claim-theyre-leaving-crypto",
+            "https://www.theblock.co/linked/136545/fantom-tvl-slumps-as-colleague-tweets-andre-cronje-is-quitting-defi"
+          ]
+        },
+        {
+          "path": "forensic_analysis.strategic_choices[2]",
+          "append_source_refs": [
+            "https://decrypt.co/94483/yfi-ftm-tank-after-andre-cronje-anton-nell-claim-theyre-leaving-crypto",
+            "https://www.theblock.co/linked/136545/fantom-tvl-slumps-as-colleague-tweets-andre-cronje-is-quitting-defi"
+          ]
+        },
+        {
+          "path": "forensic_analysis.strategic_choices[3]",
+          "append_source_refs": [
+            "https://decrypt.co/94483/yfi-ftm-tank-after-andre-cronje-anton-nell-claim-theyre-leaving-crypto",
+            "https://www.theblock.co/linked/136545/fantom-tvl-slumps-as-colleague-tweets-andre-cronje-is-quitting-defi"
+          ]
+        },
+        {
+          "path": "forensic_analysis.counterfactual",
+          "append_source_refs": [
+            "https://decrypt.co/94483/yfi-ftm-tank-after-andre-cronje-anton-nell-claim-theyre-leaving-crypto",
+            "https://www.theblock.co/linked/136545/fantom-tvl-slumps-as-colleague-tweets-andre-cronje-is-quitting-defi"
+          ]
+        }
+      ],
+      "remains_unresolved": [
+        "forensic_analysis.outcome — the two T3 reports share one departure-announcement evidence origin",
+        "forensic_analysis.why — the two T3 reports share one departure-announcement evidence origin",
+        "forensic_analysis.strategic_choices[0] — the two T3 reports share one departure-announcement evidence origin",
+        "forensic_analysis.strategic_choices[1] — vote-escrow fee/emission design lacks a second independent evidence origin or stronger research source",
+        "forensic_analysis.strategic_choices[2] — the two T3 reports share one departure-announcement evidence origin",
+        "forensic_analysis.strategic_choices[3] — the two T3 reports share one departure-announcement evidence origin",
+        "forensic_analysis.counterfactual — the two T3 reports share one departure-announcement evidence origin"
+      ],
+      "source_metadata_patches": [],
+      "casino_claim_additions": [],
+      "evidence_boundary": "The two reports trace the lifecycle shock to the same Cronje/Nell departure announcement. They document the event and market response but count as one T3 evidence origin.",
+      "support_summary": {
+        "high_risk_before": 7,
+        "high_risk_after_projected": 7,
+        "resolved_projected": 0,
+        "unresolved_preserved": 7
+      }
+    },
+    {
+      "dossier_id": "cex:dead:bitmart",
+      "unresolved_before": 7,
+      "unresolved_after_projected": 7,
+      "source_additions": [
+        {
+          "id": "bitmart-theblock-winddown",
+          "title": "BitMart to wind down trading platform as global CEO says he was not consulted",
+          "publisher": "The Block",
+          "url": "https://www.theblock.co/post/409670/bitmart-to-wind-down-trading-platform-as-global-ceo-says-he-was-not-consulted",
+          "source_tier": "T3",
+          "source_role": "independent",
+          "resolving": true,
+          "evidence_reviewed": true,
+          "evidence_locator": "Reports the phased shutdown, the global CEO's statement that he was not consulted, BMX's near-60% one-day drop, and the operator's nonspecific rationale.",
+          "evidence_scope": "lifecycle_event_and_management_context",
+          "independence_group": "bitmart-wind-down-announcement-2026-07",
+          "source_dependency": "Reports the same BitMart wind-down announcement as the paired Decrypt coverage; separate newsrooms do not create a second evidence origin for the closure schedule.",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "codex-research-agent",
+          "access_state": "bot_blocked_raw_fetch",
+          "access_checked_at": "2026-07-29",
+          "access_http_status": 403,
+          "access_method": "indexed_browser_retrieval",
+          "verification_note": "Direct automated retrieval returned HTTP 403; the article body and the stated locator were reviewed through an indexed browser snapshot. Reports the phased shutdown, the global CEO's statement that he was not consulted, BMX's near-60% one-day drop, and the operator's nonspecific rationale."
+        },
+        {
+          "id": "bitmart-decrypt-winddown",
+          "title": "BitMart Becomes Latest Crypto Exchange to Shut Down",
+          "publisher": "Decrypt",
+          "url": "https://decrypt.co/374346/bitmart-becomes-latest-crypto-exchange-to-shut-down",
+          "source_tier": "T3",
+          "source_role": "independent",
+          "resolving": true,
+          "evidence_reviewed": true,
+          "evidence_locator": "Reports deposits/orders stopped, August trading halt, January 2027 platform closure, withdrawal review conditions, BMX decline, and that no specific cause was disclosed.",
+          "evidence_scope": "lifecycle_event_and_withdrawal_process",
+          "independence_group": "bitmart-wind-down-announcement-2026-07",
+          "source_dependency": "Reports the same BitMart wind-down announcement as the paired The Block coverage; separate newsrooms do not create a second evidence origin for the closure schedule.",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "codex-research-agent",
+          "access_state": "accessible",
+          "access_checked_at": "2026-07-29",
+          "access_http_status": 200,
+          "access_method": "direct_http_retrieval",
+          "verification_note": "Direct retrieval returned HTTP 200 and the stated locator was editorially inspected. Reports deposits/orders stopped, August trading halt, January 2027 platform closure, withdrawal review conditions, BMX decline, and that no specific cause was disclosed."
+        }
+      ],
+      "forensic_claim_patches": [
+        {
+          "path": "forensic_analysis.outcome",
+          "append_source_refs": [
+            "https://www.theblock.co/post/409670/bitmart-to-wind-down-trading-platform-as-global-ceo-says-he-was-not-consulted",
+            "https://decrypt.co/374346/bitmart-becomes-latest-crypto-exchange-to-shut-down"
+          ]
+        },
+        {
+          "path": "forensic_analysis.why",
+          "append_source_refs": [
+            "https://www.theblock.co/post/409670/bitmart-to-wind-down-trading-platform-as-global-ceo-says-he-was-not-consulted",
+            "https://decrypt.co/374346/bitmart-becomes-latest-crypto-exchange-to-shut-down"
+          ]
+        },
+        {
+          "path": "forensic_analysis.strategic_choices[0]",
+          "append_source_refs": [
+            "https://www.theblock.co/post/409670/bitmart-to-wind-down-trading-platform-as-global-ceo-says-he-was-not-consulted",
+            "https://decrypt.co/374346/bitmart-becomes-latest-crypto-exchange-to-shut-down"
+          ]
+        },
+        {
+          "path": "forensic_analysis.strategic_choices[1]",
+          "append_source_refs": [
+            "https://www.theblock.co/post/409670/bitmart-to-wind-down-trading-platform-as-global-ceo-says-he-was-not-consulted",
+            "https://decrypt.co/374346/bitmart-becomes-latest-crypto-exchange-to-shut-down"
+          ]
+        },
+        {
+          "path": "forensic_analysis.strategic_choices[2]",
+          "append_source_refs": [
+            "https://www.theblock.co/post/409670/bitmart-to-wind-down-trading-platform-as-global-ceo-says-he-was-not-consulted",
+            "https://decrypt.co/374346/bitmart-becomes-latest-crypto-exchange-to-shut-down"
+          ]
+        },
+        {
+          "path": "forensic_analysis.counterfactual",
+          "append_source_refs": [
+            "https://www.theblock.co/post/409670/bitmart-to-wind-down-trading-platform-as-global-ceo-says-he-was-not-consulted",
+            "https://decrypt.co/374346/bitmart-becomes-latest-crypto-exchange-to-shut-down"
+          ]
+        }
+      ],
+      "remains_unresolved": [
+        "forensic_analysis.outcome — the two T3 reports share one operator-announcement evidence origin",
+        "forensic_analysis.why — the two T3 reports share one operator-announcement evidence origin and disclose no specific cause",
+        "forensic_analysis.strategic_choices[0] — the two T3 reports share one operator-announcement evidence origin",
+        "forensic_analysis.strategic_choices[1] — the two T3 reports share one operator-announcement evidence origin",
+        "forensic_analysis.strategic_choices[2] — the two T3 reports share one operator-announcement evidence origin",
+        "forensic_analysis.strategic_choices[3] — the separate risk-control statement does not establish a causal connection to closure",
+        "forensic_analysis.counterfactual — the two T3 reports share one operator-announcement evidence origin"
+      ],
+      "source_metadata_patches": [],
+      "casino_claim_additions": [],
+      "evidence_boundary": "The two reports trace the wind-down schedule to the same operator announcement. They document the schedule and management context but count as one T3 evidence origin and do not prove a cause.",
+      "support_summary": {
+        "high_risk_before": 7,
+        "high_risk_after_projected": 7,
+        "resolved_projected": 0,
+        "unresolved_preserved": 7
+      }
+    },
+    {
+      "dossier_id": "cex:mid:htx",
+      "unresolved_before": 6,
+      "unresolved_after_projected": 2,
+      "source_metadata_patches": [
+        {
+          "source_id": "htx-uk-faq",
+          "source_tier": "T1",
+          "source_role": "authority",
+          "resolving": true,
+          "evidence_reviewed": true,
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_locator": "OFSI FAQ 186, added May 29, 2026, states Huobi Global S.A. was designated May 26 and that OFSI considers HTX subject to UK financial sanctions because Huobi owns it.",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "access_state": "accessible",
+          "access_checked_at": "2026-07-29",
+          "access_http_status": 200,
+          "access_method": "direct_http_retrieval",
+          "verification_note": "Direct retrieval returned HTTP 200 and the stated locator was editorially inspected. OFSI FAQ 186, added May 29, 2026, states Huobi Global S.A. was designated May 26 and that OFSI considers HTX subject to UK financial sanctions because Huobi owns it."
+        }
+      ],
+      "expected_resolved_paths": [
+        "forensic_analysis.outcome",
+        "forensic_analysis.why",
+        "forensic_analysis.strategic_choices[0]",
+        "forensic_analysis.counterfactual"
+      ],
+      "remains_unresolved": [
+        "forensic_analysis.strategic_choices[1] — venue-token utility remains unverified",
+        "forensic_analysis.strategic_choices[2] — proof-of-reserves limitations remain supported only by the operator portal"
+      ],
+      "source_additions": [],
+      "casino_claim_additions": [],
+      "evidence_boundary": "OFSI establishes the UK sanctions relationship; it does not establish that sanctions caused reported volume decline, insolvency, or global closure.",
+      "support_summary": {
+        "high_risk_before": 6,
+        "high_risk_after_projected": 2,
+        "resolved_projected": 4,
+        "unresolved_preserved": 2
+      }
+    },
+    {
+      "dossier_id": "cex:successful:binance",
+      "unresolved_before": 6,
+      "unresolved_after_projected": 2,
+      "source_additions": [
+        {
+          "id": "binance-doj-plea",
+          "title": "United States v. Binance Holdings Limited, d/b/a Binance.com",
+          "publisher": "U.S. Department of Justice",
+          "url": "https://www.justice.gov/criminal/case/united-states-v-binance-holdings-limited-dba-binancecom",
+          "source_tier": "T1",
+          "source_role": "authority",
+          "resolving": true,
+          "evidence_reviewed": true,
+          "evidence_locator": "DOJ records Binance's guilty plea, $4.3B resolution, then-world-largest exchange status, and its deliberate prioritization of growth, market share, and profit over U.S. compliance controls.",
+          "evidence_scope": "legal_and_strategy_finding",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "codex-research-agent",
+          "access_state": "accessible",
+          "access_checked_at": "2026-07-29",
+          "access_http_status": 200,
+          "access_method": "direct_http_retrieval",
+          "verification_note": "Direct retrieval returned HTTP 200 and the stated locator was editorially inspected. DOJ records Binance's guilty plea, $4.3B resolution, then-world-largest exchange status, and its deliberate prioritization of growth, market share, and profit over U.S. compliance controls."
+        },
+        {
+          "id": "binance-cftc-order",
+          "title": "Federal Court Enters Order Against Binance and Former CEO, Zhao",
+          "publisher": "U.S. Commodity Futures Trading Commission",
+          "url": "https://www.cftc.gov/PressRoom/PressReleases/8837-23",
+          "source_tier": "T1",
+          "source_role": "authority",
+          "resolving": true,
+          "evidence_reviewed": true,
+          "evidence_locator": "CFTC records the $2.7B order, knowing U.S. customer solicitation and control evasion, and required governance/compliance remediation.",
+          "evidence_scope": "legal_and_governance_remediation",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "codex-research-agent",
+          "access_state": "accessible",
+          "access_checked_at": "2026-07-29",
+          "access_http_status": 200,
+          "access_method": "direct_http_retrieval",
+          "verification_note": "Direct retrieval returned HTTP 200 and the stated locator was editorially inspected. CFTC records the $2.7B order, knowing U.S. customer solicitation and control evasion, and required governance/compliance remediation."
+        }
+      ],
+      "forensic_claim_patches": [
+        {
+          "path": "forensic_analysis.outcome",
+          "replace_summary": "Binance is a successful scale control. DOJ identified it as the world's largest cryptocurrency exchange when it pleaded guilty in 2023; Binance's issuer report later states $34T of 2025 all-product volume and 300M users. The current figures remain operator-defined, not audited profitability, independent spot volume, or a solvency conclusion.",
+          "append_source_refs": [
+            "https://www.justice.gov/criminal/case/united-states-v-binance-holdings-limited-dba-binancecom"
+          ]
+        },
+        {
+          "path": "forensic_analysis.why",
+          "append_source_refs": [
+            "https://www.justice.gov/criminal/case/united-states-v-binance-holdings-limited-dba-binancecom",
+            "https://www.cftc.gov/PressRoom/PressReleases/8837-23"
+          ]
+        },
+        {
+          "path": "forensic_analysis.strategic_choices[0]",
+          "append_source_refs": [
+            "https://www.justice.gov/criminal/case/united-states-v-binance-holdings-limited-dba-binancecom",
+            "https://www.cftc.gov/PressRoom/PressReleases/8837-23"
+          ]
+        },
+        {
+          "path": "forensic_analysis.counterfactual",
+          "append_source_refs": [
+            "https://www.justice.gov/criminal/case/united-states-v-binance-holdings-limited-dba-binancecom",
+            "https://www.cftc.gov/PressRoom/PressReleases/8837-23"
+          ]
+        }
+      ],
+      "remains_unresolved": [
+        "forensic_analysis.strategic_choices[1] — BNB contribution requires independent causal evidence",
+        "forensic_analysis.strategic_choices[2] — proof-of-reserves remains operator-only"
+      ],
+      "source_metadata_patches": [],
+      "casino_claim_additions": [],
+      "evidence_boundary": "DOJ and CFTC findings support the compliance-strategy record. They do not establish present solvency, profitability, or the contribution of BNB.",
+      "support_summary": {
+        "high_risk_before": 6,
+        "high_risk_after_projected": 2,
+        "resolved_projected": 4,
+        "unresolved_preserved": 2
+      }
+    },
+    {
+      "dossier_id": "bc-game-curacao-small-house",
+      "unresolved_before": 1,
+      "unresolved_after_projected": 0,
+      "casino_claim_patches": [
+        {
+          "claim_id": "casino:claim:bcgame:operator-conflict",
+          "set": {
+            "claim_type": "context",
+            "support_direction": "context_only",
+            "analyst_note": "First-party counterevidence is preserved to prevent a global-brand cessation claim; it does not alter the scoped authority record."
+          },
+          "rationale": "This record is attributed counterevidence about global-brand continuity, not a legal or lifecycle finding."
+        }
+      ],
+      "remains_unresolved": [],
+      "source_additions": [],
+      "source_metadata_patches": [],
+      "casino_claim_additions": [],
+      "evidence_boundary": null,
+      "support_summary": {
+        "high_risk_before": 1,
+        "high_risk_after_projected": 0,
+        "resolved_projected": 1,
+        "unresolved_preserved": 0
+      }
+    },
+    {
+      "dossier_id": "funfair-b2b-platform",
+      "unresolved_before": 4,
+      "unresolved_after_projected": 3,
+      "casino_claim_patches": [
+        {
+          "claim_id": "casino:claim:funfair:current-pivot",
+          "set": {
+            "claim_type": "status",
+            "support_direction": "supports",
+            "analyst_note": "Supports product-level supersession; the company itself remains active."
+          },
+          "rationale": "The existing note's phrase 'legal-entity' accidentally promoted a narrow product-status observation into a high-risk legal claim."
+        }
+      ],
+      "remains_unresolved": [
+        "forensic_analysis.strategic_choices[1]",
+        "forensic_analysis.strategic_choices[2]",
+        "forensic_analysis.counterfactual"
+      ],
+      "source_additions": [],
+      "source_metadata_patches": [],
+      "casino_claim_additions": [],
+      "evidence_boundary": null,
+      "support_summary": {
+        "high_risk_before": 4,
+        "high_risk_after_projected": 3,
+        "resolved_projected": 1,
+        "unresolved_preserved": 3
+      }
+    },
+    {
+      "dossier_id": "decentral-games-poker-arcade",
+      "unresolved_before": 8,
+      "unresolved_after_projected": 6,
+      "casino_claim_patches": [
+        {
+          "claim_id": "casino:claim:dg:legal",
+          "set": {
+            "claim_type": "context",
+            "support_direction": "context_only",
+            "analyst_note": "Attributed contract scope and governing-law language only; no gaming approval is inferred."
+          },
+          "rationale": "A terms-of-use governing-law clause is not a licence finding."
+        },
+        {
+          "claim_id": "casino:claim:dg:no-approval",
+          "set": {
+            "claim_type": "context",
+            "support_direction": "context_only",
+            "analyst_note": "Attributed operator disclaimer preserved as an evidence limitation, not an authority finding."
+          },
+          "rationale": "The operator's disclaimer cannot independently establish a regulatory conclusion."
+        }
+      ],
+      "remains_unresolved": [
+        "forensic_analysis.why",
+        "forensic_analysis.strategic_choices[0]",
+        "forensic_analysis.strategic_choices[1]",
+        "forensic_analysis.strategic_choices[2]",
+        "forensic_analysis.strategic_choices[3]",
+        "forensic_analysis.counterfactual"
+      ],
+      "source_additions": [],
+      "source_metadata_patches": [],
+      "casino_claim_additions": [],
+      "evidence_boundary": null,
+      "support_summary": {
+        "high_risk_before": 8,
+        "high_risk_after_projected": 6,
+        "resolved_projected": 2,
+        "unresolved_preserved": 6
+      }
+    },
+    {
+      "dossier_id": "stake-dot-com",
+      "unresolved_before": 6,
+      "unresolved_after_projected": 2,
+      "source_additions": [
+        {
+          "source_id": "casino:source:stake:ukgc-exit-2025",
+          "title": "Consumer information notice: Stake leaving GB market",
+          "publisher": "UK Gambling Commission",
+          "canonical_url": "https://www.gamblingcommission.gov.uk/news/article/consumer-information-notice-stake-leaving-gb-market",
+          "source_tier": "A",
+          "source_role": "independent",
+          "resolving": true,
+          "evidence_reviewed": true,
+          "evidence_reviewed_at": "2026-07-29",
+          "evidence_reviewer": "codex-research-agent",
+          "evidence_locator": "UKGC identifies the TGP Europe white-label arrangement, investigation into Stake-branded social promotion, March 2025 GB shutdown, sponsor due-diligence warning, and geoblocking expectations.",
+          "evidence_scope": "jurisdictional_market_exit",
+          "checked_at": "2026-07-29",
+          "last_verified_at": "2026-07-29",
+          "access_state": "accessible",
+          "access_checked_at": "2026-07-29",
+          "access_http_status": 200,
+          "access_method": "direct_http_retrieval",
+          "verification_note": "Direct retrieval returned HTTP 200 and the stated locator was editorially inspected. UKGC identifies the TGP Europe white-label arrangement, investigation into Stake-branded social promotion, March 2025 GB shutdown, sponsor due-diligence warning, and geoblocking expectations.",
+          "authority_class": "regulator"
+        }
+      ],
+      "casino_claim_patches": [
+        {
+          "claim_id": "casino:claim:stake:claimed-licence",
+          "set": {
+            "claim_type": "context",
+            "support_direction": "context_only",
+            "analyst_note": "Attributed operator licence statement retained beside the authority record; it is not published as verified current status."
+          }
+        }
+      ],
+      "forensic_claim_patches": [
+        {
+          "path": "forensic_analysis.why",
+          "replace_summary": "Stake's durability is consistent with continuity, a broad casino/sportsbook bundle, proprietary rapid-cycle games, and aggressive international distribution. The GB white-label shutdown shows the cost of that reach: branded promotion, partner diligence, and effective geoblocking can turn distribution into a concrete access constraint. Public evidence still cannot isolate the contribution of crypto rails, Originals, sponsorship, affiliates, geography, or promotional spend.",
+          "append_source_refs": [
+            "https://www.gamblingcommission.gov.uk/news/article/consumer-information-notice-stake-leaving-gb-market"
+          ]
+        },
+        {
+          "path": "forensic_analysis.strategic_choices[0]",
+          "append_source_refs": [
+            "https://www.gamblingcommission.gov.uk/news/article/consumer-information-notice-stake-leaving-gb-market"
+          ]
+        },
+        {
+          "path": "forensic_analysis.strategic_choices[2]",
+          "append_source_refs": [
+            "https://www.gamblingcommission.gov.uk/news/article/consumer-information-notice-stake-leaving-gb-market"
+          ]
+        }
+      ],
+      "remains_unresolved": [
+        "forensic_analysis.strategic_choices[1] — Originals contribution remains operator-only",
+        "forensic_analysis.counterfactual — no controlled product-cohort evidence"
+      ],
+      "source_metadata_patches": [],
+      "casino_claim_additions": [
+        {
+          "claim_id": "casino:claim:stake:ukgc-gb-exit-2025",
+          "case_id": "stake-dot-com",
+          "field_path": "lifecycle.gb_market_exit",
+          "source_id": "casino:source:stake:ukgc-exit-2025",
+          "evidence_locator": "UKGC notice dated 2025-02-12, paragraphs under the title through the closure guidance: TGP Europe white-label scope, investigation, 2025-03-11 GB shutdown, due-diligence and geoblocking expectations.",
+          "claim_type": "status",
+          "support_direction": "supports",
+          "analyst_note": "Authority evidence is limited to the Great Britain white-label site and does not classify Stake globally.",
+          "checked_at": "2026-07-29"
+        }
+      ],
+      "evidence_boundary": "The UK Gambling Commission notice is scoped to the Great Britain white-label arrangement. It does not classify Stake globally.",
+      "support_summary": {
+        "high_risk_before": 6,
+        "high_risk_after_projected": 2,
+        "resolved_projected": 4,
+        "unresolved_preserved": 2
+      }
+    }
+  ],
+  "projected_result": {
+    "selected_unresolved_high_risk_claims_before": 60,
+    "selected_unresolved_high_risk_claims_after": 37,
+    "reduction": 23,
+    "reduction_pct": 38.33,
+    "explicitly_left_unresolved": 37
+  },
+  "implementation_notes": [
+    "Migration 0065 was assigned only after migrations 0063 and 0064 merged and replayed.",
+    "Renderer parity compares the canonical implementation document, generated SQL, and replayed database state byte-for-byte.",
+    "Rerun publication-depth inventory before and after; fail if any projected resolution lacks the specified claim-specific source.",
+    "Do not copy source metadata to unrelated claims and do not convert access timestamps into evidence review.",
+    "Preserve all unknowns and confidence qualifiers in the live UI."
+  ],
+  "migration_sequence": {
+    "assigned_id": "0065",
+    "reserved_after": "0064",
+    "rendered": true,
+    "rendered_file": "migrations/0065_high_risk_evidence_remediation.sql",
+    "note": "Contiguous migration 0065 was rendered after migrations 0063 and 0064 merged and replayed."
+  },
+  "ui_contract": {
+    "depends_on_migration": "0063",
+    "surface": "shared publication-depth support state",
+    "required_states": [
+      "high_risk_support_threshold_met",
+      "claim_support_pending",
+      "unsupported_section_withheld",
+      "source_access_and_review_status"
+    ],
+    "note": "Migration 0065 is integration-tested against the shared 0063 publication-depth API and the existing visible exchange/casino dossier and list UI."
+  },
+  "source_access_audit": {
+    "checked_at": "2026-07-29",
+    "direct_http_200": 10,
+    "direct_http_bot_blocked": 4,
+    "all_14_editorially_reviewed": true,
+    "boundary": "HTTP access and editorial review are separate. Four The Block pages returned HTTP 403 to the raw fetcher but resolved through indexed browser snapshots; the access limitation remains published."
+  },
+  "unresolved_claims": [
+    {
+      "dossier_id": "dex:mid:sushiswap",
+      "description": "forensic_analysis.strategic_choices[1] — current aggregation pivot is documented only by first-party sources in the reviewed set",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:successful:aerodrome",
+      "description": "forensic_analysis.outcome — the two T3 reports share one project-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:successful:aerodrome",
+      "description": "forensic_analysis.why — the two T3 reports share one project-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:successful:aerodrome",
+      "description": "forensic_analysis.strategic_choices[0] — the two T3 reports share one project-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:successful:aerodrome",
+      "description": "forensic_analysis.strategic_choices[1] — token/emission mechanics need independent economic evidence",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:successful:aerodrome",
+      "description": "forensic_analysis.strategic_choices[2] — value distribution claim remains first-party",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:successful:aerodrome",
+      "description": "forensic_analysis.strategic_choices[3] — the two T3 reports share one project-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:successful:aerodrome",
+      "description": "forensic_analysis.counterfactual — the two T3 reports share one project-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:dead:solidly",
+      "description": "forensic_analysis.outcome — the two T3 reports share one departure-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:dead:solidly",
+      "description": "forensic_analysis.why — the two T3 reports share one departure-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:dead:solidly",
+      "description": "forensic_analysis.strategic_choices[0] — the two T3 reports share one departure-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:dead:solidly",
+      "description": "forensic_analysis.strategic_choices[1] — vote-escrow fee/emission design lacks a second independent evidence origin or stronger research source",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:dead:solidly",
+      "description": "forensic_analysis.strategic_choices[2] — the two T3 reports share one departure-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:dead:solidly",
+      "description": "forensic_analysis.strategic_choices[3] — the two T3 reports share one departure-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "dex:dead:solidly",
+      "description": "forensic_analysis.counterfactual — the two T3 reports share one departure-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:dead:bitmart",
+      "description": "forensic_analysis.outcome — the two T3 reports share one operator-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:dead:bitmart",
+      "description": "forensic_analysis.why — the two T3 reports share one operator-announcement evidence origin and disclose no specific cause",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:dead:bitmart",
+      "description": "forensic_analysis.strategic_choices[0] — the two T3 reports share one operator-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:dead:bitmart",
+      "description": "forensic_analysis.strategic_choices[1] — the two T3 reports share one operator-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:dead:bitmart",
+      "description": "forensic_analysis.strategic_choices[2] — the two T3 reports share one operator-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:dead:bitmart",
+      "description": "forensic_analysis.strategic_choices[3] — the separate risk-control statement does not establish a causal connection to closure",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:dead:bitmart",
+      "description": "forensic_analysis.counterfactual — the two T3 reports share one operator-announcement evidence origin",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:mid:htx",
+      "description": "forensic_analysis.strategic_choices[1] — venue-token utility remains unverified",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:mid:htx",
+      "description": "forensic_analysis.strategic_choices[2] — proof-of-reserves limitations remain supported only by the operator portal",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:successful:binance",
+      "description": "forensic_analysis.strategic_choices[1] — BNB contribution requires independent causal evidence",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "cex:successful:binance",
+      "description": "forensic_analysis.strategic_choices[2] — proof-of-reserves remains operator-only",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "funfair-b2b-platform",
+      "description": "forensic_analysis.strategic_choices[1]",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "funfair-b2b-platform",
+      "description": "forensic_analysis.strategic_choices[2]",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "funfair-b2b-platform",
+      "description": "forensic_analysis.counterfactual",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "decentral-games-poker-arcade",
+      "description": "forensic_analysis.why",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "decentral-games-poker-arcade",
+      "description": "forensic_analysis.strategic_choices[0]",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "decentral-games-poker-arcade",
+      "description": "forensic_analysis.strategic_choices[1]",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "decentral-games-poker-arcade",
+      "description": "forensic_analysis.strategic_choices[2]",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "decentral-games-poker-arcade",
+      "description": "forensic_analysis.strategic_choices[3]",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "decentral-games-poker-arcade",
+      "description": "forensic_analysis.counterfactual",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "stake-dot-com",
+      "description": "forensic_analysis.strategic_choices[1] — Originals contribution remains operator-only",
+      "publication_support": "unresolved"
+    },
+    {
+      "dossier_id": "stake-dot-com",
+      "description": "forensic_analysis.counterfactual — no controlled product-cohort evidence",
+      "publication_support": "unresolved"
+    }
+  ]
+}

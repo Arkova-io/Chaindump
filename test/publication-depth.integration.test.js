@@ -504,6 +504,7 @@ describe('publication-depth Wave A migration 0063', () => {
       exclude: [
         '0063_publication_depth_wave_a.sql',
         '0064_nft_source_access_remediation.sql',
+        '0065_high_risk_evidence_remediation.sql',
       ],
     });
     const before = buildPublicationDepthInventory(database, { asOf: '2026-07-29' });
@@ -561,6 +562,7 @@ describe('publication-depth Wave A migration 0063', () => {
       exclude: [
         '0063_publication_depth_wave_a.sql',
         '0064_nft_source_access_remediation.sql',
+        '0065_high_risk_evidence_remediation.sql',
       ],
     });
     const untouchedBefore = {
@@ -751,15 +753,15 @@ describe('publication-depth Wave A migration 0063', () => {
       unresolved_high_risk_claim_count: 0,
     })).toEqual({
       high_risk_claim_count: 383,
-      passing_high_risk_claim_count: 0,
-      unresolved_high_risk_claim_count: 383,
+      passing_high_risk_claim_count: 15,
+      unresolved_high_risk_claim_count: 368,
     });
     for (const item of exchangeCases) {
       expect(item.analysis.forensic_analysis_status, item.slug).toBe('support_pending');
       expect(item.publication_depth, item.slug).toMatchObject({
         status: 'claim_support_pending',
         high_risk_claim_count: expect.any(Number),
-        passing_high_risk_claim_count: 0,
+        passing_high_risk_claim_count: expect.any(Number),
         unresolved_high_risk_claim_count: expect.any(Number),
         registered_source_count: expect.any(Number),
         reachable_source_count: expect.any(Number),
@@ -783,9 +785,9 @@ describe('publication-depth Wave A migration 0063', () => {
     const casinoList = await casinoListResponse.json();
     expect(casinoList.cases).toHaveLength(29);
     expect(casinoList.claim_support).toMatchObject({
-      high_risk_claim_count: 239,
-      passing_high_risk_claim_count: 88,
-      unresolved_high_risk_claim_count: 151,
+      high_risk_claim_count: 236,
+      passing_high_risk_claim_count: 93,
+      unresolved_high_risk_claim_count: 143,
     });
     expect(casinoList.cases.every(({ publication_depth: depth }) => (
       depth

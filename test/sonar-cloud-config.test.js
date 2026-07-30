@@ -7,11 +7,12 @@ const config = readFileSync(
 );
 
 describe('SonarCloud Automatic Analysis bootstrap', () => {
-  it('excludes only the three generated payload migrations from issue analysis', () => {
+  it('excludes only the four generated payload migrations from issue analysis', () => {
     expect(config.match(/^sonar\.exclusions=(.+)$/m)?.[1].split(',')).toEqual([
       'migrations/0062_chain_causal_completion.sql',
       'migrations/0063_publication_depth_wave_a.sql',
       'migrations/0064_nft_source_access_remediation.sql',
+      'migrations/0065_high_risk_evidence_remediation.sql',
     ]);
     expect(config).not.toMatch(
       /^sonar\.exclusions=.*(?:\*|scripts|src|test|docs)/m,
@@ -32,6 +33,7 @@ describe('SonarCloud Automatic Analysis bootstrap', () => {
       'scripts/render-chain-causal-completion-migration.mjs',
       'scripts/render-publication-depth-wave-a-migration.mjs',
       'scripts/render-nft-source-access-remediation-migration.mjs',
+      'scripts/render-high-risk-evidence-remediation-migration.mjs',
     ]);
     expect(cpdExclusions).not.toContain('*');
   });
