@@ -1068,6 +1068,7 @@ function newDossierCoverage() {
     freshness: null,
     identityStatus: null,
     forensicStatus: null,
+    forensicAnalysis: null,
   };
 }
 
@@ -1089,6 +1090,16 @@ function addFactCoverage(coverage, row) {
     const forensic = data.forensic_analysis || {};
     const outcome = forensic.outcome || data.outcome || {};
     if (typeof outcome.label === 'string') coverage.forensicStatus = outcome.label;
+    if (forensic.version === 'forensic-analysis-v1') {
+      coverage.forensicAnalysis = {
+        version: forensic.version,
+        outcomeAsOf: typeof outcome.as_of === 'string' ? outcome.as_of : null,
+        freshness: chainDossierFreshness({
+          last_reviewed: forensic.review?.last_reviewed_at,
+          next_review_at: forensic.review?.next_review_at,
+        }),
+      };
+    }
   }
   coverage.dimensions.add(row.dimension);
   for (const source of factJson(row.sources, [])) {
@@ -1105,6 +1116,14 @@ function publicDossierCoverage(coverage) {
     sources: [...coverage.sources.values()].slice(0, 3),
     freshness: coverage.freshness,
     status: coverage.forensicStatus || coverage.identityStatus || 'unknown',
+    forensicAnalysis: coverage.forensicAnalysis
+      ? { status: 'published', ...coverage.forensicAnalysis }
+      : {
+          status: 'pending',
+          version: null,
+          outcomeAsOf: null,
+          freshness: chainDossierFreshness(null),
+        },
   };
 }
 

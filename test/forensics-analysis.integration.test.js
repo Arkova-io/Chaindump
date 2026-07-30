@@ -46,6 +46,13 @@ describe('Forensics analysis navigation', () => {
     expect(html).toContain('Open chain dossier →');
     expect(html).toContain("coverage: 'Legacy postmortem'");
     expect(html).toContain('structural dossiers');
+    expect(html).toContain('id="blockchainAnalysisCausal"');
+    expect(html).toContain("'causal maps indexed'");
+    expect(html).toContain("'causal maps pending'");
+    expect(html).toContain('Structural coverage is not causal completion.');
+    expect(html).toContain('Causal-map coverage');
+    expect(html).toContain('Causal-analysis coverage');
+    expect(html).toContain("row.causalStatus === state.blockchainAnalysisCausal");
   expect(html).toContain('function factObjectText(value)');
   expect(html).toContain("['classification', 'most_likely', 'base', 'bull', 'bear', 'confidence']");
   expect(html).toContain("<div class=\"dsub\">Why this outcome</div><div class=\"gbody\">${esc(d.why)}</div>");
