@@ -429,6 +429,35 @@ describe('chain causal completion migration 0062', () => {
   it('serves each causal dossier through the chain API and has a visible chain UI section', async () => {
     const { document } = loadArtifacts();
     stubChainFeeds();
+    const boardResponse = await apiWorker.fetch(
+      new Request('http://localhost/api/chains'),
+      { DB: d1(apiDatabase) },
+      ctx(),
+    );
+    expect(boardResponse.status).toBe(200);
+    const board = await boardResponse.json();
+    const causalRows = board.chains.filter(
+      ({ dossier }) => dossier?.forensicAnalysis?.status === 'published',
+    );
+    expect(causalRows.map(({ name }) => name).sort()).toEqual([...expectedChains].sort());
+    for (const row of causalRows) {
+      expect(row.dossier.forensicAnalysis).toMatchObject({
+        status: 'published',
+        version: 'forensic-analysis-v1',
+        outcomeAsOf: '2026-07-29',
+        freshness: {
+          status: 'current',
+          lastReviewedAt: '2026-07-29',
+        },
+      });
+    }
+    for (const chain of ['Osmosis', 'XDC']) {
+      expect(
+        board.chains.find(({ name }) => name === chain)?.dossier?.forensicAnalysis,
+        chain,
+      ).toMatchObject({ status: 'pending', version: null });
+    }
+
     for (const entry of document.cases) {
       const response = await apiWorker.fetch(
         new Request(`http://localhost/api/chain/${encodeURIComponent(entry.chain)}`),

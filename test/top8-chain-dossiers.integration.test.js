@@ -205,6 +205,17 @@ describe('top-eight dossiers through the production API contract', () => {
       expect(row.dossier.citationCount, chain).toBeGreaterThan(0);
       expect(row.dossier.sources[0].url, chain).toMatch(/^https:\/\//);
       expect(row.dossier.status, chain).toMatch(/^(established|emerging|declining)$/);
+      expect(row.dossier.forensicAnalysis, chain).toEqual({
+        status: 'pending',
+        version: null,
+        outcomeAsOf: null,
+        freshness: {
+          status: 'unknown',
+          lastReviewedAt: null,
+          nextReviewAt: null,
+          derived: false,
+        },
+      });
     }
 
     for (const chain of TOP_EIGHT) {
