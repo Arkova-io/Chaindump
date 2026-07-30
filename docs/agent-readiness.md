@@ -87,21 +87,37 @@ content-type before UAT.
 ## Conditional (only if we expose protected APIs)
 
 10. **OAuth/OIDC discovery** — `/.well-known/openid-configuration` or
-    `/.well-known/oauth-authorization-server`. Relevant only if the x402 agent
-    API moves to OAuth-protected access.
+    `/.well-known/oauth-authorization-server`. The Worker now serves these only
+    when a real issuer, token endpoint, JWKS URI, and registration URI are set
+    as `OAUTH_*` runtime variables (including the operator's real claim URI).
+    Until then the routes return an explicit `oauth_not_configured` 404 and
+    `/auth.md` points agents to x402; this avoids publishing fake credentials
+    or an unusable issuer.
     - https://www.rfc-editor.org/rfc/rfc8414
 11. **OAuth Protected Resource Metadata** — `/.well-known/oauth-protected-resource`.
+    It is guarded by the same real-issuer configuration and includes
+    `resource`, `authorization_servers`, `scopes_supported`, and
+    `bearer_methods_supported: ["header"]` when enabled.
     - RFC 9728: https://www.rfc-editor.org/rfc/rfc9728
-12. **`/auth.md`** — agent registration instructions.
+12. **`/auth.md`** — agent registration instructions. ✅ **DONE** (2026-07-30).
+    The page is self-contained and describes the current x402/no-account flow;
+    it adds OAuth registration instructions only when the guarded metadata is
+    configured.
     - https://workos.com/auth-md
 
 ## Stretch
 
-13. **DNS-AID records** — `_index._agents.chaindump.xyz` etc. via SVCB/HTTPS
-    records, DNSSEC-signed. (Cloudflare DNS; needs zone-edit permissions.)
+13. **DNS-AID records** — manifest and DNSSEC runbook are in
+    `docs/dns-aid.md` and `ops/dns/dns-aid.zone`. Publication remains an
+    external Cloudflare/registrar action requiring zone-edit permissions; a
+    committed zone file is not represented as live until `dig +dnssec` shows
+    authenticated records.
     - draft-mozleywilliams-dnsop-dnsaid · RFC 9460
-14. **WebMCP** — `navigator.modelContext.provideContext()` exposing site tools
-    (verify a chain, screen an address, look up a case) to in-browser agents.
+14. **WebMCP** — ✅ **DONE** (2026-07-30). `public/index.html` registers four
+    read-only tools with `document.modelContext`/`navigator.modelContext` when
+    the browser API is present: market summary, chain profile, sourced
+    signals, and forensic trace lookup. Registration is abort-signal-backed and
+    pagehide-safe; no tool submits a transaction or mutates the site.
     - https://webmachinelearning.github.io/webmcp/
 
 ## Notes
