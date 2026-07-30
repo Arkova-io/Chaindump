@@ -60,6 +60,9 @@ describe("scheduled workflow safety contract", () => {
     expect(workflow).toContain("vars.RESEARCH_DESK_ENABLED == 'true'");
     expect(workflow).toContain("timeout-minutes: 30");
     expect(workflow).toContain("RESEARCH_DESK_PROPOSAL_TOKEN");
+    expect(workflow).toContain("RESEARCH_DESK_GEMINI_API_KEY");
+    expect(workflow).toContain("DESK_PROVIDER");
+    expect(workflow).toContain("gemini-2.5-flash-lite");
     expect(workflow).not.toContain("DESK_REVIEW_TOKEN");
     expect(workflow).not.toContain("/api/desk/promote");
     expect(workflow).not.toContain("contents: write");
@@ -70,7 +73,7 @@ describe("scheduled workflow safety contract", () => {
       new URL("../src/index.ts", import.meta.url),
       "utf8",
     );
-    expect(entrypoint).toContain('Number(process.env.DESK_MAX_TURNS) || 20');
+    expect(entrypoint).toContain("DEFAULT_GEMINI_MAX_TURNS");
     expect(entrypoint).toContain("no ephemeral fallback was accepted");
     expect(entrypoint).not.toContain("falling back to local file");
   });

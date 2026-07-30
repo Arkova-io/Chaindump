@@ -7,6 +7,8 @@
 // not replacement rows, and are ALWAYS review-required. They are deliberately
 // absent from the Worker's direct-promotion allowlist.
 
+import { z } from "zod";
+
 /** Existing simple row datasets accepted by the Worker's promotion allowlist. */
 export const DIRECTLY_PROMOTABLE_DATASETS = [
   "scam_intel",
@@ -38,6 +40,27 @@ export const PROPOSAL_DATASETS = [
 ] as const;
 
 export type ProposalDataset = (typeof PROPOSAL_DATASETS)[number];
+
+/** Runtime input contract shared by the Claude and Gemini proposal adapters. */
+export const queueProposalInputSchema = z.object({
+  dataset: z.enum(PROPOSAL_DATASETS),
+  slug: z.string().min(2),
+  title: z.string(),
+  summary: z.string(),
+  payload: z.record(z.string(), z.unknown()),
+  sources: z.array(z.object({
+    id: z.string(),
+    title: z.string(),
+    url: z.string().url(),
+    source_type: z.string(),
+    verified_at: z.string(),
+    verification_result: z.literal("resolved"),
+  })).min(1),
+  names_individuals: z.boolean(),
+  confidence: z.number().min(0).max(1),
+});
+
+export type QueueProposalInput = z.infer<typeof queueProposalInputSchema>;
 
 export interface ProposalGateInput {
   dataset?: string;
