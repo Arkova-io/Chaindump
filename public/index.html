@@ -750,13 +750,13 @@ function forensicsFreshnessLabel(freshness) {
 function forensicsScanText() {
   const refresh = state.forensicsRefresh;
   const refreshFreshness = state.forensicsRefreshFreshness;
-  if (state.forensicsRefreshStatus === 'loading') return 'Freshness check (every 6 hours): loading…';
-  if (state.forensicsRefreshStatus === 'unavailable') return 'Freshness check (every 6 hours): unavailable';
-  if (!refresh) return 'Freshness check (every 6 hours): no completed check recorded';
+  if (state.forensicsRefreshStatus === 'loading') return 'Report freshness (every 6 hours): checking…';
+  if (state.forensicsRefreshStatus === 'unavailable') return 'Report freshness (every 6 hours): unavailable';
+  if (!refresh) return 'Report freshness (every 6 hours): no completed check recorded';
   const due = Number(refresh.due_nft || 0) + Number(refresh.due_exchange || 0) + Number(refresh.due_casino || 0) + Number(refresh.due_chain || 0);
   const freshness = forensicsFreshnessLabel(refreshFreshness);
   const nextDue = refreshFreshness?.next_due_at ? ` · next due ${esc(refreshFreshness.next_due_at)}` : '';
-  return `Freshness check (every 6 hours): ${esc(freshness)} · last completed ${esc(refreshFreshness?.last_completed_at || refresh.completed_at || 'unknown')}${nextDue} · ${esc(due)} report(s) due`;
+  return `Report freshness (every 6 hours): ${esc(freshness)} · last checked ${esc(refreshFreshness?.last_completed_at || refresh.completed_at || 'unknown')}${nextDue} · ${esc(due)} report${due === 1 ? '' : 's'} due`;
 }
 function forensicsPriorCompletionText() {
   const completedAt = state.forensicsProposalAgentLastCompleted?.completed_at;
@@ -766,29 +766,29 @@ function forensicsProposalAgentText() {
   const run = state.forensicsProposalAgent;
   const runFreshness = state.forensicsProposalAgentFreshness;
   const priorCompletion = forensicsPriorCompletionText();
-  if (state.forensicsProposalAgentStatus === 'loading') return 'Research assistant: loading status…';
-  if (state.forensicsProposalAgentStatus === 'unavailable') return 'Research assistant: status unavailable';
+  if (state.forensicsProposalAgentStatus === 'loading') return 'Optional research updates: checking…';
+  if (state.forensicsProposalAgentStatus === 'unavailable') return 'Optional research updates: unavailable';
   if (run?.status === 'running') {
     return runFreshness?.state === 'stale'
-      ? `Research assistant: interrupted or stale since ${esc(run.started_at || 'unknown')}${priorCompletion}`
-      : `Research assistant: running since ${esc(run.started_at || 'unknown')}${priorCompletion}`;
+      ? `Optional research updates: paused or stale since ${esc(run.started_at || 'unknown')}${priorCompletion}`
+      : `Optional research updates: running since ${esc(run.started_at || 'unknown')}${priorCompletion}`;
   }
   if (run?.status === 'completed') {
     const freshness = forensicsFreshnessLabel(runFreshness);
     const nextDue = runFreshness?.next_due_at ? ` · next due ${esc(runFreshness.next_due_at)}` : '';
-    return `Research assistant: ${esc(freshness)} · completed ${esc(runFreshness?.last_completed_at || run.completed_at || run.started_at || 'unknown')}${nextDue} · ${esc(run.proposals_queued || 0)} suggestion(s) queued`;
+    return `Optional research updates: ${esc(freshness)} · last completed ${esc(runFreshness?.last_completed_at || run.completed_at || run.started_at || 'unknown')}${nextDue} · ${esc(run.proposals_queued || 0)} suggestion${Number(run.proposals_queued || 0) === 1 ? '' : 's'} waiting for review`;
   }
   if (run?.status === 'failed') {
-    return `Research assistant: failed ${esc(run.completed_at || run.started_at || 'unknown')}${priorCompletion}`;
+    return `Optional research updates: unavailable after ${esc(run.completed_at || run.started_at || 'unknown')}${priorCompletion}`;
   }
-  return 'Research assistant: no run recorded (optional workflow)';
+  return 'Optional research updates: not enabled';
 }
 function forensicsRefreshText() {
-  return `${forensicsScanText()}<br>${forensicsProposalAgentText()} · suggestions only; a person approves changes`;
+  return `${forensicsScanText()}<br>${forensicsProposalAgentText()} · a reviewer approves any changes`;
 }
 function renderForensicsRefreshStatus() {
   document.querySelectorAll('[data-forensics-refresh]').forEach((node) => {
-    node.innerHTML = `${forensicsRefreshText()} <a href="/api/forensics-refresh-status" target="_blank" rel="noopener noreferrer">See review status →</a>`;
+    node.innerHTML = `${forensicsRefreshText()} <a href="/api/forensics-refresh-status" target="_blank" rel="noopener noreferrer">See update status →</a>`;
   });
 }
 async function loadForensicsRefreshStatus() {
@@ -814,7 +814,7 @@ async function loadForensicsRefreshStatus() {
   renderForensicsRefreshStatus();
 }
 function pageHead(title, sub){
-  return `<div class="pagehead"><div class="pagetitle">${esc(title)}</div><div class="gvintro">${sub}</div><div class="muted" data-forensics-refresh>${forensicsRefreshText()} <a href="/api/forensics-refresh-status" target="_blank" rel="noopener noreferrer">See review status →</a></div></div>`;
+  return `<div class="pagehead"><div class="pagetitle">${esc(title)}</div><div class="gvintro">${sub}</div><div class="muted" data-forensics-refresh>${forensicsRefreshText()} <a href="/api/forensics-refresh-status" target="_blank" rel="noopener noreferrer">See update status →</a></div></div>`;
 }
 function trendTaxonomySourceHtml(source) {
   if (!source?.url) return '';
@@ -824,10 +824,13 @@ function trendTaxonomySourceHtml(source) {
 function trendTaxonomyDomains(value) {
   return Array.isArray(value) ? value : [value].filter(Boolean);
 }
+function humanTrendLabel(value) {
+  return String(value || '').replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
 function trendTaxonomyPanel(domains, title) {
   const wanted = trendTaxonomyDomains(domains);
   if (state.trendTaxonomyStatus === 'loading') {
-    return '<div class="gpanel"><div class="skel">Loading the shared guide for keeping outlooks fresh…</div></div>';
+    return '<div class="gpanel"><div class="skel">Loading the guide for keeping reports current…</div></div>';
   }
   if (!state.trendTaxonomy || state.trendTaxonomyStatus === 'unavailable') {
     return '<div class="analysis-note">The shared outlook guide is temporarily unavailable. The report’s citations and review dates remain the source of truth.</div>';
@@ -843,8 +846,8 @@ function trendTaxonomyPanel(domains, title) {
   ));
   const visibleCategories = categories.slice(0, 6);
   const categoryHtml = visibleCategories.map((category) => {
-    const features = category.slm_features || category.mechanism_tags || [];
-    return `<div class="gfield"><span class="gfl">${esc(category.label)}</span>${esc(category.question || category.description || '')}<br><span class="muted">Signals we track: ${esc(features.join(' · '))}</span></div>`;
+    const features = category.mechanism_tags || category.slm_features || [];
+    return `<div class="gfield"><span class="gfl">${esc(category.label)}</span>${esc(category.question || category.description || '')}<br><span class="muted">Signals we track: ${esc(features.map(humanTrendLabel).join(' · '))}</span></div>`;
   }).join('');
   const refreshGuide = data.refreshed_outlook_guide || {};
   const refreshFields = refreshGuide.vertical_refresh_fields || {};
@@ -853,9 +856,9 @@ function trendTaxonomyPanel(domains, title) {
   const refreshHtml = `<div class="plainread">
     <div class="plainread-title">Refreshed outlook contract</div>
     <div class="gfield"><span class="gfl">What changes</span>${esc(refreshGuide.summary || 'Outlooks must show dated evidence, change since last review, unknowns, and next review trigger.')}</div>
-    <div class="gfield"><span class="gfl">Sections required</span>${esc(refreshSections.join(' · ') || 'current call · change since last review · watch signals')}</div>
-    <div class="gfield"><span class="gfl">Vertical signals</span>${esc(scopedRefreshFields.slice(0, 10).join(' · ') || 'No vertical-specific fields published yet.')}</div>
-    <div class="gfield"><span class="gfl">Trend promotion</span>${esc(refreshGuide.trend_promotion_policy?.minimum_comparable_observations || 3)} comparable dated observations minimum; one screenshot or one stale source stays a review trigger.</div>
+    <div class="gfield"><span class="gfl">Every report includes</span>${esc(refreshSections.map(humanTrendLabel).join(' · ') || 'current call · change since last review · watch signals')}</div>
+    <div class="gfield"><span class="gfl">What we watch</span>${esc(scopedRefreshFields.slice(0, 10).map(humanTrendLabel).join(' · ') || 'No category-specific signals published yet.')}</div>
+    <div class="gfield"><span class="gfl">When we call a trend</span>${esc(refreshGuide.trend_promotion_policy?.minimum_comparable_observations || 3)} dated comparisons minimum; one screenshot or one old source stays a review trigger.</div>
   </div>`;
   const trendIds = new Set(categories.map((category) => category.id));
   const signals = (data.regulatory_signals || []).filter((signal) => (
@@ -867,13 +870,11 @@ function trendTaxonomyPanel(domains, title) {
     const source = signal.source || (signal.source_refs || [])[0];
     return `<div class="gfield"><span class="gfl">${esc(signal.regulator || signal.driver_domain || 'regulatory signal')} · ${esc(signal.jurisdiction || 'global')}</span>${esc(signal.signal || signal.summary || signal.title || '')}<br><span class="muted">as of ${esc(signal.as_of)} · ${trendTaxonomySourceHtml(source)}</span></div>`;
   }).join('');
-  const requiredFields = data.evidence_contract?.required_fields || data.outlook_contract?.required_fields || [];
-  const fieldCount = requiredFields.length;
   return `<div class="gpanel">
     <div class="gcols">
       <div>
         <div class="dsec">${esc(title || 'Outlook guide')}</div>
-        <div class="gnar muted">Every report follows the same plain-English questions below. The shared tags help the research desk compare patterns; they are labels to support with evidence, not conclusions on their own.</div>
+        <div class="gnar muted">Every report follows the same plain-English questions below. These labels help us compare patterns; they are signals to support with evidence, not conclusions on their own.</div>
         ${guideHtml ? `<div class="plainread"><div class="plainread-title">The five questions in every report</div>${guideHtml}</div>` : ''}
         ${refreshHtml}
         ${categoryHtml || '<div class="muted">No matching trend categories published for this view.</div>'}
@@ -881,8 +882,8 @@ function trendTaxonomyPanel(domains, title) {
       <div>
         <div class="dsec">Rules and policy to watch</div>
         ${signalHtml || '<div class="muted">No regulatory signals mapped to this view.</div>'}
-        <div class="analysis-actions"><a class="kindbtn" href="/api/trend-taxonomy" target="_blank" rel="noopener noreferrer">See the full guide →</a><a class="kindbtn" href="/api/slm/training-schema" target="_blank" rel="noopener noreferrer">See the training format →</a></div>
-        <div class="muted">Guide version ${esc(data.schema)} · ${esc(fieldCount)} evidence fields required · as of ${esc(data.as_of || 'unknown')}</div>
+        <div class="analysis-actions"><a class="kindbtn" href="/api/trend-taxonomy" target="_blank" rel="noopener noreferrer">See the measurement guide →</a></div>
+        <div class="muted">Last updated ${esc(data.as_of || 'unknown')}</div>
       </div>
     </div>
   </div>`;
@@ -935,22 +936,22 @@ function evidenceStatusParts(source) {
     || Boolean(source.source_tier || source.source_role);
   if (!hasEvidenceContract) return [];
   const truthy = (value) => value === true || value === 1 || value === '1';
-  const parts = ['registered'];
+  const parts = ['source linked'];
   if (
     Object.hasOwn(source, 'reachable')
     || Object.hasOwn(source, 'resolving')
   ) {
-    parts.push(truthy(source.reachable ?? source.resolving) ? 'reachable' : 'not reachable');
+    parts.push(truthy(source.reachable ?? source.resolving) ? 'source checked' : 'source not reachable');
   } else if (source.access_state) {
     parts.push(`retrieval ${String(source.access_state).replaceAll('_', ' ')}`);
   }
   if (Object.hasOwn(source, 'evidence_reviewed')) {
-    parts.push(truthy(source.evidence_reviewed) ? 'editor reviewed' : 'editor review pending');
+    parts.push(truthy(source.evidence_reviewed) ? 'editor checked' : 'editor review pending');
   }
-  if (source.source_tier) parts.push(`tier ${source.source_tier}`);
-  if (source.source_role) parts.push(`role ${String(source.source_role).replaceAll('_', ' ')}`);
+  if (source.source_tier) parts.push(`source class ${source.source_tier}`);
+  if (source.source_role) parts.push(`source role ${String(source.source_role).replaceAll('_', ' ')}`);
   if (truthy(source.evidence_reviewed) && source.evidence_reviewer) {
-    parts.push(`reviewer ${source.evidence_reviewer}`);
+    parts.push(`reviewed by ${source.evidence_reviewer}`);
   }
   if (truthy(source.evidence_reviewed) && source.evidence_reviewed_at) {
     parts.push(`reviewed ${source.evidence_reviewed_at}`);
@@ -961,10 +962,10 @@ function sourceMetadataHtml(source) {
   if (!source || typeof source !== 'object') return '';
   const metadata = evidenceStatusParts(source).map(esc);
   if (source.source_date) metadata.push(`source ${esc(source.source_date)}`);
-  if (source.checked_at || source.accessed_at) metadata.push(`inspected ${esc(source.checked_at || source.accessed_at)}`);
+  if (source.checked_at || source.accessed_at) metadata.push(`checked ${esc(source.checked_at || source.accessed_at)}`);
   if (source.last_verified_at) metadata.push(`verified ${esc(source.last_verified_at)}`);
-  if (source.access_state) metadata.push(`access ${esc(String(source.access_state).replaceAll('_', ' '))}`);
-  if (source.access_checked_at) metadata.push(`access checked ${esc(source.access_checked_at)}`);
+  if (source.access_state) metadata.push(`retrieval ${esc(String(source.access_state).replaceAll('_', ' '))}`);
+  if (source.access_checked_at) metadata.push(`retrieval checked ${esc(source.access_checked_at)}`);
   if (source.access_note) metadata.push(`retrieval note: ${esc(source.access_note)}`);
   if (source.verification_note) metadata.push(esc(source.verification_note));
   return metadata.length ? `<span class="muted"> · ${metadata.join(' · ')}</span>` : '';
@@ -1010,9 +1011,9 @@ function nftEvidenceHtml(profile, sources, freshnessState, publicationDepth = nu
       const verified = source.last_verified_at;
       const access = String(source.access_state || 'not recorded').replaceAll('_', ' ');
       const accessChecked = source.access_checked_at
-        ? ` · access checked ${esc(source.access_checked_at)}`
+        ? ` · retrieval checked ${esc(source.access_checked_at)}`
         : '';
-      const verification = verified ? `verified ${esc(verified)}` : 'verification not recorded';
+      const verification = verified ? `verified ${esc(verified)}` : 'verification date not recorded';
       const note = source.verification_note ? ` · ${esc(source.verification_note)}` : '';
       const accessNote = source.access_note
         ? ` · retrieval note: ${esc(source.access_note)}`
@@ -1023,19 +1024,19 @@ function nftEvidenceHtml(profile, sources, freshnessState, publicationDepth = nu
         : '';
       const today = new Date().toISOString().slice(0, 10);
       const stale = source.stale === true || (source.evidence_scope === 'current_state' && source.stale_after && today > source.stale_after);
-      const freshness = typeof source.stale === 'boolean' ? (stale ? 'STALE' : 'fresh') : 'freshness not rated';
+      const freshness = typeof source.stale === 'boolean' ? (stale ? 'old — review needed' : 'current') : 'freshness not rated';
       return `<a href="${esc(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${esc(source.title || id)} ↗</a><span class="muted"> · source ${esc(sourceDate)} · inspected ${esc(inspected)} · ${verification} · access ${esc(access)}${accessChecked} · ${esc(freshness)}${publication}${accessNote}${note}</span>`;
     }).filter(Boolean).join(' · ');
     if (!links) return '';
     let value = item.value;
     if (item.field === 'lifecycle_status' && freshnessState?.statusWithheld) {
-      value = 'unknown — evidence review required';
+      value = 'unknown — needs evidence review';
     }
     if (gap) value = 'withheld — independent support pending';
     const pending = gap
-      ? '<div class="analysis-note" style="margin:4px 0 0 68px"><b>High-risk field conclusion withheld.</b> Registered citations remain visible below, but this value does not meet the independent-support policy.</div>'
+      ? '<div class="analysis-note" style="margin:4px 0 0 68px"><b>Important conclusion held back.</b> The sources remain below, but they do not yet support publishing this conclusion.</div>'
       : '';
-    return `<div class="gfield"><span class="gfl">${esc(item.field.replaceAll('_',' '))}</span> ${esc(String(value))}<span class="muted"> · as of ${esc(item.as_of || '—')} · ${esc(item.basis || 'source')}</span>${pending}<div class="asrc">Cited evidence: ${links}</div></div>`;
+    return `<div class="gfield"><span class="gfl">${esc(String(item.field || '').replaceAll('_', ' '))}</span> ${esc(String(value))}<span class="muted"> · as of ${esc(item.as_of || '—')} · ${esc(item.basis || 'source')}</span>${pending}<div class="asrc">Sources checked: ${links}</div></div>`;
   }).filter(Boolean).join('');
   return rows ? `<div class="gsec">Field-level evidence</div>${rows}` : '';
 }
@@ -2069,19 +2070,19 @@ function casinoEvidenceStatusHtml(source) {
 }
 function publicationDepthBanner(depth, corpusLabel = 'Corpus inclusion') {
   if (!depth) {
-    return '<div class="analysis-note"><b>Independent-support check unavailable.</b> A report being listed is not proof that its important claims have enough independent support.</div>';
+    return '<div class="analysis-note"><b>Evidence review unavailable.</b> A report being listed does not mean every important claim has been checked.</div>';
   }
   const total = Number(depth.high_risk_claim_count) || 0;
   const passing = Number(depth.passing_high_risk_claim_count) || 0;
   const unresolved = Number(depth.unresolved_high_risk_claim_count) || 0;
   const status = unresolved
-    ? `${unresolved} pending / withheld`
-    : 'support threshold met';
-  return `<div class="analysis-note"><b>Independent support: ${esc(passing)} of ${esc(total)} important claims meet the bar · ${esc(status)}.</b> ${esc(corpusLabel)} counts listed reports, not proof that every conclusion is supported. Conclusions about lifecycle, cause, legal status, losses, and what-if scenarios are withheld below when the evidence is not strong enough.</div>`;
+    ? `${unresolved} still being checked or held back`
+    : 'evidence threshold met';
+  return `<div class="analysis-note"><b>Evidence review: ${esc(passing)} of ${esc(total)} important claims checked · ${esc(status)}.</b> ${esc(corpusLabel)} counts listed reports, not proof that every conclusion is supported. Claims about lifecycle, cause, legal status, losses, and what-if scenarios stay out of the report when the evidence is not strong enough.</div>`;
 }
 function publicationDepthEvidenceHtml(depth) {
-  if (!depth) return '<div class="analysis-src-preview"><div class="asrc">Evidence review status unavailable.</div></div>';
-  return `<div class="analysis-src-preview"><div class="asrc">Evidence: ${esc(depth.registered_source_count || 0)} registered · ${esc(depth.reachable_source_count || 0)} reachable · ${esc(depth.reviewed_source_count || 0)} editor reviewed. Independent support: ${esc(depth.passing_high_risk_claim_count || 0)}/${esc(depth.high_risk_claim_count || 0)} meet the bar · ${esc(depth.unresolved_high_risk_claim_count || 0)} pending / withheld.</div></div>`;
+  if (!depth) return '<div class="analysis-src-preview"><div class="asrc">Evidence review status is not available.</div></div>';
+  return `<div class="analysis-src-preview"><div class="asrc">Sources: ${esc(depth.registered_source_count || 0)} linked · ${esc(depth.reachable_source_count || 0)} checked · ${esc(depth.reviewed_source_count || 0)} editor checked. Claims checked: ${esc(depth.passing_high_risk_claim_count || 0)}/${esc(depth.high_risk_claim_count || 0)} · ${esc(depth.unresolved_high_risk_claim_count || 0)} still being checked or held back.</div></div>`;
 }
 function publicationDepthSectionHtml(label, text, depth, isUnsupported) {
   if (!text) return '';
@@ -2175,7 +2176,7 @@ function casinoDetailBody(item, detail) {
   const claimRows = (detail.claims || []).map((claim) => {
     const pending = claim.publication_support === 'pending_independent_support';
     const evidence = pending
-      ? '<div class="analysis-note" style="margin:4px 0 0 68px"><b>High-risk claim withheld — independent support pending.</b> The registered source remains available for editorial review.</div>'
+      ? '<div class="analysis-note" style="margin:4px 0 0 68px"><b>Important claim held back — more evidence needed.</b> The linked source remains available for a reviewer.</div>'
       : `<div class="muted" style="margin:3px 0 0 68px">${esc(claim.support_direction)} · ${esc(claim.evidence_locator)}</div>`;
     return `<div class="gfield"><span class="gfl">${esc(claim.field_path)}</span><a href="${esc(safeUrl(claim.url))}" target="_blank" rel="noopener noreferrer">${esc(claim.title)} ↗</a>${evidence}${casinoEvidenceStatusHtml({ ...claim, registered: true, reachable: claim.resolving })}</div>`;
   }).join('') || '<div class="muted">No registered claim evidence is available.</div>';
@@ -2186,8 +2187,8 @@ function casinoDetailBody(item, detail) {
     <div class="gfield"><span class="gfl">Launch</span>${esc(identity.launched || 'unknown')} · evidence precision ${esc(identity.date_precision || 'unknown')}</div>
     <div class="gfield"><span class="gfl">Custody</span>${esc(casinoLabel(item.custody_model))}</div>
     <div class="gfield"><span class="gfl">Token</span>${esc(item.token_status === 'documented' ? (item.token_symbol || 'Documented token') : casinoLabel(item.token_status))}</div>
-    <div class="gfield"><span class="gfl">Research status</span>${esc(item.confidence || 'unknown')} confidence · ${esc(item.completeness_pct)}% evidence completeness · reviewed ${esc(item.last_reviewed || '—')}</div>
-    <div class="gfield"><span class="gfl">Evidence status</span>${esc(identity.registered_source_count)} registered · ${esc(identity.reachable_source_count)} reachable · ${esc(identity.reviewed_source_count)} editor reviewed</div>
+    <div class="gfield"><span class="gfl">Report status</span>${esc(item.confidence || 'unknown')} confidence · ${esc(item.completeness_pct)}% evidence completeness · checked ${esc(item.last_reviewed || '—')}</div>
+    <div class="gfield"><span class="gfl">Sources</span>${esc(identity.registered_source_count)} linked · ${esc(identity.reachable_source_count)} checked · ${esc(identity.reviewed_source_count)} editor checked</div>
     <div class="gfield"><span class="gfl">Known gaps</span>${esc((item.unsourced_fields || []).map(casinoLabel).join(' · ') || 'none published')}</div>
     ${sections}<div class="gsec">Metrics and what they do (and do not) tell us</div>${observations}
     <div class="gsec">Lifecycle timeline</div>${events}
@@ -2206,7 +2207,7 @@ function casinoDetailBody(item, detail) {
         : null;
     }, 'This casino report is listed, but the evidence-backed explanation is still being reviewed.', depth)}
     <div class="gsec">Licensing</div>${licences}
-    <div class="gsec">Evidence by field and review status</div>${claimRows}
+    <div class="gsec">Sources for each claim</div>${claimRows}
     ${srcHtml(detail.sources, 'Cited sources: ')}<div class="muted" style="margin-top:8px">Last manually reviewed ${esc(item.last_reviewed || '—')}</div>
   </div>`;
 }
@@ -2227,15 +2228,15 @@ function casinoAnalysisCard(item) {
     : casinoLabel(item.outcome_label || 'outcome unknown');
   const chains = Array.isArray(item.chains) && item.chains.length ? item.chains.join(' · ') : 'No chain scope published';
   const body = open ? casinoDetailBody(item, detail) : '';
-  const sourcePreview = `<div class="analysis-src-preview"><div class="asrc">Evidence: ${esc(item.registered_source_count)} registered · ${esc(item.reachable_source_count)} reachable · ${esc(item.reviewed_source_count)} editor reviewed; open the report for field-level links and status.</div></div>`;
-  const supportPreview = `<div class="analysis-src-preview"><div class="asrc">High-risk support: ${esc(depth.passing_high_risk_claim_count || 0)}/${esc(depth.high_risk_claim_count || 0)} meet policy · ${esc(depth.unresolved_high_risk_claim_count || 0)} pending / withheld.</div></div>`;
+  const sourcePreview = `<div class="analysis-src-preview"><div class="asrc">Sources: ${esc(item.registered_source_count)} linked · ${esc(item.reachable_source_count)} checked · ${esc(item.reviewed_source_count)} editor checked; open the report for claim-level links and status.</div></div>`;
+  const supportPreview = `<div class="analysis-src-preview"><div class="asrc">Claims checked: ${esc(depth.passing_high_risk_claim_count || 0)}/${esc(depth.high_risk_claim_count || 0)} meet the evidence bar · ${esc(depth.unresolved_high_risk_claim_count || 0)} still being checked or held back.</div></div>`;
   // Keep the public handoff inside the research UI. The API remains the data
   // source for the lazy detail pane; a reader should never have to inspect raw
   // JSON to read a published dossier.
   const dossierLink = `/casino/${encodeURIComponent(item.case_id)}`;
   return `<div class="gcard ${open ? 'open' : ''}" role="button" tabindex="0" data-casino-case="${esc(item.case_id)}">
     <div class="ghead"><div class="gname">${esc(item.brand_name)} <span class="gverdict ${!statusPending && item.status === 'active' ? 'recover' : 'declining'}">${esc(statusLabel)}</span></div>
-    <div class="gdd" style="color:var(--muted2);font-size:14px">${item.reviewed_source_count}<span class="gddl">editor reviewed</span></div></div>
+    <div class="gdd" style="color:var(--muted2);font-size:14px">${item.reviewed_source_count}<span class="gddl">sources checked</span></div></div>
     <div class="gmeta">${esc(casinoLabel(item.entity_kind))} · ${esc(casinoLabel(item.product_subtype))} · ${esc(chains)} · ${esc(outcomeLabel)} · ${esc(item.completeness_pct)}% complete · status evidence ${esc(item.status_as_of || '—')} · last reviewed ${esc(item.last_reviewed || '—')}</div>
     ${plainEnglishRead({ summary: item.product_scope_note }) || '<div class="gbody">This report has a defined scope; open it for the full evidence and lifecycle read.</div>'}
     ${supportPreview}${sourcePreview}
@@ -2245,7 +2246,7 @@ function casinoAnalysisCard(item) {
 function renderCasinoAnalysis() {
   const el = document.getElementById('casinoanalysisview');
   const head = pageHead('Web3 Casino Analysis', 'Research on how onchain casinos, sportsbooks, betting exchanges, bankrolls, and gaming infrastructure grew, stalled, or closed. Each report shows what the evidence supports.');
-  if (!state.casinoAnalysisData) { el.innerHTML = `${head}<div class="skel">Loading indexed casino dossiers and claim-support audits…</div>`; return; }
+  if (!state.casinoAnalysisData) { el.innerHTML = `${head}<div class="skel">Loading casino reports and evidence checks…</div>`; return; }
   const coverage = state.casinoCoverage || {};
   const cases = state.casinoAnalysisData.cases || [];
   const claimSupport = state.casinoAnalysisData.claim_support || {};
@@ -2264,9 +2265,9 @@ function renderCasinoAnalysis() {
   const subtypes = [...new Set(cases.map((item) => item.product_subtype).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   const tokens = [...new Set(cases.map((item) => item.token_status).filter(Boolean))].sort((a, b) => a.localeCompare(b));
   if (!cases.length) {
-    const emptyCopy = coverage.target_count ? `${esc(coverage.target_count)} expected dossier IDs remain absent from the indexed corpus.` : 'No indexed dossier rows are available.';
+    const emptyCopy = coverage.target_count ? `${esc(coverage.target_count)} expected reports are not available yet.` : 'No casino reports are available yet.';
     const unavailable = state.casinoAnalysisError ? '<br/><span class="muted">The public dossier service is temporarily unavailable; candidates remain withheld.</span>' : '';
-    el.innerHTML = `${head}<div class="analysis-empty"><b>No casino dossiers are indexed yet.</b><br/>${emptyCopy}${unavailable}</div>`;
+    el.innerHTML = `${head}<div class="analysis-empty"><b>No casino reports are available yet.</b><br/>${emptyCopy}${unavailable}</div>`;
     return;
   }
   const cohortPanel = analysisCohortPanel(
@@ -2281,7 +2282,7 @@ function renderCasinoAnalysis() {
     <div class="gstats">${gstat(cases.length, 'reports in the index')}${gstat(missing, 'reports still missing')}${gstat(claimSupport.unresolved_high_risk_claim_count || 0, 'claims still pending')}${gstat(cases.filter(item=>item.token_status==='documented').length, 'tokens documented')}</div>
     ${trendTaxonomyPanel('casino', 'What tends to drive casino outcomes')}
     ${cohortPanel}
-    <div class="analysis-note">A “registered” source is listed in the report; “reachable” means we could retrieve it; “editor reviewed” means a reviewer recorded that check. None alone proves a high-risk conclusion. Open a report to see which lifecycle, legal, loss, and what-if claims are supported or withheld.</div>
+    <div class="analysis-note">A linked source is listed in the report; “checked” means we could retrieve it; “editor checked” means a reviewer recorded that check. None alone proves an important conclusion. Open a report to see which lifecycle, legal, loss, and what-if claims are supported or held back.</div>
     <div class="toolbar"><div class="analysis-controls">
       <input id="casinoAnalysisSearch" class="search" placeholder="Search casinos, chains or findings…" value="${esc(state.casinoAnalysisQuery)}" />
       <label class="muted" for="casinoAnalysisStatus">Status</label>
@@ -3931,7 +3932,7 @@ function nftRiskHtml(risk, publicationDepth) {
   }) : [];
   const pending = Number(publicationDepth?.unresolved_high_risk_claim_count) || 0;
   const count = pending ? ` ${pending} important claims are already pending.` : '';
-  return `<div class="analysis-note"><b>Risk-flag allegations withheld — claim-level support pending.</b>${esc(count)} The legacy flag is not part of the publication-depth evidence contract, so its allegation prose is not published here.</div>${srcHtml(registeredSources, 'Registered risk sources: ')}`;
+  return `<div class="analysis-note"><b>Risk allegations held back — evidence check pending.</b>${esc(count)} This older flag is not supported well enough to publish as a conclusion.</div>${srcHtml(registeredSources, 'Linked risk sources: ')}`;
 }
 function nftNarrativeSectionHtml(label, field, text, publicationDepth) {
   if (!text) return '';
@@ -4023,9 +4024,9 @@ function nftAggregateAnalysisHtml(data) {
     <div class="gsec">Token · product · founder · community evidence</div>
     <div class="gbody">${esc(coverageLine('Normalized token/value-capture field', 'token_model'))}; ${esc(coverageLine('chain-dependence field', 'chain_dependence'))}; ${esc(coverageLine('structured product/value-capture field', 'products_and_value_capture'))}; ${esc(coverageLine('founder-engagement field', 'founder_engagement'))}; ${esc(coverageLine('community-history field', 'community_history'))}; ${esc(coverageLine('holder-benefit field', 'benefits'))}. These are documentation counts, not positive signals. In particular, token-model coverage cannot answer “did it launch a token?” until token status is a controlled field across the full cohort.</div>
     <div class="gsec">Decision depth and causal boundary</div>
-    <div class="gbody">${Number(coverage.forensic_dossiers || 0)} of ${total} dossiers have a normalized causal map containing ${Number(coverage.strategic_choices || 0)} documented strategic choices, ${Number(coverage.watch_signals || 0)} watch/falsifier signals, and ${Number(coverage.material_unknowns || 0)} explicit unknowns. Schema-declared outcome confidence is ${Number(confidence.high || 0)} high and ${Number(confidence.medium || 0)} medium; schema-declared “why” confidence is ${Number(whyConfidence.high || 0)} high and ${Number(whyConfidence.medium || 0)} medium. The claim-support audit above remains controlling: unsupported conclusions are withheld in each dossier and these counts are not independent verification or experimental causal estimates.</div>
+    <div class="gbody">${Number(coverage.forensic_dossiers || 0)} of ${total} reports include a structured explanation with ${Number(coverage.strategic_choices || 0)} documented strategic choices, ${Number(coverage.watch_signals || 0)} watch signals, and ${Number(coverage.material_unknowns || 0)} explicit unknowns. Reported outcome confidence is ${Number(confidence.high || 0)} high and ${Number(confidence.medium || 0)} medium; reported “why” confidence is ${Number(whyConfidence.high || 0)} high and ${Number(whyConfidence.medium || 0)} medium. The evidence check above controls what is shown: unsupported conclusions stay out of each report, and these counts are not independent verification or experiments.</div>
     <div class="gsec">Evidence contract and freshness</div>
-    <div class="gbody">${Number(coverage.field_cited || 0)} of ${total} dossiers pass the field-citation structure check, covering ${Number(coverage.field_claims || 0)} field claims and ${Number(coverage.source_records || 0)} source records (${Number(coverage.distinct_source_urls || 0)} distinct URLs). Field-cited is not the same as editor reviewed. Publication depth: ${Number(coverage.field_claims_access_anchored || 0)} of ${Number(coverage.field_claims || 0)} field claims and ${Number(coverage.forensic_sections_access_anchored || 0)} of ${Number(coverage.forensic_sections_total || 0)} forensic sections cite at least one explicitly accessible source. ${Number(coverage.forensic_references_ledger_matched || 0)} of ${Number(coverage.forensic_references_total || 0)} causal references match a source ID or URL in the published ledgers; ${Number(coverage.forensic_references_access_anchored || 0)} of those references point to an explicitly accessible source. Ledger matching and HTTP access prove linkage and reachability—not claim truth. Current review state: ${Number(review.current || 0)} current, ${Number(review.review_due || 0)} review due, ${Number(review.withheld || 0)} stale/withheld, ${Number(review.legacy || 0)} legacy. Published lifecycle-status evidence spans ${esc(analysis.evidenceWindow?.oldest_lifecycle_status_as_of || 'unknown')} to ${esc(analysis.evidenceWindow?.newest_lifecycle_status_as_of || 'unknown')}; forensic outcome summaries span ${esc(analysis.evidenceWindow?.oldest_forensic_outcome_as_of || 'unknown')} to ${esc(analysis.evidenceWindow?.newest_forensic_outcome_as_of || 'unknown')}; lifecycle dossiers were reviewed through ${esc(analysis.evidenceWindow?.lifecycle_reviewed_through || 'unknown')}; source records were inspected through ${esc(analysis.evidenceWindow?.source_inspected_through || 'unknown')}. ${accessCheckedThrough ? `Explicit successful source access was checked through ${esc(accessCheckedThrough)}.` : 'No source in this cohort records an explicit successful-access check, so an access-checked-through date is withheld.'} Recorded source access states: ${esc(sourceAccess || 'not recorded')}.</div>
+    <div class="gbody">${Number(coverage.field_cited || 0)} of ${total} reports have claim-level source links, covering ${Number(coverage.field_claims || 0)} claims and ${Number(coverage.source_records || 0)} source records (${Number(coverage.distinct_source_urls || 0)} distinct URLs). A source link is not the same as an editor check. ${Number(coverage.field_claims_access_anchored || 0)} of ${Number(coverage.field_claims || 0)} claims and ${Number(coverage.forensic_sections_access_anchored || 0)} of ${Number(coverage.forensic_sections_total || 0)} report sections cite a source we could retrieve. ${Number(coverage.forensic_references_ledger_matched || 0)} of ${Number(coverage.forensic_references_total || 0)} causal references match a source in the report; ${Number(coverage.forensic_references_access_anchored || 0)} of those point to a source we could retrieve. This proves linkage and reachability—not that a claim is true. Current review state: ${Number(review.current || 0)} current, ${Number(review.review_due || 0)} review due, ${Number(review.withheld || 0)} old/held back, ${Number(review.legacy || 0)} earlier format. Lifecycle evidence spans ${esc(analysis.evidenceWindow?.oldest_lifecycle_status_as_of || 'unknown')} to ${esc(analysis.evidenceWindow?.newest_lifecycle_status_as_of || 'unknown')}; outcome summaries span ${esc(analysis.evidenceWindow?.oldest_forensic_outcome_as_of || 'unknown')} to ${esc(analysis.evidenceWindow?.newest_forensic_outcome_as_of || 'unknown')}; reports were reviewed through ${esc(analysis.evidenceWindow?.lifecycle_reviewed_through || 'unknown')}; sources were checked through ${esc(analysis.evidenceWindow?.source_inspected_through || 'unknown')}. ${accessCheckedThrough ? `Successful source retrieval was checked through ${esc(accessCheckedThrough)}.` : 'No source in this cohort records a successful retrieval check, so the date is not shown.'} Recorded retrieval states: ${esc(sourceAccess || 'not recorded')}.</div>
     <div class="gsec">What this dataset does not yet prove</div><ul class="evlist">${limitations}</ul>
     <div class="gsec">What would change the aggregate read</div><ul class="evlist">${falsifiers}</ul>
     <div class="gsec">Cited dossier anchors</div>
@@ -4053,7 +4054,7 @@ function renderNft(data){
   const claimSupport = data.claim_support || {};
   const citation = data.citationCoverage || {};
   const legacyCount = citation.legacyCount ?? data.collections.length;
-  const evidenceCoverage = `<div class="gnar muted" style="margin:0 0 14px">How well the reports are sourced: ${citation.fieldCitedCount||0} field-sourced report${citation.fieldCitedCount===1?'':'s'}; ${legacyCount} earlier report${legacyCount===1?'':'s'} still use collection-level source lists while we bring them up to the same standard. Field-sourced does not mean editor reviewed.</div>`;
+  const evidenceCoverage = `<div class="gnar muted" style="margin:0 0 14px">How well the reports are sourced: ${citation.fieldCitedCount||0} report${citation.fieldCitedCount===1?'':'s'} have claim-level source links; ${legacyCount} earlier report${legacyCount===1?'':'s'} still use collection-level source lists while we bring them up to the same standard. A source link does not mean an editor has checked the claim.</div>`;
   // Stat row hoisted out of the panel to sit under the page header, as on every
   // other view. The caveat line stays with the tiles it qualifies.
   const stats = n>50 ? `<div class="gstats">
@@ -4178,8 +4179,8 @@ function renderNft(data){
     </div>`;
   }).join('');
   el.innerHTML = `${NFT_HEAD}${stats}
-  <div class="analysis-note"><b>NFT/Ordinals evidence check: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} important claims have enough independent support; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending or withheld.</b> The index preserves rich reports and registered sources, but unsupported lifecycle, legal, loss, and what-if conclusions are not presented as independently verified.</div>
-  <div class="analysis-note">Evidence status across the corpus: ${esc(claimSupport.registered_source_count || 0)} registered · ${esc(claimSupport.reachable_source_count || 0)} reachable · ${esc(claimSupport.reviewed_source_count || 0)} editor reviewed. “Reachable” records retrieval; it is not editorial review.</div>
+  <div class="analysis-note"><b>NFT/Ordinals evidence check: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} important claims meet the evidence bar; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} are still being checked or held back.</b> The index preserves rich reports and linked sources, but unsupported lifecycle, legal, loss, and what-if conclusions are not presented as verified facts.</div>
+  <div class="analysis-note">Sources across the corpus: ${esc(claimSupport.registered_source_count || 0)} linked · ${esc(claimSupport.reachable_source_count || 0)} checked · ${esc(claimSupport.reviewed_source_count || 0)} editor checked. “Checked” records retrieval; it is not editorial approval.</div>
   ${evidenceCoverage}${trendTaxonomyPanel('nft_ordinals', 'What tends to drive NFT and Ordinals outcomes')}${cohortPanel}${panel}
   <div class="toolbar"><div class="analysis-controls">
     <input id="casesearch" class="search" placeholder="Search case studies by name, chain or status…" value="${esc(caseQ)}" />

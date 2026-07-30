@@ -169,7 +169,7 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('id="casinoAnalysisKind"');
     expect(html).toContain('id="casinoAnalysisSubtype"');
     expect(html).toContain('id="casinoAnalysisToken"');
-    expect(html).toContain('Evidence: ${esc(item.registered_source_count)} registered');
+    expect(html).toContain('Sources: ${esc(item.registered_source_count)} linked');
     expect(html).toContain('const dossierLink = `/casino/${encodeURIComponent(item.case_id)}`;');
     expect(html).toContain("} else if (seg === 'casino' && rest) {");
     expect(html).toContain('loadCasinoAnalysisDetail(state.casinoAnalysisExpanded);');
@@ -190,12 +190,12 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('identity.registered_source_count');
     expect(html).toContain('identity.reachable_source_count');
     expect(html).toContain('identity.reviewed_source_count');
-    expect(html).toContain('Evidence by field and review status');
+    expect(html).toContain('Sources for each claim');
     expect(html).toContain('casinoEvidenceStatusHtml({ ...claim, registered: true');
-    expect(html).toContain('Independent support: ${esc(passing)} of ${esc(total)} important claims meet the bar');
+    expect(html).toContain('Evidence review: ${esc(passing)} of ${esc(total)} important claims checked');
     expect(html).toContain("function publicationDepthBanner(depth, corpusLabel = 'Corpus inclusion')");
-    expect(html).toContain('High-risk claim withheld — independent support pending.');
-    expect(html).toContain('Conclusions about lifecycle, cause, legal status, losses, and what-if scenarios are withheld below');
+    expect(html).toContain('Important claim held back — more evidence needed.');
+    expect(html).toContain('Claims about lifecycle, cause, legal status, losses, and what-if scenarios stay out of the report');
     expect(html).toContain('forensicAnalysisHtml(synthesis.forensic_analysis');
     expect(html).toContain("}, 'This casino report is listed, but the evidence-backed explanation is still being reviewed.', depth)");
     expect(html).toContain('return ` <a class="ecite"');
@@ -204,7 +204,7 @@ describe('Web3 Casino Analysis data surface', () => {
 
   it('keeps corpus coverage distinct from claim support', () => {
     expect(html).toContain('reports still missing');
-    expect(html).toContain('expected dossier IDs remain absent from the indexed corpus');
+    expect(html).toContain('expected reports are not available yet');
     expect(html).toContain('No cross-case “largest casino” ranking is computed.');
     expect(html).toContain('No licence observation is published. Do not infer global legality from this dossier.');
     expect(html).toContain('Lifecycle timeline');
@@ -212,7 +212,7 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('function casinoReviewState(item)');
     expect(html).toContain('detail.synthesis?.forensic_analysis?.review');
     expect(html).toContain('Bars use each report’s next-review date where one exists.');
-    expect(html).toContain('which lifecycle, legal, loss, and what-if claims are supported or withheld');
+    expect(html).toContain('which lifecycle, legal, loss, and what-if claims are supported or held back');
   });
 
   it('renders supported casino causal fields and withholds unsupported fields', () => {
@@ -230,19 +230,19 @@ describe('six-hour forensic review surface', () => {
   it('shows the review cadence and links the visible status to the public API', () => {
     expect(html).toContain('function loadForensicsRefreshStatus()');
     expect(html).toContain("fetch('/api/forensics-refresh-status')");
-    expect(html).toContain('Freshness check (every 6 hours):');
-    expect(html).toContain('Research assistant:');
-    expect(html).toContain('no run recorded (optional workflow)');
+    expect(html).toContain('Report freshness (every 6 hours):');
+    expect(html).toContain('Optional research updates:');
+    expect(html).toContain('Optional research updates: not enabled');
     expect(html).toContain('refresh_freshness');
     expect(html).toContain('proposal_agent_freshness');
     expect(html).toContain('proposal_agent_last_completed');
     expect(html).toContain('last successful completion');
     expect(html).toContain('STALE');
     expect(html).toContain('next due');
-    expect(html).toContain('suggestions only; a person approves changes');
+    expect(html).toContain('a reviewer approves any changes');
     expect(html).toContain("forensicsRefreshStatus = response.ok ? 'loaded' : 'unavailable'");
-    expect(html).toContain('a person approves changes');
-    expect(html).toContain('See review status →');
+    expect(html).toContain('a reviewer approves any changes');
+    expect(html).toContain('See update status →');
   });
 });
 
@@ -291,6 +291,6 @@ describe('NFT and Ordinals Analysis data surface', () => {
     expect(html).toContain('${nftProfileAnalysisHtml(p, citedSources, depth)}');
     expect(html).toContain('${nftEvidenceHtml(p, citedSources, c.freshness, depth)}');
     expect(html.match(/\$\{nftLifecycleReadHtml\(p, depth\)\}/g)).toHaveLength(2);
-    expect(html).toContain('High-risk field conclusion withheld.');
+    expect(html).toContain('Important conclusion held back.');
   });
 });

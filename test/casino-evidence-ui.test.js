@@ -112,7 +112,7 @@ describe('casino evidence-state UI', () => {
     });
 
     expect(output).toContain('Supported lifecycle summary.');
-    expect(output).toContain('registered · reachable · editor review pending · tier B · role primary');
+    expect(output).toContain('source linked · source checked · editor review pending · source class B · source role primary');
     expect(output).toContain('Why this outcome withheld — independent support pending.');
     expect(output).not.toContain('UNSUPPORTED CAUSAL TEXT');
   });
@@ -137,7 +137,7 @@ describe('casino evidence-state UI', () => {
       (gap) => gap.path === 'forensic_analysis.counterfactual',
     );
 
-    expect(banner).toContain('2 of 9 important claims meet the bar · 7 pending / withheld');
+    expect(banner).toContain('Evidence review: 2 of 9 important claims checked · 7 still being checked or held back');
     expect(banner).toContain('Corpus inclusion counts listed reports, not proof that every conclusion is supported.');
     expect(section).toContain('Counterfactual withheld — independent support pending.');
     expect(section).not.toContain('SHOULD NOT RENDER');
