@@ -842,6 +842,17 @@ function trendTaxonomyPanel(domains, title) {
     const features = category.slm_features || category.mechanism_tags || [];
     return `<div class="gfield"><span class="gfl">${esc(category.label)}</span>${esc(category.question || category.description || '')}<br><span class="muted">Signals we track: ${esc(features.join(' · '))}</span></div>`;
   }).join('');
+  const refreshGuide = data.refreshed_outlook_guide || {};
+  const refreshFields = refreshGuide.vertical_refresh_fields || {};
+  const scopedRefreshFields = wanted.flatMap((domain) => (refreshFields[domain] || []).map((field) => field.replaceAll('_', ' ')));
+  const refreshSections = refreshGuide.required_narrative_sections || [];
+  const refreshHtml = `<div class="plainread">
+    <div class="plainread-title">Refreshed outlook contract</div>
+    <div class="gfield"><span class="gfl">What changes</span>${esc(refreshGuide.summary || 'Outlooks must show dated evidence, change since last review, unknowns, and next review trigger.')}</div>
+    <div class="gfield"><span class="gfl">Sections required</span>${esc(refreshSections.join(' · ') || 'current call · change since last review · watch signals')}</div>
+    <div class="gfield"><span class="gfl">Vertical signals</span>${esc(scopedRefreshFields.slice(0, 10).join(' · ') || 'No vertical-specific fields published yet.')}</div>
+    <div class="gfield"><span class="gfl">Trend promotion</span>${esc(refreshGuide.trend_promotion_policy?.minimum_comparable_observations || 3)} comparable dated observations minimum; one screenshot or one stale source stays a review trigger.</div>
+  </div>`;
   const trendIds = new Set(categories.map((category) => category.id));
   const signals = (data.regulatory_signals || []).filter((signal) => (
     (signal.trend_ids || []).some((id) => trendIds.has(id))
@@ -860,6 +871,7 @@ function trendTaxonomyPanel(domains, title) {
         <div class="dsec">${esc(title || 'Outlook guide')}</div>
         <div class="gnar muted">Every report follows the same plain-English questions below. The shared tags help the research desk compare patterns; they are labels to support with evidence, not conclusions on their own.</div>
         ${guideHtml ? `<div class="plainread"><div class="plainread-title">The five questions in every report</div>${guideHtml}</div>` : ''}
+        ${refreshHtml}
         ${categoryHtml || '<div class="muted">No matching trend categories published for this view.</div>'}
       </div>
       <div>

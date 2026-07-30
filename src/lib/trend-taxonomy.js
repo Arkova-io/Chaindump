@@ -37,6 +37,53 @@ export const HUMAN_INTELLIGENCE_GUIDE = Object.freeze({
   },
 });
 
+export const REFRESHED_OUTLOOK_GUIDE = Object.freeze({
+  version: 'chaindump-refreshed-outlook-v1',
+  summary: 'Outlooks are dated analyst states, not evergreen blurbs. A refresh must say what changed, why it matters, what would falsify it, and which signals should be watched next.',
+  required_narrative_sections: [
+    'current_call',
+    'prior_call',
+    'change_since_last_review',
+    'evidence_that_changed_the_call',
+    'strategic_choices_or_constraints',
+    'watch_signals',
+    'unknowns_and_withheld_claims',
+    'next_review_at',
+  ],
+  evidence_statuses: ['source_registered', 'source_reachable', 'field_cited', 'editor_reviewed', 'publication_pending', 'withheld'],
+  trend_promotion_policy: {
+    minimum_comparable_observations: 3,
+    required: [
+      'declared time window',
+      'declared denominator',
+      'source date or observation date',
+      'metric contract',
+      'entity-stable comparison key',
+      'reviewer or deterministic extractor provenance',
+    ],
+    not_enough: [
+      'one screenshot',
+      'one operator claim',
+      'one stale metric',
+      'one incomparable metric from a different product cohort',
+      'one regulatory headline without affected actor and effective date',
+    ],
+  },
+  vertical_refresh_fields: {
+    blockchain: ['killer_app_or_repeat_use', 'token_value_capture', 'security_or_uptime', 'validator_or_sequencer_risk', 'tvl_fees_users_trend', 'ecosystem_concentration', 'regulatory_or_bridge_dependency'],
+    dex: ['retained_trader_activity', 'liquidity_depth', 'fee_or_revenue_quality', 'emissions_dependence', 'chain_dependence', 'token_rights_and_unlocks', 'regulatory_market_structure'],
+    cex: ['withdrawal_state', 'reserve_and_liability_scope', 'licensing_status', 'product_availability', 'revenue_or_volume_quality', 'customer_asset_controls', 'jurisdiction_access'],
+    casino: ['legal_operator_and_license', 'active_player_or_handle_signal', 'custody_or_bankroll_model', 'settlement_chain_or_offchain_scope', 'token_incentive_dependence', 'payout_state', 'jurisdiction_risk'],
+    nft_ordinals: ['holder_retention', 'realized_sales_depth', 'founder_activity', 'product_or_ip_followthrough', 'royalty_or_treasury_capture', 'chain_dependence', 'community_sentiment_shift'],
+    stablecoin: ['issuer_authorization', 'redemption_right', 'reserve_composition', 'attestation_freshness', 'custodian_concentration', 'supply_and_liquidity_by_chain', 'depeg_recovery'],
+    rwa: ['legal_claim', 'custodian_or_spv', 'nav_supply_reconciliation', 'redemption_window', 'transfer_restrictions', 'collateral_concentration', 'issuer_disclosure'],
+    depin: ['paying_demand', 'useful_work_utilization', 'node_quality', 'revenue_excluding_emissions', 'operator_concentration', 'capex_payback', 'token_emissions'],
+    treasury_company: ['asset_units_and_cost_basis', 'mnav_premium_discount', 'debt_maturity', 'pledged_assets', 'custody', 'dilution', 'operating_cash_flow'],
+    etf_etp: ['aum_and_flows', 'nav_premium_discount', 'spread_and_volume', 'fee', 'creation_redemption_mode', 'custodian', 'collateral_or_staking_policy'],
+    regulatory_news: ['authority', 'instrument', 'affected_actors', 'affected_products', 'effective_date', 'transition_deadline', 'obligations', 'appeal_or_enforcement_status'],
+  },
+});
+
 const TREND_DRIVER_DOMAIN_ROWS = Object.freeze([
   ['distribution', 'Distribution', 'Embedded channels, wallets, exchanges, IP, geography, and repeatable acquisition.', ['distribution_advantage', 'wallet_or_exchange_funnel', 'brand_ip_reach', 'geographic_reach']],
   ['demand_retention', 'Demand retention', 'Paying use, retained users, repeat activity, active builders, and recurring demand.', ['organic_fee_demand', 'retained_users', 'active_builders', 'repeat_transactions']],
@@ -90,6 +137,34 @@ export const TREND_CATEGORIES = Object.freeze([
     domains: ['blockchain', 'dex', 'cex', 'casino', 'nft_ordinals', 'stablecoin', 'rwa', 'depin'],
     question: 'Does the token capture product value, coordinate governance, or mainly subsidize demand before unlock/emission pressure?',
     slm_features: ['token_value_capture', 'unlock_pressure', 'emissions_design', 'holder_rights'],
+  },
+  {
+    id: 'outlook_regime_change',
+    label: 'Outlook regime change',
+    domains: ['all'],
+    question: 'Has new evidence changed the analyst call, or is the prior outlook still supported by the same dated facts?',
+    slm_features: ['prior_call', 'current_call', 'evidence_delta', 'falsifier'],
+  },
+  {
+    id: 'retention_break',
+    label: 'Retention break',
+    domains: ['blockchain', 'dex', 'casino', 'nft_ordinals', 'depin'],
+    question: 'Did repeat users, holders, traders, players, builders, or nodes persist after launch, incentives, or hype faded?',
+    slm_features: ['retained_users', 'holder_retention', 'repeat_transactions', 'incentive_decay'],
+  },
+  {
+    id: 'access_or_jurisdiction_shift',
+    label: 'Access or jurisdiction shift',
+    domains: ['cex', 'dex', 'casino', 'stablecoin', 'rwa', 'etf_etp', 'regulatory_news'],
+    question: 'Did a licence, enforcement action, transition deadline, product block, or jurisdiction rule change who can use or operate the product?',
+    slm_features: ['jurisdiction_license', 'affected_actors', 'transition_deadline', 'product_availability'],
+  },
+  {
+    id: 'chain_dependency_shift',
+    label: 'Chain dependency shift',
+    domains: ['dex', 'casino', 'nft_ordinals', 'stablecoin', 'rwa', 'depin'],
+    question: 'Is success or failure explained by the host chain, bridge, sequencer, issuer, wallet, or distribution layer rather than the project alone?',
+    slm_features: ['primary_chain', 'bridge_dependency', 'sequencer_dependency', 'issuer_dependency'],
   },
 ]);
 
@@ -288,6 +363,11 @@ function compatibilityRegulatorySignal(signal) {
 export const OUTLOOK_CONTRACT = Object.freeze({
   version: OUTLOOK_VERSION,
   required_fields: [
+    'outlook_id',
+    'entity_id',
+    'vertical',
+    'prior_as_of',
+    'current_as_of',
     'prior_lifecycle_label',
     'new_lifecycle_label',
     'forecast_horizon',
@@ -298,11 +378,45 @@ export const OUTLOOK_CONTRACT = Object.freeze({
     'supporting_signal_ids',
     'contradicting_signal_ids',
     'falsifier',
+    'change_summary',
+    'trend_promotion_basis',
+    'withheld_or_unknown_claims',
     'next_review_at',
     'reviewer',
     'supersedes_outlook_id',
   ],
   publication_policy: 'Agents may propose outlook revisions, but causal, legal, lifecycle, adverse, and loss conclusions remain human-review-required before publication.',
+});
+
+export const SLM_LABEL_CONTRACT = Object.freeze({
+  version: 'chaindump-slm-label-contract-v1',
+  unit: 'one dated claim or withheld claim per row',
+  input_features: [
+    'vertical',
+    'entity_id',
+    'claim_path',
+    'published_text_or_withheld_state',
+    'metric_contract',
+    'source_refs',
+    'as_of',
+    'last_reviewed_at',
+    'next_review_at',
+  ],
+  supervised_labels: [
+    'driver_domain',
+    'trend_ids',
+    'statement_type',
+    'observed_direction',
+    'outlook_effect',
+    'lifecycle_pressure',
+    'evidence_sufficiency',
+    'publication_support',
+    'human_review_status',
+    'regulatory_status',
+    'outlook_revision_needed',
+  ],
+  evidence_sufficiency_labels: ['supported', 'partially_supported', 'withheld_unknown', 'withheld_stale', 'contradicted', 'not_comparable'],
+  split_policy: 'Use entity-stable and time-stable splits; no facts after forecast_cutoff may appear in training input for an outlook task.',
 });
 
 export const SLM_FEATURE_CONTRACT = Object.freeze({
@@ -326,6 +440,7 @@ export const SLM_FEATURE_CONTRACT = Object.freeze({
     'evidence_sufficiency',
     'causal_reasoning',
     'outlook_revision_proposal',
+    'refreshed_outlook_diffing',
     'regulatory_status_tracking',
   ],
 });
@@ -344,10 +459,13 @@ export function buildTrendTaxonomyPayload(asOf = '2026-07-30') {
     human_intelligence_guide: HUMAN_INTELLIGENCE_GUIDE,
     summary: {
       driver_domains: TREND_DRIVER_DOMAINS.length,
+      trend_categories: TREND_CATEGORIES.length,
       vertical_contracts: Object.keys(VERTICAL_SIGNAL_CONTRACTS).length,
+      vertical_outlook_refresh_contracts: Object.keys(REFRESHED_OUTLOOK_GUIDE.vertical_refresh_fields).length,
       regulatory_signals: REGULATORY_SIGNALS.length,
       regulatory_sources: sourceCount(REGULATORY_SIGNALS),
     },
+    refreshed_outlook_guide: REFRESHED_OUTLOOK_GUIDE,
     categories: TREND_CATEGORIES,
     evidence_contract: {
       version: TREND_SIGNAL_VERSION,
@@ -367,13 +485,14 @@ export function buildTrendTaxonomyPayload(asOf = '2026-07-30') {
       ],
       trend_rule: 'A trend requires at least three comparable dated observations with a declared window and denominator.',
     },
-    rule: 'A trend requires at least three comparable dated observations with a declared window and denominator; otherwise Chaindump publishes state tags, events, or review triggers.',
+    rule: REFRESHED_OUTLOOK_GUIDE.trend_promotion_policy,
     driver_domains: TREND_DRIVER_DOMAINS,
     enums: TREND_ENUMS,
     vertical_contracts: VERTICAL_SIGNAL_CONTRACTS,
     regulatory_signals: REGULATORY_SIGNALS.map(compatibilityRegulatorySignal),
     outlook_contract: OUTLOOK_CONTRACT,
     slm_feature_contract: SLM_FEATURE_CONTRACT,
+    slm_label_contract: SLM_LABEL_CONTRACT,
   };
 }
 
@@ -392,18 +511,24 @@ export function slmTrainingSchemaPayload(asOf = '2026-07-30') {
     canonical_taxonomy_schema: TREND_TAXONOMY_VERSION,
     as_of: asOf,
     human_intelligence_guide: HUMAN_INTELLIGENCE_GUIDE,
+    refreshed_outlook_guide: REFRESHED_OUTLOOK_GUIDE,
     required_record_fields: [
       'entity_id',
       'vertical',
       'claim_path',
       'published_text_or_withheld_state',
       'trend_ids',
+      'driver_domain',
+      'statement_type',
+      'metric_contract',
       'source_refs',
       'publication_support',
+      'evidence_status',
       'unknowns',
       'last_reviewed_at',
       'next_review_at',
       'forecast_cutoff',
+      'human_review_status',
     ],
     label_targets: [
       'trend_ids',
@@ -413,6 +538,7 @@ export function slmTrainingSchemaPayload(asOf = '2026-07-30') {
       'driver_domain',
       'outlook_revision_needed',
       'regulatory_status',
+      'refreshed_outlook_delta',
     ],
     quality_gates: [
       'withheld high-risk conclusions remain withheld in training text',
@@ -420,7 +546,10 @@ export function slmTrainingSchemaPayload(asOf = '2026-07-30') {
       'entity-stable split',
       'time-stable split before forecast timestamp',
       'source URL and review provenance required for training-eligible rows',
+      'trend labels require at least three comparable dated observations',
+      'regulatory records require affected actors, effective date or explicit unknown, and source authority',
     ],
+    slm_label_contract: SLM_LABEL_CONTRACT,
     export_command: 'npm run export:forensic-corpus',
     export_policy: SLM_FEATURE_CONTRACT.export_policy,
   };
