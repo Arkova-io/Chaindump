@@ -39,6 +39,16 @@ manual dispatch. Both paths are skipped unless the repository variable
 `RESEARCH_DESK_ENABLED` is exactly `true`. Paid runs are therefore **off by
 default**.
 
+### Reading workflow history
+
+GitHub may show a manual or scheduled `Research Desk Proposals` entry even
+when the run completed in a second. That is the expected skipped-run shape
+while `RESEARCH_DESK_ENABLED` is unset or not exactly `true`; it does not mean
+that a model call ran or that a proposal was published. Confirm the run log's
+skip reason and the public `/api/forensics-refresh-status` response before
+describing it as a completed research pass. The free six-hour review scan is
+independent and remains human-review-only.
+
 ## Evidence contract
 
 Each run first reads these public Chaindump surfaces:
