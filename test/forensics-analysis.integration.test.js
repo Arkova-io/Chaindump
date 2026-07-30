@@ -42,7 +42,7 @@ describe('Forensics analysis navigation', () => {
     expect(html).toContain('Research coverage');
     expect(html).toContain('id="blockchainAnalysisStatus"');
     expect(html).toContain('row.dossierStatus');
-    expect(html).toContain('Dossier status mix');
+    expect(html).toContain('Where chains stand');
     expect(html).toContain('Open full report →');
     expect(html).toContain("coverage: 'Legacy postmortem'");
     expect(html).toContain('full research reports');
@@ -116,7 +116,7 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('publicationDepth: parsedObject(row.publication_depth)');
     expect(html).toContain('sections.push(exchangeFindingHtml(row))');
     expect(html).toContain('${exchangeFindingHtml(row)}');
-    expect(html).toContain("}, 'This exchange dossier is indexed; its normalized causal contract is pending review.', depth)");
+    expect(html).toContain("}, 'This exchange report is listed, but the evidence-backed explanation is still being reviewed.', depth)");
   });
 
   it('renders association rates, uncertainty, and falsifiers instead of causal-sounding trend prose', () => {
@@ -197,7 +197,7 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('High-risk claim withheld — independent support pending.');
     expect(html).toContain('Unsupported lifecycle, causal, legal, loss, and counterfactual conclusions are withheld below.');
     expect(html).toContain('forensicAnalysisHtml(synthesis.forensic_analysis');
-    expect(html).toContain("}, 'This casino dossier is indexed; its normalized causal contract is pending review.', depth)");
+    expect(html).toContain("}, 'This casino report is listed, but the evidence-backed explanation is still being reviewed.', depth)");
     expect(html).toContain('return ` <a class="ecite"');
     expect(html).toContain('${sourceMetadataHtml(resolved)}');
   });
@@ -241,8 +241,8 @@ describe('six-hour forensic review surface', () => {
     expect(html).toContain('next due');
     expect(html).toContain('suggestions only; a person approves changes');
     expect(html).toContain("forensicsRefreshStatus = response.ok ? 'loaded' : 'unavailable'");
-    expect(html).toContain('human promotion required');
-    expect(html).toContain('Open review status →');
+    expect(html).toContain('a person approves changes');
+    expect(html).toContain('See review status →');
   });
 });
 
@@ -263,7 +263,7 @@ describe('NFT and Ordinals Analysis data surface', () => {
     expect(html).toContain('90d policy');
     expect(html).toContain('earlier report with collection sources');
     expect(html).toContain("srcHtml(sourceArray(citedSources).slice(0, 3), 'Cited sources: ')");
-    expect(html).toContain('lifecycle case stud');
+    expect(html).toContain('lifecycle report');
     expect(html).toContain("if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(nextReviewAt || '')) return 'unknown';");
   });
 
