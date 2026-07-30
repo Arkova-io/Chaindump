@@ -18,6 +18,19 @@ describe('exchange evidence remediation wave B prep', () => {
       claims: 90,
       sources: 59,
       reviewed_sources: 55,
+      unreviewed_sources: 4,
+      case_review_states: {
+        reviewed: 2,
+        partially_reviewed: 13,
+        unresolved: 0,
+      },
+      claim_review_states: {
+        reviewed: 35,
+        partially_reviewed: 46,
+        unresolved: 9,
+      },
+      reviewed_claims: 35,
+      partially_reviewed_claims: 46,
       unresolved_claims: 9,
     });
     expect(
@@ -95,6 +108,29 @@ describe('exchange evidence remediation wave B prep', () => {
     invalidCaseReview.cases[0].review.reviewed_at = '2026-02-31T12:00:00Z';
     expect(() => validateArtifact(invalidCaseReview)).toThrow(
       /semantically valid review timestamp/,
+    );
+  });
+
+  it('rejects review timestamps that postdate the prepared artifact cutoff', () => {
+    expect(artifact.prepared_cutoff_at).toBe('2026-07-30T00:09:08Z');
+
+    const futureArtifactReview = structuredClone(artifact);
+    futureArtifactReview.reviewed_at = '2026-07-30T00:10:00Z';
+    expect(() => validateArtifact(futureArtifactReview)).toThrow(
+      /artifact review cannot postdate the prepared cutoff/,
+    );
+
+    const futureCaseReview = structuredClone(artifact);
+    futureCaseReview.cases[0].review.reviewed_at = '2026-07-30T00:10:00Z';
+    expect(() => validateArtifact(futureCaseReview)).toThrow(
+      /case review cannot postdate the artifact review|case review cannot postdate the prepared cutoff/,
+    );
+
+    const futureSourceReview = structuredClone(artifact);
+    futureSourceReview.cases[0].sources[0].evidence_reviewed_at =
+      '2026-07-30T00:10:00Z';
+    expect(() => validateArtifact(futureSourceReview)).toThrow(
+      /evidence review cannot postdate the artifact review|evidence review cannot postdate the prepared cutoff/,
     );
   });
 

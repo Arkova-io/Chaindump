@@ -69,6 +69,23 @@ function isSemanticallyValidIsoTimestamp(value) {
     && calendarDate.getUTCDate() === day;
 }
 
+function parseReviewTimestamp(value, label) {
+  assert(
+    isSemanticallyValidIsoTimestamp(value),
+    `${label} must be a semantically valid ISO review timestamp`,
+  );
+  const parsed = Date.parse(value);
+  assert(Number.isFinite(parsed), `${label} must parse to a finite timestamp`);
+  return parsed;
+}
+
+function assertNotAfter(value, cutoff, message) {
+  assert(
+    parseReviewTimestamp(value, message) <= cutoff,
+    `${message} cannot postdate the prepared cutoff`,
+  );
+}
+
 function isIssuerAuthored(source) {
   return /issuer/i.test([
     source.title,
@@ -143,6 +160,11 @@ function validateSource(source, dossierId, artifact) {
     assert(
       Date.parse(source.evidence_reviewed_at) <= Date.parse(artifact.reviewed_at),
       `${prefix} evidence review cannot postdate the artifact review`,
+    );
+    assertNotAfter(
+      source.evidence_reviewed_at,
+      artifact.preparedCutoffMs,
+      `${prefix} evidence review`,
     );
     assert(
       ACCESSIBLE_STATES.has(source.access_state),
@@ -287,6 +309,15 @@ function validateCase(caseStudy, artifact) {
     `${dossierId} missing semantically valid review timestamp`,
   );
   assert(
+    Date.parse(caseStudy.review.reviewed_at) <= Date.parse(artifact.reviewed_at),
+    `${dossierId} case review cannot postdate the artifact review`,
+  );
+  assertNotAfter(
+    caseStudy.review.reviewed_at,
+    artifact.preparedCutoffMs,
+    `${dossierId} case review`,
+  );
+  assert(
     isSemanticallyValidIsoTimestamp(caseStudy.review?.as_of) &&
       caseStudy.review.as_of === artifact.as_of,
     `${dossierId} missing canonical review as_of`,
@@ -377,9 +408,23 @@ export function validateArtifact(artifact) {
   assert(
     isSemanticallyValidIsoTimestamp(artifact.as_of) &&
       isSemanticallyValidIsoTimestamp(artifact.research_as_of) &&
-      isSemanticallyValidIsoTimestamp(artifact.reviewed_at),
+      isSemanticallyValidIsoTimestamp(artifact.reviewed_at) &&
+      isSemanticallyValidIsoTimestamp(artifact.prepared_cutoff_at),
     'Artifact dates and review timestamp must be semantically valid ISO values',
   );
+  const preparedCutoffMs = parseReviewTimestamp(
+    artifact.prepared_cutoff_at,
+    'prepared_cutoff_at',
+  );
+  assertNotAfter(
+    artifact.reviewed_at,
+    preparedCutoffMs,
+    'artifact review',
+  );
+  const artifactWithCutoff = {
+    ...artifact,
+    preparedCutoffMs,
+  };
   assert(
     JSON.stringify([...artifact.selection.required_claim_topics].toSorted(
       (left, right) => left.localeCompare(right),
@@ -405,7 +450,7 @@ export function validateArtifact(artifact) {
       `Duplicate dossier ${caseStudy.dossier_id}`,
     );
     dossierIds.add(caseStudy.dossier_id);
-    validateCase(caseStudy, artifact);
+    validateCase(caseStudy, artifactWithCutoff);
   }
 
   const claimCount = artifact.cases.reduce(
@@ -414,6 +459,40 @@ export function validateArtifact(artifact) {
   );
   assert(claimCount === 90, `Expected 90 mapped claims, found ${claimCount}`);
 
+  const caseReviewStates = Object.fromEntries(
+    [...REVIEW_STATES].map((state) => [
+      state,
+      artifact.cases.filter((caseStudy) => caseStudy.review.state === state).length,
+    ]),
+  );
+  const claimReviewStates = Object.fromEntries(
+    [...REVIEW_STATES].map((state) => [
+      state,
+      artifact.cases.reduce(
+        (total, caseStudy) =>
+          total +
+          Object.values(caseStudy.claims).filter(
+            (claim) => claim.review_state === state,
+          ).length,
+        0,
+      ),
+    ]),
+  );
+  const sourceReviewStates = {
+    reviewed: artifact.cases.reduce(
+      (total, caseStudy) =>
+        total +
+        caseStudy.sources.filter((source) => source.evidence_reviewed).length,
+      0,
+    ),
+    unreviewed: artifact.cases.reduce(
+      (total, caseStudy) =>
+        total +
+        caseStudy.sources.filter((source) => !source.evidence_reviewed).length,
+      0,
+    ),
+  };
+
   return {
     dossiers: artifact.cases.length,
     claims: claimCount,
@@ -421,20 +500,13 @@ export function validateArtifact(artifact) {
       (total, caseStudy) => total + caseStudy.sources.length,
       0,
     ),
-    reviewed_sources: artifact.cases.reduce(
-      (total, caseStudy) =>
-        total +
-        caseStudy.sources.filter((source) => source.evidence_reviewed).length,
-      0,
-    ),
-    unresolved_claims: artifact.cases.reduce(
-      (total, caseStudy) =>
-        total +
-        Object.values(caseStudy.claims).filter(
-          (claim) => claim.review_state === 'unresolved',
-        ).length,
-      0,
-    ),
+    reviewed_sources: sourceReviewStates.reviewed,
+    unreviewed_sources: sourceReviewStates.unreviewed,
+    case_review_states: caseReviewStates,
+    claim_review_states: claimReviewStates,
+    reviewed_claims: claimReviewStates.reviewed,
+    partially_reviewed_claims: claimReviewStates.partially_reviewed,
+    unresolved_claims: claimReviewStates.unresolved,
   };
 }
 
