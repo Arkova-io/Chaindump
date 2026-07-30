@@ -1,0 +1,47 @@
+name: Publish DNS-AID
+
+# DNS records are an explicit, human-triggered operation. The default is a
+# permission/plan check; callers must opt into mutation and DNSSEC separately.
+on:
+  workflow_dispatch:
+    inputs:
+      apply_records:
+        description: Create missing SVCB records (requires DNS Records:Edit)
+        required: true
+        default: false
+        type: boolean
+      enable_dnssec:
+        description: Enable Cloudflare DNSSEC (registrar DS publication still required)
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dns-aid-publication
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://chaindump.xyz
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { persist-credentials: false }
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with: { node-version: 22 }
+      - name: Plan or publish SVCB records
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ZONE_ID: e0db1713017f5da643066c2d2aa54bf4
+          DNS_AID_APPLY: ${{ inputs.apply_records }}
+          DNS_AID_ENABLE_DNSSEC: ${{ inputs.enable_dnssec }}
+        run: node scripts/publish-dns-aid.mjs
+      - name: Verify authenticated DNS-AID publication
+        env:
+          DNS_AID_NAME: _index._agents.chaindump.xyz
+        run: node scripts/verify-dns-aid.mjs
