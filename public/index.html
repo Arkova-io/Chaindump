@@ -686,6 +686,37 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   forensicsProposalAgent: null, forensicsProposalAgentStatus: 'loading', forensicsProposalAgentFreshness: null,
   forensicsProposalAgentLastCompleted: null };
 
+// Background data refreshes should not feel like a navigation. Keep the
+// reader's place and the control they were using while a view is re-rendered.
+// The snapshot is DOM-based so new persistent controls inherit the behaviour
+// when they have an id, without maintaining another copy of every filter.
+function captureUiSnapshot() {
+  const active = document.activeElement;
+  const focus = active && active !== document.body && active.id ? {
+    id: active.id,
+    start: typeof active.selectionStart === 'number' ? active.selectionStart : null,
+    end: typeof active.selectionEnd === 'number' ? active.selectionEnd : null,
+  } : null;
+  return { view: state.activeView, x: window.scrollX, y: window.scrollY, focus };
+}
+function restoreUiSnapshot(snapshot) {
+  if (!snapshot || snapshot.view !== state.activeView) return;
+  window.scrollTo({ left: snapshot.x, top: snapshot.y, behavior: 'auto' });
+  if (!snapshot.focus) return;
+  const control = document.getElementById(snapshot.focus.id);
+  if (!control || control === document.activeElement) return;
+  try { control.focus({ preventScroll: true }); } catch { control.focus(); }
+  if (snapshot.focus.start != null && typeof control.setSelectionRange === 'function') {
+    try { control.setSelectionRange(snapshot.focus.start, snapshot.focus.end); } catch { /* non-text control */ }
+  }
+}
+// A response may resolve after the reader changed views. Cache the data, but
+// only restore viewport/focus while the originating view is still active.
+function refreshWithUiPreservation(task) {
+  const snapshot = captureUiSnapshot();
+  return Promise.resolve().then(task).finally(() => restoreUiSnapshot(snapshot));
+}
+
 const fmtUsd = (n) => n == null ? '—' : (n < 0 ? '-' : '') + '$' + Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 2 }).format(Math.abs(n));
 const fmtNum = (n) => n == null ? '—' : Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(n);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c]));
@@ -2563,7 +2594,7 @@ function renderTailProfile(){
   el.innerHTML = `<div class="tailwrap"><div class="tailback"><a href="/" data-view="live">← Back to the top 50</a></div>${detailHtml(d.chain)}</div>`;
 }
 
-function render() {
+function renderBoard() {
   // load() repaints on a 30s timer, replacing every `?` anchor node. A popover
   // left open would hover over rebuilt content, describing the wrong row.
   gpHide();
@@ -2613,6 +2644,14 @@ function render() {
     const arrow = sorted ? ` <span class="arrow">${state.dir===-1?'▼':'▲'}</span>` : '';
     th.innerHTML = label + q + arrow;
   });
+}
+
+// The live board is rebuilt every 30 seconds. Centralizing preservation here
+// also covers search, sorting, tier enrichment, and chain-detail loads.
+function render() {
+  const snapshot = captureUiSnapshot();
+  try { return renderBoard(); }
+  finally { restoreUiSnapshot(snapshot); }
 }
 
 function stat(label, val){ return `<div class="stat"><div class="sl">${label}</div><div class="sv">${val}</div></div>`; }
@@ -4101,9 +4140,9 @@ document.getElementById('nftview').addEventListener('click', (e) => {
 });
 async function loadNft(){
   nftLoaded = true;
-  document.getElementById('nftview').innerHTML = `<div class="skel">Loading…</div>`;
+  if (!state.nftData) document.getElementById('nftview').innerHTML = `<div class="skel">Loading…</div>`;
   try { renderNft(await fetch('api/nft').then(r=>r.json())); }
-  catch (e) { nftLoaded = false; document.getElementById('nftview').innerHTML = `<div class="skel">Couldn't load: ${esc(e.message)}</div>`; }
+  catch (e) { if (!state.nftData) { nftLoaded = false; document.getElementById('nftview').innerHTML = `<div class="skel">Couldn't load: ${esc(e.message)}</div>`; } }
 }
 document.getElementById('nftview').addEventListener('click', (e) => {
   if (e.target.closest('a') || e.target.closest('.prosetoggle') || e.target.closest('.acchead')) return;
@@ -4225,9 +4264,9 @@ function renderMarkets(data){
 }
 async function loadMarkets(){
   marketsLoaded = true;
-  document.getElementById('marketsview').innerHTML = `<div class="skel">Loading…</div>`;
+  if (!state.marketsData) document.getElementById('marketsview').innerHTML = `<div class="skel">Loading…</div>`;
   try { renderMarkets(await fetch('api/markets').then(r=>r.json())); }
-  catch (e) { marketsLoaded = false; document.getElementById('marketsview').innerHTML = `<div class="skel">Couldn't load: ${esc(e.message)}</div>`; }
+  catch (e) { if (!state.marketsData) { marketsLoaded = false; document.getElementById('marketsview').innerHTML = `<div class="skel">Couldn't load: ${esc(e.message)}</div>`; } }
 }
 document.getElementById('marketsview').addEventListener('click', (e) => {
   if (e.target.closest('a') || e.target.closest('.prosetoggle') || e.target.closest('.acchead')) return;
@@ -4295,9 +4334,9 @@ function renderStables(data){
 }
 async function loadStables(){
   stablesLoaded = true;
-  document.getElementById('stablesview').innerHTML = `<div class="skel">Loading…</div>`;
+  if (!state.stablesData) document.getElementById('stablesview').innerHTML = `<div class="skel">Loading…</div>`;
   try { renderStables(await fetch('api/stablecoins').then(r=>r.json())); }
-  catch (e) { stablesLoaded = false; document.getElementById('stablesview').innerHTML = `<div class="skel">Couldn't load: ${esc(e.message)}</div>`; }
+  catch (e) { if (!state.stablesData) { stablesLoaded = false; document.getElementById('stablesview').innerHTML = `<div class="skel">Couldn't load: ${esc(e.message)}</div>`; } }
 }
 document.getElementById('stablesview').addEventListener('click', (e) => {
   if (e.target.closest('a') || e.target.closest('.prosetoggle') || e.target.closest('.acchead')) return;
@@ -4426,7 +4465,7 @@ function renderNews(data){
     <div class="nfilters">${chips}</div>
     <div class="newslist">${rows||'<div class="skel">No stories match this filter.</div>'}</div>`;
 }
-async function loadNews(){ newsLoaded=true; document.getElementById('newsview').innerHTML=`<div class="skel">Loading news…</div>`; try{ renderNews(await fetch('api/news').then(r=>r.json())); }catch(e){ newsLoaded=false; document.getElementById('newsview').innerHTML=`<div class="skel">Couldn't load: ${esc(e.message)}</div>`; } }
+async function loadNews(){ newsLoaded=true; if (!state.newsData) document.getElementById('newsview').innerHTML=`<div class="skel">Loading news…</div>`; try{ renderNews(await fetch('api/news').then(r=>r.json())); }catch(e){ if (!state.newsData) { newsLoaded=false; document.getElementById('newsview').innerHTML=`<div class="skel">Couldn't load: ${esc(e.message)}</div>`; } } }
 document.getElementById('newsview').addEventListener('click', (e) => {
   const f = e.target.closest('.nfilter'); if (!f || !state.newsData) return;
   newsTopic = f.dataset.topic; renderNews(state.newsData);
@@ -4457,7 +4496,7 @@ function renderPower(data){
   }).join('');
   el.innerHTML = `<div class="gvintro">Crypto Power Rankings — ${data.count} countries by a composite of usage (30%), policy (25%), institutional (20%), innovation (15%) &amp; government stance (10%). Expand any country for its full adoption &amp; regulation profile (shared with Global Adoption).</div><div class="gwrap">${rows}</div>`;
 }
-async function loadPower(){ powerLoaded=true; document.getElementById('powerview').innerHTML=`<div class="skel">Loading…</div>`; try{ renderPower(await fetch('api/power').then(r=>r.json())); }catch(e){ powerLoaded=false; document.getElementById('powerview').innerHTML=`<div class="skel">Couldn't load: ${esc(e.message)}</div>`; } }
+async function loadPower(){ powerLoaded=true; if (!state.powerData) document.getElementById('powerview').innerHTML=`<div class="skel">Loading…</div>`; try{ renderPower(await fetch('api/power').then(r=>r.json())); }catch(e){ if (!state.powerData) { powerLoaded=false; document.getElementById('powerview').innerHTML=`<div class="skel">Couldn't load: ${esc(e.message)}</div>`; } } }
 
 let apiLoaded=false;
 const API_HEAD = pageHead('Agent API · x402', 'Chaindump is built for autonomous agents as much as humans. Every dataset here is reachable as a machine-readable JSON API — <b>discovery is free, deep &amp; compliance calls are pay-per-use over x402</b>. No account, no API key, no signup: your agent pays per call in USDC on Base and gets the data in the same round-trip.');
@@ -5279,9 +5318,7 @@ setInterval(() => {
   const v = state.activeView;
   const fn = LIVE_REFRESH[v];
   if (!fn) return;
-  const y = window.scrollY;
-  fn();
-  setTimeout(() => window.scrollTo(0, y), 60);
+  refreshWithUiPreservation(fn);
 }, 60000);
 </script>
 <div id="cmdk" class="cmdk-overlay" hidden>
