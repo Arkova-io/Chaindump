@@ -33,8 +33,8 @@ describe('casino evidence-depth Wave B preparation', () => {
         sources: 42,
         reviewed_sources: 42,
         access_debt: 0,
-        reviewed_claims: 29,
-        partially_reviewed_claims: 26,
+        reviewed_claims: 24,
+        partially_reviewed_claims: 31,
         unresolved_claims: 5,
       },
     });
@@ -61,7 +61,7 @@ describe('casino evidence-depth Wave B preparation', () => {
     const unsupportedCausalClaim = structuredClone(document);
     unsupportedCausalClaim.cases[0].claims.why.review_state = 'reviewed';
     expect(validateArtifact(unsupportedCausalClaim).errors).toContain(
-      'bitstarz-dot-com/why: reviewed causal claim needs tier-A/B independent evidence or two independent tier-C origins',
+      'bitstarz-dot-com/why: reviewed high-risk causal claim does not meet publication-depth policy: high_risk_evidence_threshold_not_met',
     );
 
     const dataIsNotAuthority = structuredClone(document);
@@ -70,7 +70,7 @@ describe('casino evidence-depth Wave B preparation', () => {
     );
     betswirl.claims.why.review_state = 'reviewed';
     expect(validateArtifact(dataIsNotAuthority).errors).toContain(
-      'betswirl-onchain-casino/why: reviewed causal claim needs tier-A/B independent evidence or two independent tier-C origins',
+      'betswirl-onchain-casino/why: reviewed high-risk causal claim does not meet publication-depth policy: high_risk_evidence_threshold_not_met',
     );
 
     const invalidCalendarDate = structuredClone(document);
@@ -80,15 +80,15 @@ describe('casino evidence-depth Wave B preparation', () => {
     );
   });
 
-  it('rejects authority-role causality, dependent origins, and operator-only legal certainty', () => {
-    const authorityAsCausality = structuredClone(document);
-    authorityAsCausality.cases[0].claims.why = {
-      ...authorityAsCausality.cases[0].claims.why,
-      source_ids: ['bitstarz-cga-certificate'],
+  it('rejects primary-only causality, dependent origins, and operator-only legal certainty', () => {
+    const primaryOnlyCausality = structuredClone(document);
+    primaryOnlyCausality.cases[0].claims.why = {
+      ...primaryOnlyCausality.cases[0].claims.why,
+      source_ids: ['bitstarz-terms-current'],
       review_state: 'reviewed',
     };
-    expect(validateArtifact(authorityAsCausality).errors).toContain(
-      'bitstarz-dot-com/why: reviewed causal claim needs tier-A/B independent evidence or two independent tier-C origins',
+    expect(validateArtifact(primaryOnlyCausality).errors).toContain(
+      'bitstarz-dot-com/why: reviewed high-risk causal claim does not meet publication-depth policy: high_risk_evidence_threshold_not_met',
     );
 
     const dependentOrigins = structuredClone(document);
@@ -106,14 +106,14 @@ describe('casino evidence-depth Wave B preparation', () => {
       review_state: 'reviewed',
     };
     expect(validateArtifact(dependentOrigins).errors).toContain(
-      'bitstarz-dot-com/why: reviewed causal claim needs tier-A/B independent evidence or two independent tier-C origins',
+      'bitstarz-dot-com/why: reviewed high-risk causal claim does not meet publication-depth policy: high_risk_evidence_threshold_not_met',
     );
 
     const operatorOnlyLicence = structuredClone(document);
     const sx = operatorOnlyLicence.cases.find((entry) => entry.dossier_id === 'sx-bet');
     sx.claims.legal_or_loss.review_state = 'reviewed';
     expect(validateArtifact(operatorOnlyLicence).errors).toContain(
-      'sx-bet/legal_or_loss: reviewed legal status needs a tier-A authority record',
+      'sx-bet/legal_or_loss: reviewed high-risk loss claim does not meet publication-depth policy: high_risk_evidence_threshold_not_met',
     );
   });
 
@@ -143,9 +143,36 @@ describe('casino evidence-depth Wave B preparation', () => {
     );
 
     const reviewAfterArtifact = structuredClone(document);
-    reviewAfterArtifact.cases[0].review.reviewed_at = '2026-07-29T20:31:00-04:00';
+    reviewAfterArtifact.cases[0].review.reviewed_at = '2026-07-29T20:12:00-04:00';
     expect(validateArtifact(reviewAfterArtifact).errors).toContain(
       'bitstarz-dot-com: dossier review cannot occur after artifact review',
+    );
+  });
+
+  it('rejects future artifact and source review timestamps beyond the prepared cutoff', () => {
+    expect(document.reviewed_at).toBe('2026-07-29T20:11:54-04:00');
+    expect(document.prepared_cutoff_at).toBe('2026-07-30T00:11:54Z');
+
+    const futureArtifact = structuredClone(document);
+    futureArtifact.reviewed_at = '2026-07-29T20:12:00-04:00';
+    expect(validateArtifact(futureArtifact).errors).toContain(
+      'artifact review cannot occur after prepared cutoff',
+    );
+
+    const futureSource = structuredClone(document);
+    futureSource.cases[0].sources[0].evidence_reviewed_at =
+      '2026-07-29T20:12:00-04:00';
+    expect(validateArtifact(futureSource).errors).toContain(
+      'bitstarz-dot-com/bitstarz-terms-current: source review cannot occur after dossier review',
+    );
+  });
+
+  it('derives dossier review state from claim states', () => {
+    const mutated = structuredClone(document);
+    mutated.cases[0].review.state = 'reviewed';
+
+    expect(validateArtifact(mutated).errors).toContain(
+      'bitstarz-dot-com: dossier review state must be partially_reviewed to match claim states',
     );
   });
 

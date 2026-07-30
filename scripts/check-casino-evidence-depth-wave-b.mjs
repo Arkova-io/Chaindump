@@ -1,5 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
+import {
+  evaluatePublicationClaim,
+  normalizePublicationSource,
+} from '../src/lib/publication-depth.mjs';
 
 const artifactUrl = new URL(
   '../docs/casino-evidence-depth-wave-b-2026-07-29.json',
@@ -41,6 +45,12 @@ const ACCESS_METHODS = new Set([
 const SOURCE_ROLES = new Set(['authority', 'independent', 'primary', 'data']);
 const REVIEWER = 'codex-research-agent';
 const AS_OF = '2026-07-29';
+const HIGH_RISK_TOPIC_TYPES = new Map([
+  ['outcome', 'lifecycle'],
+  ['why', 'causal'],
+  ['strategic_choices', 'causal'],
+  ['legal_or_loss', 'loss'],
+]);
 const ISO_DATE = /^(\d{4})-(\d{2})-(\d{2})$/;
 const ISO_TIMESTAMP = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/;
 
@@ -81,26 +91,6 @@ function isTimestampAtOrBefore(value, ceiling) {
     && Date.parse(value) <= Date.parse(ceiling);
 }
 
-function hasIndependentCausalSupport(sources) {
-  const strongIndependent = sources.some((source) => (
-    (source.source_tier === 'A' || source.source_tier === 'B')
-      && source.source_role === 'independent'
-  ));
-  const independentTierC = new Set(sources
-    .filter((source) => (
-      source.source_tier === 'C' && source.source_role === 'independent'
-    ))
-    .map((source) => source.independence_group)
-    .filter(Boolean));
-  return strongIndependent || independentTierC.size >= 2;
-}
-
-function hasCanonicalLegalSupport(sources) {
-  return sources.some((source) => (
-    source.source_tier === 'A' && source.source_role === 'authority'
-  ));
-}
-
 function validateDocumentMetadata(document, errors) {
   add(
     errors,
@@ -116,8 +106,14 @@ function validateDocumentMetadata(document, errors) {
   add(errors, document.reviewer === REVIEWER, 'artifact reviewer is missing');
   add(
     errors,
-    isTimestampOnAsOfDate(document.reviewed_at),
+    isTimestampOnAsOfDate(document.reviewed_at)
+      && isSemanticIsoTimestamp(document.prepared_cutoff_at),
     'artifact reviewed_at must be a semantic ISO timestamp on the as_of date',
+  );
+  add(
+    errors,
+    isTimestampAtOrBefore(document.reviewed_at, document.prepared_cutoff_at),
+    'artifact review cannot occur after prepared cutoff',
   );
   add(
     errors,
@@ -248,6 +244,7 @@ function validateClaim({
   claim,
   prefix,
   sources,
+  policySources,
   errors,
   metrics,
 }) {
@@ -289,20 +286,20 @@ function validateClaim({
         && referencedSources.every((source) => source.evidence_reviewed === true),
       `${claimPrefix}: reviewed claim requires reviewed evidence`,
     );
-  }
-  if (topic === 'why' && claim.review_state === 'reviewed') {
-    add(
-      errors,
-      hasIndependentCausalSupport(referencedSources),
-      `${claimPrefix}: reviewed causal claim needs tier-A/B independent evidence or two independent tier-C origins`,
-    );
-  }
-  if (topic === 'legal_or_loss' && claim.review_state === 'reviewed') {
-    add(
-      errors,
-      hasCanonicalLegalSupport(referencedSources),
-      `${claimPrefix}: reviewed legal status needs a tier-A authority record`,
-    );
+    const highRiskType = HIGH_RISK_TOPIC_TYPES.get(topic);
+    if (highRiskType) {
+      const assessment = evaluatePublicationClaim({
+        path: claimPrefix,
+        type: highRiskType,
+        high_risk: true,
+        source_refs: claim.source_ids,
+      }, policySources);
+      add(
+        errors,
+        assessment.passes,
+        `${claimPrefix}: reviewed high-risk ${highRiskType} claim does not meet publication-depth policy: ${assessment.gaps.join(', ')}`,
+      );
+    }
   }
 }
 
@@ -329,7 +326,7 @@ function validateClaimState(claim, claimPrefix, errors) {
   }
 }
 
-function validateDossier(dossier, documentReviewedAt, seenDossiers, errors, metrics) {
+function validateDossier(dossier, documentReviewedAt, preparedCutoffAt, seenDossiers, errors, metrics) {
   const prefix = dossier.dossier_id ?? '<missing-dossier-id>';
   add(errors, EXPECTED_DOSSIERS.has(dossier.dossier_id), `${prefix}: unexpected dossier`);
   add(errors, !seenDossiers.has(dossier.dossier_id), `${prefix}: duplicate dossier`);
@@ -348,6 +345,11 @@ function validateDossier(dossier, documentReviewedAt, seenDossiers, errors, metr
   );
   add(
     errors,
+    isTimestampAtOrBefore(dossier.review?.reviewed_at, preparedCutoffAt),
+    `${prefix}: dossier review cannot occur after prepared cutoff`,
+  );
+  add(
+    errors,
     REVIEW_STATES.has(dossier.review?.state),
     `${prefix}: invalid dossier review state`,
   );
@@ -363,6 +365,7 @@ function validateDossier(dossier, documentReviewedAt, seenDossiers, errors, metr
   );
 
   const sources = new Map();
+  const policySources = new Map();
   for (const source of dossier.sources ?? []) {
     validateSource({
       source,
@@ -372,6 +375,13 @@ function validateDossier(dossier, documentReviewedAt, seenDossiers, errors, metr
       errors,
       metrics,
     });
+    const normalized = normalizePublicationSource({
+      ...source,
+      resolving: source.access_state === 'accessible',
+    });
+    for (const key of [source.id, source.url]) {
+      if (key) policySources.set(key, normalized);
+    }
   }
 
   const claimTopics = Object.keys(dossier.claims ?? {});
@@ -381,8 +391,16 @@ function validateDossier(dossier, documentReviewedAt, seenDossiers, errors, metr
     `${prefix}: claim topics must match the evidence contract and order`,
   );
   for (const [topic, claim] of Object.entries(dossier.claims ?? {})) {
-    validateClaim({ topic, claim, prefix, sources, errors, metrics });
+    validateClaim({ topic, claim, prefix, sources, policySources, errors, metrics });
   }
+  const derivedState = Object.values(dossier.claims ?? {}).every(
+    (claim) => claim.review_state === 'reviewed',
+  ) ? 'reviewed' : 'partially_reviewed';
+  add(
+    errors,
+    dossier.review?.state === derivedState,
+    `${prefix}: dossier review state must be ${derivedState} to match claim states`,
+  );
 }
 
 export function readArtifact() {
@@ -405,7 +423,14 @@ export function validateArtifact(document) {
 
   const seenDossiers = new Set();
   for (const dossier of document.cases ?? []) {
-    validateDossier(dossier, document.reviewed_at, seenDossiers, errors, metrics);
+    validateDossier(
+      dossier,
+      document.reviewed_at,
+      document.prepared_cutoff_at,
+      seenDossiers,
+      errors,
+      metrics,
+    );
   }
 
   add(

@@ -2,7 +2,7 @@
   "schema": "chaindump-casino-evidence-depth-wave-b-v1",
   "as_of": "2026-07-29",
   "research_as_of": "2026-07-29",
-  "reviewed_at": "2026-07-29T20:30:00-04:00",
+  "reviewed_at": "2026-07-29T20:11:54-04:00",
   "reviewer": "codex-research-agent",
   "status": "implementation-prepared-no-migration-number-assigned",
   "selection": {
@@ -37,7 +37,7 @@
       "review": {
         "state": "partially_reviewed",
         "reviewer": "codex-research-agent",
-        "reviewed_at": "2026-07-29T20:30:00-04:00",
+        "reviewed_at": "2026-07-29T20:11:54-04:00",
         "as_of": "2026-07-29"
       },
       "sources": [
@@ -54,7 +54,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Current terms identify Gareton B.V., company 160656, as operator of bitstarz.com under Curaçao licence OGL/2024/165/0185 and define the custodial account relationship.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:05:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "bitstarz-cga-certificate",
@@ -69,7 +69,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Authority certificate names Gareton B.V., company 160656, licence OGL/2024/165/0185, bitstarz.com, grant date 2024-07-08, and current status Active.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:05:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "bitstarz-birthday-history",
@@ -84,21 +84,27 @@
           "evidence_reviewed": true,
           "evidence_locator": "Operator history places launch and first deposit on 2014-04-08 and describes later payment and game-catalog expansion; promotional scale claims remain unaudited.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:05:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         }
       ],
       "claims": {
         "outcome": {
           "value": "Active licensed custodial casino with documented continuity from April 2014 through the 2026 authority record; success is operational longevity, not audited profitability or solvency.",
           "as_of": "2026-07-29",
-          "source_ids": ["bitstarz-terms-current", "bitstarz-cga-certificate", "bitstarz-birthday-history"],
+          "source_ids": [
+            "bitstarz-terms-current",
+            "bitstarz-cga-certificate",
+            "bitstarz-birthday-history"
+          ],
           "confidence": "high",
           "review_state": "reviewed"
         },
         "why": {
           "value": "Early Bitcoin positioning followed by fiat, altcoin, and catalog expansion plausibly broadened demand, but the reviewed evidence does not independently isolate those choices from brand, provider, promotion, or market-cycle effects.",
           "as_of": "2026-07-29",
-          "source_ids": ["bitstarz-birthday-history"],
+          "source_ids": [
+            "bitstarz-birthday-history"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
@@ -110,28 +116,41 @@
             "Operate through a named Curaçao entity and direct authority licence."
           ],
           "as_of": "2026-07-29",
-          "source_ids": ["bitstarz-birthday-history", "bitstarz-terms-current", "bitstarz-cga-certificate"],
+          "source_ids": [
+            "bitstarz-birthday-history",
+            "bitstarz-terms-current",
+            "bitstarz-cga-certificate"
+          ],
           "confidence": "high",
           "review_state": "reviewed"
         },
         "token": {
           "value": "No native BitStarz platform token was identified in the current terms or product history; supported cryptocurrencies are custodial funding rails, but absence is not proven exhaustively across all legacy promotions.",
           "as_of": "2026-07-29",
-          "source_ids": ["bitstarz-terms-current", "bitstarz-birthday-history"],
+          "source_ids": [
+            "bitstarz-terms-current",
+            "bitstarz-birthday-history"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
         "chain_dependence": {
           "value": "Bitcoin and other networks function as deposit and withdrawal rails; games, balances, rewards, and liabilities remain operator-controlled rather than publicly settled onchain.",
           "as_of": "2026-07-29",
-          "source_ids": ["bitstarz-terms-current", "bitstarz-birthday-history"],
+          "source_ids": [
+            "bitstarz-terms-current",
+            "bitstarz-birthday-history"
+          ],
           "confidence": "medium",
           "review_state": "reviewed"
         },
         "legal_or_loss": {
           "value": "The Curaçao authority lists the named entity, domain, licence, and active status; the reviewed set contains no audited reserve coverage, customer-loss event, or universal-jurisdiction legality finding.",
           "as_of": "2026-07-29",
-          "source_ids": ["bitstarz-cga-certificate", "bitstarz-terms-current"],
+          "source_ids": [
+            "bitstarz-cga-certificate",
+            "bitstarz-terms-current"
+          ],
           "confidence": "high",
           "review_state": "reviewed"
         }
@@ -152,7 +171,7 @@
       "review": {
         "state": "partially_reviewed",
         "reviewer": "codex-research-agent",
-        "reviewed_at": "2026-07-29T20:30:00-04:00",
+        "reviewed_at": "2026-07-29T20:11:54-04:00",
         "as_of": "2026-07-29"
       },
       "sources": [
@@ -169,7 +188,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Terms updated 2026-05-15 identify CRGC Management Ltd. as service provider, name Nextgen Blockchain Technologies Ltd. as technology owner, and add SX-token sunset, USDC Bet Credits, gasless migration, and planned SX Network deprecation terms.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:08:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "sx-defillama-current",
@@ -186,7 +205,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "The 2026-07-29 page reports current matched-bet volume, open interest, fees and revenue and notes that the protocol analytics API supplies volume. Its displayed SX Rollup TVL is a carried-forward adapter value whose last raw observation was 2026-03-02.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:08:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "sx-overview-current",
@@ -201,7 +220,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Current first-party overview describes peer-to-peer pricing and protocol contracts that create, process, and settle bets onchain; superlatives are not adopted.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:08:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "sx-lemonde-anjouan-context",
@@ -216,21 +235,29 @@
           "evidence_reviewed": true,
           "evidence_locator": "2026 investigation reports ANJ and Comorian institutional challenges to the offshore Anjouan licensing system generally; it is jurisdictional counterevidence, not a case-specific finding against SX Bet.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:08:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         }
       ],
       "claims": {
         "outcome": {
           "value": "Live peer-to-peer sports exchange with matched volume and small fee revenue surfaced by DefiLlama from SX's public analytics API, while its token and dedicated-network architecture are in an announced 2026 sunset/deprecation transition. The third-party dashboard does not make the upstream activity feed independent.",
           "as_of": "2026-07-29",
-          "source_ids": ["sx-defillama-current", "sx-terms-token-sunset", "sx-overview-current"],
+          "source_ids": [
+            "sx-defillama-current",
+            "sx-terms-token-sunset",
+            "sx-overview-current"
+          ],
           "confidence": "medium",
           "review_state": "reviewed"
         },
         "why": {
           "value": "Peer pricing, USDC denomination, and maker-supplied liquidity can improve transparency and price competition, but the transition also shows that maintaining a dedicated token and network did not remain the chosen operating model.",
           "as_of": "2026-07-29",
-          "source_ids": ["sx-defillama-current", "sx-terms-token-sunset", "sx-overview-current"],
+          "source_ids": [
+            "sx-defillama-current",
+            "sx-terms-token-sunset",
+            "sx-overview-current"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
@@ -242,28 +269,41 @@
             "Sunset SX, introduce USDC Bet Credits, migrate toward gasless use, and plan SX Network deprecation."
           ],
           "as_of": "2026-07-29",
-          "source_ids": ["sx-overview-current", "sx-terms-token-sunset", "sx-defillama-current"],
-          "confidence": "high",
-          "review_state": "reviewed"
+          "source_ids": [
+            "sx-overview-current",
+            "sx-terms-token-sunset",
+            "sx-defillama-current"
+          ],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
         },
         "token": {
           "value": "SX is being sunset under terms effective 2026-05-15; a holder snapshot and USDC Bet Credit allocation replace historical utility, and alleged token-value losses are expressly addressed by the operator's release language.",
           "as_of": "2026-07-29",
-          "source_ids": ["sx-terms-token-sunset", "sx-defillama-current"],
+          "source_ids": [
+            "sx-terms-token-sunset",
+            "sx-defillama-current"
+          ],
           "confidence": "high",
           "review_state": "reviewed"
         },
         "chain_dependence": {
           "value": "Current analytics still attribute activity to SX Rollup, but the operator has announced a gasless architecture and planned network deprecation, making prior chain dependence a live migration risk.",
           "as_of": "2026-07-29",
-          "source_ids": ["sx-defillama-current", "sx-terms-token-sunset"],
+          "source_ids": [
+            "sx-defillama-current",
+            "sx-terms-token-sunset"
+          ],
           "confidence": "high",
           "review_state": "reviewed"
         },
         "legal_or_loss": {
           "value": "SX terms claim an Anjouan licence for CRGC Management Ltd.; current independent reporting raises serious system-wide questions about Anjouan licence legitimacy and enforcement but does not adjudicate SX Bet specifically.",
           "as_of": "2026-07-29",
-          "source_ids": ["sx-terms-token-sunset", "sx-lemonde-anjouan-context"],
+          "source_ids": [
+            "sx-terms-token-sunset",
+            "sx-lemonde-anjouan-context"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         }
@@ -286,7 +326,7 @@
       "review": {
         "state": "partially_reviewed",
         "reviewer": "codex-research-agent",
-        "reviewed_at": "2026-07-29T20:30:00-04:00",
+        "reviewed_at": "2026-07-29T20:11:54-04:00",
         "as_of": "2026-07-29"
       },
       "sources": [
@@ -305,7 +345,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Live snapshot provides TVL, 30-day fees/revenue, chain distribution, and quarterly pool-profit series; negative quarters are retained rather than hidden by cumulative totals.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:11:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "azuro-introduction",
@@ -320,7 +360,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "First-party architecture describes reusable prediction-market infrastructure, independent applications, shared liquidity pools, and vAMM pricing.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:11:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "azuro-liquidity-provider-risk",
@@ -335,7 +375,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Explains that one LP position is exposed across thousands of pool-supported markets and warns that new positions are likely to show initial negative returns.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:11:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "azuro-terms-current",
@@ -350,21 +390,28 @@
           "evidence_reviewed": true,
           "evidence_locator": "Current interface terms state that Azuro DAO provides an interface and does not act as broker, adviser, or gambling operator; this disclaimer does not resolve every application's legal obligations.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:11:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         }
       ],
       "claims": {
         "outcome": {
           "value": "Operating multi-application prediction-market infrastructure with independently measured collateral and fees, but commercial outcome remains unclassified because user retention, application concentration, and LP risk-adjusted returns are unresolved.",
           "as_of": "2026-07-29",
-          "source_ids": ["azuro-defillama-current", "azuro-introduction"],
-          "confidence": "high",
-          "review_state": "reviewed"
+          "source_ids": [
+            "azuro-defillama-current",
+            "azuro-introduction"
+          ],
+          "confidence": "medium",
+          "review_state": "partially_reviewed"
         },
         "why": {
           "value": "Shared vAMM liquidity lowers the cold-start burden for independent frontends, while concentrating correlated pricing, resolution, and wagering risk in common pools; multi-chain distribution adds reach and fragmentation.",
           "as_of": "2026-07-29",
-          "source_ids": ["azuro-defillama-current", "azuro-introduction", "azuro-liquidity-provider-risk"],
+          "source_ids": [
+            "azuro-defillama-current",
+            "azuro-introduction",
+            "azuro-liquidity-provider-risk"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
@@ -376,28 +423,40 @@
             "Separate liquid AZUR from staking and long-duration reward paths."
           ],
           "as_of": "2026-07-29",
-          "source_ids": ["azuro-introduction", "azuro-liquidity-provider-risk", "azuro-defillama-current"],
+          "source_ids": [
+            "azuro-introduction",
+            "azuro-liquidity-provider-risk",
+            "azuro-defillama-current"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
         "token": {
           "value": "AZUR-related governance and reward mechanisms exist in the corpus, but current supply, concentration, realized distributions, and net return after lockup/incentives were not independently resolved in this wave.",
           "as_of": "2026-07-29",
-          "source_ids": ["azuro-defillama-current"],
+          "source_ids": [
+            "azuro-defillama-current"
+          ],
           "confidence": "low",
           "review_state": "unresolved"
         },
         "chain_dependence": {
           "value": "Azuro operates across several EVM chains, with current independent data showing activity materially concentrated rather than evenly distributed; chain breadth reduces single-chain dependence but increases version and liquidity coordination.",
           "as_of": "2026-07-29",
-          "source_ids": ["azuro-defillama-current", "azuro-introduction"],
+          "source_ids": [
+            "azuro-defillama-current",
+            "azuro-introduction"
+          ],
           "confidence": "high",
           "review_state": "reviewed"
         },
         "legal_or_loss": {
           "value": "DAO terms disclaim acting as a gambling operator, but protocol/interface disclaimers cannot establish licensing or legality for independent applications; no adjudicated case-specific loss or enforcement event was established.",
           "as_of": "2026-07-29",
-          "source_ids": ["azuro-terms-current", "azuro-liquidity-provider-risk"],
+          "source_ids": [
+            "azuro-terms-current",
+            "azuro-liquidity-provider-risk"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         }
@@ -420,7 +479,7 @@
       "review": {
         "state": "partially_reviewed",
         "reviewer": "codex-research-agent",
-        "reviewed_at": "2026-07-29T20:30:00-04:00",
+        "reviewed_at": "2026-07-29T20:11:54-04:00",
         "as_of": "2026-07-29"
       },
       "sources": [
@@ -437,7 +496,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Operator's 2018 v2 announcement documents ownership transition, hash-chain fairness, 1% edge, investor bankroll, multisignature custody, and scripting.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:14:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "bustabit-stats-current",
@@ -452,7 +511,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Current official daily bankroll/bet CSV demonstrates continued activity; it does not identify unique players, legal operator, liabilities, or audited revenue.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:14:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "bustabit-unlv-cash-or-crash",
@@ -467,21 +526,29 @@
           "evidence_reviewed": true,
           "evidence_locator": "2026 original research identifies Bustabit as the first crash game, examines crash-game expected values and player behavior, and declares no competing interests.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:14:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         }
       ],
       "claims": {
         "outcome": {
           "value": "Durable active Bitcoin crash game with operator statistics still showing activity and independent academic recognition of its category origin; operational success does not establish legal or financial quality.",
           "as_of": "2026-07-29",
-          "source_ids": ["bustabit-stats-current", "bustabit-unlv-cash-or-crash", "bustabit-v2-announcement"],
+          "source_ids": [
+            "bustabit-stats-current",
+            "bustabit-unlv-cash-or-crash",
+            "bustabit-v2-announcement"
+          ],
           "confidence": "medium",
           "review_state": "reviewed"
         },
         "why": {
           "value": "A simple high-frequency loop, category first-mover position, hash-chain verification, external bankroll, and scripting plausibly support survival, but the evidence cannot isolate their effects from brand and community.",
           "as_of": "2026-07-29",
-          "source_ids": ["bustabit-v2-announcement", "bustabit-unlv-cash-or-crash", "bustabit-stats-current"],
+          "source_ids": [
+            "bustabit-v2-announcement",
+            "bustabit-unlv-cash-or-crash",
+            "bustabit-stats-current"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
@@ -493,21 +560,30 @@
             "Remain Bitcoin-denominated and custodial rather than issue a token."
           ],
           "as_of": "2026-07-29",
-          "source_ids": ["bustabit-v2-announcement", "bustabit-unlv-cash-or-crash"],
+          "source_ids": [
+            "bustabit-v2-announcement",
+            "bustabit-unlv-cash-or-crash"
+          ],
           "confidence": "high",
           "review_state": "reviewed"
         },
         "token": {
           "value": "No native platform token is part of the documented v2 model; Bitcoin is the wager and bankroll asset, which avoids token dilution while retaining BTC volatility and custody risk.",
           "as_of": "2026-07-29",
-          "source_ids": ["bustabit-v2-announcement", "bustabit-stats-current"],
+          "source_ids": [
+            "bustabit-v2-announcement",
+            "bustabit-stats-current"
+          ],
           "confidence": "medium",
           "review_state": "reviewed"
         },
         "chain_dependence": {
           "value": "Bitcoin is the deposit, wager, and bankroll denomination, but game execution and account liabilities are operator systems rather than Bitcoin smart-contract settlement.",
           "as_of": "2026-07-29",
-          "source_ids": ["bustabit-v2-announcement", "bustabit-stats-current"],
+          "source_ids": [
+            "bustabit-v2-announcement",
+            "bustabit-stats-current"
+          ],
           "confidence": "medium",
           "review_state": "reviewed"
         },
@@ -536,7 +612,7 @@
       "review": {
         "state": "partially_reviewed",
         "reviewer": "codex-research-agent",
-        "reviewed_at": "2026-07-29T20:30:00-04:00",
+        "reviewed_at": "2026-07-29T20:11:54-04:00",
         "as_of": "2026-07-29"
       },
       "sources": [
@@ -553,7 +629,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "June 2026 terms identify Precise Interactive Inc. of Panama as operator and claim Anjouan authorisation for poker, casino, and betting; restrictions and custodial rights remain operator terms.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "coinpoker-chp-current",
@@ -568,7 +644,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Current FAQ identifies CHP as an optional ERC-20 utility for community contributions and rakeback, withdrawal-fee discounts, promotions, betting and account payments, while USDT remains the principal game currency. It does not provide a current canonical contract or supply.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "coinpoker-solana-current",
@@ -583,7 +659,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Current product page describes 2017 launch, poker-led expansion, and Solana funding; marketing superlatives and scale assertions are not adopted.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "coinpoker-lemonde-anjouan-context",
@@ -598,21 +674,27 @@
           "evidence_reviewed": true,
           "evidence_locator": "2026 investigation cites ANJ, the Central Bank of Comoros, and prior World Bank concerns about the Anjouan licensing system generally; it does not adjudicate CoinPoker specifically.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         }
       ],
       "claims": {
         "outcome": {
           "value": "Active poker-led custodial platform with current 2026 terms and product surfaces tracing operation to 2017; success is continuity and product breadth, not audited financial performance.",
           "as_of": "2026-07-29",
-          "source_ids": ["coinpoker-terms-2026", "coinpoker-solana-current"],
+          "source_ids": [
+            "coinpoker-terms-2026",
+            "coinpoker-solana-current"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
         "why": {
           "value": "Poker differentiation, expansion into casino/betting, stablecoin gameplay, and broad crypto funding plausibly support continuity, while current independent activity and retention evidence is absent.",
           "as_of": "2026-07-29",
-          "source_ids": ["coinpoker-solana-current", "coinpoker-chp-current"],
+          "source_ids": [
+            "coinpoker-solana-current",
+            "coinpoker-chp-current"
+          ],
           "confidence": "low",
           "review_state": "unresolved"
         },
@@ -624,28 +706,40 @@
             "Rely on a claimed Anjouan authorisation for the operating scope."
           ],
           "as_of": "2026-07-29",
-          "source_ids": ["coinpoker-terms-2026", "coinpoker-chp-current", "coinpoker-solana-current"],
+          "source_ids": [
+            "coinpoker-terms-2026",
+            "coinpoker-chp-current",
+            "coinpoker-solana-current"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
         "token": {
           "value": "CHP remains described as an optional ERC-20 utility for community contributions and rakeback, withdrawal-fee discounts, promotions, betting and account payments, while USDT is the principal game currency; current contract, supply, concentration, and realized usage remain unresolved.",
           "as_of": "2026-07-29",
-          "source_ids": ["coinpoker-chp-current"],
+          "source_ids": [
+            "coinpoker-chp-current"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
         "chain_dependence": {
           "value": "Solana, Bitcoin, Ethereum, and other networks are funding rails; poker hands, casino games, balances, and liabilities remain operator-controlled rather than publicly executed on those chains.",
           "as_of": "2026-07-29",
-          "source_ids": ["coinpoker-terms-2026", "coinpoker-solana-current"],
+          "source_ids": [
+            "coinpoker-terms-2026",
+            "coinpoker-solana-current"
+          ],
           "confidence": "medium",
           "review_state": "reviewed"
         },
         "legal_or_loss": {
           "value": "CoinPoker claims an Anjouan licence, but major 2026 reporting documents institutional challenges to that licensing system and prohibitions in France; this is material jurisdictional counterevidence, not a CoinPoker-specific finding.",
           "as_of": "2026-07-29",
-          "source_ids": ["coinpoker-terms-2026", "coinpoker-lemonde-anjouan-context"],
+          "source_ids": [
+            "coinpoker-terms-2026",
+            "coinpoker-lemonde-anjouan-context"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         }
@@ -668,7 +762,7 @@
       "review": {
         "state": "partially_reviewed",
         "reviewer": "codex-research-agent",
-        "reviewed_at": "2026-07-29T20:30:00-04:00",
+        "reviewed_at": "2026-07-29T20:11:54-04:00",
         "as_of": "2026-07-29"
       },
       "sources": [
@@ -685,7 +779,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Authority record identifies Liquid Entertainment N.V., company 153298, licensed since 2024-11-01, and approved domains duelbits.com, duelbits.net, and sportsbits.com.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "duelbits-home-current",
@@ -700,7 +794,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Current footer identifies Liquid Entertainment N.V. as operator.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "duelbits-legit-blog-2026",
@@ -715,7 +809,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Operator article published 2026-04-05 names Liquid Gaming N.V. and an older-format licence, conflicting with the current regulator record.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "duelbits-provably-fair",
@@ -730,21 +824,27 @@
           "evidence_reviewed": true,
           "evidence_locator": "Documents server seed, client seed, and nonce verification for Duelbits Originals.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         }
       ],
       "claims": {
         "outcome": {
           "value": "Active, licensed custodial casino and sportsbook with a current authority-resolved operator identity; audited usage, revenue, reserves, and payout quality remain unavailable.",
           "as_of": "2026-07-29",
-          "source_ids": ["duelbits-cga-licence", "duelbits-home-current"],
+          "source_ids": [
+            "duelbits-cga-licence",
+            "duelbits-home-current"
+          ],
           "confidence": "medium",
           "review_state": "reviewed"
         },
         "why": {
           "value": "Casino and sportsbook breadth plus independently verifiable Originals may support acquisition and trust, but no independent cohort, revenue, or retention evidence establishes those choices as the cause of continuity.",
           "as_of": "2026-07-29",
-          "source_ids": ["duelbits-provably-fair", "duelbits-home-current"],
+          "source_ids": [
+            "duelbits-provably-fair",
+            "duelbits-home-current"
+          ],
           "confidence": "low",
           "review_state": "unresolved"
         },
@@ -755,7 +855,10 @@
             "Operate through a Curaçao-licensed corporate entity and multiple approved domains."
           ],
           "as_of": "2026-07-29",
-          "source_ids": ["duelbits-cga-licence", "duelbits-provably-fair"],
+          "source_ids": [
+            "duelbits-cga-licence",
+            "duelbits-provably-fair"
+          ],
           "confidence": "medium",
           "review_state": "reviewed"
         },
@@ -769,14 +872,19 @@
         "chain_dependence": {
           "value": "Crypto assets function primarily as custodial funding and settlement rails; the reviewed provable-fair mechanism covers first-party game outcomes, not onchain custody, liabilities, or sportsbook settlement.",
           "as_of": "2026-07-29",
-          "source_ids": ["duelbits-provably-fair"],
+          "source_ids": [
+            "duelbits-provably-fair"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
         "legal_or_loss": {
           "value": "The Curaçao Gaming Authority currently lists Liquid Entertainment N.V. and the approved Duelbits domains under an active licence. A 2026 operator blog presents a stale entity and licence description, but no audited liability deficit or adjudicated customer-loss event was established.",
           "as_of": "2026-07-29",
-          "source_ids": ["duelbits-cga-licence", "duelbits-legit-blog-2026"],
+          "source_ids": [
+            "duelbits-cga-licence",
+            "duelbits-legit-blog-2026"
+          ],
           "confidence": "medium",
           "review_state": "reviewed"
         }
@@ -799,7 +907,7 @@
       "review": {
         "state": "partially_reviewed",
         "reviewer": "codex-research-agent",
-        "reviewed_at": "2026-07-29T20:30:00-04:00",
+        "reviewed_at": "2026-07-29T20:11:54-04:00",
         "as_of": "2026-07-29"
       },
       "sources": [
@@ -818,7 +926,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Live protocol page exposes current TVL and options premium/notional activity across Optimism, Arbitrum, Base, and Polygon; live values are intentionally not frozen into this prep artifact.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "overtime-trading-guidelines",
@@ -833,7 +941,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Documents AMM trading, Chainlink inputs, full collateralization, and governance council functions.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "overtime-contract-architecture",
@@ -848,7 +956,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Current documentation describes the Thales-derived AMM, fully onchain market creation and settlement, collateral-backed liquidity pools, and Chainlink data inputs.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "overtime-terms",
@@ -863,21 +971,26 @@
           "evidence_reviewed": true,
           "evidence_locator": "Interface terms describe access restrictions and user responsibilities; they do not establish a universal gaming licence.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         }
       ],
       "claims": {
         "outcome": {
           "value": "Economically active multichain sports-market protocol with independently tracked current TVL and options volume; profitability, user retention, and liquidity-provider return quality remain unresolved.",
           "as_of": "2026-07-29",
-          "source_ids": ["overtime-defillama-current"],
+          "source_ids": [
+            "overtime-defillama-current"
+          ],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "why": {
           "value": "Full collateralization, AMM execution, oracle inputs, and multichain distribution plausibly reduce settlement opacity and broaden access, while fragmented liquidity and chain/oracle dependence constrain the causal claim.",
           "as_of": "2026-07-29",
-          "source_ids": ["overtime-defillama-current", "overtime-trading-guidelines"],
+          "source_ids": [
+            "overtime-defillama-current",
+            "overtime-trading-guidelines"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
@@ -889,28 +1002,39 @@
             "Tie the OVER token to protocol governance and economic distribution."
           ],
           "as_of": "2026-07-29",
-          "source_ids": ["overtime-trading-guidelines", "overtime-contract-architecture", "overtime-defillama-current"],
+          "source_ids": [
+            "overtime-trading-guidelines",
+            "overtime-contract-architecture",
+            "overtime-defillama-current"
+          ],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "token": {
           "value": "OVER is the protocol token and live data tracks its market value and protocol economics, but current holder concentration, realized buyback yield, and governance participation are not established here.",
           "as_of": "2026-07-29",
-          "source_ids": ["overtime-defillama-current"],
+          "source_ids": [
+            "overtime-defillama-current"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
         "chain_dependence": {
           "value": "Materially chain-dependent: collateral, AMM execution, and settlement operate across Optimism, Arbitrum, Base, and Polygon, creating transparent activity alongside bridge, oracle, sequencer, and liquidity-fragmentation risks.",
           "as_of": "2026-07-29",
-          "source_ids": ["overtime-defillama-current", "overtime-contract-architecture"],
+          "source_ids": [
+            "overtime-defillama-current",
+            "overtime-contract-architecture"
+          ],
           "confidence": "medium",
           "review_state": "reviewed"
         },
         "legal_or_loss": {
           "value": "Reviewed terms impose interface restrictions but do not establish universal regulatory permission; no adjudicated case-specific loss, audited solvency deficit, or regulator-confirmed shutdown was established.",
           "as_of": "2026-07-29",
-          "source_ids": ["overtime-terms"],
+          "source_ids": [
+            "overtime-terms"
+          ],
           "confidence": "low",
           "review_state": "partially_reviewed"
         }
@@ -933,7 +1057,7 @@
       "review": {
         "state": "partially_reviewed",
         "reviewer": "codex-research-agent",
-        "reviewed_at": "2026-07-29T20:30:00-04:00",
+        "reviewed_at": "2026-07-29T20:11:54-04:00",
         "as_of": "2026-07-29"
       },
       "sources": [
@@ -950,7 +1074,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Current documentation describes a shared onchain bankroll and AI-assisted game creation.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "winr-token-docs",
@@ -965,7 +1089,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Documents WINR's intended wager, incentive, and protocol utility.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "winr-liquidity-docs",
@@ -980,7 +1104,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Documents shared-bankroll liquidity provisioning and issuer-described returns and risks.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "winr-l2beat-current",
@@ -995,7 +1119,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Independent analysis labels the WINR L3 archived and no longer maintained, while documenting current transaction activity plus Arbitrum hosting, external DAC data availability, whitelisted validators, fast confirmations, upgradeability, and operator/sequencer risks; it notes the 2025-11-18 migration from Celestia to DAC.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "winr-defillama-current",
@@ -1012,7 +1136,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "The 2026-07-29 independent protocol snapshot reports zero tracked WINR Protocol TVL. That metric does not prove the absence of every deployed game or transaction, but it directly contradicts an unqualified commercial-activity conclusion.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "winr-paladin-audit",
@@ -1027,21 +1151,29 @@
           "evidence_reviewed": true,
           "evidence_locator": "Commissioned 2023 smart-contract review; scope and date limit its value as a current platform-wide assurance.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         }
       ],
       "claims": {
         "outcome": {
           "value": "Current first-party documentation presents a rebuilt shared-bankroll and AI game-creation product, but DefiLlama reports zero protocol TVL and L2BEAT labels the tracked L3 archived and no longer maintained despite observed chain transactions. A current product surface is therefore not evidence of commercial success or a healthy L3.",
           "as_of": "2026-07-29",
-          "source_ids": ["winr-docs-current", "winr-l2beat-current", "winr-defillama-current"],
+          "source_ids": [
+            "winr-docs-current",
+            "winr-l2beat-current",
+            "winr-defillama-current"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
         "why": {
           "value": "A shared bankroll and creator distribution can reuse liquidity across games, while the same design concentrates game loss, contract, governance, and L3 infrastructure risk into common dependencies. The reviewed evidence does not establish that this redesign reversed the zero-TVL and archived-L3 signals.",
           "as_of": "2026-07-29",
-          "source_ids": ["winr-liquidity-docs", "winr-l2beat-current", "winr-defillama-current"],
+          "source_ids": [
+            "winr-liquidity-docs",
+            "winr-l2beat-current",
+            "winr-defillama-current"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
@@ -1053,28 +1185,39 @@
             "Operate an Arbitrum-hosted L3 with an external DAC."
           ],
           "as_of": "2026-07-29",
-          "source_ids": ["winr-docs-current", "winr-token-docs", "winr-l2beat-current"],
+          "source_ids": [
+            "winr-docs-current",
+            "winr-token-docs",
+            "winr-l2beat-current"
+          ],
           "confidence": "medium",
           "review_state": "reviewed"
         },
         "token": {
           "value": "WINR is directly connected to wagering, incentives, and bankroll participation in protocol materials; current supply, concentration, realized yield, and demand composition remain unresolved.",
           "as_of": "2026-07-29",
-          "source_ids": ["winr-token-docs", "winr-liquidity-docs"],
+          "source_ids": [
+            "winr-token-docs",
+            "winr-liquidity-docs"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
         "chain_dependence": {
           "value": "High dependence: L2BEAT labels the tracked WINR L3 archived and no longer maintained; the observed architecture inherits Arbitrum hosting while relying on an external DAC, whitelisted proof actors, fast confirmations, and upgradeable/operator-controlled components.",
           "as_of": "2026-07-29",
-          "source_ids": ["winr-l2beat-current"],
+          "source_ids": [
+            "winr-l2beat-current"
+          ],
           "confidence": "high",
           "review_state": "reviewed"
         },
         "legal_or_loss": {
           "value": "No reviewed source established a regulator-backed gaming licence, adjudicated customer-loss event, or audited liability deficit. The 2023 commissioned audit is scoped security research, not a licence or current solvency guarantee.",
           "as_of": "2026-07-29",
-          "source_ids": ["winr-paladin-audit"],
+          "source_ids": [
+            "winr-paladin-audit"
+          ],
           "confidence": "low",
           "review_state": "partially_reviewed"
         }
@@ -1098,7 +1241,7 @@
       "review": {
         "state": "partially_reviewed",
         "reviewer": "codex-research-agent",
-        "reviewed_at": "2026-07-29T20:30:00-04:00",
+        "reviewed_at": "2026-07-29T20:11:54-04:00",
         "as_of": "2026-07-29"
       },
       "sources": [
@@ -1115,7 +1258,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Current terms identify Universe B Games B.V., company 155126, and Curaçao licence OGL/2024/1494/0942; withdrawal review may exceed seven days.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "betfury-cga-current",
@@ -1130,7 +1273,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Authority certificate identifies Universe B Games B.V. and active licence OGL/2024/1494/0942, granted 2025-07-31.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "betfury-tokenomics-current",
@@ -1145,7 +1288,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Issuer documentation describes BFG allocation, burns, locks, buybacks, and post-mining design.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "betfury-bfg-legacy",
@@ -1160,7 +1303,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Issuer history describes gameplay mining and the five-billion-token mining phase.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "betfury-coincheckup-2026",
@@ -1175,21 +1318,29 @@
           "evidence_reviewed": true,
           "evidence_locator": "2026 trade review describes the BFG rewards ecosystem; affiliate-style commercial framing limits its value for solvency or performance claims.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         }
       ],
       "claims": {
         "outcome": {
           "value": "Active, licensed custodial casino and sportsbook with a longstanding BFG token ecosystem; audited financial performance, liabilities, and user quality remain unavailable.",
           "as_of": "2026-07-29",
-          "source_ids": ["betfury-cga-current", "betfury-terms-current", "betfury-coincheckup-2026"],
+          "source_ids": [
+            "betfury-cga-current",
+            "betfury-terms-current",
+            "betfury-coincheckup-2026"
+          ],
           "confidence": "medium",
           "review_state": "reviewed"
         },
         "why": {
           "value": "Gameplay mining bootstrapped BFG distribution and the post-mining burn, lock, buyback, and reward system may reinforce retention, but the economic return source and causal contribution are not independently measured.",
           "as_of": "2026-07-29",
-          "source_ids": ["betfury-tokenomics-current", "betfury-bfg-legacy", "betfury-coincheckup-2026"],
+          "source_ids": [
+            "betfury-tokenomics-current",
+            "betfury-bfg-legacy",
+            "betfury-coincheckup-2026"
+          ],
           "confidence": "low",
           "review_state": "partially_reviewed"
         },
@@ -1201,28 +1352,41 @@
             "Operate through a Curaçao-licensed custodial entity."
           ],
           "as_of": "2026-07-29",
-          "source_ids": ["betfury-bfg-legacy", "betfury-tokenomics-current", "betfury-cga-current"],
+          "source_ids": [
+            "betfury-bfg-legacy",
+            "betfury-tokenomics-current",
+            "betfury-cga-current"
+          ],
           "confidence": "medium",
           "review_state": "reviewed"
         },
         "token": {
           "value": "BFG is a BNB Chain ecosystem token linked to rewards and issuer-managed post-mining economics; current supply, holder concentration, realized returns, and sustainable buyback funding remain unresolved.",
           "as_of": "2026-07-29",
-          "source_ids": ["betfury-tokenomics-current", "betfury-bfg-legacy"],
+          "source_ids": [
+            "betfury-tokenomics-current",
+            "betfury-bfg-legacy"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
         "chain_dependence": {
           "value": "BFG depends on BNB Chain for token movement and market infrastructure, while wagers, balances, withdrawals, and liabilities remain controlled by the licensed custodial operator.",
           "as_of": "2026-07-29",
-          "source_ids": ["betfury-tokenomics-current", "betfury-terms-current"],
+          "source_ids": [
+            "betfury-tokenomics-current",
+            "betfury-terms-current"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
         "legal_or_loss": {
           "value": "The regulator confirms an active Curaçao licence for Universe B Games B.V. Current terms preserve operator withdrawal-review discretion that can exceed seven days; no audited reserve deficit or adjudicated customer-loss event was established.",
           "as_of": "2026-07-29",
-          "source_ids": ["betfury-cga-current", "betfury-terms-current"],
+          "source_ids": [
+            "betfury-cga-current",
+            "betfury-terms-current"
+          ],
           "confidence": "medium",
           "review_state": "reviewed"
         }
@@ -1245,7 +1409,7 @@
       "review": {
         "state": "partially_reviewed",
         "reviewer": "codex-research-agent",
-        "reviewed_at": "2026-07-29T20:30:00-04:00",
+        "reviewed_at": "2026-07-29T20:11:54-04:00",
         "as_of": "2026-07-29"
       },
       "sources": [
@@ -1264,7 +1428,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "The 2026-07-29 API snapshot reports zero protocol TVL and zero fees for 24 hours, 7 days, and 30 days while retaining historical cumulative fees. Methodology identifies staking/LP TVL categories, game and P2P fee ranges, and revenue allocation.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "betswirl-bets-token",
@@ -1279,7 +1443,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Documents BETS utility and same-address multichain deployment at 0x94025780a1aB58868D9B2dBBB775f44b32e8E6e5.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "betswirl-contracts",
@@ -1294,7 +1458,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Lists multichain protocol contract deployments and game infrastructure.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "betswirl-paladin-audit",
@@ -1309,7 +1473,7 @@
           "evidence_reviewed": true,
           "evidence_locator": "Commissioned 2024 audit covers PvP Wheel scope and identifies governance-key and contract risks; it is not a platform-wide security guarantee.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         },
         {
           "id": "betswirl-bscscan-current",
@@ -1326,21 +1490,28 @@
           "evidence_reviewed": true,
           "evidence_locator": "Reproducible explorer page shows a verified BNB Chain Dice contract, owner/pause/admin fields, and indexed historical wager events through 2026-01-29; it does not establish current July wagering.",
           "evidence_reviewer": "codex-research-agent",
-          "evidence_reviewed_at": "2026-07-29T20:17:00-04:00"
+          "evidence_reviewed_at": "2026-07-29T20:11:54-04:00"
         }
       ],
       "claims": {
         "outcome": {
           "value": "Deployed multichain casino contracts and historical wager activity remain independently observable, but the 2026-07-29 DefiLlama snapshot reports zero protocol TVL and zero fees across 24-hour, 7-day, and 30-day windows; the reviewed BNB explorer evidence showed wagers only through 2026-01-29. Current adoption is therefore unproven.",
           "as_of": "2026-07-29",
-          "source_ids": ["betswirl-defillama-current", "betswirl-bscscan-current"],
+          "source_ids": [
+            "betswirl-defillama-current",
+            "betswirl-bscscan-current"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
         "why": {
           "value": "Reusable multichain contracts, verifiable randomness, an onchain bankroll, and explicit fee distribution plausibly reduce operator opacity, while current adoption and sustainability remain only partially independently measured.",
           "as_of": "2026-07-29",
-          "source_ids": ["betswirl-defillama-current", "betswirl-contracts", "betswirl-bscscan-current"],
+          "source_ids": [
+            "betswirl-defillama-current",
+            "betswirl-contracts",
+            "betswirl-bscscan-current"
+          ],
           "confidence": "medium",
           "review_state": "partially_reviewed"
         },
@@ -1352,28 +1523,42 @@
             "Deploy BETS at a consistent address across supported chains."
           ],
           "as_of": "2026-07-29",
-          "source_ids": ["betswirl-contracts", "betswirl-bets-token", "betswirl-defillama-current"],
+          "source_ids": [
+            "betswirl-contracts",
+            "betswirl-bets-token",
+            "betswirl-defillama-current"
+          ],
           "confidence": "medium",
-          "review_state": "reviewed"
+          "review_state": "partially_reviewed"
         },
         "token": {
           "value": "BETS is a same-address multichain token linked to staking and holder fee distributions; current circulating supply, holder concentration, realized yield, and incentive share remain unresolved.",
           "as_of": "2026-07-29",
-          "source_ids": ["betswirl-bets-token", "betswirl-defillama-current"],
+          "source_ids": [
+            "betswirl-bets-token",
+            "betswirl-defillama-current"
+          ],
           "confidence": "medium",
           "review_state": "reviewed"
         },
         "chain_dependence": {
           "value": "High EVM-chain dependence: wagers and contract activity are publicly reproducible, but oracle/VRF behavior, administrative control, pausing, liquidity, and each chain's execution environment remain material dependencies.",
           "as_of": "2026-07-29",
-          "source_ids": ["betswirl-contracts", "betswirl-bscscan-current", "betswirl-paladin-audit"],
+          "source_ids": [
+            "betswirl-contracts",
+            "betswirl-bscscan-current",
+            "betswirl-paladin-audit"
+          ],
           "confidence": "high",
           "review_state": "reviewed"
         },
         "legal_or_loss": {
           "value": "No reviewed source established a regulator-backed gaming licence, adjudicated customer-loss event, or audited liability deficit. Open contracts and a commissioned audit do not establish legal permission or eliminate governance risk.",
           "as_of": "2026-07-29",
-          "source_ids": ["betswirl-paladin-audit", "betswirl-bscscan-current"],
+          "source_ids": [
+            "betswirl-paladin-audit",
+            "betswirl-bscscan-current"
+          ],
           "confidence": "low",
           "review_state": "partially_reviewed"
         }
@@ -1391,5 +1576,6 @@
         "Current circulating supply and holder concentration."
       ]
     }
-  ]
+  ],
+  "prepared_cutoff_at": "2026-07-30T00:11:54Z"
 }
