@@ -10,86 +10,30 @@ export const TREND_TAXONOMY_VERSION = 'chaindump-trend-taxonomy-v1';
 export const TREND_SIGNAL_VERSION = 'chaindump-trend-signal-v1';
 export const OUTLOOK_VERSION = 'chaindump-outlook-v1';
 
-export const TREND_DRIVER_DOMAINS = Object.freeze([
-  {
-    id: 'distribution',
-    label: 'Distribution',
-    description: 'Embedded channels, wallets, exchanges, IP, geography, and repeatable acquisition.',
-    mechanism_tags: ['distribution_advantage', 'wallet_or_exchange_funnel', 'brand_ip_reach', 'geographic_reach'],
-  },
-  {
-    id: 'demand_retention',
-    label: 'Demand retention',
-    description: 'Paying use, retained users, repeat activity, active builders, and recurring demand.',
-    mechanism_tags: ['organic_fee_demand', 'retained_users', 'active_builders', 'repeat_transactions'],
-  },
-  {
-    id: 'capital_liquidity',
-    label: 'Capital & liquidity',
-    description: 'TVL, depth, net flows, reserves, collateral, redemption capacity, and liquidity reflexivity.',
-    mechanism_tags: ['liquidity_reflexivity', 'reserve_quality', 'collateral_quality', 'redemption_capacity'],
-  },
-  {
-    id: 'unit_economics',
-    label: 'Unit economics',
-    description: 'Fees, revenue, take rate, margins, runway, and emissions-adjusted economics.',
-    mechanism_tags: ['fee_capture', 'revenue_quality', 'subsidy_dependence', 'treasury_runway'],
-  },
-  {
-    id: 'token_design',
-    label: 'Token design',
-    description: 'Launch timing, allocation, unlocks, emissions, governance, rights, and value capture.',
-    mechanism_tags: ['token_value_capture', 'unlock_pressure', 'emissions_design', 'holder_rights'],
-  },
-  {
-    id: 'product_execution',
-    label: 'Product execution',
-    description: 'Differentiation, killer apps, delivery, migration quality, and product-market fit.',
-    mechanism_tags: ['killer_app', 'migration_execution', 'roadmap_delivery', 'product_differentiation'],
-  },
-  {
-    id: 'security_reliability',
-    label: 'Security & reliability',
-    description: 'Exploits, outages, custody failures, oracle failures, bridge risk, and operational resilience.',
-    mechanism_tags: ['security_failure', 'custody_failure', 'oracle_failure', 'bridge_dependency', 'outage_reliability'],
-  },
-  {
-    id: 'governance_organization',
-    label: 'Governance & organization',
-    description: 'Founder continuity, control keys, treasury controls, disclosure, and governance capture.',
-    mechanism_tags: ['founder_continuity', 'governance_capture', 'control_key_risk', 'disclosure_quality'],
-  },
-  {
-    id: 'dependency_concentration',
-    label: 'Dependency concentration',
-    description: 'Reliance on one chain, operator, custodian, sequencer, issuer, liquidity source, or IP owner.',
-    mechanism_tags: ['single_dependency', 'custodian_concentration', 'sequencer_dependency', 'issuer_dependency'],
-  },
-  {
-    id: 'competition_market_structure',
-    label: 'Competition & market structure',
-    description: 'Share, fragmentation, switching costs, fee compression, and vertical integration.',
-    mechanism_tags: ['fee_compression', 'switching_costs', 'fragmentation', 'vertical_integration'],
-  },
-  {
-    id: 'regulation_compliance',
-    label: 'Regulation & compliance',
-    description: 'Licensing, enforcement, reporting, AML/sanctions, tax, consumer protection, and transition deadlines.',
-    mechanism_tags: ['regulatory_fit', 'licensing_gap', 'reporting_obligation', 'sanctions_exposure'],
-  },
-  {
-    id: 'lifecycle_shock',
-    label: 'Lifecycle shock',
-    description: 'Launch, depeg, hack, halt, acquisition, shutdown, bankruptcy, restructuring, or recovery events.',
-    mechanism_tags: ['launch_shock', 'depeg_event', 'shutdown_event', 'bankruptcy_event', 'recovery_event'],
-  },
-  {
-    id: 'evidence_quality',
-    label: 'Evidence quality',
-    description: 'Stale, contradictory, incomparable, missing-denominator, inaccessible, or unverifiable evidence.',
-    mechanism_tags: ['stale_evidence', 'contradictory_sources', 'missing_denominator', 'incomparable_metric'],
-  },
+const TREND_DRIVER_DOMAIN_ROWS = Object.freeze([
+  ['distribution', 'Distribution', 'Embedded channels, wallets, exchanges, IP, geography, and repeatable acquisition.', ['distribution_advantage', 'wallet_or_exchange_funnel', 'brand_ip_reach', 'geographic_reach']],
+  ['demand_retention', 'Demand retention', 'Paying use, retained users, repeat activity, active builders, and recurring demand.', ['organic_fee_demand', 'retained_users', 'active_builders', 'repeat_transactions']],
+  ['capital_liquidity', 'Capital & liquidity', 'TVL, depth, net flows, reserves, collateral, redemption capacity, and liquidity reflexivity.', ['liquidity_reflexivity', 'reserve_quality', 'collateral_quality', 'redemption_capacity']],
+  ['unit_economics', 'Unit economics', 'Fees, revenue, take rate, margins, runway, and emissions-adjusted economics.', ['fee_capture', 'revenue_quality', 'subsidy_dependence', 'treasury_runway']],
+  ['token_design', 'Token design', 'Launch timing, allocation, unlocks, emissions, governance, rights, and value capture.', ['token_value_capture', 'unlock_pressure', 'emissions_design', 'holder_rights']],
+  ['product_execution', 'Product execution', 'Differentiation, killer apps, delivery, migration quality, and product-market fit.', ['killer_app', 'migration_execution', 'roadmap_delivery', 'product_differentiation']],
+  ['security_reliability', 'Security & reliability', 'Exploits, outages, custody failures, oracle failures, bridge risk, and operational resilience.', ['security_failure', 'custody_failure', 'oracle_failure', 'bridge_dependency', 'outage_reliability']],
+  ['governance_organization', 'Governance & organization', 'Founder continuity, control keys, treasury controls, disclosure, and governance capture.', ['founder_continuity', 'governance_capture', 'control_key_risk', 'disclosure_quality']],
+  ['dependency_concentration', 'Dependency concentration', 'Reliance on one chain, operator, custodian, sequencer, issuer, liquidity source, or IP owner.', ['single_dependency', 'custodian_concentration', 'sequencer_dependency', 'issuer_dependency']],
+  ['competition_market_structure', 'Competition & market structure', 'Share, fragmentation, switching costs, fee compression, and vertical integration.', ['fee_compression', 'switching_costs', 'fragmentation', 'vertical_integration']],
+  ['regulation_compliance', 'Regulation & compliance', 'Licensing, enforcement, reporting, AML/sanctions, tax, consumer protection, and transition deadlines.', ['regulatory_fit', 'licensing_gap', 'reporting_obligation', 'sanctions_exposure']],
+  ['lifecycle_shock', 'Lifecycle shock', 'Launch, depeg, hack, halt, acquisition, shutdown, bankruptcy, restructuring, or recovery events.', ['launch_shock', 'depeg_event', 'shutdown_event', 'bankruptcy_event', 'recovery_event']],
+  ['evidence_quality', 'Evidence quality', 'Stale, contradictory, incomparable, missing-denominator, inaccessible, or unverifiable evidence.', ['stale_evidence', 'contradictory_sources', 'missing_denominator', 'incomparable_metric']],
 ]);
+
+export const TREND_DRIVER_DOMAINS = Object.freeze(
+  TREND_DRIVER_DOMAIN_ROWS.map(([id, label, description, mechanism_tags]) => ({
+    id,
+    label,
+    description,
+    mechanism_tags,
+  })),
+);
 
 export const TREND_CATEGORIES = Object.freeze([
   ...TREND_DRIVER_DOMAINS.map((domain) => ({
