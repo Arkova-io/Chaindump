@@ -115,7 +115,7 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('high-risk claims meet policy');
     expect(html).toContain('publicationDepth: parsedObject(row.publication_depth)');
     expect(html).toContain('sections.push(exchangeFindingHtml(row))');
-    expect(html).toContain('${exchangeFindingHtml(row)}');
+    expect(html).toContain('plainRead || exchangeFindingHtml(row)');
     expect(html).toContain("}, 'This exchange report is listed, but the evidence-backed explanation is still being reviewed.', depth)");
   });
 
@@ -175,7 +175,7 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('loadCasinoAnalysisDetail(state.casinoAnalysisExpanded);');
     expect(html).toContain('Open report →');
     expect(html).toContain('Open coverage ledger →');
-    expect(html).toContain('indexed dossier${filtered.length===1');
+    expect(html).toContain('report${filtered.length===1');
   });
 
   it('uses the detailed cited casino case for expanded identity fields omitted from summary cards', () => {
