@@ -4569,7 +4569,7 @@ app.get('/auth.md', (c) => {
     '',
     '## Current access: x402',
     '',
-    'Chaindump does not require account registration for its agent API. Discovery is free; metered calls use HTTP 402 and x402 payment in USDC on Base. Start with:',
+    'Agent registration is not required for Chaindump\'s current x402 agent API; there is no account or bearer-credential provisioning endpoint. Discovery is free; metered calls use HTTP 402 and x402 payment in USDC on Base. Start with:',
     '',
     `- Manifest: ${ORIGIN}/api/agent/manifest`,
     `- API catalog: ${ORIGIN}/.well-known/api-catalog`,
