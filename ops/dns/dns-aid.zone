@@ -1,8 +1,8 @@
 ; DNS-AID manifest for chaindump.xyz.
-; This file is intentionally not authoritative until imported into the DNS
-; provider and the public zone is DNSSEC-signed. Never add signing keys here.
+; This file is intentionally not authoritative until imported into Cloudflare
+; and the public zone is DNSSEC-signed. Never add signing keys here.
 $ORIGIN chaindump.xyz.
 $TTL 3600
 
-_index._agents SVCB 1 chaindump.xyz. alpn="h2" port=443 mandatory=alpn,port
-_mcp._agents   SVCB 1 chaindump-mcp-270018525501.us-central1.run.app. alpn="h2" port=443 mandatory=alpn,port
+_index._agents SVCB 1 chaindump.xyz. alpn="h2" port=443 mandatory="alpn,port"
+_mcp._agents   SVCB 1 chaindump-mcp-270018525501.us-central1.run.app. alpn="h2" port=443 mandatory="alpn,port"
