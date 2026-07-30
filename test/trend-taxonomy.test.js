@@ -42,13 +42,23 @@ describe('trend taxonomy', () => {
     expect(taxonomy.schema).toBe('trend-taxonomy-v1');
     expect(taxonomy.canonical_schema).toBe('chaindump-trend-taxonomy-v1');
     expect(taxonomy.driver_domains.length).toBeGreaterThanOrEqual(10);
+    expect(taxonomy.summary.trend_categories).toBeGreaterThan(taxonomy.summary.driver_domains);
+    expect(taxonomy.summary.vertical_outlook_refresh_contracts).toBeGreaterThanOrEqual(10);
     expect(taxonomy.outlook_contract.required_fields).toContain('supporting_signal_ids');
+    expect(taxonomy.outlook_contract.required_fields).toContain('change_summary');
+    expect(taxonomy.refreshed_outlook_guide.trend_promotion_policy.minimum_comparable_observations).toBe(3);
+    expect(taxonomy.refreshed_outlook_guide.vertical_refresh_fields.dex).toContain('retained_trader_activity');
     expect(schema.required_record_fields).toContain('unknowns');
+    expect(schema.required_record_fields).toContain('metric_contract');
+    expect(schema.required_record_fields).toContain('human_review_status');
     expect(schema.taxonomy_schema).toBe(taxonomy.schema);
     expect(schema.required_record_fields).toContain('last_reviewed_at');
     expect(schema.quality_gates.join(' ')).toContain('withheld high-risk conclusions');
+    expect(schema.quality_gates.join(' ')).toContain('three comparable dated observations');
     expect(taxonomy.human_intelligence_guide.canonical_format).toHaveLength(5);
     expect(taxonomy.human_intelligence_guide.verticals.dex).toMatch(/real traders/i);
+    expect(schema.label_targets).toContain('refreshed_outlook_delta');
+    expect(schema.slm_label_contract.evidence_sufficiency_labels).toContain('not_comparable');
     expect(schema.human_intelligence_guide.verticals.nft_ordinals).toMatch(/lasting holders/i);
   });
 
@@ -80,6 +90,8 @@ describe('trend taxonomy', () => {
     expect(html).toContain("trendTaxonomyPanel(['dex', 'cex']");
     expect(html).toContain("trendTaxonomyPanel('casino'");
     expect(html).toContain("trendTaxonomyPanel('nft_ordinals'");
+    expect(html).toContain('Refreshed outlook contract');
+    expect(html).toContain('comparable dated observations minimum');
     expect(html).toContain('/api/trend-taxonomy');
     expect(html).toContain('/api/slm/training-schema');
   });
