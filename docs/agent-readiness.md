@@ -1,5 +1,17 @@
 # Agent-readiness / AI-discovery checklist (Phase D)
 
+## Latest production audit — 2026-07-30
+
+Production revision `9235c75d825e0e19d45c4691ad6611ca12f16cdf` is healthy. The
+current external scan is intentionally mixed: WebMCP, the MCP server card, and
+the API catalog pass; DNS-AID, OAuth/OIDC, protected-resource metadata, and the
+scanner's registration-oriented `auth.md` check remain incomplete by design.
+Chaindump uses an x402/no-account agent API today, so publishing a made-up
+issuer, JWKS, scope, or registration endpoint would be false. DNS-AID is a
+separate operational gate: the Cloudflare token exists in Secret Manager but
+does not yet have DNS Records/DNSSEC permissions. See the DNS runbook for the
+exact scope change and fail-closed verification command.
+
 Runs **after the redesign, before UAT**. Source: isitagentready.com audit of
 chaindump.xyz (via Carson 2026-07-13). Each item = a file/header the Worker
 serves. Most are static routes we add to `src/worker.js` (served with the right

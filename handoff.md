@@ -1,5 +1,65 @@
 # Chaindump session handoff - 2026-07-29
 
+## Current execution snapshot — 2026-07-30
+
+This is the authoritative handoff for the latest workflow pass. The source of
+truth is `main` at production revision
+`9235c75d825e0e19d45c4691ad6611ca12f16cdf` (verified through
+`https://chaindump.xyz/api/health`). PRs **#110** and **#111** are merged and
+deployed. The normalized `normalized-dossier-v1` template is now both a public
+UI renderer and an API contract across Blockchain, DEX/CEX, Web3 Casino, and
+NFT/Ordinals; it is not only a style or vocabulary pass. The contract keeps
+the same human report order everywhere: what it is, what happened, why the
+outcome happened, strategic choices, operating model, token/value capture,
+evidence, counterfactual, risks/unknowns, lifecycle, outlook/watch list, and
+review metadata. Unknown and withheld claims remain explicit and each sourced
+claim retains its field-level citation and dates.
+
+### Research Desk execution boundary
+
+The screenshot showing three one-second proposal runs is normal for the
+current safe configuration: the workflow trigger fired, then the jobs were
+intentionally skipped because `RESEARCH_DESK_ENABLED` is not `true`. No paid
+model call or proposal publication occurred. The free six-hour refresh scanner
+continues to record review debt and status, but it is human-review-only and
+cannot rewrite a lifecycle, legal, causal, narrative, or outlook conclusion.
+To enable paid proposal research later, production must have the proposal and
+run-status migrations, matching `DESK_PROPOSAL_TOKEN` /
+`RESEARCH_DESK_PROPOSAL_TOKEN`, a human-only `DESK_REVIEW_TOKEN`, and
+`RESEARCH_DESK_ANTHROPIC_API_KEY`; then a human must explicitly set the
+repository variable. See `agent-desk/README.md` and
+`.github/workflows/research-desk.yml`.
+
+### Agent-discovery and DNS status
+
+- WebMCP is live and scanner-verified: the page registers four read-only
+  tools (market summary, chain profile, sourced signals, forensic trace
+  lookup) when the browser API is available.
+- The MCP server card and API catalog are live. OAuth/OIDC discovery and
+  protected-resource metadata intentionally return a truthful
+  `oauth_not_configured` 404 because Chaindump's current agent API uses x402,
+  not a fabricated issuer/JWKS/registration server. `/auth.md` documents the
+  no-account x402 flow; the external scanner may still mark it incomplete
+  because it expects a registration URL.
+- DNS-AID is not live. The Cloudflare credential does exist in Secret Manager,
+  but its token currently has only Worker and zone-read permissions. It lacks
+  DNS Records read/edit and DNSSEC permissions, so public `_agents` SVCB
+  records cannot be published or claimed. The runbook and dry-run workflow
+  remain in `docs/dns-aid-publication.md`, `docs/dns-aid.md`, and
+  `ops/dns/dns-aid.zone`.
+
+### Verified corpus and remaining work
+
+The latest production corpus smoke verified **50 blockchains, 29 DEX cases,
+30 CEX cases, 29 Web3 casino cases, and 51 NFT/Ordinals cases** through the
+public APIs. Counts describe indexed records, not equal evidentiary depth;
+field-level freshness and withheld states remain visible in each dossier.
+The remaining known product backlog is small and explicit: remove the
+console-icon 404 noise in the browser surface and complete the remaining
+casino jargon/copy cleanup while preserving the normalized contract. A
+detailed chronological account of this pass, including checks and external
+gates, is in `docs/session-summary-2026-07-30.md`.
+
 ## Current state
 
 - 2026-07-30 refreshed-outlook categorization continuation: branch `codex/outlook-trend-slm-readiness-20260730` extends the merged trend taxonomy into a stricter SLM-ready outlook contract. `/api/trend-taxonomy` now exposes `chaindump-refreshed-outlook-v1` with required outlook-refresh sections, evidence statuses, per-vertical refresh fields for blockchain, DEX, CEX, casino, NFT/Ordinals, stablecoins, RWA, DePIN, treasury companies, ETFs/ETPs, and regulatory news, plus the hard rule that a promoted trend needs at least three comparable dated observations with a declared window, denominator, metric contract, comparison key, source/observation date, and provenance. `/api/slm/training-schema` now includes metric contracts, evidence status, human-review status, refreshed-outlook deltas, and the SLM label contract. Every analysis page’s trend guide renders a visible **Refreshed outlook contract** block so this is product surface, not hidden JSON.
