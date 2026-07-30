@@ -18,6 +18,7 @@ describe('agent discovery metadata', () => {
     expect(auth.headers.get('content-type')).toContain('text/markdown');
     const authBody = await auth.text();
     expect(authBody).toContain('# auth.md');
+    expect(authBody).toContain('Agent registration is not required');
     expect(authBody).toContain('x402');
     expect(authBody).toContain('Registration endpoint: none required');
     expect(authBody).toContain('OAuth (not configured)');
