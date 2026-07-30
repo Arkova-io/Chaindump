@@ -5410,6 +5410,88 @@ setInterval(() => {
   if (!fn) return;
   refreshWithUiPreservation(fn);
 }, 60000);
+
+// WebMCP (experimental browser API): expose only read-only, same-origin data
+// lookups. The page never registers tools that submit forms, mutate state, or
+// move funds. A signal-backed registration is aborted on pagehide so stale
+// tools cannot survive a navigation. Older experimental builds used
+// navigator.modelContext.provideContext(); keep a compatibility fallback while
+// preferring the current registerTool() API.
+(function registerChaindumpWebMcp() {
+  const modelContext = document.modelContext || (typeof navigator !== 'undefined' && navigator.modelContext);
+  if (!modelContext) return;
+  const controller = new AbortController();
+  const bounded = (value, max = 120) => String(value || '').trim().slice(0, max);
+  const readJson = async (path, signal) => {
+    const response = await fetch(path, { headers: { accept: 'application/json' }, signal });
+    let body = null;
+    try { body = await response.json(); } catch (error) {}
+    if (!response.ok) return { status: response.status, ...body };
+    return body;
+  };
+  const toolDefinitions = [
+    {
+      name: 'chaindump_market_summary',
+      title: 'Read Chaindump market summary',
+      description: 'Read the current sourced market posture and top blockchain signals. This tool does not change data or submit transactions.',
+      inputSchema: { type: 'object', properties: {}, additionalProperties: false },
+      execute: async (_, options = {}) => readJson('/api/agent/summary', options.signal || controller.signal),
+    },
+    {
+      name: 'chaindump_chain_profile',
+      title: 'Read one chain profile',
+      description: 'Read one chain profile, analyst take, metrics, and cited signals by chain name. This tool is read-only.',
+      inputSchema: {
+        type: 'object',
+        properties: { chain: { type: 'string', description: 'Chain name, for example Ethereum or Solana.' } },
+        required: ['chain'],
+        additionalProperties: false,
+      },
+      execute: async ({ chain } = {}, options = {}) => readJson(`/api/agent/chain/${encodeURIComponent(bounded(chain))}`, options.signal || controller.signal),
+    },
+    {
+      name: 'chaindump_signals',
+      title: 'Read sourced signals',
+      description: 'Read the current confidence-scored capital-flow and activity signals, optionally filtered by direction. This tool is read-only.',
+      inputSchema: {
+        type: 'object',
+        properties: {
+          direction: { type: 'string', enum: ['bullish', 'bearish', 'warning'] },
+          min_confidence: { type: 'number', minimum: 0, maximum: 1 },
+        },
+        additionalProperties: false,
+      },
+      execute: async ({ direction, min_confidence: minConfidence } = {}, options = {}) => {
+        const params = new URLSearchParams();
+        if (['bullish', 'bearish', 'warning'].includes(direction)) params.set('direction', direction);
+        if (Number.isFinite(Number(minConfidence))) params.set('min_confidence', String(Math.max(0, Math.min(1, Number(minConfidence)))));
+        const suffix = params.toString() ? `?${params}` : '';
+        return readJson(`/api/agent/signals${suffix}`, options.signal || controller.signal);
+      },
+    },
+    {
+      name: 'chaindump_trace_lookup',
+      title: 'Search cited forensic traces',
+      description: 'Search Chaindump’s public forensic trace index for an address, transaction, entity, or case name. Results are evidence leads, not a finding of guilt.',
+      inputSchema: {
+        type: 'object',
+        properties: { query: { type: 'string', description: 'A search term, address, transaction hash, or case name.' } },
+        required: ['query'],
+        additionalProperties: false,
+      },
+      execute: async ({ query } = {}, options = {}) => readJson(`/api/trace-lookup?q=${encodeURIComponent(bounded(query))}`, options.signal || controller.signal),
+    },
+  ].map((tool) => ({ ...tool, annotations: { readOnlyHint: true, untrustedContentHint: true } }));
+
+  if (typeof modelContext.registerTool === 'function') {
+    Promise.all(toolDefinitions.map((tool) => modelContext.registerTool(tool, { signal: controller.signal }))).catch(() => {});
+  } else if (typeof modelContext.provideContext === 'function') {
+    // Compatibility with the earlier WebMCP proposal; this branch is never
+    // used by current implementations but keeps the capability discoverable.
+    try { modelContext.provideContext({ tools: toolDefinitions }); } catch (error) {}
+  }
+  window.addEventListener('pagehide', () => controller.abort(), { once: true });
+})();
 </script>
 <div id="cmdk" class="cmdk-overlay" hidden>
   <div class="cmdk" role="dialog" aria-modal="true" aria-label="Command palette">

@@ -4282,6 +4282,67 @@ app.get('/collection/:id', wrap(async (req, res) => {
 // ai-input=yes. See docs/agent-readiness.md.
 // ---------------------------------------------------------------------------
 const ORIGIN = 'https://chaindump.xyz';
+
+// OAuth is deliberately opt-in. Chaindump's production API currently uses
+// x402 (USDC on Base), not bearer tokens, so publishing placeholder OAuth
+// issuers, endpoints, or keys would make agent clients send credentials to a
+// service that does not issue them. Set all required OAUTH_* variables only
+// after a real authorization server is deployed and tested.
+function oauthMetadataConfig() {
+  const values = {
+    issuer: ENV.OAUTH_ISSUER,
+    authorizationEndpoint: ENV.OAUTH_AUTHORIZATION_ENDPOINT,
+    tokenEndpoint: ENV.OAUTH_TOKEN_ENDPOINT,
+    jwksUri: ENV.OAUTH_JWKS_URI,
+    registerUri: ENV.OAUTH_REGISTER_URI,
+    claimUri: ENV.OAUTH_CLAIM_URI,
+  };
+  if (Object.values(values).some((value) => !value)) return null;
+  try {
+    for (const value of Object.values(values)) {
+      const url = new URL(String(value));
+      if (url.protocol !== 'https:') return null;
+    }
+  } catch (error) {
+    return null;
+  }
+  return Object.fromEntries(Object.entries(values).map(([key, value]) => [key, String(value).replace(/\/$/, '')]));
+}
+
+function oauthUnavailable(c) {
+  return c.json({
+    error: 'oauth_not_configured',
+    message: 'Chaindump currently authenticates metered agent requests with x402 (USDC on Base); no OAuth issuer is configured.',
+    x402_manifest: `${ORIGIN}/api/agent/manifest`,
+  }, 404, { 'cache-control': 'no-store' });
+}
+
+function oauthAuthorizationMetadata(config) {
+  return {
+    issuer: config.issuer,
+    authorization_endpoint: config.authorizationEndpoint,
+    token_endpoint: config.tokenEndpoint,
+    jwks_uri: config.jwksUri,
+    registration_endpoint: config.registerUri,
+    grant_types_supported: ['authorization_code', 'client_credentials'],
+    response_types_supported: ['code'],
+    token_endpoint_auth_methods_supported: ['client_secret_basic', 'private_key_jwt'],
+    scopes_supported: ['agent:read'],
+    // Auth.md's agent registration contract is published only alongside a
+    // real registration endpoint; identity and credential claims remain
+    // operator-controlled metadata, never invented by this Worker.
+    agent_auth: {
+      skill: `${ORIGIN}/auth.md`,
+      register_uri: config.registerUri,
+      identity_types_supported: ['anonymous'],
+      anonymous: {
+        credential_types_supported: ['bearer'],
+        claim_uri: config.claimUri,
+      },
+    },
+  };
+}
+
 const AI_CRAWLERS = ['GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'ClaudeBot', 'Claude-Web', 'anthropic-ai', 'Google-Extended', 'PerplexityBot', 'CCBot', 'Applebot-Extended', 'meta-externalagent'];
 const ROBOTS_TXT = [
   '# Chaindump — real-time blockchain intelligence',
@@ -4440,6 +4501,91 @@ app.get('/.well-known/api-catalog', (c) => {
     status: [{ href: `${ORIGIN}/api/health`, type: 'application/json' }],
   }] };
   return new Response(JSON.stringify(linkset), { headers: { 'content-type': 'application/linkset+json', 'cache-control': 'public, max-age=3600' } });
+});
+
+// OAuth/OIDC discovery is conditional on a real issuer. The public Chaindump
+// API is x402-authenticated today; returning fabricated issuer or JWKS URLs is
+// worse than a 404 because agents could try to provision credentials there.
+app.get('/.well-known/oauth-authorization-server', (c) => {
+  const config = oauthMetadataConfig();
+  if (!config) return oauthUnavailable(c);
+  return new Response(JSON.stringify(oauthAuthorizationMetadata(config), null, 2), {
+    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300' },
+  });
+});
+
+app.get('/.well-known/openid-configuration', (c) => {
+  const config = oauthMetadataConfig();
+  if (!config) return oauthUnavailable(c);
+  return new Response(JSON.stringify({
+    ...oauthAuthorizationMetadata(config),
+    subject_types_supported: ['public'],
+    id_token_signing_alg_values_supported: ['RS256'],
+  }, null, 2), {
+    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300' },
+  });
+});
+
+// RFC 9728 metadata for the resource server. It is published only when the
+// same issuer is configured as the authorization server, preventing a
+// discoverable but unusable OAuth flow while Chaindump remains x402-first.
+app.get('/.well-known/oauth-protected-resource', (c) => {
+  const config = oauthMetadataConfig();
+  if (!config) return oauthUnavailable(c);
+  return new Response(JSON.stringify({
+    resource: `${ORIGIN}/api/agent`,
+    authorization_servers: [config.issuer],
+    scopes_supported: ['agent:read'],
+    bearer_methods_supported: ['header'],
+  }, null, 2), {
+    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'public, max-age=300' },
+  });
+});
+
+// Auth.md is always truthful, even before an OAuth issuer exists. It gives
+// agents a complete x402 registration/provisioning path and explicitly says
+// that no account or bearer credential is available today.
+app.get('/auth.md', (c) => {
+  const config = oauthMetadataConfig();
+  const oauthSection = config ? [
+    '',
+    '## OAuth (configured)',
+    '',
+    `Use the authorization server metadata at ${ORIGIN}/.well-known/oauth-authorization-server.`,
+    `Register at ${config.registerUri}; request the \'agent:read\' scope.`,
+    `Use the protected-resource metadata at ${ORIGIN}/.well-known/oauth-protected-resource before sending a bearer token.`,
+  ] : [
+    '',
+    '## OAuth (not configured)',
+    '',
+    'Chaindump does not currently issue OAuth/OIDC credentials. Do not send a bearer token or invent an issuer; the OAuth discovery routes intentionally return 404 until a real issuer, token endpoint, JWKS URI, and registration endpoint are configured.',
+  ];
+  const body = [
+    '# auth.md — Chaindump agent access',
+    '',
+    '## Audience',
+    '',
+    'This document is for software agents that need cited, read-only blockchain, exchange, casino, NFT/Ordinals, policy, and on-chain forensic data from Chaindump.',
+    '',
+    '## Current access: x402',
+    '',
+    'Chaindump does not require account registration for its agent API. Discovery is free; metered calls use HTTP 402 and x402 payment in USDC on Base. Start with:',
+    '',
+    `- Manifest: ${ORIGIN}/api/agent/manifest`,
+    `- API catalog: ${ORIGIN}/.well-known/api-catalog`,
+    `- Health: ${ORIGIN}/api/health`,
+    '',
+    'An x402-aware client reads the payment requirements from the 402 response, signs the requested USDC authorization, and retries with an X-PAYMENT header. In demo mode the API grants a small free quota and ignores payment headers; it never treats a client-supplied header as authentication.',
+    '',
+    'The API is read-only. Claims carry source/provenance fields and confidence; agents should preserve those citations and treat unverified or human-review-gated material as such.',
+    ...oauthSection,
+    '',
+    '## Safety and contact',
+    '',
+    'Do not use this service to submit transactions, move funds, change accounts, or infer a person\'s guilt from an automated match. For access or disclosure questions, use the contact listed on the site.',
+    '',
+  ].join('\n');
+  return new Response(body, { headers: { 'content-type': 'text/markdown; charset=utf-8', 'cache-control': 'public, max-age=300' } });
 });
 
 // Agent Skills Discovery (RFC v0.2.0) — advertises Chaindump's differentiated
