@@ -11,6 +11,8 @@ describe("cross-vertical research contract", () => {
   it("targets every public freshness and analysis surface", () => {
     expect(ANALYSIS_ENDPOINT_PATHS).toEqual({
       reviewDebt: "/api/forensics-refresh-status",
+      trendTaxonomy: "/api/trend-taxonomy",
+      slmSchema: "/api/slm/training-schema",
       blockchains: "/api/chains",
       dex: "/api/exchange-analysis?kind=dex",
       cex: "/api/exchange-analysis?kind=cex",
@@ -36,7 +38,12 @@ describe("cross-vertical research contract", () => {
     expect(prompt).toContain("field_path");
     expect(prompt).toContain("source_refs");
     expect(prompt).toContain("verified_at");
+    expect(prompt).toContain("trend_ids");
+    expect(prompt).toContain("forensic_analysis.watch");
+    expect(prompt).toContain("A trend requires at least three comparable dated observations");
     expect(DEFAULT_RESEARCH_TASK).toContain("DEX, CEX");
+    expect(DEFAULT_RESEARCH_TASK).toContain("trend taxonomy");
+    expect(DEFAULT_RESEARCH_TASK).toContain("outlook/watch/unknowns/licensing/status");
     expect(DEFAULT_RESEARCH_TASK).toContain("It is valid to queue nothing");
   });
 });

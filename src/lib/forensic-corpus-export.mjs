@@ -27,7 +27,7 @@ function sourceArray(value) {
       evidence_reviewed: Boolean(source.evidence_reviewed),
       reachable: source.reachable ?? source.resolving ?? null,
     }];
-  }).filter((source) => /^https:\/\//.test(source.url || ''));
+  }).filter((source) => (source.url || '').startsWith('https://'));
 }
 
 function safeText(value) {
@@ -85,7 +85,7 @@ function stateTagsForForensicRecord(record) {
   if (freshnessStatus) tags.add(`review_${String(freshnessStatus).toLowerCase()}`);
   const forensicStatus = record?.forensicStatus || record?.analysis?.forensic_analysis_status || record?.causalStatus;
   if (forensicStatus) tags.add(`causal_${String(forensicStatus).toLowerCase()}`);
-  return [...tags].sort();
+  return [...tags].sort((a, b) => a.localeCompare(b));
 }
 
 export function normalizeTrainingRecord(record, context = {}) {
