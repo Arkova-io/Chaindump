@@ -1249,6 +1249,36 @@ function blockchainSummary(row) {
   }
   return '<div class="gbody muted">Live market row; a research dossier is not yet published.</div>';
 }
+function blockchainMetricHtml(row) {
+  const metric = row.metric == null ? '—' : fmtUsd(row.metric);
+  return `${metric}<span class="gddl">${esc(row.metricLabel)}</span>`;
+}
+function blockchainDimensionMeta(row) {
+  if (!row.dimensionCount) return '';
+  return `${row.dimensionCount}/${row.expectedDimensionCount} dimensions · `;
+}
+function blockchainFieldCoverageMeta(row) {
+  if (row.dataCompletenessPct == null) return '';
+  return `${row.dataCompletenessPct}% field coverage · `;
+}
+function blockchainFreshnessMeta(freshness, label) {
+  if (!freshness) return '';
+  const reviewDue = freshness.nextReviewAt ? ` by ${esc(freshness.nextReviewAt)}` : '';
+  const policy = freshness.derived ? ' (90d policy)' : '';
+  return ` · ${label} review ${esc(freshness.status)}${reviewDue}${policy}`;
+}
+function blockchainMetaHtml(row) {
+  return [
+    `${esc(row.coverage)} · causal map ${esc(row.causalStatus)}`,
+    row.causalAsOf ? ` as of ${esc(row.causalAsOf)}` : '',
+    ' · ',
+    blockchainDimensionMeta(row),
+    blockchainFieldCoverageMeta(row),
+    `${row.citationCount} cited source${row.citationCount === 1 ? '' : 's'}`,
+    blockchainFreshnessMeta(row.freshness, 'structural'),
+    blockchainFreshnessMeta(row.causalFreshness, 'causal'),
+  ].join('');
+}
 function renderBlockchainAnalysis() {
   const el = document.getElementById('blockchainanalysisview');
   const head = pageHead('Blockchain Analysis', 'One sortable index for live, stuck, dying and dead chains. Research coverage is labeled separately from live market coverage.');
@@ -1293,8 +1323,8 @@ function renderBlockchainAnalysis() {
   );
   const cards = filtered.map((row) => `<div class="gcard">
     <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${blockchainLifecycleClass(row.dossierStatus)}">${esc(row.dossierStatus.replaceAll('_', ' '))}</span></div>
-    <div class="gdd" style="color:var(--muted2);font-size:14px">${row.metric == null ? '—' : fmtUsd(row.metric)}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
-    <div class="gmeta">${esc(row.coverage)} · causal map ${esc(row.causalStatus)}${row.causalAsOf ? ` as of ${esc(row.causalAsOf)}` : ''} · ${row.dimensionCount ? `${row.dimensionCount}/${row.expectedDimensionCount} dimensions · ` : ''}${row.dataCompletenessPct != null ? `${row.dataCompletenessPct}% field coverage · ` : ''}${row.citationCount} cited source${row.citationCount === 1 ? '' : 's'}${row.freshness ? ` · structural review ${esc(row.freshness.status)}${row.freshness.nextReviewAt ? ` by ${esc(row.freshness.nextReviewAt)}` : ''}${row.freshness.derived ? ' (90d policy)' : ''}` : ''}${row.causalFreshness ? ` · causal review ${esc(row.causalFreshness.status)}${row.causalFreshness.nextReviewAt ? ` by ${esc(row.causalFreshness.nextReviewAt)}` : ''}` : ''}</div>
+    <div class="gdd" style="color:var(--muted2);font-size:14px">${blockchainMetricHtml(row)}</div></div>
+    <div class="gmeta">${blockchainMetaHtml(row)}</div>
     ${blockchainSummary(row)}
     ${srcHtml(row.sources.slice(0, 3), 'Cited sources: ')}
     <div class="gexpand"><a href="/chain/${encodeURIComponent(row.name)}">Open chain dossier →</a></div>
