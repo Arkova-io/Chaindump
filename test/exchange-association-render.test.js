@@ -212,10 +212,10 @@ describe('exchangeAssociationPanel', () => {
 
   it('renders dataset-readiness counts and the method note', () => {
     const out = F.exchangeAssociationPanel(summary(), 'DEX');
-    expect(out).toContain('1/4 cited causal dossiers');
+    expect(out).toContain('1/4 reports with cited cause analysis');
     expect(out).toContain('1 documented token records');
     expect(out).toContain('2 current non-limited evidence records');
-    expect(out).toContain('1 strict metric groups with at least two cases');
+    expect(out).toContain('1 comparable metric groups with at least two cases');
     expect(out).toContain('Descriptive association only. Uses Wilson score intervals.');
   });
 
@@ -234,7 +234,7 @@ describe('exchangeAssociationPanel', () => {
 
   it('defaults trendReadiness fields to zero when trendReadiness is missing', () => {
     const out = F.exchangeAssociationPanel(summary({ trendReadiness: undefined }), 'DEX');
-    expect(out).toContain('0/0 cited causal dossiers');
+    expect(out).toContain('0/0 reports with cited cause analysis');
     expect(out).toContain('0 documented token records');
   });
 
