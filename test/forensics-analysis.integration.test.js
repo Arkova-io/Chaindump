@@ -53,6 +53,7 @@ describe('Forensics analysis navigation', () => {
     expect(html).toContain('Causal-map coverage');
     expect(html).toContain('Causal-analysis coverage');
     expect(html).toContain("row.causalStatus === state.blockchainAnalysisCausal");
+    expect(html).toContain('function normalizeLegacyBlockchainAnalysis(row, lifecycle)');
   expect(html).toContain('function factObjectText(value)');
   expect(html).toContain("['classification', 'most_likely', 'base', 'bull', 'bear', 'confidence']");
   expect(html).toContain("<div class=\"dsub\">Why this outcome</div><div class=\"gbody\">${esc(d.why)}</div>");

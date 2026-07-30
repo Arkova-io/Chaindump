@@ -1162,6 +1162,39 @@ function nftProfileAnalysisHtml(profile, sources, publicationDepth = null) {
 // researched mid/dead cohorts. Live-only rows are labeled as such; being in the
 // top 50 is not presented as a completed research dossier.
 // ---------------------------------------------------------------------------
+function normalizeLegacyBlockchainAnalysis(row, lifecycle) {
+  const profile = parsedObject(row.profile);
+  const forensic = parsedObject(profile.forensic_analysis);
+  const forensicReview = parsedObject(forensic.review);
+  const hasForensic = forensic.version === 'forensic-analysis-v1';
+  const sources = sourceArray(row.sources);
+  const isMid = lifecycle === 'mid';
+  return {
+    name: row.chain,
+    lifecycle,
+    coverage: 'Legacy postmortem',
+    dossierStatus: forensic.outcome?.label || profile.status || lifecycle,
+    metric: isMid ? row.tvl : row.current_tvl,
+    metricLabel: isMid ? 'TVL' : 'Current TVL',
+    summary: isMid ? row.why_stuck || profile.situation || '' : row.why || profile.postmortem || '',
+    sources,
+    updatedAt: row.updated_at,
+    dimensionCount: 0,
+    expectedDimensionCount: 8,
+    dataCompletenessPct: null,
+    citationCount: sources.length,
+    freshness: null,
+    causalStatus: hasForensic ? 'published' : 'pending',
+    causalVersion: hasForensic ? forensic.version : null,
+    causalAsOf: hasForensic ? forensic.outcome?.as_of || null : null,
+    causalFreshness: hasForensic ? {
+      status: forensicReviewState(forensicReview),
+      lastReviewedAt: forensicReview.last_reviewed_at || null,
+      nextReviewAt: forensicReview.next_review_at || null,
+    } : null,
+  };
+}
+
 function normalizeBlockchainAnalysis(live, mid, dead) {
   const byName = new Map();
   (live.chains || []).forEach((row) => {
@@ -1187,50 +1220,10 @@ function normalizeBlockchainAnalysis(live, mid, dead) {
     });
   });
   (mid.chains || []).forEach((row) => {
-    const p = parsedObject(row.profile);
-    const forensic = parsedObject(p.forensic_analysis);
-    const hasForensic = forensic.version === 'forensic-analysis-v1';
-    const forensicReview = parsedObject(forensic.review);
-    byName.set(String(row.chain).toLowerCase(), {
-      name: row.chain, lifecycle: 'mid', coverage: 'Legacy postmortem',
-      dossierStatus: p.forensic_analysis?.outcome?.label || p.status || 'mid',
-      metric: row.tvl, metricLabel: 'TVL', summary: row.why_stuck || p.situation || '',
-      sources: sourceArray(row.sources), updatedAt: row.updated_at,
-      dimensionCount: 0, expectedDimensionCount: 8,
-      dataCompletenessPct: null, citationCount: sourceArray(row.sources).length,
-      freshness: null,
-      causalStatus: hasForensic ? 'published' : 'pending',
-      causalVersion: hasForensic ? forensic.version : null,
-      causalAsOf: hasForensic ? forensic.outcome?.as_of || null : null,
-      causalFreshness: hasForensic ? {
-        status: forensicReviewState(forensicReview),
-        lastReviewedAt: forensicReview.last_reviewed_at || null,
-        nextReviewAt: forensicReview.next_review_at || null,
-      } : null,
-    });
+    byName.set(String(row.chain).toLowerCase(), normalizeLegacyBlockchainAnalysis(row, 'mid'));
   });
   (dead.chains || []).forEach((row) => {
-    const p = parsedObject(row.profile);
-    const forensic = parsedObject(p.forensic_analysis);
-    const hasForensic = forensic.version === 'forensic-analysis-v1';
-    const forensicReview = parsedObject(forensic.review);
-    byName.set(String(row.chain).toLowerCase(), {
-      name: row.chain, lifecycle: 'dead', coverage: 'Legacy postmortem',
-      dossierStatus: p.forensic_analysis?.outcome?.label || p.status || 'dead',
-      metric: row.current_tvl, metricLabel: 'Current TVL', summary: row.why || p.postmortem || '',
-      sources: sourceArray(row.sources), updatedAt: row.updated_at,
-      dimensionCount: 0, expectedDimensionCount: 8,
-      dataCompletenessPct: null, citationCount: sourceArray(row.sources).length,
-      freshness: null,
-      causalStatus: hasForensic ? 'published' : 'pending',
-      causalVersion: hasForensic ? forensic.version : null,
-      causalAsOf: hasForensic ? forensic.outcome?.as_of || null : null,
-      causalFreshness: hasForensic ? {
-        status: forensicReviewState(forensicReview),
-        lastReviewedAt: forensicReview.last_reviewed_at || null,
-        nextReviewAt: forensicReview.next_review_at || null,
-      } : null,
-    });
+    byName.set(String(row.chain).toLowerCase(), normalizeLegacyBlockchainAnalysis(row, 'dead'));
   });
   return [...byName.values()];
 }
