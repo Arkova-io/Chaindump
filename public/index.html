@@ -411,6 +411,9 @@
   .analysis-controls .search { max-width:360px; }
   .analysis-spacer { flex:1; }
   .analysis-note { border-left:3px solid var(--accent); background:var(--surface2); padding:12px 14px; border-radius:8px; color:var(--muted2); font-size:12.5px; line-height:1.6; margin-bottom:16px; }
+  .plainread { border-left:3px solid var(--accent); background:var(--surface2); border-radius:8px; padding:10px 12px; margin:10px 0 14px; }
+  .plainread-title { color:var(--text); font-size:11px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; margin-bottom:4px; }
+  .plainread .prose { margin:0; color:var(--text); }
   .analysis-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
   .analysis-src-preview .asrc { margin-top:8px; padding-top:7px; }
   .analysis-empty { background:var(--surface); border:1px dashed var(--border2); border-radius:12px; padding:28px; color:var(--muted2); line-height:1.65; }
@@ -743,13 +746,13 @@ function forensicsFreshnessLabel(freshness) {
 function forensicsScanText() {
   const refresh = state.forensicsRefresh;
   const refreshFreshness = state.forensicsRefreshFreshness;
-  if (state.forensicsRefreshStatus === 'loading') return 'Six-hour review scan: loading evidence-governance status…';
-  if (state.forensicsRefreshStatus === 'unavailable') return 'Six-hour review scan: status unavailable';
-  if (!refresh) return 'Six-hour review scan: no completed scan recorded';
+  if (state.forensicsRefreshStatus === 'loading') return 'Freshness check (every 6 hours): loading…';
+  if (state.forensicsRefreshStatus === 'unavailable') return 'Freshness check (every 6 hours): unavailable';
+  if (!refresh) return 'Freshness check (every 6 hours): no completed check recorded';
   const due = Number(refresh.due_nft || 0) + Number(refresh.due_exchange || 0) + Number(refresh.due_casino || 0) + Number(refresh.due_chain || 0);
   const freshness = forensicsFreshnessLabel(refreshFreshness);
   const nextDue = refreshFreshness?.next_due_at ? ` · next due ${esc(refreshFreshness.next_due_at)}` : '';
-  return `Six-hour review scan: ${esc(freshness)} · last completed ${esc(refreshFreshness?.last_completed_at || refresh.completed_at || 'unknown')}${nextDue} · ${esc(due)} dossier(s) due`;
+  return `Freshness check (every 6 hours): ${esc(freshness)} · last completed ${esc(refreshFreshness?.last_completed_at || refresh.completed_at || 'unknown')}${nextDue} · ${esc(due)} report(s) due`;
 }
 function forensicsPriorCompletionText() {
   const completedAt = state.forensicsProposalAgentLastCompleted?.completed_at;
@@ -759,29 +762,29 @@ function forensicsProposalAgentText() {
   const run = state.forensicsProposalAgent;
   const runFreshness = state.forensicsProposalAgentFreshness;
   const priorCompletion = forensicsPriorCompletionText();
-  if (state.forensicsProposalAgentStatus === 'loading') return 'Proposal research agent: loading run status…';
-  if (state.forensicsProposalAgentStatus === 'unavailable') return 'Proposal research agent: status unavailable';
+  if (state.forensicsProposalAgentStatus === 'loading') return 'Research assistant: loading status…';
+  if (state.forensicsProposalAgentStatus === 'unavailable') return 'Research assistant: status unavailable';
   if (run?.status === 'running') {
     return runFreshness?.state === 'stale'
-      ? `Proposal research agent: interrupted or STALE run since ${esc(run.started_at || 'unknown')}${priorCompletion}`
-      : `Proposal research agent: running since ${esc(run.started_at || 'unknown')}${priorCompletion}`;
+      ? `Research assistant: interrupted or stale since ${esc(run.started_at || 'unknown')}${priorCompletion}`
+      : `Research assistant: running since ${esc(run.started_at || 'unknown')}${priorCompletion}`;
   }
   if (run?.status === 'completed') {
     const freshness = forensicsFreshnessLabel(runFreshness);
     const nextDue = runFreshness?.next_due_at ? ` · next due ${esc(runFreshness.next_due_at)}` : '';
-    return `Proposal research agent: ${esc(freshness)} · completed ${esc(runFreshness?.last_completed_at || run.completed_at || run.started_at || 'unknown')}${nextDue} · ${esc(run.proposals_queued || 0)} candidate(s) queued`;
+    return `Research assistant: ${esc(freshness)} · completed ${esc(runFreshness?.last_completed_at || run.completed_at || run.started_at || 'unknown')}${nextDue} · ${esc(run.proposals_queued || 0)} suggestion(s) queued`;
   }
   if (run?.status === 'failed') {
-    return `Proposal research agent: failed ${esc(run.completed_at || run.started_at || 'unknown')}${priorCompletion}`;
+    return `Research assistant: failed ${esc(run.completed_at || run.started_at || 'unknown')}${priorCompletion}`;
   }
-  return 'Proposal research agent: no run recorded (opt-in workflow)';
+  return 'Research assistant: no run recorded (optional workflow)';
 }
 function forensicsRefreshText() {
-  return `${forensicsScanText()}<br>${forensicsProposalAgentText()} · proposal-only; human promotion required`;
+  return `${forensicsScanText()}<br>${forensicsProposalAgentText()} · suggestions only; a person approves changes`;
 }
 function renderForensicsRefreshStatus() {
   document.querySelectorAll('[data-forensics-refresh]').forEach((node) => {
-    node.innerHTML = `${forensicsRefreshText()} <a href="/api/forensics-refresh-status" target="_blank" rel="noopener noreferrer">Open review status →</a>`;
+    node.innerHTML = `${forensicsRefreshText()} <a href="/api/forensics-refresh-status" target="_blank" rel="noopener noreferrer">See review status →</a>`;
   });
 }
 async function loadForensicsRefreshStatus() {
@@ -807,7 +810,7 @@ async function loadForensicsRefreshStatus() {
   renderForensicsRefreshStatus();
 }
 function pageHead(title, sub){
-  return `<div class="pagehead"><div class="pagetitle">${esc(title)}</div><div class="gvintro">${sub}</div><div class="muted" data-forensics-refresh>${forensicsRefreshText()} <a href="/api/forensics-refresh-status" target="_blank" rel="noopener noreferrer">Open review status →</a></div></div>`;
+  return `<div class="pagehead"><div class="pagetitle">${esc(title)}</div><div class="gvintro">${sub}</div><div class="muted" data-forensics-refresh>${forensicsRefreshText()} <a href="/api/forensics-refresh-status" target="_blank" rel="noopener noreferrer">See review status →</a></div></div>`;
 }
 function trendTaxonomySourceHtml(source) {
   if (!source?.url) return '';
@@ -820,12 +823,14 @@ function trendTaxonomyDomains(value) {
 function trendTaxonomyPanel(domains, title) {
   const wanted = trendTaxonomyDomains(domains);
   if (state.trendTaxonomyStatus === 'loading') {
-    return '<div class="gpanel"><div class="skel">Loading shared trend taxonomy for refreshed outlooks…</div></div>';
+    return '<div class="gpanel"><div class="skel">Loading the shared guide for keeping outlooks fresh…</div></div>';
   }
   if (!state.trendTaxonomy || state.trendTaxonomyStatus === 'unavailable') {
-    return '<div class="analysis-note">Shared trend taxonomy is temporarily unavailable; dossier-level citations and review dates remain authoritative.</div>';
+    return '<div class="analysis-note">The shared outlook guide is temporarily unavailable. The report’s citations and review dates remain the source of truth.</div>';
   }
   const data = state.trendTaxonomy;
+  const guide = data.human_intelligence_guide?.canonical_format || [];
+  const guideHtml = guide.map(([label, description]) => `<div class="gfield"><span class="gfl">${esc(label)}</span>${esc(description)}</div>`).join('');
   const rawCategories = data.categories || data.driver_domains || [];
   const categories = rawCategories.filter((category) => (
     !category.domains
@@ -835,7 +840,7 @@ function trendTaxonomyPanel(domains, title) {
   const visibleCategories = categories.slice(0, 6);
   const categoryHtml = visibleCategories.map((category) => {
     const features = category.slm_features || category.mechanism_tags || [];
-    return `<div class="gfield"><span class="gfl">${esc(category.label)}</span>${esc(category.question || category.description || '')}<br><span class="muted">Features: ${esc(features.join(' · '))}</span></div>`;
+    return `<div class="gfield"><span class="gfl">${esc(category.label)}</span>${esc(category.question || category.description || '')}<br><span class="muted">Signals we track: ${esc(features.join(' · '))}</span></div>`;
   }).join('');
   const trendIds = new Set(categories.map((category) => category.id));
   const signals = (data.regulatory_signals || []).filter((signal) => (
@@ -852,15 +857,16 @@ function trendTaxonomyPanel(domains, title) {
   return `<div class="gpanel">
     <div class="gcols">
       <div>
-        <div class="dsec">${esc(title || 'Outlook trend taxonomy')}</div>
-        <div class="gnar muted">Refreshed outlooks now classify causal drivers with shared trend_ids before they feed the future local SLM. These are tags to apply with evidence, not conclusions by themselves.</div>
+        <div class="dsec">${esc(title || 'Outlook guide')}</div>
+        <div class="gnar muted">Every report follows the same plain-English questions below. The shared tags help the research desk compare patterns; they are labels to support with evidence, not conclusions on their own.</div>
+        ${guideHtml ? `<div class="plainread"><div class="plainread-title">The five questions in every report</div>${guideHtml}</div>` : ''}
         ${categoryHtml || '<div class="muted">No matching trend categories published for this view.</div>'}
       </div>
       <div>
-        <div class="dsec">Current regulatory inputs</div>
+        <div class="dsec">Rules and policy to watch</div>
         ${signalHtml || '<div class="muted">No regulatory signals mapped to this view.</div>'}
-        <div class="analysis-actions"><a class="kindbtn" href="/api/trend-taxonomy" target="_blank" rel="noopener noreferrer">Open taxonomy JSON →</a><a class="kindbtn" href="/api/slm/training-schema" target="_blank" rel="noopener noreferrer">Open SLM schema →</a></div>
-        <div class="muted">${esc(data.schema)} · ${esc(fieldCount)} required evidence fields · as of ${esc(data.as_of || 'unknown')}</div>
+        <div class="analysis-actions"><a class="kindbtn" href="/api/trend-taxonomy" target="_blank" rel="noopener noreferrer">See the full guide →</a><a class="kindbtn" href="/api/slm/training-schema" target="_blank" rel="noopener noreferrer">See the training format →</a></div>
+        <div class="muted">Guide version ${esc(data.schema)} · ${esc(fieldCount)} evidence fields required · as of ${esc(data.as_of || 'unknown')}</div>
       </div>
     </div>
   </div>`;
@@ -1112,6 +1118,22 @@ function analysisText(value) {
   if (Array.isArray(value)) return value.map(String).join(' · ');
   return value == null ? '' : String(value);
 }
+// A single, shared handoff for readers who do not want to decode the research
+// schema first.  This only reuses a published field; it never invents a
+// conclusion or turns a missing field into a claim.
+function plainEnglishRead(fields = {}) {
+  const outlook = fields.outlook;
+  const outlookText = typeof outlook === 'object' && outlook
+    ? [outlook.most_likely, outlook.base, outlook.classification].filter(Boolean).join(' · ')
+    : analysisText(outlook);
+  const choices = Array.isArray(fields.strategic_choices)
+    ? fields.strategic_choices.map((item) => item?.choice || item?.decision || item?.claim || '').filter(Boolean).join(' · ')
+    : analysisText(fields.strategic_choices);
+  const read = [fields.summary, fields.why, fields.present_situation, fields.analysis, outlookText, choices]
+    .map(analysisText).map((value) => value.trim()).find(Boolean);
+  if (!read) return '';
+  return `<div class="plainread"><div class="plainread-title">Plain-English read · why this matters</div>${proseBox(read)}</div>`;
+}
 function distributionItems(rows, getValue, labels = {}) {
   const counts = new Map();
   rows.forEach((row) => {
@@ -1238,18 +1260,18 @@ function nftProfileAnalysisHtml(profile, sources, publicationDepth = null) {
   const forensic = parsedObject(profile?.forensic_analysis);
   const hasForensic = forensic.version === 'forensic-analysis-v1' || forensic.schema === 'forensic-analysis-v1';
   const fields = [
-    ['Token model &amp; value capture', profile?.token_model],
-    ['Chain dependence', profile?.chain_dependence],
-    ['Risk evidence', profile?.risks],
+    ['How the token captures value', profile?.token_model],
+    ['How much it depends on its chain', profile?.chain_dependence],
+    ['Risks in the evidence', profile?.risks],
   ];
   // Older dossiers may have explicit causal fields but not the reviewed shared
   // contract. Keep those fields visible without mislabeling them as normalized.
   if (!hasForensic) fields.push(
-    ['Why this outcome · legacy profile field', profile?.why],
-    ['Strategic choices · legacy profile field', profile?.strategic_choices],
-    ['Counterfactual · legacy profile field', profile?.counterfactual],
-    ['What would change our mind · legacy profile field', profile?.watch],
-    ['Material unknowns · legacy profile field', profile?.unknowns],
+    ['Why this outcome · earlier report field', profile?.why],
+    ['Strategic choices · earlier report field', profile?.strategic_choices],
+    ['What could have been different · earlier report field', profile?.counterfactual],
+    ['What would change our mind · earlier report field', profile?.watch],
+    ['Open questions · earlier report field', profile?.unknowns],
   );
   const structured = fields.map(([label, value]) => {
     const body = nftStructuredValueHtml(value, sources);
@@ -1260,7 +1282,7 @@ function nftProfileAnalysisHtml(profile, sources, publicationDepth = null) {
     return sourceArray(sources).find((item) => item.id === key || item.url === key)
       || (typeof key === 'string' && key.startsWith('https://') ? { url: key, title: 'source' } : null);
   };
-  return `${structured}${forensicAnalysisHtml(profile?.forensic_analysis, resolveRef, 'This NFT/Ordinals dossier remains visible, but its normalized causal map is pending review.', publicationDepth)}`;
+  return `${structured}${forensicAnalysisHtml(profile?.forensic_analysis, resolveRef, 'This NFT/Ordinals report is listed, but the evidence-backed explanation is still being reviewed.', publicationDepth)}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -1341,12 +1363,12 @@ function blockchainLifecycleClass(lifecycle) {
 function blockchainSummary(row) {
   if (row.summary) return `<div class="gbody">${esc(row.summary)}</div>`;
   if (row.dimensionCount && row.causalStatus === 'published') {
-    return '<div class="gbody muted">Structural research and the normalized causal map are published; open the dossier for the evidence-backed why, strategic choices, counterfactual, watch signals and unknowns.</div>';
+    return '<div class="gbody muted">A full report is published. Open it for the evidence-backed why, the choices that shaped the outcome, what could have gone differently, and what we are watching now.</div>';
   }
   if (row.dimensionCount) {
-    return '<div class="gbody muted">The eight-dimension structural dossier is published, but its normalized causal map is pending. Do not treat structural coverage as a completed “why” analysis.</div>';
+    return '<div class="gbody muted">A research report is published, but the evidence-backed explanation is still being reviewed. Do not read this as a finished why.</div>';
   }
-  return '<div class="gbody muted">Live market row; a research dossier is not yet published.</div>';
+  return '<div class="gbody muted">Live numbers are available; a full research report has not been published yet.</div>';
 }
 function blockchainMetricHtml(row) {
   const metric = row.metric == null ? '—' : fmtUsd(row.metric);
@@ -1354,11 +1376,11 @@ function blockchainMetricHtml(row) {
 }
 function blockchainDimensionMeta(row) {
   if (!row.dimensionCount) return '';
-  return `${row.dimensionCount}/${row.expectedDimensionCount} dimensions · `;
+  return `${row.dimensionCount}/${row.expectedDimensionCount} research sections · `;
 }
 function blockchainFieldCoverageMeta(row) {
   if (row.dataCompletenessPct == null) return '';
-  return `${row.dataCompletenessPct}% field coverage · `;
+  return `${row.dataCompletenessPct}% of fields covered · `;
 }
 function blockchainFreshnessMeta(freshness, label) {
   if (!freshness) return '';
@@ -1367,20 +1389,22 @@ function blockchainFreshnessMeta(freshness, label) {
   return ` · ${label} review ${esc(freshness.status)}${reviewDue}${policy}`;
 }
 function blockchainMetaHtml(row) {
+  const coverage = row.coverage === 'Research dossier' ? 'Full research report' : row.coverage === 'Legacy postmortem' ? 'Earlier report' : 'Live numbers';
+  const causal = row.causalStatus === 'published' ? 'why analysis complete' : 'why analysis pending';
   return [
-    `${esc(row.coverage)} · causal map ${esc(row.causalStatus)}`,
+    `${esc(coverage)} · ${esc(causal)}`,
     row.causalAsOf ? ` as of ${esc(row.causalAsOf)}` : '',
     ' · ',
     blockchainDimensionMeta(row),
     blockchainFieldCoverageMeta(row),
     `${row.citationCount} cited source${row.citationCount === 1 ? '' : 's'}`,
-    blockchainFreshnessMeta(row.freshness, 'structural'),
-    blockchainFreshnessMeta(row.causalFreshness, 'causal'),
+    blockchainFreshnessMeta(row.freshness, 'report'),
+    blockchainFreshnessMeta(row.causalFreshness, 'why-analysis'),
   ].join('');
 }
 function renderBlockchainAnalysis() {
   const el = document.getElementById('blockchainanalysisview');
-  const head = pageHead('Blockchain Analysis', 'One sortable index for live, stuck, dying and dead chains. Research coverage is labeled separately from live market coverage.');
+  const head = pageHead('Blockchain Analysis', 'One sortable index for live, stuck, fading and dead chains. Every report shows what happened, why, and what the evidence can—and cannot—tell us.');
   const rows = state.blockchainAnalysisData;
   if (!rows) { el.innerHTML = `${head}<div class="skel">Loading the blockchain index…</div>`; return; }
   const q = state.blockchainAnalysisQuery.toLowerCase();
@@ -1414,23 +1438,23 @@ function renderBlockchainAnalysis() {
   const researched = rows.filter((row) => row.coverage === 'Research dossier').length;
   const causal = rows.filter((row) => row.causalStatus === 'published').length;
   const cohortPanel = analysisCohortPanel(
-    'Dossier status mix',
+    'Where chains stand',
     distributionItems(rows, (row) => row.dossierStatus, { live_only: 'live metrics only', mid: 'stuck / mid', dead: 'dead / dying' }),
-    'Causal-analysis coverage',
-    distributionItems(rows, (row) => row.causalStatus, { published: 'causal map indexed', pending: 'causal map pending' }),
-    'Structural coverage and normalized causal coverage are separate. Review freshness remains visible on each dossier card.',
+    'Why-analysis coverage',
+    distributionItems(rows, (row) => row.causalStatus, { published: 'why analysis complete', pending: 'why analysis pending' }),
+    'A report can have plenty of facts while its evidence-backed explanation is still pending. The card tells you which one you are reading.',
   );
   const cards = filtered.map((row) => `<div class="gcard">
     <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${blockchainLifecycleClass(row.dossierStatus)}">${esc(row.dossierStatus.replaceAll('_', ' '))}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${blockchainMetricHtml(row)}</div></div>
     <div class="gmeta">${blockchainMetaHtml(row)}</div>
-    ${blockchainSummary(row)}
+    ${plainEnglishRead({ summary: row.summary }) || blockchainSummary(row)}
     ${srcHtml(row.sources.slice(0, 3), 'Cited sources: ')}
-    <div class="gexpand"><a href="/chain/${encodeURIComponent(row.name)}">Open chain dossier →</a></div>
+    <div class="gexpand"><a href="/chain/${encodeURIComponent(row.name)}">Open full report →</a></div>
   </div>`).join('');
   el.innerHTML = `${head}
-    <div class="analysis-note"><b>Structural coverage is not causal completion.</b> A chain is counted as causal only when its dossier publishes the normalized why, strategic choices, counterfactual, watch signals, unknowns, outcome as-of date, and review schedule.</div>
-    <div class="gstats">${gstat(rows.length, 'chains indexed')}${gstat(researched, 'structural dossiers')}${gstat(causal, 'causal maps indexed')}${gstat(rows.length - causal, 'causal maps pending')}</div>
+    <div class="analysis-note"><b>Facts are not the same as an explanation.</b> A chain is counted as having a complete why-analysis only when its report explains the outcome, names the choices behind it, says what could have changed it, lists watch signals and unknowns, and gives a review date.</div>
+    <div class="gstats">${gstat(rows.length, 'chains in the index')}${gstat(researched, 'full research reports')}${gstat(causal, 'why analyses complete')}${gstat(rows.length - causal, 'why analyses pending')}</div>
     ${trendTaxonomyPanel('blockchain', 'Blockchain outlook trend taxonomy')}
     ${cohortPanel}
     <div class="toolbar"><div class="analysis-controls">
@@ -1440,24 +1464,24 @@ function renderBlockchainAnalysis() {
         <option value="all"${state.blockchainAnalysisStatus==='all'?' selected':''}>All dossier statuses</option>
         ${[...new Set(rows.map((row) => row.dossierStatus))].sort().map((status) => `<option value="${esc(status)}"${state.blockchainAnalysisStatus===status?' selected':''}>${esc(status.replaceAll('_', ' '))}</option>`).join('')}
       </select>
-      <label class="muted" for="blockchainAnalysisCausal">Causal analysis</label>
+      <label class="muted" for="blockchainAnalysisCausal">Why analysis</label>
       <select id="blockchainAnalysisCausal" class="analysis-select">
-        <option value="all"${state.blockchainAnalysisCausal==='all'?' selected':''}>All causal states</option>
-        <option value="published"${state.blockchainAnalysisCausal==='published'?' selected':''}>Causal map indexed</option>
-        <option value="pending"${state.blockchainAnalysisCausal==='pending'?' selected':''}>Causal map pending</option>
+        <option value="all"${state.blockchainAnalysisCausal==='all'?' selected':''}>All why-analysis states</option>
+        <option value="published"${state.blockchainAnalysisCausal==='published'?' selected':''}>Why analysis complete</option>
+        <option value="pending"${state.blockchainAnalysisCausal==='pending'?' selected':''}>Why analysis pending</option>
       </select>
       <span class="analysis-spacer"></span>
       <label class="muted" for="blockchainAnalysisSort">Sort</label>
       <select id="blockchainAnalysisSort" class="analysis-select">
         <option value="name"${state.blockchainAnalysisSort==='name'?' selected':''}>Name</option>
-        <option value="lifecycle"${state.blockchainAnalysisSort==='lifecycle'?' selected':''}>Dossier status</option>
-        <option value="dossier"${state.blockchainAnalysisSort==='dossier'?' selected':''}>Dossier coverage</option>
-        <option value="causal"${state.blockchainAnalysisSort==='causal'?' selected':''}>Causal-map coverage</option>
+        <option value="lifecycle"${state.blockchainAnalysisSort==='lifecycle'?' selected':''}>Lifecycle</option>
+        <option value="dossier"${state.blockchainAnalysisSort==='dossier'?' selected':''}>Research coverage</option>
+        <option value="causal"${state.blockchainAnalysisSort==='causal'?' selected':''}>Why-analysis coverage</option>
         <option value="citations"${state.blockchainAnalysisSort==='citations'?' selected':''}>Citation count</option>
         <option value="review"${state.blockchainAnalysisSort==='review'?' selected':''}>Review freshness</option>
       </select>
     </div></div>
-    <div class="analysis-actions">${analysisButton('live','Live top 50')}${analysisButton('mid','Stuck / mid dossiers')}${analysisButton('grave','Dead & dying dossiers')}</div>
+    <div class="analysis-actions">${analysisButton('live','Live top 50')}${analysisButton('mid','Stuck / mid reports')}${analysisButton('grave','Dead & fading reports')}</div>
     <div class="dsec" style="margin:20px 0 10px">${filtered.length} chain${filtered.length===1?'':'s'} shown</div>
     <div class="gwrap">${cards || '<div class="skel">No chains match.</div>'}</div>`;
 }
@@ -1611,29 +1635,29 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
   const venueContext = [String(row.venueType).toUpperCase(), exchangeLabel(row.custodyModel || 'custody unresolved')];
   if (row.primaryChain) venueContext.push(row.primaryChain);
   fields.push(
-    `<div class="gfield"><span class="gfl">Venue</span> ${venueContext.map(esc).join(' · ')}</div>`,
+    `<div class="gfield"><span class="gfl">Where it operated</span> ${venueContext.map(esc).join(' · ')}</div>`,
     outcomeGap
       ? '<div class="gfield"><span class="gfl">Observed status</span>withheld · independent support pending</div>'
       : `<div class="gfield"><span class="gfl">Observed status</span> ${esc(exchangeLabel(row.status || 'unknown'))}</div>`,
-    `<div class="gfield"><span class="gfl">Product cohort</span> ${esc(exchangeLabel(row.productCohort))}</div>`,
+    `<div class="gfield"><span class="gfl">What it sold</span> ${esc(exchangeLabel(row.productCohort))}</div>`,
     `<div class="gfield"><span class="gfl">Token</span> ${tokenLine}</div>`,
   );
   const deployments = Array.isArray(row.analysis?.chains) ? row.analysis.chains.filter(Boolean) : [];
-  if (deployments.length) fields.push(`<div class="gfield"><span class="gfl">Deployment context</span> ${esc(deployments.join(' · '))}</div>`);
+  if (deployments.length) fields.push(`<div class="gfield"><span class="gfl">Where it ran</span> ${esc(deployments.join(' · '))}</div>`);
   if (row.token?.launch_date) fields.push(`<div class="gfield"><span class="gfl">Token launch</span> ${esc(row.token.launch_date)}</div>`);
   const metricContract = [row.metricType, row.metricUnit, exchangeLabel(row.metricWindow)];
   if (row.metricAsOf) metricContract.push(`as of ${row.metricAsOf}`);
   metricContract.push(row.metricObservedAt ? `observed ${row.metricObservedAt}` : 'observation time unknown');
-  fields.push(`<div class="gfield"><span class="gfl">Metric contract</span> ${metricContract.map(esc).join(' · ')}</div>`);
-  if (row.comparisonKey) fields.push(`<div class="gfield"><span class="gfl">Comparison key</span> ${esc(row.comparisonKey)}</div>`);
+  fields.push(`<div class="gfield"><span class="gfl">How we measured it</span> ${metricContract.map(esc).join(' · ')}</div>`);
+  if (row.comparisonKey) fields.push(`<div class="gfield"><span class="gfl">Comparison note</span> ${esc(row.comparisonKey)}</div>`);
 
   const sections = [];
-  if (row.operatingModel) sections.push(`<div class="gsec">Operating model</div>${proseBox(row.operatingModel)}`);
+  if (row.operatingModel) sections.push(`<div class="gsec">How it made money</div>${proseBox(row.operatingModel)}`);
   const purpose = profile.purpose || profile.what_it_does;
-  if (purpose) sections.push(`<div class="gsec">Purpose</div>${proseBox(analysisText(purpose))}`);
+  if (purpose) sections.push(`<div class="gsec">What it was built to do</div>${proseBox(analysisText(purpose))}`);
   if (row.summary) sections.push(exchangeFindingHtml(row));
   if (profile.success_factors) sections.push(publicationDepthSectionHtml(
-    'Success factors',
+    'What helped it succeed',
     analysisText(profile.success_factors),
     depth,
     (gap) => gap.path === 'forensic_analysis.why',
@@ -1641,7 +1665,7 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
   const risks = profile.risks || profile.risk_factors;
   if (risks) sections.push(exchangeRiskNotesHtml(risks, depth));
   if (profile.synthesis) sections.push(publicationDepthSectionHtml(
-    'Research synthesis',
+    'Analyst take',
     analysisText(profile.synthesis),
     depth,
     (gap) => gap.path === 'forensic_analysis.why'
@@ -1657,7 +1681,7 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
       const id = typeof source === 'string' ? null : source?.id;
       return url === value || id === value;
     }) || (String(value).startsWith('https://') ? { url: value, title: 'source' } : null);
-  }, 'This exchange dossier is indexed; its normalized causal contract is pending review.', depth));
+  }, 'This exchange report is listed, but the evidence-backed explanation is still being reviewed.', depth));
   const qualityIssueText = row.qualityIssues.length
     ? row.qualityIssues.map(exchangeLabel).join(' · ')
     : 'No recorded feature gaps';
@@ -1667,15 +1691,15 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
   const freshnessState = exchangeReviewState(row);
   const nextReviewAt = forensicReview.next_review_at || freshness.next_review_at || 'unknown';
   return `<div class="gexp">${publicationDepthBanner(depth, 'Exchange dossier inclusion')}${fields.join('')}${sections.join('')}
-    <div class="gsec">Field evidence</div>
+    <div class="gsec">Evidence by field</div>
     ${exchangeEvidenceLinks(row, 'operating_model_source_indexes', 'Operating model')}
     ${exchangeEvidenceLinks(row, 'custody_model_source_indexes', 'Custody')}
-    ${exchangeEvidenceLinks(row, 'product_cohort_source_indexes', 'Product cohort')}
+    ${exchangeEvidenceLinks(row, 'product_cohort_source_indexes', 'Business model')}
     ${exchangeTokenEvidence(row)}
     ${exchangeEvidenceLinks(row, 'metric_source_indexes', 'Metric')}
-    <div class="gsec">Data quality</div>
+    <div class="gsec">Evidence quality</div>
     <div class="gfield"><span class="gfl">${esc(row.qualityLabel)}</span> ${esc(qualityIssueText)}</div>
-    <div class="gfield"><span class="gfl">Freshness</span>${esc(freshnessState.replaceAll('_', ' '))} · lifecycle evidence ${esc(freshness.lifecycle_evidence_date || 'date unknown')} · last verified ${esc(forensicReview.last_verified_at || forensicReview.last_reviewed_at || freshness.last_verified_at || 'unknown')} · next review ${esc(nextReviewAt)}</div>
+    <div class="gfield"><span class="gfl">Research status</span>${esc(freshnessState.replaceAll('_', ' '))} · lifecycle evidence ${esc(freshness.lifecycle_evidence_date || 'date unknown')} · last verified ${esc(forensicReview.last_verified_at || forensicReview.last_reviewed_at || freshness.last_verified_at || 'unknown')} · next review ${esc(nextReviewAt)}</div>
     ${srcHtml(row.sources, 'Cited sources: ')}
     <div class="stampline">Research snapshot ${esc(snapshotDate)} · data quality ${esc(row.qualityLabel)}</div>
   </div>`;
@@ -1692,17 +1716,21 @@ function exchangeAnalysisCard(row) {
   const token = row.token || {};
   const sourcePreview = srcHtml(row.sources.slice(0, 3), 'Cited sources: ');
   const details = open ? exchangeAnalysisDetails(row, p, exchangeTokenLine(token)) : '';
+  const plainRead = !publicationDepthGap(row.publicationDepth, 'forensic_analysis.why')
+    && !publicationDepthGap(row.publicationDepth, 'forensic_analysis.outcome')
+    ? plainEnglishRead({ summary: row.summary, why: p.why, analysis: p.synthesis, outlook: row.outlook })
+    : '';
   const metricContext = row.peakMetric != null ? `Peak ${fmtUsd(row.peakMetric)} → ${exchangeMetric(row)}` : exchangeMetric(row);
   const sourceLabel = row.sources.length === 1 ? 'source' : 'sources';
   const meta = [
     row.kind.toUpperCase(),
-    `venue: ${exchangeLabel(row.venueType)}`,
-    exchangeLabel(row.productCohort),
+    `where: ${exchangeLabel(row.venueType)}`,
+    `model: ${exchangeLabel(row.productCohort)}`,
     row.primaryChain,
     row.launched ? `launched ${row.launched}` : null,
-    `indexed cohort: ${row.lifecycle}`,
-    `data quality: ${row.qualityLabel}`,
-    `causal map: ${row.forensicStatus === 'published' ? 'indexed' : 'structure pending'}`,
+    `outcome: ${lifecycleLabel(row.lifecycle)}`,
+    `evidence: ${row.qualityLabel}`,
+    `why analysis: ${row.forensicStatus === 'published' ? 'complete' : 'pending'}`,
     `high-risk support: ${row.publicationDepth.passing_high_risk_claim_count || 0}/${row.publicationDepth.high_risk_claim_count || 0}`,
     `${row.sources.length} ${sourceLabel}`,
   ].filter(Boolean);
@@ -1711,10 +1739,10 @@ function exchangeAnalysisCard(row) {
     <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${verdictClass}">${esc(verdictLabel)}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${metricContext}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
     <div class="gmeta">${meta.map(esc).join(' · ')}</div>
-    ${exchangeFindingHtml(row)}
+    ${plainRead || exchangeFindingHtml(row)}
     ${publicationDepthEvidenceHtml(row.publicationDepth)}
     <div class="analysis-src-preview">${sourcePreview || '<div class="asrc">No cited sources published for this row.</div>'}</div>
-    ${details}<div class="gexpand">${open?'Hide dossier ▲':'Full dossier ▾'} · <a href="${esc(dossierLink)}">Open dossier →</a></div>
+    ${details}<div class="gexpand">${open?'Hide report ▲':'Read full report ▾'} · <a href="${esc(dossierLink)}">Open report →</a></div>
   </div>`;
 }
 function exchangeTrendSummary(summary, label) {
@@ -1737,7 +1765,7 @@ function exchangeTrendSummary(summary, label) {
   if (chainParts.length) {
     chainContext = `<br/><b>Primary-chain context (descriptive, not causal):</b> ${esc(chainParts.join(' · '))}.`;
   }
-  return `<div class="analysis-note"><b>${esc(label)} cohort:</b> ${summary.count || 0} cases · ${lifecycle.successful || 0} successful · ${lifecycle.mid || 0} mid · ${lifecycle.dead || 0} dead · ${quality.verified || 0} verified / ${quality.partial || 0} partial / ${quality.limited || 0} limited. ${summary.comparisonGroups?.length || 0} strict metric groups. Token evidence by outcome: ${esc(tokenParts.join(', ') || 'none')}.<br/><b>Largest product cohorts:</b> ${esc(productParts.join(' · ') || 'none')}.${chainContext}</div>`;
+  return `<div class="analysis-note"><b>${esc(label)} group:</b> ${summary.count || 0} cases · ${lifecycle.successful || 0} successful · ${lifecycle.mid || 0} stuck · ${lifecycle.dead || 0} closed or winding down · ${quality.verified || 0} verified / ${quality.partial || 0} partial / ${quality.limited || 0} limited. ${summary.comparisonGroups?.length || 0} like-for-like metric groups. Token evidence by outcome: ${esc(tokenParts.join(', ') || 'none')}.<br/><b>Largest business-model groups:</b> ${esc(productParts.join(' · ') || 'none')}.${chainContext}</div>`;
 }
 function exchangeAssociationRows(rows, labels = {}) {
   return (rows || []).map((row) => {
@@ -1784,7 +1812,7 @@ function exchangeAssociationPanel(summary, label) {
 }
 function renderExchangeAnalysis() {
   const el = document.getElementById('exchangeanalysisview');
-  const head = pageHead('DEX/CEX Analysis', 'Cited lifecycle research across successful, middling and failed decentralized and centralized exchanges.');
+  const head = pageHead('DEX/CEX Analysis', 'Research on how decentralized and centralized exchanges grew, stalled, or closed—what they sold, how they made money, and what the evidence supports.');
   const rows = state.exchangeAnalysisData;
   if (!rows) { el.innerHTML = `${head}<div class="skel">Loading exchange dossiers…</div>`; return; }
   const q = state.exchangeAnalysisQuery.toLowerCase();
@@ -1817,17 +1845,17 @@ function renderExchangeAnalysis() {
   const cohorts = [...new Set(rows.map((row) => row.productCohort))]
     .sort((a, b) => a.localeCompare(b));
   const cohortPanel = analysisCohortPanel(
-    'Outcome mix',
+    'Where exchanges stand',
     distributionItems(rows, (row) => row.lifecycle, { successful: 'successful', mid: 'stuck / mid', dead: 'dead / closing' }),
-    'Causal-map freshness',
+    'Why-analysis freshness',
     distributionItems(rows, exchangeReviewState, { review_due: 'review due', unknown: 'pending / unknown' }),
-    'Outcome and freshness bars count normalized DEX and CEX dossiers; they do not combine unlike market metrics.',
+    'The bars show where each exchange stands and how recently its why-analysis was checked. Unlike market metrics are never added together.',
   );
   el.innerHTML = `${head}${errors}
-    <div class="gstats">${gstat(rows.filter(r=>r.kind==='dex').length, 'DEX cases')}${gstat(rows.filter(r=>r.kind==='cex').length, 'CEX cases')}${gstat(rows.filter(r=>r.forensicStatus==='published').length, 'causal maps indexed')}${gstat(claimSupport.unresolved_high_risk_claim_count || 0, 'high-risk claims pending')}</div>
+    <div class="gstats">${gstat(rows.filter(r=>r.kind==='dex').length, 'DEX reports')}${gstat(rows.filter(r=>r.kind==='cex').length, 'CEX reports')}${gstat(rows.filter(r=>r.forensicStatus==='published').length, 'why analyses complete')}${gstat(claimSupport.unresolved_high_risk_claim_count || 0, 'claims still pending')}</div>
     ${trendTaxonomyPanel(['dex', 'cex'], 'DEX/CEX outlook trend taxonomy')}
-    <div class="analysis-note"><b>Exchange claim-support audit: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} high-risk claims meet policy; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending / withheld.</b> “Indexed” means the dossier and causal schema exist; it does not mean the conclusions passed editorial evidence review.</div>
-    <div class="analysis-note">${cited} of ${rows.length} dossiers expose registered citations. Across them: ${esc(claimSupport.registered_source_count || 0)} registered · ${esc(claimSupport.reachable_source_count || 0)} reachable · ${esc(claimSupport.reviewed_source_count || 0)} editor reviewed. Comparison requires the same venue kind, product cohort, metric type, unit, and window. Spot, routed, perpetual, TVL, loss, daily, and quarterly measures are never added together.</div>
+    <div class="analysis-note"><b>Evidence check: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} high-risk claims meet policy; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending or withheld.</b> A report can be listed before every conclusion passes editorial review.</div>
+    <div class="analysis-note">${cited} of ${rows.length} reports expose registered citations. Across them: ${esc(claimSupport.registered_source_count || 0)} registered · ${esc(claimSupport.reachable_source_count || 0)} reachable · ${esc(claimSupport.reviewed_source_count || 0)} editor reviewed. We compare only like with like: the same venue type, business model, metric, unit, and time window. Spot, routed, perpetual, TVL, loss, daily, and quarterly measures are never added together.</div>
     ${cohortPanel}
     ${exchangeTrendSummary(state.exchangeAnalysisSummaries.dex, 'DEX')}
     ${exchangeTrendSummary(state.exchangeAnalysisSummaries.cex, 'CEX')}
@@ -1858,27 +1886,27 @@ function renderExchangeAnalysis() {
           return exchangeOption(quality, label, state.exchangeAnalysisQuality === quality);
         }).join('')}
       </select>
-      <label class="muted" for="exchangeAnalysisForensic">Causal map</label>
+      <label class="muted" for="exchangeAnalysisForensic">Why analysis</label>
       <select id="exchangeAnalysisForensic" class="analysis-select">
         <option value="all">All research states</option>
-        <option value="published"${state.exchangeAnalysisForensic==='published'?' selected':''}>Indexed causal maps</option>
-        <option value="pending"${state.exchangeAnalysisForensic==='pending'?' selected':''}>Causal structure pending</option>
+        <option value="published"${state.exchangeAnalysisForensic==='published'?' selected':''}>Why analysis complete</option>
+        <option value="pending"${state.exchangeAnalysisForensic==='pending'?' selected':''}>Why analysis pending</option>
       </select>
       <span class="analysis-spacer"></span>
       <label class="muted" for="exchangeAnalysisSort">Sort</label>
       <select id="exchangeAnalysisSort" class="analysis-select">
         <option value="name"${state.exchangeAnalysisSort==='name'?' selected':''}>Name</option>
         <option value="lifecycle"${state.exchangeAnalysisSort==='lifecycle'?' selected':''}>Lifecycle</option>
-        <option value="cohort"${state.exchangeAnalysisSort==='cohort'?' selected':''}>Product cohort</option>
-        <option value="metric"${state.exchangeAnalysisSort==='metric'?' selected':''}>Metric comparison key</option>
-        <option value="quality"${state.exchangeAnalysisSort==='quality'?' selected':''}>Data quality</option>
+        <option value="cohort"${state.exchangeAnalysisSort==='cohort'?' selected':''}>Business model</option>
+        <option value="metric"${state.exchangeAnalysisSort==='metric'?' selected':''}>Metric comparison</option>
+        <option value="quality"${state.exchangeAnalysisSort==='quality'?' selected':''}>Evidence quality</option>
         <option value="launched"${state.exchangeAnalysisSort==='launched'?' selected':''}>Launch date</option>
         <option value="citations"${state.exchangeAnalysisSort==='citations'?' selected':''}>Citation count</option>
         <option value="updated"${state.exchangeAnalysisSort==='updated'?' selected':''}>Last verified</option>
       </select>
       <button type="button" class="kindbtn" data-exchange-sort-dir="${state.exchangeAnalysisDir}">${state.exchangeAnalysisDir === 1 ? 'Ascending ↑' : 'Descending ↓'}</button>
     </div></div>
-    <div class="dsec" style="margin:18px 0 10px">${filtered.length} dossier${filtered.length===1?'':'s'} shown</div>
+    <div class="dsec" style="margin:18px 0 10px">${filtered.length} report${filtered.length===1?'':'s'} shown</div>
     <div class="gwrap">${filtered.map(exchangeAnalysisCard).join('') || '<div class="skel">No dossiers match these filters.</div>'}</div>`;
 }
 async function fetchExchangeAnalysisKind(kind) {
@@ -2025,7 +2053,7 @@ function casinoDepthSectionHtml(label, text, depth, isUnsupported) {
   return publicationDepthSectionHtml(label, text, depth, isUnsupported);
 }
 function casinoDetailBody(item, detail) {
-  if (detail === 'loading') return '<div class="gexp"><div class="skel">Loading cited dossier…</div></div>';
+  if (detail === 'loading') return '<div class="gexp"><div class="skel">Loading cited report…</div></div>';
   if (detail?.error) return `<div class="gexp"><div class="muted">Couldn't load this dossier: ${esc(detail.error)}</div></div>`;
   if (!detail) return '';
   // The summary endpoint intentionally omits operator and launch identity
@@ -2033,34 +2061,38 @@ function casinoDetailBody(item, detail) {
   const identity = detail.case || item;
   const synthesis = detail.synthesis || {};
   const depth = detail.publication_depth || item.publication_depth;
+  const plainRead = !publicationDepthGap(depth, 'forensic_analysis.why')
+    && !publicationDepthGap(depth, 'forensic_analysis.outcome')
+    ? plainEnglishRead({ present_situation: synthesis.present_situation, why: synthesis.success_failure_hypotheses, outlook: synthesis.outlook })
+    : '';
   const sections = [
     [
       'Lifecycle &amp; current situation',
       synthesis.present_situation,
       (gap) => gap.type === 'lifecycle' || gap.path === 'forensic_analysis.outcome',
     ],
-    ['Operating model &amp; distribution', synthesis.business_mechanism, () => false],
-    ['Token &amp; value-capture evidence', synthesis.token_contribution, () => false],
-    ['Chain dependence', synthesis.chain_dependence, () => false],
-    ['Legal scope &amp; evidence limit', synthesis.risk_legal_posture, (gap) => gap.type === 'legal'],
+    ['How it worked and reached users', synthesis.business_mechanism, () => false],
+    ['Token and where the money went', synthesis.token_contribution, () => false],
+    ['How much it depended on its chain', synthesis.chain_dependence, () => false],
+    ['What the legal evidence does (and does not) say', synthesis.risk_legal_posture, (gap) => gap.type === 'legal'],
     [
-      'Success / failure hypotheses',
+      'Why it worked or failed',
       synthesis.success_failure_hypotheses,
       (gap) => gap.path === 'forensic_analysis.why'
         || gap.path.startsWith('forensic_analysis.strategic_choices['),
     ],
     [
-      'Counterfactual',
+      'What could have been different',
       synthesis.counterfactual,
       (gap) => gap.path === 'forensic_analysis.counterfactual',
     ],
     [
-      'Outlook &amp; review triggers',
+      'Outlook and what to watch',
       casinoOutlookText(synthesis.outlook),
       casinoOutlookUnsupported,
     ],
     [
-      'Lessons from this case',
+      'What this case teaches',
       Array.isArray(synthesis.lessons_learned)
         ? synthesis.lessons_learned.join(' ')
         : synthesis.lessons_learned,
@@ -2090,10 +2122,10 @@ function casinoDetailBody(item, detail) {
     <div class="gfield"><span class="gfl">Research status</span>${esc(item.confidence || 'unknown')} confidence · ${esc(item.completeness_pct)}% evidence completeness · reviewed ${esc(item.last_reviewed || '—')}</div>
     <div class="gfield"><span class="gfl">Evidence status</span>${esc(identity.registered_source_count)} registered · ${esc(identity.reachable_source_count)} reachable · ${esc(identity.reviewed_source_count)} editor reviewed</div>
     <div class="gfield"><span class="gfl">Known gaps</span>${esc((item.unsourced_fields || []).map(casinoLabel).join(' · ') || 'none published')}</div>
-    ${sections}<div class="gsec">Documented metrics &amp; comparability limits</div>${observations}
+    ${sections}<div class="gsec">Metrics and what they do (and do not) tell us</div>${observations}
     <div class="gsec">Lifecycle timeline</div>${events}
     ${casinoPublicationDepthBanner(depth)}
-    ${forensicAnalysisHtml(synthesis.forensic_analysis, (ref) => {
+    ${plainRead}${forensicAnalysisHtml(synthesis.forensic_analysis, (ref) => {
       const value = typeof ref === 'string' ? ref : (ref?.url || ref?.value);
       if (!value) return null;
       const claim = (detail.claims || []).find((claim) => claim.claim_id === value || claim.url === value);
@@ -2105,9 +2137,9 @@ function casinoDetailBody(item, detail) {
       return String(value).startsWith('https://')
         ? { url: value, title: 'source', verification_note: 'source registry status unavailable' }
         : null;
-    }, 'This casino dossier is indexed; its normalized causal contract is pending review.', depth)}
-    <div class="gsec">Licence observations</div>${licences}
-    <div class="gsec">Field evidence &amp; review status</div>${claimRows}
+    }, 'This casino report is listed, but the evidence-backed explanation is still being reviewed.', depth)}
+    <div class="gsec">Licensing</div>${licences}
+    <div class="gsec">Evidence by field and review status</div>${claimRows}
     ${srcHtml(detail.sources, 'Cited sources: ')}<div class="muted" style="margin-top:8px">Last manually reviewed ${esc(item.last_reviewed || '—')}</div>
   </div>`;
 }
@@ -2128,7 +2160,7 @@ function casinoAnalysisCard(item) {
     : casinoLabel(item.outcome_label || 'outcome unknown');
   const chains = Array.isArray(item.chains) && item.chains.length ? item.chains.join(' · ') : 'No chain scope published';
   const body = open ? casinoDetailBody(item, detail) : '';
-  const sourcePreview = `<div class="analysis-src-preview"><div class="asrc">Evidence: ${esc(item.registered_source_count)} registered · ${esc(item.reachable_source_count)} reachable · ${esc(item.reviewed_source_count)} editor reviewed; open dossier for field-level links and status.</div></div>`;
+  const sourcePreview = `<div class="analysis-src-preview"><div class="asrc">Evidence: ${esc(item.registered_source_count)} registered · ${esc(item.reachable_source_count)} reachable · ${esc(item.reviewed_source_count)} editor reviewed; open the report for field-level links and status.</div></div>`;
   const supportPreview = `<div class="analysis-src-preview"><div class="asrc">High-risk support: ${esc(depth.passing_high_risk_claim_count || 0)}/${esc(depth.high_risk_claim_count || 0)} meet policy · ${esc(depth.unresolved_high_risk_claim_count || 0)} pending / withheld.</div></div>`;
   // Keep the public handoff inside the research UI. The API remains the data
   // source for the lazy detail pane; a reader should never have to inspect raw
@@ -2138,14 +2170,14 @@ function casinoAnalysisCard(item) {
     <div class="ghead"><div class="gname">${esc(item.brand_name)} <span class="gverdict ${!statusPending && item.status === 'active' ? 'recover' : 'declining'}">${esc(statusLabel)}</span></div>
     <div class="gdd" style="color:var(--muted2);font-size:14px">${item.reviewed_source_count}<span class="gddl">editor reviewed</span></div></div>
     <div class="gmeta">${esc(casinoLabel(item.entity_kind))} · ${esc(casinoLabel(item.product_subtype))} · ${esc(chains)} · ${esc(outcomeLabel)} · ${esc(item.completeness_pct)}% complete · status evidence ${esc(item.status_as_of || '—')} · last reviewed ${esc(item.last_reviewed || '—')}</div>
-    <div class="gbody">${esc(item.product_scope_note || 'Scoped research dossier.')}</div>
+    ${plainEnglishRead({ summary: item.product_scope_note }) || '<div class="gbody">This report has a defined scope; open it for the full evidence and lifecycle read.</div>'}
     ${supportPreview}${sourcePreview}
-    ${body}<div class="gexpand">${open ? 'Hide dossier ▲' : 'Full cited dossier ▾'} · <a href="${esc(dossierLink)}" target="_blank" rel="noopener noreferrer">Open dossier →</a></div>
+    ${body}<div class="gexpand">${open ? 'Hide report ▲' : 'Read full report ▾'} · <a href="${esc(dossierLink)}" target="_blank" rel="noopener noreferrer">Open report →</a></div>
   </div>`;
 }
 function renderCasinoAnalysis() {
   const el = document.getElementById('casinoanalysisview');
-  const head = pageHead('Web3 Casino Analysis', 'Indexed, cited research across onchain casinos, sportsbooks, betting exchanges, bankrolls, and gaming infrastructure. Claim support varies and is shown per dossier.');
+  const head = pageHead('Web3 Casino Analysis', 'Research on how onchain casinos, sportsbooks, betting exchanges, bankrolls, and gaming infrastructure grew, stalled, or closed. Each report shows what the evidence supports.');
   if (!state.casinoAnalysisData) { el.innerHTML = `${head}<div class="skel">Loading indexed casino dossiers and claim-support audits…</div>`; return; }
   const coverage = state.casinoCoverage || {};
   const cases = state.casinoAnalysisData.cases || [];
@@ -2171,18 +2203,18 @@ function renderCasinoAnalysis() {
     return;
   }
   const cohortPanel = analysisCohortPanel(
-    'Cohort evidence map · outcomes',
+    'Where these businesses stand',
     distributionItems(cases, (item) => item.outcome_label || 'unclassified'),
-    'Review freshness',
+    'Report freshness',
     distributionItems(cases, casinoReviewState, { review_due: 'review due', unknown: 'review date unknown' }),
-    'Bars prefer each causal map’s explicit next-review date and use the 90-day dossier policy only when that field is absent. A current review is not evidence of profitability or legal availability.',
+    'Bars use each report’s next-review date where one exists. A current review is not proof of profitability or legal availability.',
   );
   el.innerHTML = `${head}
     <div class="analysis-note"><b>${esc(coverage.present_count ?? cases.length)}/${esc(coverage.target_count || cases.length)} corpus coverage measures indexed dossiers, not editorial claim support.</b> Across the visible corpus, ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} high-risk claims meet the independent-support policy and ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending / withheld. No cross-case “largest casino” ranking is computed.</div>
-    <div class="gstats">${gstat(cases.length, 'indexed dossiers')}${gstat(missing, 'expected dossiers missing')}${gstat(claimSupport.unresolved_high_risk_claim_count || 0, 'high-risk claims pending')}${gstat(cases.filter(item=>item.token_status==='documented').length, 'documented tokens')}</div>
+    <div class="gstats">${gstat(cases.length, 'reports in the index')}${gstat(missing, 'reports still missing')}${gstat(claimSupport.unresolved_high_risk_claim_count || 0, 'claims still pending')}${gstat(cases.filter(item=>item.token_status==='documented').length, 'tokens documented')}</div>
     ${trendTaxonomyPanel('casino', 'Web3 casino outlook trend taxonomy')}
     ${cohortPanel}
-    <div class="analysis-note">Legend: “registered” means the citation exists in the dossier; “reachable” records retrieval; “editor reviewed” requires explicit review provenance. None alone proves a high-risk conclusion. Open a dossier to see which lifecycle, causal, legal, loss, and counterfactual claims meet policy or are withheld.</div>
+    <div class="analysis-note">A “registered” source is listed in the report; “reachable” means we could retrieve it; “editor reviewed” means a reviewer recorded that check. None alone proves a high-risk conclusion. Open a report to see which lifecycle, legal, loss, and what-if claims are supported or withheld.</div>
     <div class="toolbar"><div class="analysis-controls">
       <input id="casinoAnalysisSearch" class="search" placeholder="Search casinos, chains or findings…" value="${esc(state.casinoAnalysisQuery)}" />
       <label class="muted" for="casinoAnalysisStatus">Status</label>
@@ -2201,7 +2233,7 @@ function renderCasinoAnalysis() {
       <select id="casinoAnalysisSort" class="analysis-select"><option value="reviewed"${state.casinoAnalysisSort==='reviewed'?' selected':''}>Last reviewed</option><option value="name"${state.casinoAnalysisSort==='name'?' selected':''}>Name</option><option value="sources"${state.casinoAnalysisSort==='sources'?' selected':''}>Reviewed source count</option></select>
     </div></div>
     <div class="analysis-actions"><a class="kindbtn" href="/api/casino-coverage" target="_blank" rel="noopener noreferrer">Open coverage ledger →</a></div>
-    <div class="dsec" style="margin:18px 0 10px">${filtered.length} indexed dossier${filtered.length===1?'':'s'} shown · claim support varies · cohort as of ${esc(coverage.universe_as_of || state.casinoAnalysisData.as_of || '—')}</div>
+    <div class="dsec" style="margin:18px 0 10px">${filtered.length} report${filtered.length===1?'':'s'} shown · evidence strength varies · cohort as of ${esc(coverage.universe_as_of || state.casinoAnalysisData.as_of || '—')}</div>
     <div class="gwrap">${filtered.map(casinoAnalysisCard).join('') || '<div class="skel">No casino dossiers match these filters.</div>'}</div>`;
 }
 async function loadCasinoAnalysis() {
@@ -2855,7 +2887,7 @@ function forensicUnknownsHtml(analysis) {
 function forensicOutcomeHtml(analysis, resolveRef, publicationDepth) {
   const outcome = parsedObject(analysis.outcome);
   const outcomeGap = publicationDepthGap(publicationDepth, 'forensic_analysis.outcome');
-  if (outcomeGap) return publicationPendingHtml('Scoped outcome', outcomeGap);
+  if (outcomeGap) return publicationPendingHtml('Bottom line', outcomeGap);
   let outcomeText = 'outcome withheld';
   if (outcome.label) {
     outcomeText = exchangeLabel(outcome.label);
@@ -2865,18 +2897,18 @@ function forensicOutcomeHtml(analysis, resolveRef, publicationDepth) {
   const references = (outcome.source_refs || outcome.evidence_refs || [])
     .map((ref) => forensicRefHtml(ref, resolveRef))
     .join('');
-  return `<div class="gfield"><span class="gfl">Scoped outcome</span>${esc(outcomeText)}${references}</div>`;
+  return `<div class="gfield"><span class="gfl">Bottom line</span>${esc(outcomeText)}${references}</div>`;
 }
 function forensicReviewHtml(analysis) {
   const review = parsedObject(analysis.review);
   if (!(review?.freshness || review?.status || review?.next_review_at)) return '';
   const stateLabel = forensicReviewState(review).replaceAll('_', ' ');
-  return `<div class="gfield"><span class="gfl">Analysis freshness</span>${esc(stateLabel)} · verified ${esc(review.last_verified_at || review.last_reviewed_at || 'unknown')} · review ${esc(review.next_review_at || 'unknown')}</div>`;
+  return `<div class="gfield"><span class="gfl">Research status</span>${esc(stateLabel)} · verified ${esc(review.last_verified_at || review.last_reviewed_at || 'unknown')} · next review ${esc(review.next_review_at || 'unknown')}</div>`;
 }
-function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is indexed, but its structured causal analysis is pending review.', publicationDepth = null) {
+function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is listed, but the evidence-backed explanation is still being written.', publicationDepth = null) {
   const a = parsedObject(contract);
   if (!a || (a.schema !== 'forensic-analysis-v1' && a.version !== 'forensic-analysis-v1')) {
-    return `<div class="dsec">Forensic analysis</div><div class="analysis-note">${esc(pendingText)}</div>`;
+    return `<div class="dsec">Evidence-backed analysis</div><div class="analysis-note">${esc(pendingText)}</div>`;
   }
   const why = forensicWhyHtml(a, resolveRef, publicationDepth);
   const choices = forensicChoicesHtml(a, resolveRef, publicationDepth);
@@ -2892,7 +2924,7 @@ function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is 
     unknowns ? `<div class="gsec">Material unknowns</div>${unknowns}` : '',
     forensicReviewHtml(a),
   ].filter(Boolean).join('');
-  return `<div class="dsec">Forensic analysis</div><div class="anbox">${sections}</div>`;
+  return `<div class="dsec">Evidence-backed analysis</div><div class="anbox">${sections}</div>`;
 }
 
 function synthesisHtml(f){
@@ -3702,7 +3734,7 @@ function mktUrl(c){
 const CHAIN_ICON = { ethereum:'⟠', solana:'◎', 'bitcoin-ordinals':'₿', ordinals:'₿', polygon:'⬡', 'polygon-pos':'⬡', avalanche:'🔺', berachain:'🐻', abstract:'✦', 'binance-smart-chain':'◈', apechain:'🦍', base:'🔵', ronin:'⚔', hyperevm:'💧', blast:'💥', stargaze:'✧', 'optimistic-ethereum':'🔴', arbitrum:'🔷' };
 const CHAIN_LABEL = { 'polygon-pos':'Polygon', 'binance-smart-chain':'BNB Chain', 'optimistic-ethereum':'Optimism', ordinals:'Bitcoin Ordinals', hyperevm:'HyperEVM', apechain:'ApeChain' };
 function chainLabel(c){ c=(c||'').toString(); return CHAIN_LABEL[c] || c.replace(/-/g,' ').replace(/\b\w/g, m=>m.toUpperCase()); }
-const NFT_HEAD = pageHead('NFT and Ordinals Analysis', 'A lifecycle library for NFT &amp; Ordinals collections — mint raise vs secondary, holder and founder engagement, royalty capture, and how long projects actually last.');
+const NFT_HEAD = pageHead('NFT and Ordinals Analysis', 'A lifecycle library for NFT and Ordinals projects: how they launched, found demand, kept holders, made money, and changed over time.');
 function nftRiskHtml(risk, publicationDepth) {
   if (!risk || !risk.level || risk.level === 'clean') return '';
   let rawSources = [];
@@ -3749,7 +3781,7 @@ function nftLifecycleMetric(profile) {
   return '—';
 }
 function nftLifecycleMetricLabel(profile) {
-  if (profile.secondary_volume_usd != null) return '2nd vol';
+  if (profile.secondary_volume_usd != null) return 'secondary volume';
   if (profile.mint_raise_usd != null) return 'mint raise';
   return 'metric';
 }
@@ -3848,7 +3880,7 @@ function renderNft(data){
   const claimSupport = data.claim_support || {};
   const citation = data.citationCoverage || {};
   const legacyCount = citation.legacyCount ?? data.collections.length;
-  const evidenceCoverage = `<div class="gnar muted" style="margin:0 0 14px">Evidence coverage: ${citation.fieldCitedCount||0} dossier${citation.fieldCitedCount===1?'':'s'} use the field-citation schema; ${legacyCount} legacy dossier${legacyCount===1?'':'s'} retain collection-level source lists while they are retrofitted. Field-cited does not mean editor reviewed.</div>`;
+  const evidenceCoverage = `<div class="gnar muted" style="margin:0 0 14px">How well the reports are sourced: ${citation.fieldCitedCount||0} field-sourced report${citation.fieldCitedCount===1?'':'s'}; ${legacyCount} earlier report${legacyCount===1?'':'s'} still use collection-level source lists while we bring them up to the same standard. Field-sourced does not mean editor reviewed.</div>`;
   // Stat row hoisted out of the panel to sit under the page header, as on every
   // other view. The caveat line stays with the tiles it qualifies.
   const stats = n>50 ? `<div class="gstats">
@@ -3857,21 +3889,21 @@ function renderNft(data){
       ${gstat(m.medianMcapUsd!=null?fmtUsd(m.medianMcapUsd):'—', 'median market cap')}
       ${gstat(m.total24hUsd!=null?fmtUsd(m.total24hUsd):'—', 'total 24h volume')}
     </div>` : `<div class="gstats">
-      ${gstat(data.collections.length, 'deep case studies')}
-      ${gstat(a.avgHolderRetentionPct!=null?a.avgHolderRetentionPct+'%':'—', 'holder retention · case studies')}
-      ${gstat(a.avgLifespanDays!=null?Math.round(a.avgLifespanDays/30)+' mo':'—', 'avg age · case studies')}
-      ${gstat(n||'…', 'live-data collections loading')}
+      ${gstat(data.collections.length, 'in-depth case studies')}
+      ${gstat(a.avgHolderRetentionPct!=null?a.avgHolderRetentionPct+'%':'—', 'holders retained on average')}
+      ${gstat(a.avgLifespanDays!=null?Math.round(a.avgLifespanDays/30)+' mo':'—', 'average project life')}
+      ${gstat(n||'…', 'live collections loading')}
     </div><div class="gnar muted" style="margin:0 0 14px">Note: the stats above are across the ${data.collections.length} in-depth case studies (blue-chips + notable failures), not a market average — a broader live dataset of hundreds of collections is loading.</div>`;
   const cohortPanel = analysisCohortPanel(
-    'Lifecycle cohort',
+    'Where projects stand today',
     distributionItems(data.collections, (item) => item.status || 'unknown'),
-    'Evidence freshness',
+    'Report freshness',
     distributionItems(data.collections, nftReviewState, {
       review_due: 'review due',
       withheld: 'stale / withheld',
       legacy: 'legacy / no field policy',
     }),
-    'Lifecycle bars show indexed classifications, not independently verified outcomes. Freshness is derived from each field-cited dossier’s evidence policy; legacy source lists remain visibly separate.',
+    'These bars show indexed classifications, not independently verified outcomes. Freshness follows each report’s evidence policy; earlier collection-level source lists remain clearly marked.',
   );
   const panel = `<div class="gpanel">
     ${accordionHtml(
@@ -3911,8 +3943,12 @@ function renderNft(data){
     const sourceCount = sourceArray(citedSources).length;
     const sourcePreview = srcHtml(sourceArray(citedSources).slice(0, 3), 'Cited sources: ') || '<div class="analysis-src-preview"><div class="asrc">No cited sources published for this case study.</div></div>';
     const mkt = mktUrl(c);
+    const plainRead = !publicationDepthGap(depth, 'forensic_analysis.why')
+      && !publicationDepthGap(depth, 'forensic_analysis.outcome')
+      ? plainEnglishRead({ analysis: p.analysis, why: p.why, outlook: p.outlook })
+      : '';
     const body = open ? `<div class="gexp">
-      ${publicationDepthBanner(depth, 'NFT/Ordinals dossier inclusion')}
+      ${publicationDepthBanner(depth, 'NFT/Ordinals report inclusion')}
       ${nftRiskHtml(c.risk, depth)}
       ${mkt?`<div class="gfield"><span class="gfl">Collection</span> <a href="${esc(safeUrl(mkt))}" target="_blank" rel="noopener noreferrer">View on marketplace ↗</a></div>`:''}
       <div class="gfield"><span class="gfl">Minted</span> ${esc(p.launched||'—')}${nftSupplyText(p.supply) ? ` · ${esc(nftSupplyText(p.supply))}` : ''}</div>
@@ -3938,16 +3974,17 @@ function renderNft(data){
         <div class="gname">${icon} ${esc(c.name)} <span class="gverdict ${outcomeGap ? 'declining' : verdictClass(c.status)}">${esc(outcomeGap ? 'support pending' : (c.status||''))}</span></div>
         <div class="gdd" style="color:var(--muted2);font-size:13px">${nftLifecycleMetric(p)}<span class="gddl">${nftLifecycleMetricLabel(p)}</span></div>
       </div>
-      <div class="gmeta">${esc(chainLabel(c.chain))}${p.launched?` · launched ${esc(p.launched)}`:''}${p.holder_retention_pct!=null?` · ${p.holder_retention_pct}% holders retained`:''} · ${sourceCount} registered source${sourceCount===1?'':'s'} · ${c.citation?.fieldCited?'field-citation schema':'legacy/collection-cited'}${outcomeGap?` · indexed classification ${esc(c.status||'unknown')} not independently verified`:''}</div>
+      <div class="gmeta">${esc(chainLabel(c.chain))}${p.launched?` · launched ${esc(p.launched)}`:''}${p.holder_retention_pct!=null?` · ${p.holder_retention_pct}% holders retained`:''} · ${sourceCount} cited source${sourceCount===1?'':'s'} · ${c.citation?.fieldCited?'field-sourced report':'earlier report with collection sources'}${outcomeGap?` · indexed classification ${esc(c.status||'unknown')} is not independently verified`:''}</div>
+      ${plainRead}
       ${nftLifecycleReadHtml(p, depth)}
       ${publicationDepthEvidenceHtml(depth)}
       <div class="analysis-src-preview">${sourcePreview}</div>
       ${body}
-      <div class="gexpand">${open?'Hide details ▲':'Full lifecycle ▾'} · <a href="/collection/${encodeURIComponent(c.slug)}">Open dossier →</a></div>
+      <div class="gexpand">${open?'Hide details ▲':'Read full lifecycle ▾'} · <a href="/collection/${encodeURIComponent(c.slug)}">Open report →</a></div>
     </div>`;
   }).join('');
   el.innerHTML = `${NFT_HEAD}${stats}
-  <div class="analysis-note"><b>NFT/Ordinals claim-support audit: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} high-risk claims meet policy; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending / withheld.</b> The index preserves rich dossiers and registered sources, but unsupported lifecycle, causal, legal, loss, and counterfactual conclusions are not presented as independently verified.</div>
+  <div class="analysis-note"><b>NFT/Ordinals evidence check: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} high-risk claims meet policy; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending or withheld.</b> The index preserves rich reports and registered sources, but unsupported lifecycle, legal, loss, and what-if conclusions are not presented as independently verified.</div>
   <div class="analysis-note">Evidence status across the corpus: ${esc(claimSupport.registered_source_count || 0)} registered · ${esc(claimSupport.reachable_source_count || 0)} reachable · ${esc(claimSupport.reviewed_source_count || 0)} editor reviewed. “Reachable” records retrieval; it is not editorial review.</div>
   ${evidenceCoverage}${trendTaxonomyPanel('nft_ordinals', 'NFT/Ordinals lifecycle trend taxonomy')}${cohortPanel}${panel}
   <div class="toolbar"><div class="analysis-controls">
@@ -3967,7 +4004,7 @@ function renderNft(data){
     </select>
   </div></div>
   <div class="analysis-actions"><a class="kindbtn" href="#nftcatalog">Browse live catalog ↓</a></div>
-  <div class="dsec" style="margin:20px 0 10px">${caseList.length} lifecycle case stud${caseList.length===1?'y':'ies'} shown · ${data.collections.length} total</div>
+  <div class="dsec" style="margin:20px 0 10px">${caseList.length} lifecycle report${caseList.length===1?'':'s'} shown · ${data.collections.length} total</div>
   <div class="gwrap">${cards || '<div class="skel">No case studies match.</div>'}</div>
   <div class="dsec" style="margin:28px 0 4px">Browse the full catalog by chain</div>
   <div class="gnar muted" style="margin-bottom:12px">Every NFT &amp; Ordinals collection tracked, grouped by chain — open a chain to browse its collections, or search across all chains. Each card opens live floor, market cap, 24h volume and holders.</div>

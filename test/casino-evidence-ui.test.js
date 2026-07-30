@@ -42,11 +42,14 @@ function buildCasinoCardRenderer() {
   return new Function(`
     const esc = (value) => String(value ?? '');
     const casinoLabel = (value) => String(value || '').replaceAll('_', ' ');
+    const analysisText = (value) => Array.isArray(value) ? value.map(String).join(' · ') : (value == null ? '' : String(value));
+    const proseBox = (value) => '<div class="prose">' + esc(value) + '</div>';
     const casinoDetailBody = () => '';
     const state = {
       casinoAnalysisExpanded: null,
       casinoAnalysisDetails: {},
     };
+    ${functionBlock('plainEnglishRead', 'distributionItems')}
     ${functionBlock('publicationDepthGap', 'publicationPendingHtml')}
     ${functionBlock('casinoAnalysisCard', 'renderCasinoAnalysis')}
     return casinoAnalysisCard;
