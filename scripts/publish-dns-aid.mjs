@@ -38,10 +38,11 @@ async function cf(path, init) {
     ? { ...init, headers: { ...headers, ...(init.headers || {}) } }
     : { headers };
   const response = await fetch(`${api}${path}`, request);
-  const body = await response.json().catch(() => ({}));
-  if (!response.ok || body.success !== true) {
-    const code = body.errors?.[0]?.code ?? response.status;
-    const message = body.errors?.[0]?.message ?? response.statusText;
+  const body = await response.json().catch(() => null);
+  if (!response.ok || body?.success !== true) {
+    const errors = Array.isArray(body?.errors) ? body.errors : [];
+    const code = errors[0]?.code ?? response.status;
+    const message = errors[0]?.message ?? response.statusText;
     throw new Error(`Cloudflare API request failed (${code}): ${message}`);
   }
   return body.result;
@@ -60,7 +61,7 @@ for (const record of records) {
 }
 
 const dnssec = await cf('/dnssec');
-console.log(JSON.stringify({ dnssec_status: dnssec.status, ds_available: Boolean(dnssec.ds), apply, enable_dnssec: enableDnssec }));
+console.log(JSON.stringify({ ds_available: Boolean(dnssec.ds), apply, enable_dnssec: enableDnssec }));
 if (enableDnssec && dnssec.status !== 'active') {
   if (!apply) {
     console.log(JSON.stringify({ action: 'would-enable-dnssec' }));

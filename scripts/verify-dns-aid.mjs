@@ -25,7 +25,7 @@ const hasAlpn = /(?:^|[\\s])alpn(?:=|\\s)/i.test(data);
 const hasEndpoint = /(?:^|[\\s])(?:port|target)(?:=|\\s)/i.test(data);
 
 const result = {
-  status: payload.Status,
+  noerror: payload.Status === 0,
   authenticated: payload.AD === true,
   has_alpn: hasAlpn,
   has_endpoint_parameter: hasEndpoint,
