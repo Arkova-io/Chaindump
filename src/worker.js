@@ -34,6 +34,10 @@ import {
   summarizeCasinoPublicationCoverage,
 } from './lib/casino-publication-cohort.js';
 import {
+  slmTrainingSchemaPayload,
+  trendTaxonomyPayload,
+} from './lib/trend-taxonomy.js';
+import {
   assessCasinoPublicationDepth,
   assessExchangePublicationDepth,
   assessNftPublicationDepth,
@@ -3347,6 +3351,17 @@ app.get('/api/forensics-refresh-status', wrap(async (req, res) => {
     ...(refreshError ? { error: refreshError } : {}),
     ...(proposalAgentError ? { proposal_agent_error: proposalAgentError } : {}),
   });
+}));
+
+// Shared outlook/trend vocabulary for analyst refreshes and local-SLM exports.
+// This endpoint is intentionally source-backed metadata, not an automated
+// rewrite of any dossier conclusion.
+app.get('/api/trend-taxonomy', wrap((req, res) => {
+  res.json(trendTaxonomyPayload());
+}));
+
+app.get('/api/slm/training-schema', wrap((req, res) => {
+  res.json(slmTrainingSchemaPayload());
 }));
 
 // Decentralized storage / document-verification infrastructure

@@ -12,3 +12,4 @@ node_modules/
 # generated / local artifacts
 board.json
 .playwright-mcp/
+.chaindump-corpus/
