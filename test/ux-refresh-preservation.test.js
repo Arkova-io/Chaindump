@@ -25,4 +25,17 @@ describe('background refresh UX contract', () => {
     expect(timer).toContain('refreshWithUiPreservation(fn);');
     expect(timer).not.toContain('window.scrollTo(0, y)');
   });
+
+  it('preserves focus when asynchronous taxonomy and catalog renders replace controls', () => {
+    expect(html).toContain('function rerenderActiveForensicsView()');
+    expect(html).toContain('function renderCatalogBody()');
+    expect(html).toContain('function renderCatalog()');
+    expect(html).toContain('document.addEventListener(\'change\', preserveControlAfterEvent, true);');
+    expect(html).toContain('document.addEventListener(\'input\', preserveControlAfterEvent, true);');
+  });
+
+  it('does not remount the traces page on every route visit', () => {
+    expect(html).toContain('if (state.tracesData) renderTraces(state.tracesData);');
+    expect(html).toContain('if (!state.tracesData) document.getElementById(\'tracesview\').innerHTML');
+  });
 });

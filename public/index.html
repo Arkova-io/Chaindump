@@ -884,10 +884,16 @@ function trendTaxonomyPanel(domains, title) {
   </div>`;
 }
 function rerenderActiveForensicsView() {
-  if (state.activeView === 'blockchain-analysis') renderBlockchainAnalysis();
-  if (state.activeView === 'exchange-analysis') renderExchangeAnalysis();
-  if (state.activeView === 'casino-analysis') renderCasinoAnalysis();
-  if (state.activeView === 'nft-analysis' && state.nftData) renderNft(state.nftData);
+  // Taxonomy arrives asynchronously. Preserve the control/scroll state that
+  // may have changed while it was loading instead of stealing focus from a
+  // reader who started searching a dossier.
+  const snapshot = captureUiSnapshot();
+  try {
+    if (state.activeView === 'blockchain-analysis') renderBlockchainAnalysis();
+    if (state.activeView === 'exchange-analysis') renderExchangeAnalysis();
+    if (state.activeView === 'casino-analysis') renderCasinoAnalysis();
+    if (state.activeView === 'nft-analysis' && state.nftData) renderNft(state.nftData);
+  } finally { restoreUiSnapshot(snapshot); }
 }
 async function loadTrendTaxonomy() {
   if (state.trendTaxonomyStatus === 'loaded') return;
@@ -3381,7 +3387,13 @@ function switchView(view, push){
   if (view === 'api' && !apiLoaded) loadApi();
   if (view === 'news' && !newsLoaded) loadNews();
   if (view === 'power' && !powerLoaded) loadPower();
-  if (view === 'traces') { state.scamGraph = null; loadTraces(); }
+  if (view === 'traces') {
+    // Route changes should reveal the cached tracker immediately. Re-fetching
+    // on every visit used to replace a populated graph with a skeleton and
+    // reset the reader's position, even though the data had not changed.
+    if (state.tracesData) renderTraces(state.tracesData);
+    else { state.scamGraph = null; loadTraces(); }
+  }
   if (view === 'grave') ensureGraveKind(state.xKind);
   if (view === 'mid') ensureMidKind(state.xKind);
   if (view === 'blockchain-analysis' && !blockchainAnalysisLoaded) { blockchainAnalysisLoaded = true; loadBlockchainAnalysis(); }
@@ -3397,6 +3409,18 @@ function switchView(view, push){
 }
 applyViewGating();
 document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchView(t.dataset.view)));
+
+// Many filter handlers intentionally re-render their entire view. Capture the
+// focused control during the event's capture phase and restore it after the
+// delegated handler has replaced the markup; this covers select changes and
+// future filters without requiring every handler to repeat caret bookkeeping.
+function preserveControlAfterEvent(event) {
+  if (!event.target || !event.target.id) return;
+  const snapshot = captureUiSnapshot();
+  queueMicrotask(() => restoreUiSnapshot(snapshot));
+}
+document.addEventListener('input', preserveControlAfterEvent, true);
+document.addEventListener('change', preserveControlAfterEvent, true);
 
 // ---- ⌘K command palette ----
 const cmdk = { open:false, items:[], filtered:[], sel:0 };
@@ -4055,7 +4079,7 @@ function catCardHtml(c, cat){
     <div class="gexpand">${open?'Hide ▲':'Live floor, mcap, holders ▾'}</div>
   </div>`;
 }
-function renderCatalog(){
+function renderCatalogBody(){
   const el = document.getElementById('nftcatalog');
   if (!el) return;
   const cat = state.catalog;
@@ -4109,6 +4133,13 @@ function renderCatalog(){
     }).join('') + `</div>`;
   }
   el.innerHTML = controls + body;
+}
+// Catalog search/facet/detail requests replace the controls asynchronously;
+// keep the query caret, focus, and reading position across those replacements.
+function renderCatalog(){
+  const snapshot = captureUiSnapshot();
+  try { return renderCatalogBody(); }
+  finally { restoreUiSnapshot(snapshot); }
 }
 let catSearchTimer = null;
 async function loadCatalogFacets(){
@@ -4744,7 +4775,17 @@ function renderTraceResults(data){
   const mHtml = m.length ? `<div class="dsec">Found in ${m.length} traced case${m.length>1?'s':''}</div>${m.map(x=>`<div class="traceres" data-goto="${esc(x.slug)}"><b>${esc(x.name)}</b>${x.amount_usd?` · ${fmtUsd(x.amount_usd)}`:''}<div class="tracehits">${(x.hits||[]).map(h=>`<div class="tracehit">${h.type==='hop'?'↳':'•'} ${esc(h.detail)}${h.txurl?` · <a href="${esc(safeUrl(h.txurl))}" target="_blank" rel="noopener noreferrer">tx ↗</a>`:''}</div>`).join('')||'<div class="tracehit">Referenced in case</div>'}</div><div class="tracegoto">Open case ↓</div></div>`).join('')}` : '';
   el.innerHTML = `<div class="tracepanel">${sancHtml}${rkHtml}${mHtml}</div>`;
 }
-async function loadTraces(){ tracesLoaded=true; document.getElementById('tracesview').innerHTML=`<div class="skel">Loading…</div>`; try{ renderTraces(await fetch('api/traces').then(r=>r.json())); }catch(e){ tracesLoaded=false; document.getElementById('tracesview').innerHTML=`<div class="skel">Couldn't load: ${esc(e.message)}</div>`; } }
+async function loadTraces(){
+  tracesLoaded = true;
+  if (!state.tracesData) document.getElementById('tracesview').innerHTML=`<div class="skel">Loading…</div>`;
+  try { renderTraces(await fetch('api/traces').then(r=>r.json())); }
+  catch(e) {
+    if (!state.tracesData) {
+      tracesLoaded = false;
+      document.getElementById('tracesview').innerHTML=`<div class="skel">Couldn't load: ${esc(e.message)}</div>`;
+    }
+  }
+}
 
 let traceTimer;
 document.getElementById('tracesview').addEventListener('input', (e) => {
