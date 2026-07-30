@@ -31,4 +31,11 @@ describe('server normalized dossier contract', () => {
     expect(worker.indexOf('const publicProfile = publicNftProfile')).toBeLessThan(worker.indexOf('normalized_dossier: normalizedNftDossier'));
     expect(worker.indexOf('const publicSynthesis = publicCasinoSynthesis')).toBeLessThan(worker.indexOf('publicCase.normalized_dossier = normalizedCasinoDossier'));
   });
+
+  it('does not reintroduce an exchange lifecycle when public outcome is withheld', () => {
+    expect(worker).toContain('status: row.status ?? null');
+    expect(worker).toContain('lifecycle: profile?.synthesis || row.status || null');
+    expect(worker).not.toContain('status: row.status || row.lifecycle');
+    expect(worker).not.toContain('lifecycle: profile?.synthesis || row.lifecycle');
+  });
 });

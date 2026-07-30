@@ -203,7 +203,10 @@ function normalizedExchangeDossier(row, analysis, profile) {
   return normalizeDossier({
     category: `${String(row.kind || 'exchange').toUpperCase()} · ${row.venue_type || 'exchange'}`,
     name: row.name,
-    status: row.status || row.lifecycle,
+    // `publicExchangeCase` deliberately nulls status when outcome support is
+    // pending. Do not fall back to the source lifecycle here or the normalized
+    // contract would re-introduce a withheld conclusion.
+    status: row.status ?? null,
     metric: row.metric,
     as_of: analysis?.metric?.as_of || row.updated_at,
     what_it_is: profile?.purpose || profile?.what_it_does || analysis?.product_cohort,
@@ -215,7 +218,7 @@ function normalizedExchangeDossier(row, analysis, profile) {
     evidence: analysis?.evidence,
     counterfactual: forensic.counterfactual || profile?.counterfactual,
     risks_unknowns: profile?.risks || profile?.risk_factors || forensic.unknowns,
-    lifecycle: profile?.synthesis || row.lifecycle,
+    lifecycle: profile?.synthesis || row.status || null,
     outlook_watch: row.outlook || forensic.watch,
     review_metadata: analysis?.freshness || forensic.review,
     sources: row.sources,
