@@ -137,8 +137,8 @@ describe('casino evidence-state UI', () => {
       (gap) => gap.path === 'forensic_analysis.counterfactual',
     );
 
-    expect(banner).toContain('2 of 9 meet policy · 7 pending / withheld');
-    expect(banner).toContain('Corpus inclusion measures indexed coverage, not editorial claim support.');
+    expect(banner).toContain('2 of 9 important claims meet the bar · 7 pending / withheld');
+    expect(banner).toContain('Corpus inclusion counts listed reports, not proof that every conclusion is supported.');
     expect(section).toContain('Counterfactual withheld — independent support pending.');
     expect(section).not.toContain('SHOULD NOT RENDER');
   });

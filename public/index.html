@@ -1455,7 +1455,7 @@ function renderBlockchainAnalysis() {
   el.innerHTML = `${head}
     <div class="analysis-note"><b>Facts are not the same as an explanation.</b> A chain is counted as having a complete why-analysis only when its report explains the outcome, names the choices behind it, says what could have changed it, lists watch signals and unknowns, and gives a review date.</div>
     <div class="gstats">${gstat(rows.length, 'chains in the index')}${gstat(researched, 'full research reports')}${gstat(causal, 'why analyses complete')}${gstat(rows.length - causal, 'why analyses pending')}</div>
-    ${trendTaxonomyPanel('blockchain', 'Blockchain outlook trend taxonomy')}
+    ${trendTaxonomyPanel('blockchain', 'What tends to drive blockchain outcomes')}
     ${cohortPanel}
     <div class="toolbar"><div class="analysis-controls">
       <input id="blockchainAnalysisSearch" class="search" placeholder="Search chains or lifecycle…" value="${esc(state.blockchainAnalysisQuery)}" />
@@ -1731,7 +1731,7 @@ function exchangeAnalysisCard(row) {
     `outcome: ${lifecycleLabel(row.lifecycle)}`,
     `evidence: ${row.qualityLabel}`,
     `why analysis: ${row.forensicStatus === 'published' ? 'complete' : 'pending'}`,
-    `high-risk support: ${row.publicationDepth.passing_high_risk_claim_count || 0}/${row.publicationDepth.high_risk_claim_count || 0}`,
+    `independent support: ${row.publicationDepth.passing_high_risk_claim_count || 0}/${row.publicationDepth.high_risk_claim_count || 0}`,
     `${row.sources.length} ${sourceLabel}`,
   ].filter(Boolean);
   const dossierLink = `/exchange/${encodeURIComponent(row.kind)}/${encodeURIComponent(row.lifecycle)}/${encodeURIComponent(row.slug)}`;
@@ -1765,7 +1765,7 @@ function exchangeTrendSummary(summary, label) {
   if (chainParts.length) {
     chainContext = `<br/><b>Primary-chain context (descriptive, not causal):</b> ${esc(chainParts.join(' · '))}.`;
   }
-  return `<div class="analysis-note"><b>${esc(label)} group:</b> ${summary.count || 0} cases · ${lifecycle.successful || 0} successful · ${lifecycle.mid || 0} stuck · ${lifecycle.dead || 0} closed or winding down · ${quality.verified || 0} verified / ${quality.partial || 0} partial / ${quality.limited || 0} limited. ${summary.comparisonGroups?.length || 0} like-for-like metric groups. Token evidence by outcome: ${esc(tokenParts.join(', ') || 'none')}.<br/><b>Largest business-model groups:</b> ${esc(productParts.join(' · ') || 'none')}.${chainContext}</div>`;
+  return `<div class="analysis-note"><b>${esc(label)} group:</b> ${summary.count || 0} cases · ${lifecycle.successful || 0} successful · ${lifecycle.mid || 0} stuck · ${lifecycle.dead || 0} closed or winding down · ${quality.verified || 0} verified / ${quality.partial || 0} partial / ${quality.limited || 0} limited. ${summary.comparisonGroups?.length || 0} comparable metric groups. Token evidence by outcome: ${esc(tokenParts.join(', ') || 'none')}.<br/><b>Largest business-model groups:</b> ${esc(productParts.join(' · ') || 'none')}.${chainContext}</div>`;
 }
 function exchangeAssociationRows(rows, labels = {}) {
   return (rows || []).map((row) => {
@@ -1806,7 +1806,7 @@ function exchangeAssociationPanel(summary, label) {
     </div>
     <div class="dsub" style="margin-top:14px">Product-model cohorts</div>
     ${exchangeAssociationRows((association.productCohort || []).filter((row) => row.sampleSize >= 2).slice(0, 10)) || '<div class="muted">No repeated product cohort.</div>'}
-    <div class="analysis-note"><b>Dataset readiness:</b> ${esc(readiness.causalDossiers || 0)}/${esc(readiness.totalCases || 0)} cited causal dossiers · ${esc(readiness.documentedTokenCases || 0)} documented token records · ${esc(readiness.currentEvidenceCases || 0)} current non-limited evidence records · ${esc(readiness.comparableMetricGroups || 0)} strict metric groups with at least two cases.<br/>${esc(association.method)}</div>
+    <div class="analysis-note"><b>Dataset readiness:</b> ${esc(readiness.causalDossiers || 0)}/${esc(readiness.totalCases || 0)} reports with cited cause analysis · ${esc(readiness.documentedTokenCases || 0)} documented token records · ${esc(readiness.currentEvidenceCases || 0)} current non-limited evidence records · ${esc(readiness.comparableMetricGroups || 0)} comparable metric groups with at least two cases.<br/>${esc(association.method)}</div>
     ${hypotheses ? `<div class="dsub">Predeclared hypotheses and what would falsify them</div><ul class="evlist">${hypotheses}</ul>` : ''}
   </div>`;
 }
@@ -1853,8 +1853,8 @@ function renderExchangeAnalysis() {
   );
   el.innerHTML = `${head}${errors}
     <div class="gstats">${gstat(rows.filter(r=>r.kind==='dex').length, 'DEX reports')}${gstat(rows.filter(r=>r.kind==='cex').length, 'CEX reports')}${gstat(rows.filter(r=>r.forensicStatus==='published').length, 'why analyses complete')}${gstat(claimSupport.unresolved_high_risk_claim_count || 0, 'claims still pending')}</div>
-    ${trendTaxonomyPanel(['dex', 'cex'], 'DEX/CEX outlook trend taxonomy')}
-    <div class="analysis-note"><b>Evidence check: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} high-risk claims meet policy; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending or withheld.</b> A report can be listed before every conclusion passes editorial review.</div>
+    ${trendTaxonomyPanel(['dex', 'cex'], 'What tends to drive exchange outcomes')}
+    <div class="analysis-note"><b>Evidence check: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} important claims have enough independent support; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending or withheld.</b> A report can be listed before every conclusion passes editorial review.</div>
     <div class="analysis-note">${cited} of ${rows.length} reports expose registered citations. Across them: ${esc(claimSupport.registered_source_count || 0)} registered · ${esc(claimSupport.reachable_source_count || 0)} reachable · ${esc(claimSupport.reviewed_source_count || 0)} editor reviewed. We compare only like with like: the same venue type, business model, metric, unit, and time window. Spot, routed, perpetual, TVL, loss, daily, and quarterly measures are never added together.</div>
     ${cohortPanel}
     ${exchangeTrendSummary(state.exchangeAnalysisSummaries.dex, 'DEX')}
@@ -2022,7 +2022,7 @@ function casinoEvidenceStatusHtml(source) {
 }
 function publicationDepthBanner(depth, corpusLabel = 'Corpus inclusion') {
   if (!depth) {
-    return '<div class="analysis-note"><b>Claim-support audit unavailable.</b> Dossier inclusion is not proof that high-risk claims meet the independent-support threshold.</div>';
+    return '<div class="analysis-note"><b>Independent-support check unavailable.</b> A report being listed is not proof that its important claims have enough independent support.</div>';
   }
   const total = Number(depth.high_risk_claim_count) || 0;
   const passing = Number(depth.passing_high_risk_claim_count) || 0;
@@ -2030,11 +2030,11 @@ function publicationDepthBanner(depth, corpusLabel = 'Corpus inclusion') {
   const status = unresolved
     ? `${unresolved} pending / withheld`
     : 'support threshold met';
-  return `<div class="analysis-note"><b>High-risk claim support: ${esc(passing)} of ${esc(total)} meet policy · ${esc(status)}.</b> ${esc(corpusLabel)} measures indexed coverage, not editorial claim support. Unsupported lifecycle, causal, legal, loss, and counterfactual conclusions are withheld below.</div>`;
+  return `<div class="analysis-note"><b>Independent support: ${esc(passing)} of ${esc(total)} important claims meet the bar · ${esc(status)}.</b> ${esc(corpusLabel)} counts listed reports, not proof that every conclusion is supported. Conclusions about lifecycle, cause, legal status, losses, and what-if scenarios are withheld below when the evidence is not strong enough.</div>`;
 }
 function publicationDepthEvidenceHtml(depth) {
   if (!depth) return '<div class="analysis-src-preview"><div class="asrc">Evidence review status unavailable.</div></div>';
-  return `<div class="analysis-src-preview"><div class="asrc">Evidence: ${esc(depth.registered_source_count || 0)} registered · ${esc(depth.reachable_source_count || 0)} reachable · ${esc(depth.reviewed_source_count || 0)} editor reviewed. High-risk support: ${esc(depth.passing_high_risk_claim_count || 0)}/${esc(depth.high_risk_claim_count || 0)} meet policy · ${esc(depth.unresolved_high_risk_claim_count || 0)} pending / withheld.</div></div>`;
+  return `<div class="analysis-src-preview"><div class="asrc">Evidence: ${esc(depth.registered_source_count || 0)} registered · ${esc(depth.reachable_source_count || 0)} reachable · ${esc(depth.reviewed_source_count || 0)} editor reviewed. Independent support: ${esc(depth.passing_high_risk_claim_count || 0)}/${esc(depth.high_risk_claim_count || 0)} meet the bar · ${esc(depth.unresolved_high_risk_claim_count || 0)} pending / withheld.</div></div>`;
 }
 function publicationDepthSectionHtml(label, text, depth, isUnsupported) {
   if (!text) return '';
@@ -2210,9 +2210,9 @@ function renderCasinoAnalysis() {
     'Bars use each report’s next-review date where one exists. A current review is not proof of profitability or legal availability.',
   );
   el.innerHTML = `${head}
-    <div class="analysis-note"><b>${esc(coverage.present_count ?? cases.length)}/${esc(coverage.target_count || cases.length)} corpus coverage measures indexed dossiers, not editorial claim support.</b> Across the visible corpus, ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} high-risk claims meet the independent-support policy and ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending / withheld. No cross-case “largest casino” ranking is computed.</div>
+    <div class="analysis-note"><b>${esc(coverage.present_count ?? cases.length)}/${esc(coverage.target_count || cases.length)} reports are listed in the index; that is not proof every conclusion is supported.</b> Across the visible reports, ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} important claims have enough independent support and ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending / withheld. No cross-case “largest casino” ranking is computed.</div>
     <div class="gstats">${gstat(cases.length, 'reports in the index')}${gstat(missing, 'reports still missing')}${gstat(claimSupport.unresolved_high_risk_claim_count || 0, 'claims still pending')}${gstat(cases.filter(item=>item.token_status==='documented').length, 'tokens documented')}</div>
-    ${trendTaxonomyPanel('casino', 'Web3 casino outlook trend taxonomy')}
+    ${trendTaxonomyPanel('casino', 'What tends to drive casino outcomes')}
     ${cohortPanel}
     <div class="analysis-note">A “registered” source is listed in the report; “reachable” means we could retrieve it; “editor reviewed” means a reviewer recorded that check. None alone proves a high-risk conclusion. Open a report to see which lifecycle, legal, loss, and what-if claims are supported or withheld.</div>
     <div class="toolbar"><div class="analysis-controls">
@@ -3757,7 +3757,7 @@ function nftRiskHtml(risk, publicationDepth) {
     };
   }) : [];
   const pending = Number(publicationDepth?.unresolved_high_risk_claim_count) || 0;
-  const count = pending ? ` ${pending} dossier high-risk claims are already pending.` : '';
+  const count = pending ? ` ${pending} important claims are already pending.` : '';
   return `<div class="analysis-note"><b>Risk-flag allegations withheld — claim-level support pending.</b>${esc(count)} The legacy flag is not part of the publication-depth evidence contract, so its allegation prose is not published here.</div>${srcHtml(registeredSources, 'Registered risk sources: ')}`;
 }
 function nftNarrativeSectionHtml(label, field, text, publicationDepth) {
@@ -3909,7 +3909,7 @@ function renderNft(data){
     ${accordionHtml(
       `Lifecycle analysis — what the ${data.analysis?.cohort?.total ?? data.collections.length}-case data can and cannot say`,
       `${claimSupport.unresolved_high_risk_claim_count
-        ? '<div class="analysis-note"><b>Aggregate analysis uses indexed classifications with unresolved high-risk support.</b> Unsupported dossier conclusions remain withheld below; these counts are not independently verified outcomes.</div>'
+        ? '<div class="analysis-note"><b>This summary uses labels from listed reports whose important claims still need support.</b> Unsupported conclusions remain withheld below; these counts are not independently verified outcomes.</div>'
         : ''}${nftAggregateAnalysisHtml(data)}`,
       true,
     )}
@@ -3984,9 +3984,9 @@ function renderNft(data){
     </div>`;
   }).join('');
   el.innerHTML = `${NFT_HEAD}${stats}
-  <div class="analysis-note"><b>NFT/Ordinals evidence check: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} high-risk claims meet policy; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending or withheld.</b> The index preserves rich reports and registered sources, but unsupported lifecycle, legal, loss, and what-if conclusions are not presented as independently verified.</div>
+  <div class="analysis-note"><b>NFT/Ordinals evidence check: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} important claims have enough independent support; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending or withheld.</b> The index preserves rich reports and registered sources, but unsupported lifecycle, legal, loss, and what-if conclusions are not presented as independently verified.</div>
   <div class="analysis-note">Evidence status across the corpus: ${esc(claimSupport.registered_source_count || 0)} registered · ${esc(claimSupport.reachable_source_count || 0)} reachable · ${esc(claimSupport.reviewed_source_count || 0)} editor reviewed. “Reachable” records retrieval; it is not editorial review.</div>
-  ${evidenceCoverage}${trendTaxonomyPanel('nft_ordinals', 'NFT/Ordinals lifecycle trend taxonomy')}${cohortPanel}${panel}
+  ${evidenceCoverage}${trendTaxonomyPanel('nft_ordinals', 'What tends to drive NFT and Ordinals outcomes')}${cohortPanel}${panel}
   <div class="toolbar"><div class="analysis-controls">
     <input id="casesearch" class="search" placeholder="Search case studies by name, chain or status…" value="${esc(caseQ)}" />
     <label class="muted" for="nftCaseStatus">Status</label>

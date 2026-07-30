@@ -112,7 +112,7 @@ describe('cross-vertical publication-depth UI', () => {
 
     expect(output).not.toContain('UNSUPPORTED EXCHANGE WHY');
     expect(output).toContain('What happened withheld — independent support pending.');
-    expect(output).toContain('High-risk support: 0/1 meet policy');
+    expect(output).toContain('Independent support: 0/1 meet the bar');
     expect(output).toContain('Registered source');
     expect(output).toContain('registered · reachable · editor review pending');
   });

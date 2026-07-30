@@ -112,7 +112,7 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain("forensicStatus: analysis.forensic_analysis_status || (forensic ? 'published' : 'pending')");
     expect(html).toContain("'why analyses complete'");
     expect(html).toContain('Evidence check:');
-    expect(html).toContain('high-risk claims meet policy');
+    expect(html).toContain('important claims have enough independent support');
     expect(html).toContain('publicationDepth: parsedObject(row.publication_depth)');
     expect(html).toContain('sections.push(exchangeFindingHtml(row))');
     expect(html).toContain('plainRead || exchangeFindingHtml(row)');
@@ -192,10 +192,10 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('identity.reviewed_source_count');
     expect(html).toContain('Evidence by field and review status');
     expect(html).toContain('casinoEvidenceStatusHtml({ ...claim, registered: true');
-    expect(html).toContain('High-risk claim support: ${esc(passing)} of ${esc(total)} meet policy');
+    expect(html).toContain('Independent support: ${esc(passing)} of ${esc(total)} important claims meet the bar');
     expect(html).toContain("function publicationDepthBanner(depth, corpusLabel = 'Corpus inclusion')");
     expect(html).toContain('High-risk claim withheld — independent support pending.');
-    expect(html).toContain('Unsupported lifecycle, causal, legal, loss, and counterfactual conclusions are withheld below.');
+    expect(html).toContain('Conclusions about lifecycle, cause, legal status, losses, and what-if scenarios are withheld below');
     expect(html).toContain('forensicAnalysisHtml(synthesis.forensic_analysis');
     expect(html).toContain("}, 'This casino report is listed, but the evidence-backed explanation is still being reviewed.', depth)");
     expect(html).toContain('return ` <a class="ecite"');
