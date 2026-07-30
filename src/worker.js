@@ -1068,7 +1068,29 @@ function newDossierCoverage() {
     freshness: null,
     identityStatus: null,
     forensicStatus: null,
+    forensicAnalysis: null,
   };
+}
+
+function addSynthesisCoverage(coverage, data) {
+  const forensic = data.forensic_analysis || {};
+  const outcome = forensic.outcome || data.outcome || {};
+  if (typeof outcome.label === 'string') coverage.forensicStatus = outcome.label;
+  if (forensic.version !== 'forensic-analysis-v1') return;
+  coverage.forensicAnalysis = {
+    version: forensic.version,
+    outcomeAsOf: typeof outcome.as_of === 'string' ? outcome.as_of : null,
+    freshness: chainDossierFreshness({
+      last_reviewed: forensic.review?.last_reviewed_at,
+      next_review_at: forensic.review?.next_review_at,
+    }),
+  };
+}
+
+function addCoverageSources(coverage, row) {
+  for (const source of factJson(row.sources, [])) {
+    if (source?.url && !coverage.sources.has(source.url)) coverage.sources.set(source.url, source);
+  }
 }
 
 function addFactCoverage(coverage, row) {
@@ -1085,15 +1107,9 @@ function addFactCoverage(coverage, row) {
   if (row.dimension === 'identity' && typeof data.status === 'string') {
     coverage.identityStatus = data.status;
   }
-  if (row.dimension === 'synthesis') {
-    const forensic = data.forensic_analysis || {};
-    const outcome = forensic.outcome || data.outcome || {};
-    if (typeof outcome.label === 'string') coverage.forensicStatus = outcome.label;
-  }
+  if (row.dimension === 'synthesis') addSynthesisCoverage(coverage, data);
   coverage.dimensions.add(row.dimension);
-  for (const source of factJson(row.sources, [])) {
-    if (source?.url && !coverage.sources.has(source.url)) coverage.sources.set(source.url, source);
-  }
+  addCoverageSources(coverage, row);
 }
 
 function publicDossierCoverage(coverage) {
@@ -1105,6 +1121,14 @@ function publicDossierCoverage(coverage) {
     sources: [...coverage.sources.values()].slice(0, 3),
     freshness: coverage.freshness,
     status: coverage.forensicStatus || coverage.identityStatus || 'unknown',
+    forensicAnalysis: coverage.forensicAnalysis
+      ? { status: 'published', ...coverage.forensicAnalysis }
+      : {
+          status: 'pending',
+          version: null,
+          outcomeAsOf: null,
+          freshness: chainDossierFreshness(null),
+        },
   };
 }
 

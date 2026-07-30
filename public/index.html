@@ -673,6 +673,7 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   xKind: 'chain', deadDexData: null, deadCexData: null, midDexData: null, midCexData: null,
   dexBoard: null, cexBoard: null, graveExExpanded: null, graveExOpenGroups: null, midExExpanded: null, midExOpenGroups: null,
   blockchainAnalysisData: null, blockchainAnalysisQuery: '', blockchainAnalysisSort: 'name', blockchainAnalysisStatus: 'all',
+  blockchainAnalysisCausal: 'all',
   exchangeAnalysisData: null, exchangeAnalysisSummaries: {}, exchangeAnalysisClaimSupport: null, exchangeAnalysisErrors: [], exchangeAnalysisQuery: '',
   exchangeAnalysisKind: 'all', exchangeAnalysisLifecycle: 'all', exchangeAnalysisSort: 'name',
   exchangeAnalysisCohort: 'all', exchangeAnalysisQuality: 'all', exchangeAnalysisForensic: 'all',
@@ -1161,6 +1162,39 @@ function nftProfileAnalysisHtml(profile, sources, publicationDepth = null) {
 // researched mid/dead cohorts. Live-only rows are labeled as such; being in the
 // top 50 is not presented as a completed research dossier.
 // ---------------------------------------------------------------------------
+function normalizeLegacyBlockchainAnalysis(row, lifecycle) {
+  const profile = parsedObject(row.profile);
+  const forensic = parsedObject(profile.forensic_analysis);
+  const forensicReview = parsedObject(forensic.review);
+  const hasForensic = forensic.version === 'forensic-analysis-v1';
+  const sources = sourceArray(row.sources);
+  const isMid = lifecycle === 'mid';
+  return {
+    name: row.chain,
+    lifecycle,
+    coverage: 'Legacy postmortem',
+    dossierStatus: forensic.outcome?.label || profile.status || lifecycle,
+    metric: isMid ? row.tvl : row.current_tvl,
+    metricLabel: isMid ? 'TVL' : 'Current TVL',
+    summary: isMid ? row.why_stuck || profile.situation || '' : row.why || profile.postmortem || '',
+    sources,
+    updatedAt: row.updated_at,
+    dimensionCount: 0,
+    expectedDimensionCount: 8,
+    dataCompletenessPct: null,
+    citationCount: sources.length,
+    freshness: null,
+    causalStatus: hasForensic ? 'published' : 'pending',
+    causalVersion: hasForensic ? forensic.version : null,
+    causalAsOf: hasForensic ? forensic.outcome?.as_of || null : null,
+    causalFreshness: hasForensic ? {
+      status: forensicReviewState(forensicReview),
+      lastReviewedAt: forensicReview.last_reviewed_at || null,
+      nextReviewAt: forensicReview.next_review_at || null,
+    } : null,
+  };
+}
+
 function normalizeBlockchainAnalysis(live, mid, dead) {
   const byName = new Map();
   (live.chains || []).forEach((row) => {
@@ -1169,6 +1203,7 @@ function normalizeBlockchainAnalysis(live, mid, dead) {
     const dossier = row.dossier || {};
     const sources = sourceArray(dossier.sources);
     const hasDossier = Number(dossier.dimensionCount || 0) > 0;
+    const forensicAnalysis = parsedObject(dossier.forensicAnalysis);
     byName.set(String(name).toLowerCase(), {
       name, lifecycle: 'live', dossierStatus: dossier.status || (hasDossier ? 'unknown' : 'live_only'),
       coverage: hasDossier ? 'Research dossier' : 'Live metrics', metric: row.tvl,
@@ -1178,31 +1213,17 @@ function normalizeBlockchainAnalysis(live, mid, dead) {
       dataCompletenessPct: dossier.dataCompletenessPct,
       citationCount: Number(dossier.citationCount || sources.length),
       freshness: dossier.freshness || null,
+      causalStatus: forensicAnalysis.status === 'published' ? 'published' : 'pending',
+      causalVersion: forensicAnalysis.version || null,
+      causalAsOf: forensicAnalysis.outcomeAsOf || null,
+      causalFreshness: forensicAnalysis.freshness || null,
     });
   });
   (mid.chains || []).forEach((row) => {
-    const p = parsedObject(row.profile);
-    byName.set(String(row.chain).toLowerCase(), {
-      name: row.chain, lifecycle: 'mid', coverage: 'Legacy postmortem',
-      dossierStatus: p.forensic_analysis?.outcome?.label || p.status || 'mid',
-      metric: row.tvl, metricLabel: 'TVL', summary: row.why_stuck || p.situation || '',
-      sources: sourceArray(row.sources), updatedAt: row.updated_at,
-      dimensionCount: 0, expectedDimensionCount: 8,
-      dataCompletenessPct: null, citationCount: sourceArray(row.sources).length,
-      freshness: null,
-    });
+    byName.set(String(row.chain).toLowerCase(), normalizeLegacyBlockchainAnalysis(row, 'mid'));
   });
   (dead.chains || []).forEach((row) => {
-    const p = parsedObject(row.profile);
-    byName.set(String(row.chain).toLowerCase(), {
-      name: row.chain, lifecycle: 'dead', coverage: 'Legacy postmortem',
-      dossierStatus: p.forensic_analysis?.outcome?.label || p.status || 'dead',
-      metric: row.current_tvl, metricLabel: 'Current TVL', summary: row.why || p.postmortem || '',
-      sources: sourceArray(row.sources), updatedAt: row.updated_at,
-      dimensionCount: 0, expectedDimensionCount: 8,
-      dataCompletenessPct: null, citationCount: sourceArray(row.sources).length,
-      freshness: null,
-    });
+    byName.set(String(row.chain).toLowerCase(), normalizeLegacyBlockchainAnalysis(row, 'dead'));
   });
   return [...byName.values()];
 }
@@ -1213,10 +1234,43 @@ function blockchainLifecycleClass(lifecycle) {
 }
 function blockchainSummary(row) {
   if (row.summary) return `<div class="gbody">${esc(row.summary)}</div>`;
+  if (row.dimensionCount && row.causalStatus === 'published') {
+    return '<div class="gbody muted">Structural research and the normalized causal map are published; open the dossier for the evidence-backed why, strategic choices, counterfactual, watch signals and unknowns.</div>';
+  }
   if (row.dimensionCount) {
-    return '<div class="gbody muted">Same-format research is published; open the dossier for lifecycle, token, capital, onchain, team, narrative, risk and synthesis evidence.</div>';
+    return '<div class="gbody muted">The eight-dimension structural dossier is published, but its normalized causal map is pending. Do not treat structural coverage as a completed “why” analysis.</div>';
   }
   return '<div class="gbody muted">Live market row; a research dossier is not yet published.</div>';
+}
+function blockchainMetricHtml(row) {
+  const metric = row.metric == null ? '—' : fmtUsd(row.metric);
+  return `${metric}<span class="gddl">${esc(row.metricLabel)}</span>`;
+}
+function blockchainDimensionMeta(row) {
+  if (!row.dimensionCount) return '';
+  return `${row.dimensionCount}/${row.expectedDimensionCount} dimensions · `;
+}
+function blockchainFieldCoverageMeta(row) {
+  if (row.dataCompletenessPct == null) return '';
+  return `${row.dataCompletenessPct}% field coverage · `;
+}
+function blockchainFreshnessMeta(freshness, label) {
+  if (!freshness) return '';
+  const reviewDue = freshness.nextReviewAt ? ` by ${esc(freshness.nextReviewAt)}` : '';
+  const policy = freshness.derived ? ' (90d policy)' : '';
+  return ` · ${label} review ${esc(freshness.status)}${reviewDue}${policy}`;
+}
+function blockchainMetaHtml(row) {
+  return [
+    `${esc(row.coverage)} · causal map ${esc(row.causalStatus)}`,
+    row.causalAsOf ? ` as of ${esc(row.causalAsOf)}` : '',
+    ' · ',
+    blockchainDimensionMeta(row),
+    blockchainFieldCoverageMeta(row),
+    `${row.citationCount} cited source${row.citationCount === 1 ? '' : 's'}`,
+    blockchainFreshnessMeta(row.freshness, 'structural'),
+    blockchainFreshnessMeta(row.causalFreshness, 'causal'),
+  ].join('');
 }
 function renderBlockchainAnalysis() {
   const el = document.getElementById('blockchainanalysisview');
@@ -1226,7 +1280,8 @@ function renderBlockchainAnalysis() {
   const q = state.blockchainAnalysisQuery.toLowerCase();
   const filtered = rows.filter((row) => (
     (state.blockchainAnalysisStatus === 'all' || row.dossierStatus === state.blockchainAnalysisStatus)
-    && (!q || `${row.name} ${row.lifecycle} ${row.dossierStatus} ${row.coverage}`.toLowerCase().includes(q))
+    && (state.blockchainAnalysisCausal === 'all' || row.causalStatus === state.blockchainAnalysisCausal)
+    && (!q || `${row.name} ${row.lifecycle} ${row.dossierStatus} ${row.coverage} ${row.causalStatus}`.toLowerCase().includes(q))
   ));
   const order = {
     thriving: 0, established: 1, emerging: 2, recovering: 3,
@@ -1240,31 +1295,36 @@ function renderBlockchainAnalysis() {
       const reviewOrder = { review_due: 0, unknown: 1, current: 2 };
       return (reviewOrder[a.freshness?.status || 'unknown'] - reviewOrder[b.freshness?.status || 'unknown']) || a.name.localeCompare(b.name);
     }
+    if (state.blockchainAnalysisSort === 'causal') {
+      const causalOrder = { pending: 0, published: 1 };
+      return (causalOrder[a.causalStatus] - causalOrder[b.causalStatus])
+        || a.name.localeCompare(b.name);
+    }
     if (state.blockchainAnalysisSort === 'dossier') return (b.dimensionCount - a.dimensionCount)
       || ((b.dataCompletenessPct || 0) - (a.dataCompletenessPct || 0))
       || a.name.localeCompare(b.name);
     return a.name.localeCompare(b.name);
   });
   const researched = rows.filter((row) => row.coverage === 'Research dossier').length;
-  const legacy = rows.filter((row) => row.coverage === 'Legacy postmortem').length;
+  const causal = rows.filter((row) => row.causalStatus === 'published').length;
   const cohortPanel = analysisCohortPanel(
     'Dossier status mix',
     distributionItems(rows, (row) => row.dossierStatus, { live_only: 'live metrics only', mid: 'stuck / mid', dead: 'dead / dying' }),
-    'Review freshness',
-    distributionItems(rows, (row) => row.freshness?.status || 'unknown', { review_due: 'review due', unknown: 'no review schedule' }),
-    'Counts use the same rows shown by this index; research freshness follows each dossier’s published review metadata.',
+    'Causal-analysis coverage',
+    distributionItems(rows, (row) => row.causalStatus, { published: 'causal map indexed', pending: 'causal map pending' }),
+    'Structural coverage and normalized causal coverage are separate. Review freshness remains visible on each dossier card.',
   );
   const cards = filtered.map((row) => `<div class="gcard">
     <div class="ghead"><div class="gname">${esc(row.name)} <span class="gverdict ${blockchainLifecycleClass(row.dossierStatus)}">${esc(row.dossierStatus.replaceAll('_', ' '))}</span></div>
-    <div class="gdd" style="color:var(--muted2);font-size:14px">${row.metric == null ? '—' : fmtUsd(row.metric)}<span class="gddl">${esc(row.metricLabel)}</span></div></div>
-    <div class="gmeta">${esc(row.coverage)} · ${row.dimensionCount ? `${row.dimensionCount}/${row.expectedDimensionCount} dimensions · ` : ''}${row.dataCompletenessPct != null ? `${row.dataCompletenessPct}% field coverage · ` : ''}${row.citationCount} cited source${row.citationCount === 1 ? '' : 's'}${row.freshness ? ` · review ${esc(row.freshness.status)}${row.freshness.nextReviewAt ? ` by ${esc(row.freshness.nextReviewAt)}` : ''}${row.freshness.derived ? ' (90d policy)' : ''}` : ''}</div>
+    <div class="gdd" style="color:var(--muted2);font-size:14px">${blockchainMetricHtml(row)}</div></div>
+    <div class="gmeta">${blockchainMetaHtml(row)}</div>
     ${blockchainSummary(row)}
     ${srcHtml(row.sources.slice(0, 3), 'Cited sources: ')}
     <div class="gexpand"><a href="/chain/${encodeURIComponent(row.name)}">Open chain dossier →</a></div>
   </div>`).join('');
   el.innerHTML = `${head}
-    <div class="analysis-note">This index distinguishes structural research dossiers, legacy postmortems, and live-only coverage. A chain appearing in the top 50 is not automatically counted as analyzed.</div>
-    <div class="gstats">${gstat(rows.length, 'chains indexed')}${gstat(researched, 'structural dossiers')}${gstat(legacy, 'legacy postmortems')}${gstat(rows.filter(r=>r.lifecycle==='dead').length, 'dead / dying')}</div>
+    <div class="analysis-note"><b>Structural coverage is not causal completion.</b> A chain is counted as causal only when its dossier publishes the normalized why, strategic choices, counterfactual, watch signals, unknowns, outcome as-of date, and review schedule.</div>
+    <div class="gstats">${gstat(rows.length, 'chains indexed')}${gstat(researched, 'structural dossiers')}${gstat(causal, 'causal maps indexed')}${gstat(rows.length - causal, 'causal maps pending')}</div>
     ${cohortPanel}
     <div class="toolbar"><div class="analysis-controls">
       <input id="blockchainAnalysisSearch" class="search" placeholder="Search chains or lifecycle…" value="${esc(state.blockchainAnalysisQuery)}" />
@@ -1273,12 +1333,19 @@ function renderBlockchainAnalysis() {
         <option value="all"${state.blockchainAnalysisStatus==='all'?' selected':''}>All dossier statuses</option>
         ${[...new Set(rows.map((row) => row.dossierStatus))].sort().map((status) => `<option value="${esc(status)}"${state.blockchainAnalysisStatus===status?' selected':''}>${esc(status.replaceAll('_', ' '))}</option>`).join('')}
       </select>
+      <label class="muted" for="blockchainAnalysisCausal">Causal analysis</label>
+      <select id="blockchainAnalysisCausal" class="analysis-select">
+        <option value="all"${state.blockchainAnalysisCausal==='all'?' selected':''}>All causal states</option>
+        <option value="published"${state.blockchainAnalysisCausal==='published'?' selected':''}>Causal map indexed</option>
+        <option value="pending"${state.blockchainAnalysisCausal==='pending'?' selected':''}>Causal map pending</option>
+      </select>
       <span class="analysis-spacer"></span>
       <label class="muted" for="blockchainAnalysisSort">Sort</label>
       <select id="blockchainAnalysisSort" class="analysis-select">
         <option value="name"${state.blockchainAnalysisSort==='name'?' selected':''}>Name</option>
         <option value="lifecycle"${state.blockchainAnalysisSort==='lifecycle'?' selected':''}>Dossier status</option>
         <option value="dossier"${state.blockchainAnalysisSort==='dossier'?' selected':''}>Dossier coverage</option>
+        <option value="causal"${state.blockchainAnalysisSort==='causal'?' selected':''}>Causal-map coverage</option>
         <option value="citations"${state.blockchainAnalysisSort==='citations'?' selected':''}>Citation count</option>
         <option value="review"${state.blockchainAnalysisSort==='review'?' selected':''}>Review freshness</option>
       </select>
@@ -2083,6 +2150,7 @@ document.getElementById('blockchainanalysisview').addEventListener('input', (e) 
 document.getElementById('blockchainanalysisview').addEventListener('change', (e) => {
   if (e.target.id === 'blockchainAnalysisSort') state.blockchainAnalysisSort = e.target.value;
   else if (e.target.id === 'blockchainAnalysisStatus') state.blockchainAnalysisStatus = e.target.value;
+  else if (e.target.id === 'blockchainAnalysisCausal') state.blockchainAnalysisCausal = e.target.value;
   else return;
   renderBlockchainAnalysis();
 });
