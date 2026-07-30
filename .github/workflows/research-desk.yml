@@ -36,22 +36,31 @@ jobs:
           node-version: 22
           cache: npm
           cache-dependency-path: agent-desk/package-lock.json
-      - run: npm ci
+      - run: npm ci --ignore-scripts
       - run: npm run build
-      - name: Validate proposal-only credentials
+      - name: Validate provider and proposal-only credentials
         env:
+          DESK_PROVIDER: ${{ vars.RESEARCH_DESK_PROVIDER || 'gemini' }}
+          GEMINI_API_KEY: ${{ secrets.RESEARCH_DESK_GEMINI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.RESEARCH_DESK_ANTHROPIC_API_KEY }}
           DESK_PROPOSAL_TOKEN: ${{ secrets.RESEARCH_DESK_PROPOSAL_TOKEN }}
         run: |
-          test -n "$ANTHROPIC_API_KEY" || { echo "Missing RESEARCH_DESK_ANTHROPIC_API_KEY"; exit 1; }
+          case "$DESK_PROVIDER" in
+            gemini) test -n "$GEMINI_API_KEY" || { echo "Missing RESEARCH_DESK_GEMINI_API_KEY (GCP Secret Manager: gemini-api-key)"; exit 1; } ;;
+            claude) test -n "$ANTHROPIC_API_KEY" || { echo "Missing RESEARCH_DESK_ANTHROPIC_API_KEY"; exit 1; } ;;
+            *) echo "Unsupported RESEARCH_DESK_PROVIDER: $DESK_PROVIDER"; exit 1 ;;
+          esac
           test -n "$DESK_PROPOSAL_TOKEN" || { echo "Missing RESEARCH_DESK_PROPOSAL_TOKEN"; exit 1; }
       - name: Queue verified research candidates
         env:
+          DESK_PROVIDER: ${{ vars.RESEARCH_DESK_PROVIDER || 'gemini' }}
+          GEMINI_API_KEY: ${{ secrets.RESEARCH_DESK_GEMINI_API_KEY }}
           ANTHROPIC_API_KEY: ${{ secrets.RESEARCH_DESK_ANTHROPIC_API_KEY }}
           DESK_PROPOSAL_TOKEN: ${{ secrets.RESEARCH_DESK_PROPOSAL_TOKEN }}
           CHAINDUMP_BASE_URL: https://chaindump.xyz
           CHAINDUMP_MCP_URL: https://chaindump-mcp-270018525501.us-central1.run.app/mcp
-          DESK_MODEL: ${{ vars.RESEARCH_DESK_MODEL || 'claude-sonnet-5' }}
-          DESK_MAX_TURNS: ${{ vars.RESEARCH_DESK_MAX_TURNS || '20' }}
+          DESK_MODEL: ${{ vars.RESEARCH_DESK_MODEL || 'gemini-2.5-flash-lite' }}
+          DESK_MAX_TURNS: ${{ vars.RESEARCH_DESK_MAX_TURNS || '6' }}
+          DESK_MAX_OUTPUT_TOKENS: ${{ vars.RESEARCH_DESK_MAX_OUTPUT_TOKENS || '4096' }}
           DESK_TASK: ${{ inputs.task || '' }}
         run: npm start

@@ -8,27 +8,40 @@
 // fraud/crime is force-flagged for human review before it can reach the site.
 //
 // Tools: the live chain-intel MCP server (our own dogfooded tools) + web research
-// + a single custom `queue_proposal` tool. Model + key from the environment
-// (ANTHROPIC_API_KEY; in prod, from GCP Secret Manager `Anthropic`).
+// + a single custom `queue_proposal` tool. Gemini is the default low-cost
+// provider; Claude remains an explicit opt-in. In production the Gemini key is
+// loaded from GCP Secret Manager `gemini-api-key`.
 
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { query, tool, createSdkMcpServer } from "@anthropic-ai/claude-agent-sdk";
 import { z } from "zod";
-import { PROPOSAL_DATASETS, sanitizeSlug, buildRecord } from "./proposal.js";
+import {
+  PROPOSAL_DATASETS,
+  sanitizeSlug,
+  buildRecord,
+  type QueueProposalInput,
+} from "./proposal.js";
 import { buildResearchSystemPrompt, DEFAULT_RESEARCH_TASK } from "./research.js";
+import { buildResearchRunId, postResearchRunStatus } from "./run-status.js";
+import { runResearchDeskLifecycle } from "./lifecycle.js";
+import { DEFAULT_GEMINI_MAX_TURNS, DEFAULT_GEMINI_MODEL, runGeminiDesk, resolveDeskProvider } from "./gemini.js";
 
 const MCP_URL = process.env.CHAINDUMP_MCP_URL || "https://chaindump-mcp-270018525501.us-central1.run.app/mcp";
 const QUEUE_DIR = process.env.DESK_QUEUE_DIR || "./proposals";
-const MODEL = process.env.DESK_MODEL || "claude-sonnet-5";
-const MAX_TURNS = Number(process.env.DESK_MAX_TURNS) || 40;
+const PROVIDER = resolveDeskProvider();
+const MODEL = process.env.DESK_MODEL || (PROVIDER === "gemini" ? DEFAULT_GEMINI_MODEL : "claude-sonnet-5");
+const MAX_TURNS = Number(process.env.DESK_MAX_TURNS) || (PROVIDER === "gemini" ? DEFAULT_GEMINI_MAX_TURNS : 20);
+const MAX_OUTPUT_TOKENS = Number(process.env.DESK_MAX_OUTPUT_TOKENS) || 4096;
 const CHAINDUMP_BASE = (process.env.CHAINDUMP_BASE_URL || "https://chaindump.xyz").replace(/\/$/, "");
-const DESK_PROPOSAL_TOKEN = process.env.DESK_PROPOSAL_TOKEN || process.env.DESK_TOKEN;
+const DESK_PROPOSAL_TOKEN = process.env.DESK_PROPOSAL_TOKEN || process.env.DESK_TOKEN || "";
+let proposalPersistenceFailures = 0;
 
 // Persist a proposal to the durable, human-reviewed queue via the Worker's
-// authenticated write path (/api/desk/propose). Falls back to a local file when
-// DESK_PROPOSAL_TOKEN isn't set (offline/dev) or on a transient POST failure. Returns
-// where it landed, for the tool's confirmation text.
+// authenticated write path (/api/desk/propose). Falls back to a local file only
+// when DESK_PROPOSAL_TOKEN isn't set (offline/dev). A configured remote queue
+// must fail loudly: a GitHub runner's local filesystem is ephemeral and cannot
+// safely masquerade as durable persistence.
 async function tryPostProposal(record: unknown): Promise<boolean> {
   if (!DESK_PROPOSAL_TOKEN) return false;
   try {
@@ -38,11 +51,11 @@ async function tryPostProposal(record: unknown): Promise<boolean> {
       body: JSON.stringify(record),
     });
     if (r.ok) return true;
-    console.error(`[desk] propose ${r.status}; falling back to local file`);
+    throw new Error(`proposal queue returned HTTP ${r.status}`);
   } catch (e) {
-    console.error("[desk] propose failed; falling back to local file:", e instanceof Error ? e.message : e);
+    proposalPersistenceFailures += 1;
+    throw new Error(`proposal queue write failed: ${e instanceof Error ? e.message : e}`);
   }
-  return false;
 }
 
 async function persistProposal(dataset: string, slug: string, record: unknown): Promise<string> {
@@ -73,9 +86,16 @@ const queueProposal = tool(
         "For analysis candidates: canonical entity id, exact field/claim, existing value if known, evidence, explicit as_of, source date/type/verification, causal reasoning, counterevidence/unknowns, and reviewer action. Never submit a full dossier replacement.",
       ),
     sources: z
-      .array(z.object({ title: z.string(), url: z.string().url() }))
+      .array(z.object({
+        id: z.string(),
+        title: z.string(),
+        url: z.string().url(),
+        source_type: z.string(),
+        verified_at: z.string(),
+        verification_result: z.enum(["resolved"]),
+      }))
       .min(1)
-      .describe("Resolving, authoritative sources — each must have been verified to load."),
+      .describe("Resolving, authoritative sources with stable ids and explicit verification metadata."),
     names_individuals: z
       .boolean()
       .describe("TRUE if this names a private individual or asserts fraud/crime. Forces human review (non-negotiable)."),
@@ -96,6 +116,11 @@ const queueProposal = tool(
   },
 );
 
+async function queueGeminiProposal(args: QueueProposalInput): Promise<string> {
+  const record = buildRecord(args, new Date().toISOString());
+  return persistProposal(args.dataset, args.slug, record);
+}
+
 const deskTools = createSdkMcpServer({ name: "desk", version: "0.1.0", tools: [queueProposal] });
 
 // ---- the desk's operating rules --------------------------------------------
@@ -104,7 +129,36 @@ const SYSTEM_PROMPT = buildResearchSystemPrompt(CHAINDUMP_BASE);
 
 // ---- one desk run -----------------------------------------------------------
 
-async function runDesk(task: string): Promise<void> {
+type DeskMessage = Awaited<ReturnType<typeof query>> extends AsyncIterable<infer T>
+  ? T
+  : never;
+
+function queuedProposalCount(message: DeskMessage): number {
+  if (message.type !== "assistant") return 0;
+  return message.message.content.filter((block) => (
+    block.type === "tool_use" && block.name === "mcp__desk__queue_proposal"
+  )).length;
+}
+
+function logDeskResult(message: DeskMessage, proposals: number): void {
+  if (message.type !== "result") return;
+  const cost = "total_cost_usd" in message ? message.total_cost_usd : undefined;
+  const costText = cost == null ? "" : ` — $${cost.toFixed(4)}`;
+  console.error(`[desk] run finished: ${proposals} proposal(s) queued to ${QUEUE_DIR}${costText}`);
+}
+
+async function runDesk(task: string): Promise<number> {
+  if (PROVIDER === "gemini") {
+    return runGeminiDesk({
+      apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "",
+      model: MODEL,
+      systemPrompt: SYSTEM_PROMPT,
+      task,
+      maxTurns: MAX_TURNS,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
+      queueProposal: queueGeminiProposal,
+    });
+  }
   let proposals = 0;
   const run = query({
     prompt: task,
@@ -137,15 +191,15 @@ async function runDesk(task: string): Promise<void> {
 
   for await (const message of run) {
     if (message.type === "result") {
-      const cost = "total_cost_usd" in message ? message.total_cost_usd : undefined;
-      console.error(`[desk] run finished: ${proposals} proposal(s) queued to ${QUEUE_DIR}` + (cost != null ? ` — $${cost.toFixed(4)}` : ""));
+      logDeskResult(message, proposals);
       continue;
     }
-    if (message.type !== "assistant") continue;
-    for (const block of message.message.content) {
-      if (block.type === "tool_use" && block.name === "mcp__desk__queue_proposal") proposals += 1;
-    }
+    proposals += queuedProposalCount(message);
   }
+  if (proposalPersistenceFailures > 0) {
+    throw new Error(`${proposalPersistenceFailures} proposal queue write(s) failed; no ephemeral fallback was accepted`);
+  }
+  return proposals;
 }
 
 // ---- entry ------------------------------------------------------------------
@@ -154,12 +208,27 @@ async function runDesk(task: string): Promise<void> {
 // pass across all four analysis surfaces, not an instruction to rewrite them.
 
 const TASK = process.env.DESK_TASK || DEFAULT_RESEARCH_TASK;
+const RESEARCH_RUN_ID = buildResearchRunId();
 
 try {
-  if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error("ANTHROPIC_API_KEY is not set (in prod, load it from GCP Secret Manager `Anthropic`).");
-  }
-  await runDesk(TASK);
+  await runResearchDeskLifecycle({
+    baseUrl: CHAINDUMP_BASE,
+    token: DESK_PROPOSAL_TOKEN,
+    runId: RESEARCH_RUN_ID,
+    assertReady: () => {
+      if (PROVIDER === "gemini" && !(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY)) {
+        throw new Error("GEMINI_API_KEY is not set (in prod, load it from GCP Secret Manager `gemini-api-key`).");
+      }
+      if (PROVIDER === "claude" && !process.env.ANTHROPIC_API_KEY) {
+        throw new Error("ANTHROPIC_API_KEY is not set (in prod, load it from GCP Secret Manager `Anthropic`).");
+      }
+    },
+    runDesk: () => runDesk(TASK),
+    postStatus: postResearchRunStatus,
+    onTerminalStatusError: (statusError) => {
+      console.error("[desk] failed to record terminal run status:", statusError instanceof Error ? statusError.message : statusError);
+    },
+  });
 } catch (e) {
   console.error("[desk] fatal:", e instanceof Error ? e.message : e);
   process.exit(1);

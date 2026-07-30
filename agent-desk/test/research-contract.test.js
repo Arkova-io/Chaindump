@@ -11,6 +11,8 @@ describe("cross-vertical research contract", () => {
   it("targets every public freshness and analysis surface", () => {
     expect(ANALYSIS_ENDPOINT_PATHS).toEqual({
       reviewDebt: "/api/forensics-refresh-status",
+      trendTaxonomy: "/api/trend-taxonomy",
+      slmSchema: "/api/slm/training-schema",
       blockchains: "/api/chains",
       dex: "/api/exchange-analysis?kind=dex",
       cex: "/api/exchange-analysis?kind=cex",
@@ -32,7 +34,16 @@ describe("cross-vertical research contract", () => {
     expect(prompt).toContain("never publish");
     expect(prompt).toContain("cannot be directly promoted");
     expect(prompt).toContain("alternative explanations");
-    expect(DEFAULT_RESEARCH_TASK).toContain("at most one");
+    expect(prompt).toContain("entity_id");
+    expect(prompt).toContain("field_path");
+    expect(prompt).toContain("source_refs");
+    expect(prompt).toContain("verified_at");
+    expect(prompt).toContain("trend_ids");
+    expect(prompt).toContain("forensic_analysis.watch");
+    expect(prompt).toContain("A trend requires at least three comparable dated observations");
+    expect(DEFAULT_RESEARCH_TASK).toContain("DEX, CEX");
+    expect(DEFAULT_RESEARCH_TASK).toContain("trend taxonomy");
+    expect(DEFAULT_RESEARCH_TASK).toContain("outlook/watch/unknowns/licensing/status");
     expect(DEFAULT_RESEARCH_TASK).toContain("It is valid to queue nothing");
   });
 });
@@ -52,5 +63,18 @@ describe("scheduled workflow safety contract", () => {
     expect(workflow).not.toContain("DESK_REVIEW_TOKEN");
     expect(workflow).not.toContain("/api/desk/promote");
     expect(workflow).not.toContain("contents: write");
+  });
+
+  it("keeps the documented and runtime default turn budget aligned", () => {
+    const entrypoint = readFileSync(
+      new URL("../src/index.ts", import.meta.url),
+      "utf8",
+    );
+    expect(entrypoint).toContain('DEFAULT_GEMINI_MAX_TURNS');
+    expect(workflow).toContain("RESEARCH_DESK_GEMINI_API_KEY");
+    expect(workflow).toContain("DESK_PROVIDER");
+    expect(workflow).toContain("gemini-2.5-flash-lite");
+    expect(entrypoint).toContain("no ephemeral fallback was accepted");
+    expect(entrypoint).not.toContain("falling back to local file");
   });
 });
