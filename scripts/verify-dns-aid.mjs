@@ -8,10 +8,10 @@
  * returns authenticated data.
  */
 
-const name = process.env.DNS_AID_NAME || '_index._agents.chaindump.xyz';
+const dnsAidName = process.env.DNS_AID_NAME || '_index._agents.chaindump.xyz';
 const resolver = process.env.DNS_AID_RESOLVER || 'https://cloudflare-dns.com/dns-query';
 const url = new URL(resolver);
-url.searchParams.set('name', name);
+url.searchParams.set('name', dnsAidName);
 url.searchParams.set('type', 'SVCB');
 url.searchParams.set('do', '1');
 
@@ -25,11 +25,8 @@ const hasAlpn = /(?:^|[\\s])alpn(?:=|\\s)/i.test(data);
 const hasEndpoint = /(?:^|[\\s])(?:port|target)(?:=|\\s)/i.test(data);
 
 const result = {
-  resolver,
-  name,
   status: payload.Status,
   authenticated: payload.AD === true,
-  answer: svcb?.data || null,
   has_alpn: hasAlpn,
   has_endpoint_parameter: hasEndpoint,
 };

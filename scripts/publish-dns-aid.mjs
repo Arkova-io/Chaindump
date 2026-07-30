@@ -33,13 +33,16 @@ const records = [
 
 const api = `https://api.cloudflare.com/client/v4/zones/${zoneId}`;
 const headers = { authorization: `Bearer ${token}`, 'content-type': 'application/json' };
-async function cf(path, init = {}) {
-  const response = await fetch(`${api}${path}`, { ...init, headers: { ...headers, ...(init.headers || {}) } });
+async function cf(path, init) {
+  const request = init
+    ? { ...init, headers: { ...headers, ...(init.headers || {}) } }
+    : { headers };
+  const response = await fetch(`${api}${path}`, request);
   const body = await response.json().catch(() => ({}));
   if (!response.ok || body.success !== true) {
     const code = body.errors?.[0]?.code ?? response.status;
     const message = body.errors?.[0]?.message ?? response.statusText;
-    throw new Error(`Cloudflare API ${path} failed (${code}): ${message}`);
+    throw new Error(`Cloudflare API request failed (${code}): ${message}`);
   }
   return body.result;
 }
@@ -49,20 +52,22 @@ const existing = await cf('/dns_records?type=SVCB&per_page=100');
 const byName = new Map(existing.map((record) => [record.name.replace(/\\.$/, ''), record]));
 for (const record of records) {
   const current = byName.get(record.name);
-  const summary = { name: record.name, type: record.type, data: record.data, action: current ? 'already-present' : (apply ? 'create' : 'would-create') };
+  let action = 'already-present';
+  if (!current) action = apply ? 'create' : 'would-create';
+  const summary = { record: record.name, action };
   console.log(JSON.stringify(summary));
   if (!current && apply) await cf('/dns_records', { method: 'POST', body: JSON.stringify(record) });
 }
 
 const dnssec = await cf('/dnssec');
-console.log(JSON.stringify({ dnssec: { status: dnssec.status, ds: dnssec.ds || null }, apply, enable_dnssec: enableDnssec }));
+console.log(JSON.stringify({ dnssec_status: dnssec.status, ds_available: Boolean(dnssec.ds), apply, enable_dnssec: enableDnssec }));
 if (enableDnssec && dnssec.status !== 'active') {
   if (!apply) {
     console.log(JSON.stringify({ action: 'would-enable-dnssec' }));
   } else {
-    const enabled = await cf('/dnssec', { method: 'POST', body: JSON.stringify({}) });
-    console.log(JSON.stringify({ dnssec_enabled: true, ds: enabled.ds || null }));
-    console.error('Publish the returned DS record at the registrar before claiming DNSSEC validation.');
+    await cf('/dnssec', { method: 'POST' });
+    console.log(JSON.stringify({ dnssec_enabled: true, ds_available: true }));
+    console.error('Retrieve and publish the returned DS record at the registrar before claiming DNSSEC validation.');
   }
 }
 
