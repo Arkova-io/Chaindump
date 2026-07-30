@@ -365,6 +365,10 @@
   .gdd { text-align:right; font-size:18px; font-weight:700; color:var(--red); font-variant-numeric:tabular-nums; white-space:nowrap; }
   .gddl { display:block; font-size:9.5px; color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:.04em; }
   .gmeta { color:var(--muted); font-size:11.5px; margin:6px 0 12px; font-variant-numeric:tabular-nums; }
+  .normalized-dossier { border:1px solid var(--border2); border-radius:10px; padding:14px 16px; margin:0 0 16px; background:rgba(10,14,22,.38); }
+  .normalized-dossier-head { display:flex; align-items:center; gap:8px; font-size:15px; }
+  .normalized-dossier-metric { margin-left:auto; color:var(--muted2); font-weight:700; font-variant-numeric:tabular-nums; }
+  .normalized-section + .normalized-section { border-top:1px solid var(--border); margin-top:12px; padding-top:2px; }
   .gsec { font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:600; margin:10px 0 5px; }
   .gbody { font-size:12.5px; line-height:1.6; color:var(--text); }
   .gpanel { background:var(--surface); border:1px solid var(--border2); border-radius:14px; padding:18px 20px; margin-bottom:8px; }
@@ -1647,6 +1651,31 @@ function exchangeOutlookHtml(outlook, depth) {
 }
 function exchangeAnalysisDetails(row, profile, tokenLine) {
   const depth = row.publicationDepth;
+  const forensic = parsedObject(row.analysis?.forensic_analysis || profile?.forensic_analysis);
+  const review = parsedObject(forensic.review || row.freshness);
+  const tokenSummary = row.token?.symbol
+    ? `${row.token.symbol} · ${exchangeLabel(row.token.strategy || 'value-capture strategy unresolved')} · ${exchangeLabel(row.token.launch_timing || 'launch timing unresolved')}`
+    : 'No venue token identified in the cited dossier';
+  const normalized = normalizedDossierHtml({
+    category: `${String(row.kind || 'exchange').toUpperCase()} · ${exchangeLabel(row.venueType)}`,
+    name: row.name,
+    status: lifecycleLabel(row.lifecycle || row.status),
+    metric: exchangeMetric(row),
+    asOf: row.metricAsOf || row.updatedAt,
+    whatItIs: profile.purpose || profile.what_it_does || `${exchangeLabel(row.productCohort)} ${exchangeLabel(row.venueType)} dossier`,
+    whatHappened: row.summary || profile.situation || profile.postmortem,
+    why: forensic.why || profile.why || profile.success_factors || profile.success_failure_hypotheses,
+    strategicChoices: forensic.strategic_choices || profile.strategic_choices,
+    operatingModel: row.operatingModel || profile.operating_model,
+    tokenValueCapture: tokenSummary,
+    evidence: row.evidence,
+    counterfactual: forensic.counterfactual || profile.counterfactual || profile.could_differ,
+    risksUnknowns: profile.risks || profile.risk_factors || forensic.unknowns,
+    lifecycle: profile.synthesis || row.status,
+    outlookWatch: row.outlook || forensic.watch || profile.watch,
+    reviewMetadata: review,
+    sources: row.sources,
+  });
   const outcomeGap = publicationDepthGap(depth, 'forensic_analysis.outcome');
   const fields = [];
   if (row.launched) fields.push(`<div class="gfield"><span class="gfl">Launched</span> ${esc(row.launched)}</div>`);
@@ -1708,7 +1737,7 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
   const forensicReview = parsedObject(parsedObject(row.analysis.forensic_analysis || profile.forensic_analysis).review);
   const freshnessState = exchangeReviewState(row);
   const nextReviewAt = forensicReview.next_review_at || freshness.next_review_at || 'unknown';
-  return `<div class="gexp">${publicationDepthBanner(depth, 'Exchange dossier inclusion')}${fields.join('')}${sections.join('')}
+  return `<div class="gexp">${publicationDepthBanner(depth, 'Exchange dossier inclusion')}${normalized}${fields.join('')}${sections.join('')}
     <div class="gsec">Evidence by field</div>
     ${exchangeEvidenceLinks(row, 'operating_model_source_indexes', 'Operating model')}
     ${exchangeEvidenceLinks(row, 'custody_model_source_indexes', 'Custody')}
@@ -2079,6 +2108,26 @@ function casinoDetailBody(item, detail) {
   const identity = detail.case || item;
   const synthesis = detail.synthesis || {};
   const depth = detail.publication_depth || item.publication_depth;
+  const normalized = normalizedDossierHtml({
+    category: `Web3 casino · ${casinoLabel(item.product_subtype)}`,
+    name: item.brand_name,
+    status: item.status || item.outcome_label,
+    metric: item.completeness_pct != null ? `${item.completeness_pct}% evidence completeness` : 'metric not published',
+    asOf: item.status_as_of || item.last_reviewed,
+    whatItIs: item.product_scope_note || synthesis.present_situation,
+    whatHappened: synthesis.present_situation,
+    why: synthesis.success_failure_hypotheses,
+    strategicChoices: synthesis.strategic_choices || synthesis.business_mechanism,
+    operatingModel: synthesis.business_mechanism || synthesis.chain_dependence,
+    tokenValueCapture: synthesis.token_contribution || (item.token_status === 'documented' ? item.token_symbol : item.token_status),
+    evidence: detail.claims,
+    counterfactual: synthesis.counterfactual,
+    risksUnknowns: synthesis.risk_legal_posture || item.unsourced_fields,
+    lifecycle: synthesis.present_situation,
+    outlookWatch: casinoOutlookText(synthesis.outlook),
+    reviewMetadata: { confidence: item.confidence, completeness_pct: item.completeness_pct, last_reviewed: item.last_reviewed, next_review: item.next_review_at },
+    sources: detail.sources,
+  });
   const plainRead = !publicationDepthGap(depth, 'forensic_analysis.why')
     && !publicationDepthGap(depth, 'forensic_analysis.outcome')
     ? plainEnglishRead({ present_situation: synthesis.present_situation, why: synthesis.success_failure_hypotheses, outlook: synthesis.outlook })
@@ -2131,7 +2180,7 @@ function casinoDetailBody(item, detail) {
     return `<div class="gfield"><span class="gfl">${esc(claim.field_path)}</span><a href="${esc(safeUrl(claim.url))}" target="_blank" rel="noopener noreferrer">${esc(claim.title)} ↗</a>${evidence}${casinoEvidenceStatusHtml({ ...claim, registered: true, reachable: claim.resolving })}</div>`;
   }).join('') || '<div class="muted">No registered claim evidence is available.</div>';
   const domain = safeUrl(`https://${item.primary_domain}`);
-  return `<div class="gexp">
+  return `<div class="gexp">${normalized}
     <div class="gfield"><span class="gfl">Domain</span><a href="${esc(domain)}" target="_blank" rel="noopener noreferrer">${esc(item.primary_domain)} ↗</a></div>
     <div class="gfield"><span class="gfl">Operator</span>${esc(identity.legal_operator || 'not published')} · parent ${esc(identity.parent_entity || 'not published')}</div>
     <div class="gfield"><span class="gfl">Launch</span>${esc(identity.launched || 'unknown')} · evidence precision ${esc(identity.date_precision || 'unknown')}</div>
@@ -2945,6 +2994,73 @@ function forensicAnalysisHtml(contract, resolveRef, pendingText = 'This case is 
   return `<div class="dsec">Evidence-backed analysis</div><div class="anbox">${sections}</div>`;
 }
 
+// Canonical report anatomy. Category-specific evidence follows this block, but
+// every report answers the same questions in the same order. Unknown fields are
+// shown explicitly so a missing citation never turns into an implied claim.
+const NORMALIZED_DOSSIER_SECTIONS = Object.freeze([
+  ['what_it_is', 'What it is'],
+  ['what_happened', 'What happened'],
+  ['why', 'Why this outcome'],
+  ['strategic_choices', 'Strategic choices'],
+  ['operating_model', 'Operating model'],
+  ['token_value_capture', 'Token and value capture'],
+  ['evidence', 'Evidence and sources'],
+  ['counterfactual', 'What could have been different'],
+  ['risks_unknowns', 'Risks and unknowns'],
+  ['lifecycle', 'Lifecycle read'],
+  ['outlook_watch', 'Outlook and what to watch'],
+  ['review_metadata', 'Review metadata'],
+]);
+function normalizedValue(value) {
+  if (value == null || value === '') return '';
+  if (Array.isArray(value)) return value.map((item) => normalizedValue(item)).filter(Boolean).join(' ');
+  if (typeof value === 'object') {
+    return Object.entries(value)
+      .filter(([key, item]) => !['source_ids', 'source_refs', 'evidence_refs'].includes(key) && item != null && item !== '')
+      .map(([key, item]) => `${key.replaceAll('_', ' ')}: ${normalizedValue(item)}`)
+      .filter(Boolean).join(' · ');
+  }
+  return String(value);
+}
+function normalizedUnknown(label) {
+  return `<div class="gnar muted">Unknown / not published for this report. ${esc(label)} needs a dated, verifiable observation before we make a call.</div>`;
+}
+function normalizedSourceLedger(sources) {
+  const list = sourceArray(sources);
+  if (!list.length) return normalizedUnknown('The source ledger');
+  return `${srcHtml(list, 'Cited sources: ')}<div class="gnar muted">Each link is a source used by this report; source coverage does not by itself prove every conclusion.</div>`;
+}
+function normalizedDossierHtml(input = {}) {
+  const d = input || {};
+  const status = normalizedValue(d.status) || 'unknown / not published';
+  const metric = normalizedValue(d.metric) || '—';
+  const asOf = normalizedValue(d.asOf) || 'date unknown';
+  const header = `<div class="normalized-dossier" data-normalized-dossier="v1">
+    <div class="dsec">Normalized research report</div>
+    <div class="normalized-dossier-head"><b>${esc(normalizedValue(d.name) || 'Unnamed case')}</b><span class="gverdict ${verdictClass(status)}">${esc(status)}</span><span class="normalized-dossier-metric">${esc(metric)}</span></div>
+    <div class="gmeta">${esc(normalizedValue(d.category) || 'Forensics')} · as of ${esc(asOf)} · same report template across every research category</div>`;
+  const values = {
+    what_it_is: d.whatItIs,
+    what_happened: d.whatHappened,
+    why: d.why,
+    strategic_choices: d.strategicChoices,
+    operating_model: d.operatingModel,
+    token_value_capture: d.tokenValueCapture,
+    evidence: d.evidence,
+    counterfactual: d.counterfactual,
+    risks_unknowns: d.risksUnknowns,
+    lifecycle: d.lifecycle,
+    outlook_watch: d.outlookWatch,
+    review_metadata: d.reviewMetadata,
+  };
+  const sections = NORMALIZED_DOSSIER_SECTIONS.map(([key, label]) => {
+    if (key === 'evidence') return `<section class="normalized-section" data-normalized-section="${key}"><div class="gsec">${label}</div>${normalizedSourceLedger(d.sources)}${normalizedValue(values[key]) ? proseBox(normalizedValue(values[key])) : ''}</section>`;
+    const value = normalizedValue(values[key]);
+    return `<section class="normalized-section" data-normalized-section="${key}"><div class="gsec">${label}</div>${value ? proseBox(value) : normalizedUnknown(label)}</section>`;
+  }).join('');
+  return `${header}${sections}<div class="stampline">Unknowns stay visible until a reviewer adds dated, verifiable evidence.</div></div>`;
+}
+
 function synthesisHtml(f){
   if (!f || !f.data) return '';
   const d = f.data, when = f.updatedAt || d.as_of;
@@ -3142,8 +3258,29 @@ function factsHtml(d){
 function analystHtml(d){
   if (!d) return `<div class="dsec">Analysis</div><div class="anbox muted">Loading analysis…</div>`;
   const a = d.analysis;
-  if (!a || !a.take) return factsHtml(d) || `<div class="dsec">Analyst take</div><div class="anbox muted">Not yet covered by the research desk.</div>`;
-  const p = a.profile || {};
+  const p = a?.profile || {};
+  const synthesis = d.facts?.synthesis?.data || {};
+  const normalized = normalizedDossierHtml({
+    category: 'Blockchain',
+    name: d.chain?.name || d.name || d.chain || 'Chain',
+    status: d.chain?.verdict || d.chain?.lifecycle || a?.sentiment,
+    metric: d.chain?.tvl != null ? fmtUsd(d.chain.tvl) : d.tvl != null ? fmtUsd(d.tvl) : 'metric not published',
+    asOf: d.updated_at || a?.updated_at || synthesis.as_of,
+    whatItIs: p.what_it_does || p.purpose || d.description,
+    whatHappened: synthesis.situation || synthesis.postmortem || p.situation || a?.take,
+    why: synthesis.why || synthesis.success_mechanism || p.why || d.chain?.why_stuck,
+    strategicChoices: synthesis.strategic_choices || p.strategic_choices,
+    operatingModel: p.operating_model || p.business_model || p.purpose,
+    tokenValueCapture: d.chain?.token || p.token || d.token,
+    evidence: synthesis.evidence || d.facts?.synthesis?.sources || a?.sources,
+    counterfactual: synthesis.could_differ || synthesis.counterfactual || p.could_differ,
+    risksUnknowns: synthesis.unknowns || p.risks || p.unknowns || d.risk,
+    lifecycle: synthesis.lifecycle || p.lifecycle || p.outlook,
+    outlookWatch: synthesis.outlook || p.outlook,
+    reviewMetadata: synthesis.review || a?.updated_at,
+    sources: a?.sources || d.facts?.synthesis?.sources,
+  });
+  if (!a || !a.take) return `${normalized}${factsHtml(d) || `<div class="dsec">Analyst take</div><div class="anbox muted">Not yet covered by the research desk.</div>`}`;
   const sent = (a.sentiment || '').toLowerCase().replace(/[^a-z]/g, '');
   const badge = a.sentiment ? `<span class="sent ${sent}">${esc(a.sentiment)}</span>` : '';
   const when = a.updated_at ? `<span class="anwhen">updated ${esc(a.updated_at)} UTC</span>` : '';
@@ -3156,7 +3293,7 @@ function analystHtml(d){
     } catch (e) {}
   }
   return `
-    ${factsHtml(d)}
+    ${normalized}${factsHtml(d)}
     ${p.what_it_does?`<div class="dsec">What it does</div><div class="gbody">${esc(p.what_it_does)}</div>`:''}
     ${p.purpose?`<div class="dsec">Original purpose</div><div class="gbody">${esc(p.purpose)}</div>`:''}
     <div class="dsec">Major events & analyst take ${badge}${when}</div><div class="anbox">${proseBox(a.take)}${sources}</div>
@@ -3983,7 +4120,28 @@ function renderNft(data){
       && !publicationDepthGap(depth, 'forensic_analysis.outcome')
       ? plainEnglishRead({ analysis: p.analysis, why: p.why, outlook: p.outlook })
       : '';
+    const normalized = normalizedDossierHtml({
+      category: `NFT / Ordinals · ${chainLabel(c.chain)}`,
+      name: c.name,
+      status: c.status,
+      metric: nftLifecycleMetric(p),
+      asOf: p.evidence_policy?.status_as_of || p.evidence_policy?.last_verified_at || c.updated_at,
+      whatItIs: p.collection_description || p.business || `${chainLabel(c.chain)} collection dossier`,
+      whatHappened: p.community_history || p.analysis,
+      why: p.why || p.risks,
+      strategicChoices: p.strategic_choices || p.founder_engagement,
+      operatingModel: p.business || p.benefits,
+      tokenValueCapture: p.token_model || p.royalties_enforced || p.royalties_earned_usd,
+      evidence: p.evidence,
+      counterfactual: p.counterfactual || p.watch,
+      risksUnknowns: p.risks || p.unknowns,
+      lifecycle: p.analysis,
+      outlookWatch: p.outlook || p.watch,
+      reviewMetadata: p.evidence_policy || c.freshness,
+      sources: citedSources,
+    });
     const body = open ? `<div class="gexp">
+      ${normalized}
       ${publicationDepthBanner(depth, 'NFT/Ordinals report inclusion')}
       ${nftRiskHtml(c.risk, depth)}
       ${mkt?`<div class="gfield"><span class="gfl">Collection</span> <a href="${esc(safeUrl(mkt))}" target="_blank" rel="noopener noreferrer">View on marketplace ↗</a></div>`:''}
