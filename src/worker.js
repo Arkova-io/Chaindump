@@ -3005,6 +3005,15 @@ function casinoCasePublicationState(claims, depth) {
 
 function normalizedCasinoDossier(row, synthesis, claims, sources) {
   const forensic = synthesis?.forensic_analysis || {};
+  const sourceLedger = Array.isArray(sources) && sources.length
+    ? sources
+    : [...new Map((claims || [])
+      .filter((claim) => claim?.url)
+      .map((claim) => [claim.source_id || claim.url, {
+        id: claim.source_id || claim.url,
+        title: claim.title || claim.source_id || 'source',
+        url: claim.url,
+      }])).values()];
   const evidence = (claims || []).map((claim) => ({
     claim_id: claim.claim_id,
     field_path: claim.field_path,
@@ -3030,7 +3039,7 @@ function normalizedCasinoDossier(row, synthesis, claims, sources) {
     lifecycle: synthesis?.present_situation || row.outcome_label,
     outlook_watch: synthesis?.outlook || forensic.watch,
     review_metadata: { confidence: row.confidence, completeness_pct: row.completeness_pct, last_reviewed: row.last_reviewed },
-    sources,
+    sources: sourceLedger,
   });
 }
 
