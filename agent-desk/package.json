@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Autonomous Chaindump research desk — keeps the forensic / graveyard / policy / trend-analysis data fresh via a verified, sourced, human-gated research loop (Claude Agent SDK). Consumes the chain-intel MCP server + web research.",
+  "description": "Autonomous Chaindump research desk — keeps forensic analysis fresh through bounded, sourced, human-gated Gemini or Claude proposal runs.",
   "scripts": {
     "build": "tsc",
     "typecheck": "tsc --noEmit",
@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@anthropic-ai/claude-agent-sdk": "^0.3.220",
+    "@google/genai": "^2.14.0",
     "zod": "^4.0.0"
   },
   "devDependencies": {

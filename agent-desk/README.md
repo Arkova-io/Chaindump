@@ -1,6 +1,6 @@
 # chaindump-agent-desk — proposal-only research
 
-An opt-in **Claude Agent SDK** process that researches fresh evidence for
+An opt-in **Gemini (default) / Claude** process that researches fresh evidence for
 Chaindump's blockchain, DEX/CEX, Web3 casino, and NFT/Ordinals analyses.
 
 **It never publishes.** It reads Chaindump's public freshness and analysis APIs,
@@ -39,15 +39,22 @@ manual dispatch. Both paths are skipped unless the repository variable
 `RESEARCH_DESK_ENABLED` is exactly `true`. Paid runs are therefore **off by
 default**.
 
-### Reading workflow history
+## Provider and cost boundary
 
-GitHub may show a manual or scheduled `Research Desk Proposals` entry even
-when the run completed in a second. That is the expected skipped-run shape
-while `RESEARCH_DESK_ENABLED` is unset or not exactly `true`; it does not mean
-that a model call ran or that a proposal was published. Confirm the run log's
-skip reason and the public `/api/forensics-refresh-status` response before
-describing it as a completed research pass. The free six-hour review scan is
-independent and remains human-review-only.
+Gemini is the default provider because it is the lower-cost path for bounded
+review-debt scans. The workflow defaults to `gemini-2.5-flash-lite`, six model
+turns, and 4,096 output tokens. Set the repository variable
+`RESEARCH_DESK_PROVIDER=claude` only when Claude is intentionally selected.
+There is no automatic provider fallback: a missing selected-provider key fails
+closed before any model request.
+
+The Gemini adapter is deliberately narrower than the Claude Agent SDK adapter:
+it gives the model only a read-only `fetch_url` function for public HTTPS
+sources and the `queue_proposal` function. It does not expose the chain-intel
+MCP server, shell, credentials, promotion, or publication operations. Every
+candidate still goes through the same durable queue and human review gate. This
+is a safe proposal path while Gemini MCP parity is evaluated; it must not be
+described as equivalent to the Claude tool surface.
 
 ## Evidence contract
 
@@ -91,15 +98,21 @@ market/liquidity, utility/benefits, and conflicts in the current lifecycle read.
 
 Set these repository secrets:
 
-- `RESEARCH_DESK_ANTHROPIC_API_KEY` — model/API credential.
+- `RESEARCH_DESK_GEMINI_API_KEY` — Gemini API key (load the value from GCP
+  Secret Manager resource `projects/arkova1/secrets/gemini-api-key`; never
+  commit or print it). This is required when the provider is `gemini`.
+- `RESEARCH_DESK_ANTHROPIC_API_KEY` — Claude API credential, only required
+  when `RESEARCH_DESK_PROVIDER=claude`.
 - `RESEARCH_DESK_PROPOSAL_TOKEN` — proposal-only credential for
   `/api/desk/propose`.
 
 Set `RESEARCH_DESK_ENABLED=true` only when four paid research runs per day are
 intended. Optional repository variables:
 
-- `RESEARCH_DESK_MODEL` (default `claude-sonnet-5`)
-- `RESEARCH_DESK_MAX_TURNS` (default `20`)
+- `RESEARCH_DESK_PROVIDER` (default `gemini`; allowed values `gemini`, `claude`)
+- `RESEARCH_DESK_MODEL` (default `gemini-2.5-flash-lite` for Gemini)
+- `RESEARCH_DESK_MAX_TURNS` (default `6` for Gemini, `20` for Claude)
+- `RESEARCH_DESK_MAX_OUTPUT_TOKENS` (default `4096`)
 
 Actual cost depends on the selected model, source volume, and tool turns; it is
 not fixed. Each completed desk run logs the SDK-reported USD cost when
@@ -124,14 +137,18 @@ not require, create, or enable paid credentials.
 ```bash
 npm ci
 npm run build
-export ANTHROPIC_API_KEY=...
+export DESK_PROVIDER=gemini
+export GEMINI_API_KEY=...
 export DESK_PROPOSAL_TOKEN=...
 npm start
 ```
 
-Environment variables: `ANTHROPIC_API_KEY` (required),
+Environment variables: `DESK_PROVIDER` (default `gemini`),
+`GEMINI_API_KEY` (required for Gemini) or `ANTHROPIC_API_KEY` (required for
+Claude),
 `DESK_PROPOSAL_TOKEN`, `CHAINDUMP_BASE_URL`, `CHAINDUMP_MCP_URL`,
-`DESK_TASK`, `DESK_MODEL`, `DESK_MAX_TURNS`, and `DESK_QUEUE_DIR`.
+`DESK_TASK`, `DESK_MODEL`, `DESK_MAX_TURNS`, `DESK_MAX_OUTPUT_TOKENS`, and
+`DESK_QUEUE_DIR`.
 `DESK_TOKEN` remains a temporary proposal-only migration fallback. Without a
 proposal token, local development falls back to JSON files in `./proposals`;
 the scheduled workflow validates both required secrets before running. When a
