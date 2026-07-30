@@ -10,6 +10,33 @@ export const TREND_TAXONOMY_VERSION = 'chaindump-trend-taxonomy-v1';
 export const TREND_SIGNAL_VERSION = 'chaindump-trend-signal-v1';
 export const OUTLOOK_VERSION = 'chaindump-outlook-v1';
 
+// These are the words the reader should see before the internal taxonomy. The
+// tags remain machine-readable, but every vertical gets one short explanation
+// of the question the research is trying to answer. This keeps the SLM
+// contract useful without making the public report read like a database dump.
+export const HUMAN_INTELLIGENCE_GUIDE = Object.freeze({
+  canonical_format: [
+    ['What it is', 'What the project or company actually does.'],
+    ['What happened', 'The important events, in order, with dates and sources.'],
+    ['Why it turned out this way', 'The strategic choices and outside forces that explain the result.'],
+    ['What would change the call', 'The evidence that would prove the outlook wrong or move it.'],
+    ['What to watch next', 'A short list of measurable signals and the next review date.'],
+  ],
+  verticals: {
+    blockchain: 'Does this chain create a repeatable reason to use it, and does the token capture any of that value?',
+    dex: 'Does this exchange attract real traders and keep them when incentives fade, or is the activity rented?',
+    cex: 'Can this exchange protect customer assets, stay compliant, and earn durable revenue in a crowded market?',
+    casino: 'Is the operator legally able to serve its users, and does it have repeat paying demand after promotions?',
+    nft_ordinals: 'Did the collection turn a launch moment into lasting holders, products, and founder follow-through?',
+    stablecoin: 'Can holders redeem at par, and are the reserves, issuer, and legal rights strong enough to support that promise?',
+    rwa: 'Does the token represent a real legal claim on an asset, with a credible custodian and a workable exit?',
+    depin: 'Are people paying for a useful physical service, or are token rewards paying for activity that disappears when emissions stop?',
+    treasury_company: 'Does the balance-sheet strategy create shareholder value after debt, dilution, custody, and crypto volatility?',
+    etf_etp: 'Do flows, fees, liquidity, and the creation/redemption mechanism make this a useful investment vehicle?',
+    regulatory_news: 'Who is affected, what changes, when does it take effect, and what evidence would change the legal reading?',
+  },
+});
+
 const TREND_DRIVER_DOMAIN_ROWS = Object.freeze([
   ['distribution', 'Distribution', 'Embedded channels, wallets, exchanges, IP, geography, and repeatable acquisition.', ['distribution_advantage', 'wallet_or_exchange_funnel', 'brand_ip_reach', 'geographic_reach']],
   ['demand_retention', 'Demand retention', 'Paying use, retained users, repeat activity, active builders, and recurring demand.', ['organic_fee_demand', 'retained_users', 'active_builders', 'repeat_transactions']],
@@ -314,6 +341,7 @@ export function buildTrendTaxonomyPayload(asOf = '2026-07-30') {
     schema: TREND_TAXONOMY_VERSION,
     signal_schema: TREND_SIGNAL_VERSION,
     as_of: asOf,
+    human_intelligence_guide: HUMAN_INTELLIGENCE_GUIDE,
     summary: {
       driver_domains: TREND_DRIVER_DOMAINS.length,
       vertical_contracts: Object.keys(VERTICAL_SIGNAL_CONTRACTS).length,
@@ -363,6 +391,7 @@ export function slmTrainingSchemaPayload(asOf = '2026-07-30') {
     taxonomy_schema: 'trend-taxonomy-v1',
     canonical_taxonomy_schema: TREND_TAXONOMY_VERSION,
     as_of: asOf,
+    human_intelligence_guide: HUMAN_INTELLIGENCE_GUIDE,
     required_record_fields: [
       'entity_id',
       'vertical',
