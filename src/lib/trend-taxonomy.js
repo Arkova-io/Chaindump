@@ -242,6 +242,40 @@ export const REGULATORY_SIGNALS = Object.freeze([
     ],
   },
   {
+    id: 'cftc-crypto-perps-market-structure-2026-07',
+    driver_domain: 'regulation_compliance',
+    statement_type: 'regulatory_signal',
+    jurisdiction: 'US',
+    as_of: '2026-07-30',
+    title: 'CFTC digital-asset derivatives and perpetual-contract signals are exchange taxonomy inputs',
+    summary: 'DEX/CEX and derivatives venue outlooks should separate spot, perps, DCM/listed-contract, FCM, foreign-futures, and event-market exposure instead of using one generic exchange label.',
+    affected_verticals: ['dex', 'cex', 'regulatory_news'],
+    source_refs: [
+      {
+        title: 'CFTC — Press Releases',
+        url: 'https://www.cftc.gov/PressRoom/PressReleases',
+        publisher: 'CFTC',
+      },
+    ],
+  },
+  {
+    id: 'ec-mica-review-consultation-2026-05',
+    driver_domain: 'regulation_compliance',
+    statement_type: 'regulatory_signal',
+    jurisdiction: 'EU',
+    as_of: '2026-07-30',
+    title: 'European Commission MiCA review keeps EU crypto rules in review-active state',
+    summary: 'EU regulatory analysis should tag MiCA assumptions as review-active through the 2026 consultation window and preserve separate fields for issuer, CASP, stablecoin, DeFi, and supervisory-scope questions.',
+    affected_verticals: ['cex', 'dex', 'stablecoin', 'rwa', 'regulatory_news'],
+    source_refs: [
+      {
+        title: 'European Commission — Commission seeks feedback on the functioning of EU crypto-assets rules',
+        url: 'https://finance.ec.europa.eu/news/commission-seeks-feedback-functioning-eu-crypto-assets-rules-2026-05-20_en',
+        publisher: 'European Commission',
+      },
+    ],
+  },
+  {
     id: 'irs-1099-da-2026',
     driver_domain: 'regulation_compliance',
     statement_type: 'regulatory_signal',
@@ -264,6 +298,8 @@ const SIGNAL_TO_CATEGORY_IDS = Object.freeze({
   'eu-mica-casp-register-2026-07': ['regulation_compliance', 'evidence_quality'],
   'us-stablecoin-framework-2026-07': ['regulation_compliance', 'capital_liquidity', 'evidence_quality'],
   'sec-crypto-taxonomy-2026-03': ['regulation_compliance', 'token_design', 'evidence_quality'],
+  'cftc-crypto-perps-market-structure-2026-07': ['regulation_compliance', 'capital_liquidity', 'competition_market_structure'],
+  'ec-mica-review-consultation-2026-05': ['regulation_compliance', 'evidence_quality', 'competition_market_structure'],
   'irs-1099-da-2026': ['regulation_compliance', 'governance_organization', 'evidence_quality'],
 });
 
