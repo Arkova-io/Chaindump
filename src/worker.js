@@ -27,6 +27,7 @@ import { SCORE_META, TIER_CRITERIA, TIERS, BOARD_SIZE, CHANGE_90D_MIN_SPAN_DAYS,
 import { DEX_CATEGORIES, aggregateBreakdown, feedIsDegenerate, selectCandidates, dedupeChains, rollupDexProtocols } from './lib/llama.js';
 import { renderSsrRows } from './lib/ssr-rows.js';
 import { CHAIN_DOSSIER_DIMENSIONS } from './lib/chain-dossier.js';
+import { normalizeDossier } from './lib/normalized-dossier.js';
 import { normalizeExchangeCase, summarizeExchangeCases } from './lib/exchange-analysis.js';
 import { buildNftLifecycleAnalysis } from './lib/nft-lifecycle-analysis.js';
 import {
@@ -193,6 +194,34 @@ function exchangeMetricSupportPending(row, depth) {
     && Number(depth?.unresolved_high_risk_claim_count) > 0;
 }
 
+// Server-side counterpart to the shared report renderer. Keep this projection
+// deliberately shallow: it only uses fields that have already passed the
+// public redaction/publication gates, while preserving nulls for unknowns.
+function normalizedExchangeDossier(row, analysis, profile) {
+  const forensic = analysis?.forensic_analysis || profile?.forensic_analysis || {};
+  const token = analysis?.token || {};
+  return normalizeDossier({
+    category: `${String(row.kind || 'exchange').toUpperCase()} · ${row.venue_type || 'exchange'}`,
+    name: row.name,
+    status: row.status || row.lifecycle,
+    metric: row.metric,
+    as_of: analysis?.metric?.as_of || row.updated_at,
+    what_it_is: profile?.purpose || profile?.what_it_does || analysis?.product_cohort,
+    what_happened: row.summary,
+    why: forensic.why || profile?.why || profile?.success_factors,
+    strategic_choices: forensic.strategic_choices || profile?.strategic_choices,
+    operating_model: analysis?.operating_model,
+    token_value_capture: token,
+    evidence: analysis?.evidence,
+    counterfactual: forensic.counterfactual || profile?.counterfactual,
+    risks_unknowns: profile?.risks || profile?.risk_factors || forensic.unknowns,
+    lifecycle: profile?.synthesis || row.lifecycle,
+    outlook_watch: row.outlook || forensic.watch,
+    review_metadata: analysis?.freshness || forensic.review,
+    sources: row.sources,
+  });
+}
+
 function publicExchangeCase(row) {
   const depth = row.publication_depth;
   const outcomePending = Boolean(publicationDepthGapAt(depth, 'forensic_analysis.outcome'));
@@ -209,7 +238,8 @@ function publicExchangeCase(row) {
       ? 'support_pending'
       : row.analysis?.forensic_analysis_status,
   };
-  return {
+  const publicProfile = publicExchangeProfile(row.profile, depth);
+  const publicRow = {
     ...row,
     status: outcomePending ? null : row.status,
     metric: metricPending ? null : row.metric,
@@ -217,8 +247,12 @@ function publicExchangeCase(row) {
     drawdown_pct: metricPending ? null : row.drawdown_pct,
     summary: outcomePending || whyPending ? null : row.summary,
     outlook: causalPending ? null : row.outlook,
-    profile: publicExchangeProfile(row.profile, depth),
+    profile: publicProfile,
     analysis,
+  };
+  return {
+    ...publicRow,
+    normalized_dossier: normalizedExchangeDossier(publicRow, analysis, publicProfile),
     publication_support: {
       status: outcomePending ? PENDING_PUBLICATION_SUPPORT : null,
       metric: metricPending ? PENDING_PUBLICATION_SUPPORT : null,
@@ -270,6 +304,32 @@ function publicNftProfile(profileValue, depth) {
         : null]),
   );
   return profile;
+}
+
+function normalizedNftDossier(row, profile, sources) {
+  const forensic = profile?.forensic_analysis || {};
+  return normalizeDossier({
+    category: `NFT / Ordinals · ${row.chain || 'chain unknown'}`,
+    name: row.name,
+    status: row.status,
+    metric: profile?.secondary_volume_usd ?? profile?.mint_raise_usd ?? null,
+    as_of: profile?.evidence_policy?.status_as_of
+      || profile?.evidence_policy?.last_verified_at
+      || row.updated_at,
+    what_it_is: profile?.collection_description || profile?.business,
+    what_happened: profile?.community_history || profile?.analysis,
+    why: forensic.why || profile?.why || profile?.risks,
+    strategic_choices: forensic.strategic_choices || profile?.strategic_choices || profile?.founder_engagement,
+    operating_model: profile?.business || profile?.benefits,
+    token_value_capture: profile?.token_model || profile?.royalties_enforced || profile?.royalties_earned_usd,
+    evidence: profile?.evidence,
+    counterfactual: forensic.counterfactual || profile?.counterfactual || profile?.watch,
+    risks_unknowns: profile?.risks || profile?.unknowns,
+    lifecycle: profile?.analysis,
+    outlook_watch: profile?.outlook || forensic.watch,
+    review_metadata: profile?.evidence_policy,
+    sources,
+  });
 }
 
 function publicNftRisk(riskValue) {
@@ -1828,6 +1888,31 @@ function resolveTags(row, facts, onBoard) {
   return { cohort, themes: derived };
 }
 
+function normalizedChainDossier(row, description, analysis, facts, risk) {
+  const profile = analysis?.profile || {};
+  const synthesis = facts?.synthesis?.data || {};
+  return normalizeDossier({
+    category: 'Blockchain',
+    name: row?.name,
+    status: row?.verdict || row?.lifecycle || analysis?.sentiment,
+    metric: row?.tvl ?? null,
+    as_of: row?.updated_at || analysis?.updated_at || synthesis.as_of,
+    what_it_is: profile.what_it_does || profile.purpose || description,
+    what_happened: synthesis.situation || synthesis.postmortem || analysis?.take,
+    why: synthesis.why || synthesis.success_mechanism || profile.why || row?.why_stuck,
+    strategic_choices: synthesis.strategic_choices || profile.strategic_choices,
+    operating_model: profile.operating_model || profile.business_model || profile.purpose,
+    token_value_capture: profile.token || row?.token,
+    evidence: synthesis.evidence || analysis?.sources,
+    counterfactual: synthesis.could_differ || synthesis.counterfactual || profile.could_differ,
+    risks_unknowns: synthesis.unknowns || profile.risks || profile.unknowns || risk,
+    lifecycle: synthesis.lifecycle || profile.lifecycle || row?.lifecycle,
+    outlook_watch: synthesis.outlook || profile.outlook || analysis?.outlook,
+    review_metadata: synthesis.review || analysis?.updated_at,
+    sources: parsedPublicJson(analysis?.sources, []),
+  });
+}
+
 app.get('/api/chain/:name', wrap(async (req, res) => {
   try {
     if (!cache.data) cache = await loadSnapshot();
@@ -1926,7 +2011,7 @@ app.get('/api/chain/:name', wrap(async (req, res) => {
 
     const tags = resolveTags(row, facts, onBoard);
 
-    res.json({ chain: row, curatedLifecycle, scoreMeta: SCORE_META, description: DESCRIPTIONS[nkey] || null, dataQuality, topProjects, topNfts, topTokens, analysis, risk, facts, tags, tagVocab: tagVocab() });
+    res.json({ chain: row, curatedLifecycle, scoreMeta: SCORE_META, description: DESCRIPTIONS[nkey] || null, dataQuality, topProjects, topNfts, topTokens, analysis, risk, facts, tags, tagVocab: tagVocab(), normalized_dossier: normalizedChainDossier(row, DESCRIPTIONS[nkey] || null, analysis, facts, risk) });
   } catch (e) {
     res.status(502).json({ error: e.message });
   }
@@ -2756,10 +2841,12 @@ app.get('/api/nft', wrap(async (req, res) => {
       const lifecyclePending = hasPublicationDepthGap(publicationDepth, ({ path, type }) => (
         type === 'lifecycle' || path === 'forensic_analysis.outcome'
       ));
+      const publicProfile = publicNftProfile(p, publicationDepth);
       return {
         ...r,
         status: freshness?.statusWithheld || lifecyclePending ? 'unknown' : r.status,
-        profile: publicNftProfile(p, publicationDepth),
+        profile: publicProfile,
+        normalized_dossier: normalizedNftDossier({ ...r, status: freshness?.statusWithheld || lifecyclePending ? 'unknown' : r.status }, publicProfile, publicationSources),
         citation: { fieldCited: p?.citation_schema === 'field-v1' && citation.valid, errors: citation.errors },
         freshness,
         publication_sources: publicationSources,
@@ -2913,6 +3000,37 @@ function casinoCasePublicationState(claims, depth) {
   return { statusPending, outcomePending };
 }
 
+function normalizedCasinoDossier(row, synthesis, claims, sources) {
+  const forensic = synthesis?.forensic_analysis || {};
+  const evidence = (claims || []).map((claim) => ({
+    claim_id: claim.claim_id,
+    field_path: claim.field_path,
+    support_direction: claim.support_direction,
+    evidence_locator: claim.evidence_locator,
+    publication_support: claim.publication_support || null,
+  }));
+  return normalizeDossier({
+    category: `Web3 casino · ${row.product_subtype || 'product unknown'}`,
+    name: row.brand_name,
+    status: row.status || row.outcome_label,
+    metric: row.completeness_pct == null ? null : `${row.completeness_pct}% evidence completeness`,
+    as_of: row.status_as_of || row.last_reviewed,
+    what_it_is: row.product_scope_note || synthesis?.present_situation,
+    what_happened: synthesis?.present_situation,
+    why: synthesis?.success_failure_hypotheses || forensic.why,
+    strategic_choices: synthesis?.strategic_choices || synthesis?.business_mechanism || forensic.strategic_choices,
+    operating_model: synthesis?.business_mechanism || synthesis?.chain_dependence,
+    token_value_capture: synthesis?.token_contribution || row.token_symbol || row.token_status,
+    evidence,
+    counterfactual: synthesis?.counterfactual || forensic.counterfactual,
+    risks_unknowns: synthesis?.risk_legal_posture || row.unsourced_fields || forensic.unknowns,
+    lifecycle: synthesis?.present_situation || row.outcome_label,
+    outlook_watch: synthesis?.outlook || forensic.watch,
+    review_metadata: { confidence: row.confidence, completeness_pct: row.completeness_pct, last_reviewed: row.last_reviewed },
+    sources,
+  });
+}
+
 function publicCasinoCase(row, claims, depth) {
   const result = casinoCaseRow(row);
   const { statusPending, outcomePending } = casinoCasePublicationState(claims, depth);
@@ -2929,6 +3047,7 @@ function publicCasinoCase(row, claims, depth) {
     status: statusPending ? PENDING_PUBLICATION_SUPPORT : null,
     outcome: outcomePending ? PENDING_PUBLICATION_SUPPORT : null,
   };
+  result.normalized_dossier = normalizedCasinoDossier(result, null, claims, []);
   return result;
 }
 
@@ -3287,6 +3406,12 @@ app.get('/api/casino/:case_id', wrap(async (req, res) => {
     const publicSynthesis = publicCasinoSynthesis(
       synthesis,
       publicationDepth,
+    );
+    publicCase.normalized_dossier = normalizedCasinoDossier(
+      publicCase,
+      publicSynthesis,
+      publicClaims,
+      sources,
     );
     res.json({
       case: publicCase, claims: publicClaims, sources,
