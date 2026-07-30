@@ -8,8 +8,9 @@
 // fraud/crime is force-flagged for human review before it can reach the site.
 //
 // Tools: the live chain-intel MCP server (our own dogfooded tools) + web research
-// + a single custom `queue_proposal` tool. Model + key from the environment
-// (ANTHROPIC_API_KEY; in prod, from GCP Secret Manager `Anthropic`).
+// + a single custom `queue_proposal` tool. Gemini is the default low-cost
+// provider; Claude remains an explicit opt-in. In production the Gemini key is
+// loaded from GCP Secret Manager `gemini-api-key`.
 
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -19,15 +20,19 @@ import {
   PROPOSAL_DATASETS,
   sanitizeSlug,
   buildRecord,
+  type QueueProposalInput,
 } from "./proposal.js";
 import { buildResearchSystemPrompt, DEFAULT_RESEARCH_TASK } from "./research.js";
 import { buildResearchRunId, postResearchRunStatus } from "./run-status.js";
 import { runResearchDeskLifecycle } from "./lifecycle.js";
+import { DEFAULT_GEMINI_MAX_TURNS, DEFAULT_GEMINI_MODEL, runGeminiDesk, resolveDeskProvider } from "./gemini.js";
 
 const MCP_URL = process.env.CHAINDUMP_MCP_URL || "https://chaindump-mcp-270018525501.us-central1.run.app/mcp";
 const QUEUE_DIR = process.env.DESK_QUEUE_DIR || "./proposals";
-const MODEL = process.env.DESK_MODEL || "claude-sonnet-5";
-const MAX_TURNS = Number(process.env.DESK_MAX_TURNS) || 20;
+const PROVIDER = resolveDeskProvider();
+const MODEL = process.env.DESK_MODEL || (PROVIDER === "gemini" ? DEFAULT_GEMINI_MODEL : "claude-sonnet-5");
+const MAX_TURNS = Number(process.env.DESK_MAX_TURNS) || (PROVIDER === "gemini" ? DEFAULT_GEMINI_MAX_TURNS : 20);
+const MAX_OUTPUT_TOKENS = Number(process.env.DESK_MAX_OUTPUT_TOKENS) || 4096;
 const CHAINDUMP_BASE = (process.env.CHAINDUMP_BASE_URL || "https://chaindump.xyz").replace(/\/$/, "");
 const DESK_PROPOSAL_TOKEN = process.env.DESK_PROPOSAL_TOKEN || process.env.DESK_TOKEN || "";
 let proposalPersistenceFailures = 0;
@@ -111,6 +116,11 @@ const queueProposal = tool(
   },
 );
 
+async function queueGeminiProposal(args: QueueProposalInput): Promise<string> {
+  const record = buildRecord(args, new Date().toISOString());
+  return persistProposal(args.dataset, args.slug, record);
+}
+
 const deskTools = createSdkMcpServer({ name: "desk", version: "0.1.0", tools: [queueProposal] });
 
 // ---- the desk's operating rules --------------------------------------------
@@ -138,6 +148,17 @@ function logDeskResult(message: DeskMessage, proposals: number): void {
 }
 
 async function runDesk(task: string): Promise<number> {
+  if (PROVIDER === "gemini") {
+    return runGeminiDesk({
+      apiKey: process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || "",
+      model: MODEL,
+      systemPrompt: SYSTEM_PROMPT,
+      task,
+      maxTurns: MAX_TURNS,
+      maxOutputTokens: MAX_OUTPUT_TOKENS,
+      queueProposal: queueGeminiProposal,
+    });
+  }
   let proposals = 0;
   const run = query({
     prompt: task,
@@ -195,7 +216,10 @@ try {
     token: DESK_PROPOSAL_TOKEN,
     runId: RESEARCH_RUN_ID,
     assertReady: () => {
-      if (!process.env.ANTHROPIC_API_KEY) {
+      if (PROVIDER === "gemini" && !(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY)) {
+        throw new Error("GEMINI_API_KEY is not set (in prod, load it from GCP Secret Manager `gemini-api-key`).");
+      }
+      if (PROVIDER === "claude" && !process.env.ANTHROPIC_API_KEY) {
         throw new Error("ANTHROPIC_API_KEY is not set (in prod, load it from GCP Secret Manager `Anthropic`).");
       }
     },
