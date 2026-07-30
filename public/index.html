@@ -681,6 +681,7 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   casinoAnalysisData: null, casinoCoverage: null, casinoAnalysisError: '', casinoAnalysisQuery: '', casinoAnalysisSort: 'reviewed',
   casinoAnalysisStatus: 'all', casinoAnalysisKind: 'all', casinoAnalysisSubtype: 'all', casinoAnalysisToken: 'all', casinoAnalysisExpanded: null, casinoAnalysisDetails: {},
   nftCaseSort: 'name', nftCaseStatus: 'all', nftCaseChain: 'all',
+  trendTaxonomy: null, trendTaxonomyStatus: 'loading',
   forensicsRefresh: null, forensicsRefreshStatus: 'loading', forensicsRefreshFreshness: null,
   forensicsProposalAgent: null, forensicsProposalAgentStatus: 'loading', forensicsProposalAgentFreshness: null,
   forensicsProposalAgentLastCompleted: null };
@@ -776,6 +777,80 @@ async function loadForensicsRefreshStatus() {
 }
 function pageHead(title, sub){
   return `<div class="pagehead"><div class="pagetitle">${esc(title)}</div><div class="gvintro">${sub}</div><div class="muted" data-forensics-refresh>${forensicsRefreshText()} <a href="/api/forensics-refresh-status" target="_blank" rel="noopener noreferrer">Open review status →</a></div></div>`;
+}
+function trendTaxonomySourceHtml(source) {
+  if (!source?.url) return '';
+  const title = source.title || source.publisher || source.url;
+  return `<a href="${esc(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${esc(title)} ↗</a>`;
+}
+function trendTaxonomyDomains(value) {
+  return Array.isArray(value) ? value : [value].filter(Boolean);
+}
+function trendTaxonomyPanel(domains, title) {
+  const wanted = trendTaxonomyDomains(domains);
+  if (state.trendTaxonomyStatus === 'loading') {
+    return '<div class="gpanel"><div class="skel">Loading shared trend taxonomy for refreshed outlooks…</div></div>';
+  }
+  if (!state.trendTaxonomy || state.trendTaxonomyStatus === 'unavailable') {
+    return '<div class="analysis-note">Shared trend taxonomy is temporarily unavailable; dossier-level citations and review dates remain authoritative.</div>';
+  }
+  const data = state.trendTaxonomy;
+  const rawCategories = data.categories || data.driver_domains || [];
+  const categories = rawCategories.filter((category) => (
+    !category.domains
+    || (category.domains || []).includes('all')
+    || wanted.some((domain) => (category.domains || []).includes(domain))
+  ));
+  const visibleCategories = categories.slice(0, 6);
+  const categoryHtml = visibleCategories.map((category) => {
+    const features = category.slm_features || category.mechanism_tags || [];
+    return `<div class="gfield"><span class="gfl">${esc(category.label)}</span>${esc(category.question || category.description || '')}<br><span class="muted">Features: ${esc(features.join(' · '))}</span></div>`;
+  }).join('');
+  const trendIds = new Set(categories.map((category) => category.id));
+  const signals = (data.regulatory_signals || []).filter((signal) => (
+    (signal.trend_ids || []).some((id) => trendIds.has(id))
+    || trendIds.has(signal.driver_domain)
+    || (signal.affected_verticals || []).some((vertical) => wanted.includes(vertical))
+  )).slice(0, 4);
+  const signalHtml = signals.map((signal) => {
+    const source = signal.source || (signal.source_refs || [])[0];
+    return `<div class="gfield"><span class="gfl">${esc(signal.regulator || signal.driver_domain || 'regulatory signal')} · ${esc(signal.jurisdiction || 'global')}</span>${esc(signal.signal || signal.summary || signal.title || '')}<br><span class="muted">as of ${esc(signal.as_of)} · ${trendTaxonomySourceHtml(source)}</span></div>`;
+  }).join('');
+  const requiredFields = data.evidence_contract?.required_fields || data.outlook_contract?.required_fields || [];
+  const fieldCount = requiredFields.length;
+  return `<div class="gpanel">
+    <div class="gcols">
+      <div>
+        <div class="dsec">${esc(title || 'Outlook trend taxonomy')}</div>
+        <div class="gnar muted">Refreshed outlooks now classify causal drivers with shared trend_ids before they feed the future local SLM. These are tags to apply with evidence, not conclusions by themselves.</div>
+        ${categoryHtml || '<div class="muted">No matching trend categories published for this view.</div>'}
+      </div>
+      <div>
+        <div class="dsec">Current regulatory inputs</div>
+        ${signalHtml || '<div class="muted">No regulatory signals mapped to this view.</div>'}
+        <div class="analysis-actions"><a class="kindbtn" href="/api/trend-taxonomy" target="_blank" rel="noopener noreferrer">Open taxonomy JSON →</a><a class="kindbtn" href="/api/slm/training-schema" target="_blank" rel="noopener noreferrer">Open SLM schema →</a></div>
+        <div class="muted">${esc(data.schema)} · ${esc(fieldCount)} required evidence fields · as of ${esc(data.as_of || 'unknown')}</div>
+      </div>
+    </div>
+  </div>`;
+}
+function rerenderActiveForensicsView() {
+  if (state.activeView === 'blockchain-analysis') renderBlockchainAnalysis();
+  if (state.activeView === 'exchange-analysis') renderExchangeAnalysis();
+  if (state.activeView === 'casino-analysis') renderCasinoAnalysis();
+  if (state.activeView === 'nft-analysis' && state.nftData) renderNft(state.nftData);
+}
+async function loadTrendTaxonomy() {
+  if (state.trendTaxonomyStatus === 'loaded') return;
+  try {
+    const response = await fetch('/api/trend-taxonomy');
+    state.trendTaxonomy = response.ok ? await response.json() : null;
+    state.trendTaxonomyStatus = response.ok ? 'loaded' : 'unavailable';
+  } catch {
+    state.trendTaxonomy = null;
+    state.trendTaxonomyStatus = 'unavailable';
+  }
+  rerenderActiveForensicsView();
 }
 // ---------------------------------------------------------------------------
 // The kind toggle shared by the Dead & Dying / Stuck-Mid views — Chains (the
@@ -1325,6 +1400,7 @@ function renderBlockchainAnalysis() {
   el.innerHTML = `${head}
     <div class="analysis-note"><b>Structural coverage is not causal completion.</b> A chain is counted as causal only when its dossier publishes the normalized why, strategic choices, counterfactual, watch signals, unknowns, outcome as-of date, and review schedule.</div>
     <div class="gstats">${gstat(rows.length, 'chains indexed')}${gstat(researched, 'structural dossiers')}${gstat(causal, 'causal maps indexed')}${gstat(rows.length - causal, 'causal maps pending')}</div>
+    ${trendTaxonomyPanel('blockchain', 'Blockchain outlook trend taxonomy')}
     ${cohortPanel}
     <div class="toolbar"><div class="analysis-controls">
       <input id="blockchainAnalysisSearch" class="search" placeholder="Search chains or lifecycle…" value="${esc(state.blockchainAnalysisQuery)}" />
@@ -1718,6 +1794,7 @@ function renderExchangeAnalysis() {
   );
   el.innerHTML = `${head}${errors}
     <div class="gstats">${gstat(rows.filter(r=>r.kind==='dex').length, 'DEX cases')}${gstat(rows.filter(r=>r.kind==='cex').length, 'CEX cases')}${gstat(rows.filter(r=>r.forensicStatus==='published').length, 'causal maps indexed')}${gstat(claimSupport.unresolved_high_risk_claim_count || 0, 'high-risk claims pending')}</div>
+    ${trendTaxonomyPanel(['dex', 'cex'], 'DEX/CEX outlook trend taxonomy')}
     <div class="analysis-note"><b>Exchange claim-support audit: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} high-risk claims meet policy; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending / withheld.</b> “Indexed” means the dossier and causal schema exist; it does not mean the conclusions passed editorial evidence review.</div>
     <div class="analysis-note">${cited} of ${rows.length} dossiers expose registered citations. Across them: ${esc(claimSupport.registered_source_count || 0)} registered · ${esc(claimSupport.reachable_source_count || 0)} reachable · ${esc(claimSupport.reviewed_source_count || 0)} editor reviewed. Comparison requires the same venue kind, product cohort, metric type, unit, and window. Spot, routed, perpetual, TVL, loss, daily, and quarterly measures are never added together.</div>
     ${cohortPanel}
@@ -2072,6 +2149,7 @@ function renderCasinoAnalysis() {
   el.innerHTML = `${head}
     <div class="analysis-note"><b>${esc(coverage.present_count ?? cases.length)}/${esc(coverage.target_count || cases.length)} corpus coverage measures indexed dossiers, not editorial claim support.</b> Across the visible corpus, ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} high-risk claims meet the independent-support policy and ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending / withheld. No cross-case “largest casino” ranking is computed.</div>
     <div class="gstats">${gstat(cases.length, 'indexed dossiers')}${gstat(missing, 'expected dossiers missing')}${gstat(claimSupport.unresolved_high_risk_claim_count || 0, 'high-risk claims pending')}${gstat(cases.filter(item=>item.token_status==='documented').length, 'documented tokens')}</div>
+    ${trendTaxonomyPanel('casino', 'Web3 casino outlook trend taxonomy')}
     ${cohortPanel}
     <div class="analysis-note">Legend: “registered” means the citation exists in the dossier; “reachable” records retrieval; “editor reviewed” requires explicit review provenance. None alone proves a high-risk conclusion. Open a dossier to see which lifecycle, causal, legal, loss, and counterfactual claims meet policy or are withheld.</div>
     <div class="toolbar"><div class="analysis-controls">
@@ -3214,6 +3292,9 @@ function switchView(view, push){
   document.getElementById('powerview').style.display = view === 'power' ? 'block' : 'none';
   document.getElementById('tracesview').style.display = view === 'traces' ? 'block' : 'none';
   document.getElementById('apiview').style.display = view === 'api' ? 'block' : 'none';
+  if (['blockchain-analysis', 'exchange-analysis', 'casino-analysis', 'nft-analysis'].includes(view)) {
+    loadTrendTaxonomy();
+  }
   if (view === 'api' && !apiLoaded) loadApi();
   if (view === 'news' && !newsLoaded) loadNews();
   if (view === 'power' && !powerLoaded) loadPower();
@@ -3829,7 +3910,7 @@ function renderNft(data){
   el.innerHTML = `${NFT_HEAD}${stats}
   <div class="analysis-note"><b>NFT/Ordinals claim-support audit: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} high-risk claims meet policy; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending / withheld.</b> The index preserves rich dossiers and registered sources, but unsupported lifecycle, causal, legal, loss, and counterfactual conclusions are not presented as independently verified.</div>
   <div class="analysis-note">Evidence status across the corpus: ${esc(claimSupport.registered_source_count || 0)} registered · ${esc(claimSupport.reachable_source_count || 0)} reachable · ${esc(claimSupport.reviewed_source_count || 0)} editor reviewed. “Reachable” records retrieval; it is not editorial review.</div>
-  ${evidenceCoverage}${cohortPanel}${panel}
+  ${evidenceCoverage}${trendTaxonomyPanel('nft_ordinals', 'NFT/Ordinals lifecycle trend taxonomy')}${cohortPanel}${panel}
   <div class="toolbar"><div class="analysis-controls">
     <input id="casesearch" class="search" placeholder="Search case studies by name, chain or status…" value="${esc(caseQ)}" />
     <label class="muted" for="nftCaseStatus">Status</label>

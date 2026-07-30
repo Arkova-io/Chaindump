@@ -16,7 +16,8 @@
     "check:worker": "node --input-type=module --check < src/worker.js",
     "check:nft-dossiers": "node scripts/check-nft-dossiers.mjs",
     "check:casino-evidence-depth-wave-b": "node scripts/check-casino-evidence-depth-wave-b.mjs",
-    "check:exchange-remediation-wave-b": "node scripts/check-exchange-evidence-remediation-wave-b.mjs"
+    "check:exchange-remediation-wave-b": "node scripts/check-exchange-evidence-remediation-wave-b.mjs",
+    "export:forensic-corpus": "node scripts/export-forensic-corpus.mjs"
   },
   "dependencies": {
     "express": "^5.2.1",

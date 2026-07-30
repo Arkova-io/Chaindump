@@ -4,6 +4,8 @@
  */
 export const ANALYSIS_ENDPOINT_PATHS = {
   reviewDebt: "/api/forensics-refresh-status",
+  trendTaxonomy: "/api/trend-taxonomy",
+  slmSchema: "/api/slm/training-schema",
   blockchains: "/api/chains",
   dex: "/api/exchange-analysis?kind=dex",
   cex: "/api/exchange-analysis?kind=cex",
@@ -25,6 +27,7 @@ export function buildResearchSystemPrompt(baseUrl: string): string {
 
 ACCURACY IS SACRED (non-negotiable):
 - Start by loading ${endpoints.reviewDebt} with WebFetch. It is the public six-hour review-debt signal; it does not authorize publication.
+- Load ${endpoints.trendTaxonomy} and ${endpoints.slmSchema}. Use the taxonomy to tag proposals with the right trend_ids / driver domains and to keep future SLM labels consistent. These schemas do not authorize publication.
 - Load the relevant existing public corpus before external research:
   - blockchains: ${endpoints.blockchains}
   - DEXs: ${endpoints.dex}
@@ -38,6 +41,8 @@ ACCURACY IS SACRED (non-negotiable):
 - The proposal slug MUST be the canonical dedupe key "<normalized entity_id>--<normalized field_path>--<as_of>"; the Worker rejects alternate slugs, duplicate source URLs, missing source_refs, and unverified sources.
 - Never queue a full dossier replacement, bulk status rewrite, uncited metric, or fake freshness update. Never claim a live value is current merely because an old source still resolves.
 - For NFT / Ordinals, lifecycle evidence must explicitly distinguish project/operator activity, holder/community activity, market/liquidity evidence, utility/benefits, and current lifecycle status. Conflicting evidence means "needs review", not a confident status.
+- Prioritize stale or materially changing refreshed-outlook fields across every vertical: outlook, forensic_analysis.watch, forensic_analysis.unknowns, and regulation/licensing/status fields. Treat these as review candidates, not automatic lifecycle changes.
+- A trend requires at least three comparable dated observations with a declared window and denominator. If the evidence does not meet that bar, queue a state-tag/event/review-trigger candidate instead of a trend claim.
 - Attribute blame to culpable individuals only with strong sourcing; never blame neutral infrastructure. Anything naming a private individual or asserting fraud/crime must set names_individuals=true.
 
 DATASET CONTRACT:
@@ -50,4 +55,4 @@ All four are proposal-only, always require human review, and cannot be directly 
 YOUR ONLY OUTPUT is queue_proposal calls. Queue one candidate per distinct field/claim, only after verification and deduplication. A thin or duplicative candidate should not be queued.`;
 }
 
-export const DEFAULT_RESEARCH_TASK = `Run one bounded cross-vertical review-debt pass. Inspect the public freshness status and existing analysis first. Then research at most one genuinely novel, decision-useful evidence candidate in each of five surfaces: blockchain, DEX, CEX, Web3 casino, and NFT/Ordinals lifecycle. Prioritize overdue or materially changing dossiers. Verify every source with WebFetch, adversarially test causal claims, deduplicate, and queue only field-level evidence candidates. It is valid to queue nothing when the existing record is current or the evidence is weak.`;
+export const DEFAULT_RESEARCH_TASK = `Run one bounded cross-vertical review-debt pass. Inspect the public freshness status, trend taxonomy, SLM schema, and existing analysis first. Then research at most one genuinely novel, decision-useful evidence candidate in each of five surfaces: blockchain, DEX, CEX, Web3 casino, and NFT/Ordinals lifecycle. Prioritize overdue or materially changing outlook/watch/unknowns/licensing/status fields. Verify every source with WebFetch, adversarially test causal claims, deduplicate, and queue only field-level evidence candidates. It is valid to queue nothing when the existing record is current or the evidence is weak.`;
