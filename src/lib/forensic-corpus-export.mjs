@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { stateTagsForForensicRecord } from './trend-taxonomy.js';
 
 export const FORENSIC_CORPUS_SCHEMA = 'chaindump-forensic-training-record-v1';
 
@@ -72,20 +73,6 @@ function publicationState(record) {
     registered_source_count: Number(depth.registered_source_count) || 0,
     reviewed_source_count: Number(depth.reviewed_source_count) || 0,
   };
-}
-
-function stateTagsForForensicRecord(record) {
-  const tags = new Set();
-  const lifecycle = record?.lifecycle || record?.status || record?.dossierStatus;
-  if (lifecycle) tags.add(`outcome_${String(lifecycle).toLowerCase().replaceAll(' ', '_')}`);
-  const depth = record?.publication_depth || record?.publicationDepth || {};
-  if (Number(depth.unresolved_high_risk_claim_count) > 0) tags.add('support_pending');
-  const freshness = record?.freshness || record?.analysis?.freshness || record?.causalFreshness || {};
-  const freshnessStatus = freshness.status || freshness.state;
-  if (freshnessStatus) tags.add(`review_${String(freshnessStatus).toLowerCase()}`);
-  const forensicStatus = record?.forensicStatus || record?.analysis?.forensic_analysis_status || record?.causalStatus;
-  if (forensicStatus) tags.add(`causal_${String(forensicStatus).toLowerCase()}`);
-  return [...tags].sort((a, b) => a.localeCompare(b));
 }
 
 export function normalizeTrainingRecord(record, context = {}) {
