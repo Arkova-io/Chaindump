@@ -47,6 +47,9 @@ describe('trend taxonomy', () => {
     expect(schema.taxonomy_schema).toBe(taxonomy.schema);
     expect(schema.required_record_fields).toContain('last_reviewed_at');
     expect(schema.quality_gates.join(' ')).toContain('withheld high-risk conclusions');
+    expect(taxonomy.human_intelligence_guide.canonical_format).toHaveLength(5);
+    expect(taxonomy.human_intelligence_guide.verticals.dex).toMatch(/real traders/i);
+    expect(schema.human_intelligence_guide.verticals.nft_ordinals).toMatch(/lasting holders/i);
   });
 
   it('exposes taxonomy and SLM endpoints without requiring D1', async () => {
