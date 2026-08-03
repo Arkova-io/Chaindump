@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "express": "^5.2.1",
-    "hono": "^4.12.32"
+    "hono": "^4.12.34"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -29,6 +29,11 @@
     "tla-precheck": "0.1.7",
     "vitest": "4.1.10",
     "wrangler": "^4.115.0"
+  },
+  "overrides": {
+    "brace-expansion": "5.0.9",
+    "postcss": "8.5.25",
+    "undici": "7.29.0"
   },
   "emblem_build": {
     "tables": [
