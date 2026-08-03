@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { buildProfileAdapterCensus } from '../scripts/profile-adapter-census.mjs';
 
 const EXPECTED_COUNTS = {
-  blockchain: [90, 0, 0, 90, 0, 90, 2637],
+  blockchain: [90, 0, 0, 89, 1, 90, 2743],
   dex: [29, 0, 27, 0, 2, 27, 92],
   cex: [30, 0, 27, 1, 2, 28, 46],
   nft_collection: [39, 0, 20, 0, 19, 0, 0],
@@ -18,7 +18,7 @@ const EXPECTED_COUNTS = {
 };
 
 const RICHEST_CONTROLS = {
-  blockchain: ['ethereum', 6],
+  blockchain: ['ethereum', 10],
   dex: ['sushiswap', 10],
   cex: ['binance', 10],
   nft_collection: ['azuki', 10],
@@ -87,6 +87,15 @@ describe('full-corpus canonical profile adapter', () => {
     });
   });
 
+  it('projects Ethereum structured research into the complete shared report template', () => {
+    const ethereum = census.rows.find((row) => (
+      row.type === 'blockchain' && row.slug === 'ethereum'
+    ));
+    expect(ethereum?.section_count).toBe(10);
+    expect(ethereum?.raw_object_leak).toBe(false);
+    expect(ethereum?.placeholder_copy).toBe(false);
+  });
+
   it('keeps exact per-type depth and validation counts intentional', () => {
     for (const [type, expected] of Object.entries(EXPECTED_COUNTS)) {
       const row = census.by_type[type];
@@ -119,7 +128,7 @@ describe('full-corpus canonical profile adapter', () => {
     }, {});
     expect(classes).toEqual({
       source_metadata_debt: 2776,
-      citation_debt: 1452,
+      citation_debt: 1558,
     });
 
     const structural = census.rows.filter((row) => row.validation_error_classes.structural_contract_error);
