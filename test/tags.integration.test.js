@@ -158,9 +158,15 @@ describe('chain tags on /api/chain/:name', () => {
   });
 
   it('computes up-and-coming from a real 16-day-old row', async () => {
-    const body = await get('Robinhood Chain', [identity('Robinhood Chain', REAL.Robinhood)]);
-    expect(body.tags.cohort).toBe('up-and-coming');
-    expect(body.tags.themes).toEqual(expect.arrayContaining(['l2', 'corporate-parent', 'rwa']));
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-07-17T00:00:00Z'));
+    try {
+      const body = await get('Robinhood Chain', [identity('Robinhood Chain', REAL.Robinhood)]);
+      expect(body.tags.cohort).toBe('up-and-coming');
+      expect(body.tags.themes).toEqual(expect.arrayContaining(['l2', 'corporate-parent', 'rwa']));
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it('treats `permissioned` as a theme and still lets the board win', async () => {
