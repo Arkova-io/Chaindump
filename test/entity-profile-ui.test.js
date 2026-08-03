@@ -52,6 +52,23 @@ describe('shared human-facing entity profile UI', () => {
     }
   });
 
+  it('translates machine enums into reader-facing labels across all 13 profile types', () => {
+    const { canonicalProfileHtml } = profileRenderer();
+    for (const fixture of Object.values(ENTITY_PROFILE_BROWSER_FIXTURES)) {
+      const raw = structuredClone(fixture);
+      raw.identity.name = 'Example profile';
+      raw.outcome.label = 'middling_declining';
+      raw.classification.subtype = 'centralized_multi_product_exchange';
+      raw.classification.chains = ['BNB_Smart_Chain', 'dYdX'];
+      const output = canonicalProfileHtml(raw);
+      const visibleText = output.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
+
+      expect(visibleText).toContain('Middling declining');
+      expect(visibleText).toContain('Centralized multi product exchange · BNB Smart Chain · dYdX');
+      expect(visibleText).not.toMatch(/\b(?:middling_declining|centralized_multi_product_exchange|BNB_Smart_Chain)\b/);
+    }
+  });
+
   it('keeps the report anatomy in the requested order, then renders metrics and evidence', () => {
     const { canonicalProfileHtml } = profileRenderer();
     const output = canonicalProfileHtml(ENTITY_PROFILE_BROWSER_FIXTURES.blockchain);
@@ -110,5 +127,8 @@ describe('shared human-facing entity profile UI', () => {
     expect(html).toContain('id="profileTitle" tabindex="-1"');
     expect(html).toContain("title.focus({ preventScroll:true })");
     expect(html).toContain("event.target.closest('a[data-profile-type][data-profile-slug]')");
+    expect(html).toContain('.profile-page { max-width:1040px; margin:0 auto; min-width:0; }');
+    expect(html).toContain('.profile-report .gbody { font-size:14px; line-height:1.72; color:var(--text); overflow-wrap:anywhere; }');
+    expect(html).toContain('.profile-source a { color:var(--accent2); font-size:13px; line-height:1.45; min-width:0; overflow-wrap:anywhere; }');
   });
 });

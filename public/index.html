@@ -370,19 +370,19 @@
   .normalized-dossier-head { display:flex; align-items:center; gap:8px; font-size:15px; }
   .normalized-dossier-metric { margin-left:auto; color:var(--muted2); font-weight:700; font-variant-numeric:tabular-nums; }
   .normalized-section + .normalized-section { border-top:1px solid var(--border); margin-top:12px; padding-top:2px; }
-  .profile-page { max-width:1040px; margin:0 auto; }
+  .profile-page { max-width:1040px; margin:0 auto; min-width:0; }
   .profile-back { display:inline-flex; align-items:center; gap:6px; margin:0 0 16px; color:var(--muted2); font-size:12.5px; text-decoration:none; }
   .profile-back:hover { color:var(--accent); }
   .profile-hero { background:var(--surface); border:1px solid var(--border2); border-radius:14px; padding:22px 24px; margin-bottom:14px; }
   .profile-eyebrow { color:var(--muted); font-size:10.5px; font-weight:700; letter-spacing:.07em; text-transform:uppercase; margin-bottom:9px; }
   .profile-title-row { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
-  .profile-title { margin:0; color:var(--text); font-size:28px; line-height:1.15; letter-spacing:-.025em; }
-  .profile-summary { color:var(--muted2); font-size:13px; line-height:1.6; margin:10px 0 0; }
+  .profile-title { margin:0; color:var(--text); font-size:28px; line-height:1.15; letter-spacing:-.025em; overflow-wrap:anywhere; }
+  .profile-summary { color:var(--muted2); font-size:13px; line-height:1.6; margin:10px 0 0; overflow-wrap:anywhere; }
   .profile-report { background:var(--surface); border:1px solid var(--border2); border-radius:14px; padding:8px 24px 20px; }
   .profile-report .normalized-section { padding:16px 0 4px; }
   .profile-report .normalized-section + .normalized-section { margin-top:0; padding-top:18px; }
   .profile-report .gsec { font-size:11px; margin:0 0 7px; }
-  .profile-report .gbody { font-size:14px; line-height:1.72; color:var(--text); }
+  .profile-report .gbody { font-size:14px; line-height:1.72; color:var(--text); overflow-wrap:anywhere; }
   .profile-metrics { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin:14px 0; }
   .profile-metric { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; min-width:0; }
   .profile-metric-value { color:var(--text); font-size:17px; font-weight:700; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
@@ -390,7 +390,7 @@
   .profile-sources { display:flex; flex-direction:column; gap:8px; }
   .profile-source { display:flex; align-items:baseline; justify-content:space-between; gap:14px; border-top:1px solid var(--border); padding-top:8px; }
   .profile-source:first-child { border-top:0; padding-top:0; }
-  .profile-source a { color:var(--accent2); font-size:13px; line-height:1.45; }
+  .profile-source a { color:var(--accent2); font-size:13px; line-height:1.45; min-width:0; overflow-wrap:anywhere; }
   .profile-source-publisher { color:var(--muted); font-size:11px; flex-shrink:0; }
   .profile-error { background:var(--surface); border:1px solid var(--border2); border-radius:14px; padding:24px; color:var(--muted2); }
   .profile-open-link { color:var(--accent2); font-size:12px; font-weight:600; text-decoration:none; }
@@ -3065,6 +3065,14 @@ function profileHref(type, slug) {
 }
 function profileTypeLabel(type) { return PROFILE_TYPE_META[type]?.[0] || 'Research profile'; }
 function profileParentView(type) { return PROFILE_TYPE_META[type]?.[1] || 'live'; }
+function profilePublicLabel(value) {
+  const text = normalizedText(value);
+  if (!text) return '';
+  const readable = text.replaceAll('_', ' ').replace(/\s+/g, ' ').trim();
+  return readable === readable.toLowerCase()
+    ? readable.replace(/^[a-z]/, (letter) => letter.toUpperCase())
+    : readable;
+}
 function profileDate(value) {
   if (!value || !Number.isFinite(Date.parse(value))) return '';
   return new Intl.DateTimeFormat('en', { year:'numeric', month:'short', day:'numeric', timeZone:'UTC' }).format(new Date(value));
@@ -3116,11 +3124,12 @@ function canonicalProfileSources(profile) {
 function canonicalProfileHtml(profile) {
   const type = profile?.identity?.type;
   const name = normalizedText(profile?.identity?.name) || 'Research profile';
-  const outcome = normalizedText(profile?.outcome?.label || profile?.status?.operating_state);
+  const rawOutcome = normalizedText(profile?.outcome?.label || profile?.status?.operating_state);
+  const outcome = profilePublicLabel(rawOutcome);
   const typeLabel = profileTypeLabel(type);
   const context = [
-    normalizedText(profile?.classification?.subtype),
-    ...(Array.isArray(profile?.classification?.chains) ? profile.classification.chains.map(normalizedText).filter(Boolean) : []),
+    profilePublicLabel(profile?.classification?.subtype),
+    ...(Array.isArray(profile?.classification?.chains) ? profile.classification.chains.map(profilePublicLabel).filter(Boolean) : []),
   ].filter(Boolean);
   const asOf = profileDate(profile?.freshness?.last_reviewed_at || profile?.outcome?.as_of || profile?.status?.as_of);
   const sections = [];
@@ -3145,7 +3154,7 @@ function canonicalProfileHtml(profile) {
     <a class="profile-back" href="/${esc(parent)}" data-profile-back="${esc(parent)}">← Back to ${esc(profileTypeLabel(type))} research</a>
     <header class="profile-hero">
       <div class="profile-eyebrow">${esc(typeLabel)} research profile</div>
-      <div class="profile-title-row"><h2 class="profile-title" id="profileTitle" tabindex="-1">${esc(name)}</h2>${outcome ? `<span class="gverdict ${verdictClass(outcome)}">${esc(outcome)}</span>` : ''}</div>
+      <div class="profile-title-row"><h2 class="profile-title" id="profileTitle" tabindex="-1">${esc(name)}</h2>${outcome ? `<span class="gverdict ${verdictClass(rawOutcome)}">${esc(outcome)}</span>` : ''}</div>
       <div class="profile-summary">${context.length ? `${esc(context.join(' · '))}${asOf ? ' · ' : ''}` : ''}${asOf ? `Evidence current through ${esc(asOf)}` : 'The report shows only what the published evidence currently supports.'}</div>
     </header>
     <div class="profile-report">${sections.join('')}${gapsHtml}${canonicalProfileMetrics(profile)}${sources}</div>
