@@ -3,7 +3,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { document, renderMigration } from '../scripts/render-dai-helium-gold-migration.mjs';
 
-const migrationUrl = new URL('../migrations/0076_dai_helium_gold_profiles.sql', import.meta.url);
+const migrationUrl = new URL('../migrations/0079_helium_q2_citation_integrity.sql', import.meta.url);
 const migration = readFileSync(migrationUrl, 'utf8');
 const artifact = JSON.parse(readFileSync(
   new URL('../docs/dai-helium-gold-2026-08-03.json', import.meta.url),
@@ -46,10 +46,10 @@ function openDb() {
   return value;
 }
 
-function applyMigrationsBefore0076(database) {
+function applyMigrationsBefore0079(database) {
   const migrationDirectory = new URL('../migrations/', import.meta.url);
   const files = readdirSync(migrationDirectory)
-    .filter((file) => /^\d{4}_.+\.sql$/.test(file) && file < '0076_')
+    .filter((file) => /^\d{4}_.+\.sql$/.test(file) && file < '0079_')
     .sort();
   for (const file of files) {
     database.exec(readFileSync(new URL(file, migrationDirectory), 'utf8'));
@@ -80,7 +80,7 @@ describe('DAI and Helium gold profiles', () => {
   it('keeps the research document, renderer and SQL artifact deterministic', () => {
     expect(artifact).toEqual(document);
     expect(migration).toBe(renderMigration(document));
-    expect(document.generated_migration).toBe('0076_dai_helium_gold_profiles.sql');
+    expect(document.generated_migration).toBe('0079_helium_q2_citation_integrity.sql');
   });
 
   it('installs semantically complete, atomic profiles without touching neighboring rows', () => {
@@ -98,8 +98,9 @@ describe('DAI and Helium gold profiles', () => {
         status: { operating_state: 'operating', as_of: '2026-08-03' },
         outcome: { as_of: '2026-08-03', rule_id: 'forensic-lifecycle-v1' },
         freshness: { state: 'current', last_reviewed_at: '2026-08-03', next_review_at: '2026-08-10' },
-        confidence: 'medium',
       });
+      expect(canonical.confidence).toBe(slug === 'helium' ? 'low' : 'medium');
+      expect(canonical.outcome.confidence).toBe(canonical.confidence);
       expect(canonical.outcome.label).toMatch(/^operating_/);
       expect(Object.keys(canonical.sections)).toEqual(SECTIONS);
       expect(canonical.claims.every(({ review }) => review.state === 'pending')).toBe(true);
@@ -120,7 +121,10 @@ describe('DAI and Helium gold profiles', () => {
       }
       const sourceIds = new Set(JSON.parse(value.sources).map(({ id }) => id));
       const claimIds = new Set(canonical.claims.map(({ id }) => id));
+      expect(new Set(canonical.claims.map(({ field_path }) => field_path)).size)
+        .toBe(canonical.claims.length);
       for (const claim of canonical.claims) {
+        expect(claim.assertion?.trim(), `${slug}:${claim.id}:assertion`).not.toBe('');
         for (const id of claim.source_ids) {
           expect(sourceIds.has(id), `${slug}:${claim.id}:${id}`).toBe(true);
         }
@@ -145,40 +149,127 @@ describe('DAI and Helium gold profiles', () => {
     expect(JSON.stringify(JSON.parse(daiRow.sources))).toContain('0x2221973333bd0c22f8b1b2593fa9817765bafcf65a2d3c25ebde8df06bbd197c');
     expect(JSON.stringify(JSON.parse(daiRow.sources))).toContain('0xa2bffc99b76e5a2e2733ac1f5c350c1d7590e5ae74862fad58b2816b7ab8fba6');
     expect(helium.canonical_profile.sections.what_it_is).toMatch(/protocol documents say.*HNT.*FAQ still says.*MOBILE/i);
-    expect(helium.canonical_profile.sections.token_and_value_capture).toMatch(/contracted carrier rates can be lower/i);
+    expect(helium.canonical_profile.sections.token_and_value_capture)
+      .toMatch(/payer rate changed.*\$0\.50.*\$0\.10/is);
     expect(helium.canonical_profile.sections.lifecycle).toMatch(/commercial partner statement.*not independent proof/i);
-    expect(helium.canonical_profile.sections.outlook_and_watch).toMatch(/dated statement, not a permanent growth forecast/i);
+    expect(helium.canonical_profile.sections.outlook_and_watch).toMatch(/not independent proof or a permanent growth forecast/i);
     expect(helium.canonical_profile.metrics).toEqual(expect.arrayContaining([
       expect.objectContaining({
         dimension: 'fees',
-        value: 3560000,
-        window: { start: '2026-01-01', end: '2026-03-31', definition: 'calendar_quarter' },
-        quality_flags: expect.arrayContaining(['protocol-dc-burn-not-cash-receipts']),
+        value: 3290000,
+        window: { start: '2026-04-01', end: '2026-06-30', definition: 'calendar_quarter' },
+        quality_flags: expect.arrayContaining(['latest-reported-quarter', 'issuer-funded-advisory']),
       }),
-      expect.objectContaining({ dimension: 'utilization', value: 8281.1, unit: 'terabytes' }),
+      expect.objectContaining({ dimension: 'fees', value: 3350000 }),
+      expect.objectContaining({ dimension: 'utilization', value: 9851, unit: 'terabytes' }),
+      expect.objectContaining({ dimension: 'unit_revenue', value: 0.1, as_of: '2026-06-05' }),
     ]));
     const telefonica = JSON.parse(heliumRow.sources).find(({ id }) => id === 'telefonica');
     expect(telefonica.role).toBe('primary');
   });
 
-  it('preserves the exact pre-0076 legacy records during a real migration replay', () => {
+  it('treats Q2 as the latest Helium period and Q1 only as history', () => {
+    const helium = document.cases.find(({ slug }) => slug === 'helium');
+    const canonical = helium.profile.canonical_profile;
+    const quarterMetrics = canonical.metrics.filter(({ window }) => (
+      window.definition === 'calendar_quarter'
+    ));
+    const latest = quarterMetrics.reduce((left, right) => (
+      left.as_of > right.as_of ? left : right
+    ));
+    expect(latest.as_of).toBe('2026-06-30');
+    expect(quarterMetrics.filter(({ as_of }) => as_of === '2026-06-30'))
+      .toHaveLength(4);
+    expect(quarterMetrics.filter(({ as_of }) => as_of === '2026-03-31')
+      .every(({ quality_flags }) => quality_flags.includes('historical-comparator'))).toBe(true);
+    expect(canonical.sections.what_happened).toMatch(/latest quarterly report.*Q2.*9,851.*20% from Q1/is);
+    expect(canonical.sections.lifecycle).toMatch(/latest period is Q2 2026.*Q1 is retained only as dated history/is);
+    expect(canonical.sections.token_and_value_capture).toMatch(/June 4–5.*\$0\.50.*\$0\.10/is);
+    expect(canonical.events).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        id: 'event:helium:carrier-payer-rate-reset:2026-06-05',
+        date: '2026-06-05',
+      }),
+    ]));
+  });
+
+  it('classifies Blockworks Advisory as issuer-funded primary evidence, never independent', () => {
+    const helium = document.cases.find(({ slug }) => slug === 'helium');
+    const advisory = helium.sources.filter(({ id }) => /^hnt-q[12]-2026$/.test(id));
+    expect(advisory).toHaveLength(2);
+    expect(advisory.every(({ role }) => role === 'primary')).toBe(true);
+    expect(advisory.every(({ publisher }) => publisher === 'Blockworks Advisory')).toBe(true);
+    expect(advisory.every(({ title }) => /Nova Labs-funded/i.test(title))).toBe(true);
+    expect(helium.profile.canonical_profile.confidence).toBe('low');
+    expect(helium.profile.canonical_profile.outcome.note).toMatch(/issuer-funded.*lack independent/is);
+  });
+
+  it('maps every section claim to one explicit assertion and one unique atomic field', () => {
+    for (const { slug, profile } of document.cases) {
+      const canonical = profile.canonical_profile;
+      const sectionClaims = Object.values(canonical.section_claim_ids).flat()
+        .map((id) => canonical.claims.find((claim) => claim.id === id));
+      expect(sectionClaims.every(Boolean)).toBe(true);
+      expect(new Set(sectionClaims.map(({ field_path }) => field_path)).size)
+        .toBe(sectionClaims.length);
+      expect(new Set(sectionClaims.map(({ evidence_locator }) => evidence_locator)).size)
+        .toBe(sectionClaims.length);
+      for (const claim of sectionClaims) {
+        expect(claim.assertion?.trim(), `${slug}:${claim.id}`).not.toBe('');
+        const match = claim.field_path.match(
+          /^extensions\.atomic_assertions\.([a-z_]+)\.([a-z0-9-]+)$/,
+        );
+        expect(match, `${slug}:${claim.id}:${claim.field_path}`).not.toBeNull();
+        expect(canonical.extensions.atomic_assertions[match[1]][match[2]])
+          .toBe(claim.assertion);
+      }
+    }
+  });
+
+  it('splits formerly bundled Helium market and DAI risk claims into atomic records', () => {
+    const dai = document.cases.find(({ slug }) => slug === 'dai').profile.canonical_profile;
+    const helium = document.cases.find(({ slug }) => slug === 'helium').profile.canonical_profile;
+    const daiIds = new Set(dai.claims.map(({ id }) => id));
+    const heliumIds = new Set(helium.claims.map(({ id }) => id));
+    expect(daiIds.has('claim:dai:risks_and_unknowns:liquidation-shutdown')).toBe(false);
+    for (const id of [
+      'claim:dai:risks_and_unknowns:liquidation-risk',
+      'claim:dai:risks_and_unknowns:shutdown-process',
+      'claim:dai:risks_and_unknowns:issuer-exposure',
+      'claim:dai:risks_and_unknowns:collateral-split-unknown',
+    ]) expect(daiIds.has(id), id).toBe(true);
+    expect(heliumIds.has('claim:helium:what_happened:usage-and-market')).toBe(false);
+    for (const id of [
+      'claim:helium:what_happened:q2-transfer',
+      'claim:helium:what_happened:q2-carrier-burn',
+      'claim:helium:what_happened:q2-total-burn',
+      'claim:helium:what_happened:hnt-price',
+      'claim:helium:what_happened:hnt-market-cap',
+      'claim:helium:what_happened:measurement-boundary',
+    ]) expect(heliumIds.has(id), id).toBe(true);
+  });
+
+  it('preserves the exact pre-0079 legacy envelope during a real migration replay', () => {
     const corpus = new DatabaseSync(':memory:');
     try {
-      applyMigrationsBefore0076(corpus);
+      applyMigrationsBefore0079(corpus);
       const beforeDai = row('stablecoin_meta', 'dai', corpus);
       const beforeHelium = row('rwa_depin', 'helium', corpus);
+      const beforeUsds = row('stablecoin_meta', 'usds', corpus);
+      const beforeFilecoin = row('rwa_depin', 'filecoin', corpus);
       corpus.exec(migration);
       const afterDai = row('stablecoin_meta', 'dai', corpus);
       const afterHelium = row('rwa_depin', 'helium', corpus);
       for (const [before, after] of [[beforeDai, afterDai], [beforeHelium, afterHelium]]) {
+        const beforeProfile = JSON.parse(before.profile);
         const profile = JSON.parse(after.profile);
-        expect(profile.legacy_preservation.previous_profile).toEqual(JSON.parse(before.profile));
-        expect(profile.legacy_preservation.previous_sources).toEqual(JSON.parse(before.sources));
-        expect(profile.legacy_preservation.preserved_at).toBe('2026-08-03');
+        expect(profile.legacy_preservation).toEqual(beforeProfile.legacy_preservation);
         expect(profile.canonical_profile.schema).toBe('chaindump-entity-profile-source');
       }
       expect(JSON.parse(afterDai.profile).notes).toBe(JSON.parse(beforeDai.profile).notes);
       expect(JSON.parse(afterHelium.profile).what_it_does).not.toBeUndefined();
+      expect(row('stablecoin_meta', 'usds', corpus)).toEqual(beforeUsds);
+      expect(row('rwa_depin', 'filecoin', corpus)).toEqual(beforeFilecoin);
       corpus.exec(migration);
       expect(row('stablecoin_meta', 'dai', corpus)).toEqual(afterDai);
       expect(row('rwa_depin', 'helium', corpus)).toEqual(afterHelium);

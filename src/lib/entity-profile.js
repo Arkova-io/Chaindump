@@ -90,7 +90,7 @@ export const METRIC_DIMENSIONS = Object.freeze({
   depin: Object.freeze([
     'nodes', 'active_nodes', 'capacity', 'utilization', 'revenue',
     'protocol_revenue', 'fees', 'market_cap', 'fdv', 'price', 'volume',
-    'token_emissions', 'geographic_coverage',
+    'token_emissions', 'geographic_coverage', 'active_users', 'unit_revenue',
   ]),
   infrastructure_network: Object.freeze([
     'nodes', 'active_nodes', 'capacity', 'used_capacity', 'utilization',
