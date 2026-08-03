@@ -3550,7 +3550,9 @@ function profileIso(value) {
   if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
   const sqlTimestamp = /^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})$/.exec(trimmed);
   if (sqlTimestamp) return `${sqlTimestamp[1]}T${sqlTimestamp[2]}Z`;
-  return Number.isFinite(Date.parse(trimmed)) ? trimmed : null;
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(trimmed)
+      && Number.isFinite(Date.parse(trimmed))) return trimmed;
+  return null;
 }
 
 function latestProfileDate(...values) {
@@ -3647,18 +3649,30 @@ async function blockchainEntityProfile(slug) {
        SELECT chain, chain, 'chain_analysis', NULL, sentiment, take, NULL,
               profile, sources, updated_at, 3
          FROM chain_analysis
+       UNION ALL
+       SELECT chain, chain, 'chain_facts', NULL, NULL, NULL, NULL,
+              NULL, NULL, MAX(updated_at), 4
+         FROM chain_facts
+        GROUP BY chain
      ) WHERE lower(chain) = ? OR lower(replace(chain, ' ', '-')) = ?
-       ORDER BY priority LIMIT 1`,
+       ORDER BY priority`,
     [slug, slug],
   );
   if (!rows[0]) return null;
+  const embeddedProfile = rows
+    .map((candidate) => embeddedCanonicalEntityProfile(candidate.profile, {
+      type: 'blockchain',
+      slug,
+    }))
+    .find(Boolean);
+  if (embeddedProfile) return embeddedProfile;
   const row = rows[0];
   const legacy = profileJson(row.profile, {});
   const facts = await chainFacts(row.chain) || {};
   const metaRows = await dbQuery(
     `SELECT data, sources, updated_at FROM chain_facts
-      WHERE lower(chain) = ? AND dimension = '_meta' LIMIT 1`,
-    [slug],
+      WHERE lower(chain) = lower(?) AND dimension = '_meta' LIMIT 1`,
+    [row.chain],
   );
   const meta = profileJson(metaRows[0]?.data, {});
   const identity = facts.identity?.data || {};
