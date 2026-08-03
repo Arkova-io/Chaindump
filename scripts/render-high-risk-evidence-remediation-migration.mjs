@@ -598,7 +598,15 @@ function main() {
   const existingIds = readdirSync(resolve(root, 'migrations'))
     .filter((file) => /^\d{4}_.+\.sql$/.test(file))
     .map((file) => Number(file.slice(0, 4)));
-  const nextId = Math.max(...existingIds.filter((id) => id !== Number(assignedId))) + 1;
+  const assignedNumber = Number(assignedId);
+  // A reviewed historical migration must remain reproducible after later
+  // migrations land. Only calculate from predecessors when its assigned file
+  // already exists; a genuinely new render still has to claim the next id.
+  const assignedExists = existingIds.includes(assignedNumber);
+  const contiguousBase = assignedExists
+    ? existingIds.filter((id) => id < assignedNumber)
+    : existingIds;
+  const nextId = Math.max(0, ...contiguousBase) + 1;
   if (Number(assignedId) !== nextId) {
     throw new Error(
       `Migration rendering refused: assigned ${assignedId}, but the next contiguous id is ${String(nextId).padStart(4, '0')}.`,
