@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   ANALYSIS_SECTION_KEYS,
   buildLegacyEntityProfile,
+  embeddedCanonicalEntityProfile,
   ENTITY_PROFILE_SCHEMA,
   ENTITY_PROFILE_VERSION,
   profileSummary,
@@ -253,5 +254,23 @@ describe('canonical entity profile v1', () => {
         code: 'citation_required',
       }),
     ]));
+  });
+
+  it('selects only identity-matched canonical profiles embedded in legacy rows', () => {
+    const canonical = publishedStablecoinProfile();
+    const legacy = JSON.stringify({ canonical_profile: canonical, preserved: 'legacy field' });
+
+    expect(embeddedCanonicalEntityProfile(legacy, {
+      type: 'stablecoin',
+      slug: 'usdc',
+    })).toEqual(canonical);
+    expect(embeddedCanonicalEntityProfile(legacy, {
+      type: 'stablecoin',
+      slug: 'usdt',
+    })).toBeNull();
+    expect(embeddedCanonicalEntityProfile('{bad json', {
+      type: 'stablecoin',
+      slug: 'usdc',
+    })).toBeNull();
   });
 });
