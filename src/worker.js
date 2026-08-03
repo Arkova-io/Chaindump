@@ -3542,12 +3542,36 @@ function profileJson(value, fallback = {}) {
   try { return value ? JSON.parse(value) : fallback; } catch { return fallback; }
 }
 
+const PROFILE_MISSING_PROSE = /^(?:unknown|unresolved|not (?:yet )?(?:known|published|available)|pending|n\/?a|—)$/i;
+
 function profileProse(...values) {
   for (const value of values) {
-    if (typeof value === 'string' && value.trim()) return value.trim();
-    if (typeof value?.summary === 'string' && value.summary.trim()) return value.summary.trim();
+    if (typeof value === 'string' && value.trim() && !PROFILE_MISSING_PROSE.test(value.trim())) {
+      return value.trim();
+    }
+    if (typeof value?.summary === 'string' && value.summary.trim()
+        && !PROFILE_MISSING_PROSE.test(value.summary.trim())) {
+      return value.summary.trim();
+    }
   }
   return null;
+}
+
+function profileIdentityProse(type, name, chains = []) {
+  const entityName = String(name || '').trim();
+  if (!entityName) return null;
+  const chainNames = (Array.isArray(chains) ? chains : [])
+    .map((chain) => String(chain || '').trim()).filter(Boolean);
+  if (type === 'blockchain') {
+    return `${entityName} is a blockchain tracked in Chaindump's research index.`;
+  }
+  if (type === 'dex') {
+    const chainContext = chainNames.length === 1
+      ? ` on ${chainNames[0]}`
+      : chainNames.length > 1 ? ` operating across ${chainNames.join(', ')}` : '';
+    return `${entityName} is a decentralized exchange${chainContext}.`;
+  }
+  return `${entityName} is a centralized exchange.`;
 }
 
 function profileIso(value) {
@@ -3709,10 +3733,11 @@ async function blockchainEntityProfile(slug) {
     profileMetric('blockchain', { id: `blockchain:${slug}:token-price`, dimension: 'token_price', label: 'Token price', value: token.token_current_usd, unit: 'usd', currency: 'USD', as_of: token.as_of }),
     profileMetric('blockchain', { id: `blockchain:${slug}:token-market-cap`, dimension: 'token_market_cap', label: 'Token market cap', value: token.market_cap_usd, unit: 'usd', currency: 'USD', as_of: token.as_of }),
   ].filter(Boolean);
+  const chainName = identity.chain || row.name;
   return profileCandidate({
     identity: {
       id: `blockchain:${slug}`, type: 'blockchain', slug,
-      name: identity.chain || row.name,
+      name: chainName,
       aliases: Array.isArray(identity.aliases) ? identity.aliases : [],
     },
     classification: {
@@ -3728,7 +3753,8 @@ async function blockchainEntityProfile(slug) {
       claim_ids: [],
     },
     sections: {
-      what_it_is: profileProse(narrative.purpose, legacy.what_it_does, legacy.purpose),
+      what_it_is: profileProse(narrative.purpose, legacy.what_it_does, legacy.purpose)
+        || profileIdentityProse('blockchain', chainName),
       what_happened: profileProse(synthesis.situation, legacy.situation, row.narrative),
       why_this_outcome: profileProse(forensic.why, synthesis.success_mechanism, synthesis.postmortem, legacy.postmortem),
       strategic_choices: forensic.strategic_choices,
@@ -3815,12 +3841,16 @@ async function exchangeEntityProfile(type, slug) {
     as_of: publicRow.analysis?.metric?.as_of || asOf,
     window_definition: publicRow.analysis?.metric?.window,
   });
+  const profileChains = publicRow.analysis?.chains
+    || (publicRow.primary_chain ? [publicRow.primary_chain] : []);
+  const whatItIs = profileProse(profile.purpose, profile.what_it_does)
+    || profileIdentityProse(type, publicRow.name, profileChains);
   return profileCandidate({
     identity: { id: `${type}:${slug}`, type, slug, name: publicRow.name, aliases: [] },
     classification: {
       subtype: publicRow.analysis?.product_cohort || publicRow.venue_type || null,
       tags: [],
-      chains: publicRow.analysis?.chains || (publicRow.primary_chain ? [publicRow.primary_chain] : []),
+      chains: profileChains,
       jurisdictions: [],
     },
     outcome: {
@@ -3831,7 +3861,7 @@ async function exchangeEntityProfile(type, slug) {
       claim_ids: [],
     },
     sections: {
-      what_it_is: profileProse(profile.purpose, profile.what_it_does),
+      what_it_is: whatItIs,
       what_happened: profileProse(publicRow.summary),
       why_this_outcome: profileProse(forensic.why, profile.why, profile.success_factors),
       strategic_choices: forensic.strategic_choices || profile.strategic_choices,

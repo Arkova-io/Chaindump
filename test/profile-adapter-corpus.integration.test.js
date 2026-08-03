@@ -70,6 +70,13 @@ describe('full-corpus canonical profile adapter', () => {
     expect(census.rows).toHaveLength(329);
     expect(census.rows.every((row) => row.http_status === 200)).toBe(true);
     expect(census.rows.every((row) => row.section_count > 0)).toBe(true);
+    expect(census.rows.every((row) => row.placeholder_copy === false)).toBe(true);
+  });
+
+  it('gives every thin chain and exchange a useful identity sentence instead of a sentinel', () => {
+    const byId = new Map(census.rows.map((row) => [`${row.type}:${row.slug}`, row]));
+    expect(byId.get('dex:aerodrome')?.what_it_is).toContain('decentralized exchange');
+    expect(byId.get('cex:ascendex')?.what_it_is).toContain('centralized exchange');
   });
 
   it('prefers forensic chain facts and identity-matched canonical profiles over thinner legacy rows', () => {

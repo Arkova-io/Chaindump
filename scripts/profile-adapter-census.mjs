@@ -11,6 +11,7 @@ const ENTITY_TYPES = [
 ];
 
 const RAW_COPY_PATTERN = /\[object Object\]|(?:^|\W)(?:source_ids|source_refs|evidence_locator|publication_support|validation_errors|legacy_unmapped|canonical_profile|citation_schema)(?:\W|$)/i;
+const PLACEHOLDER_COPY_PATTERN = /^(?:unknown|unresolved|not (?:yet )?(?:known|published|available)|pending|n\/?a|—)$/i;
 
 function applyMigrations(database) {
   const files = readdirSync(new URL('../migrations/', import.meta.url))
@@ -191,6 +192,7 @@ function profileAssessment(route, status, profile) {
   const sections = profile?.analysis?.sections || {};
   const bodies = Object.entries(sections).filter(([, section]) => (
     typeof section?.body === 'string' && section.body.trim()
+    && !PLACEHOLDER_COPY_PATTERN.test(section.body.trim())
   ));
   const sectionCount = bodies.length;
   const errors = Array.isArray(profile?.quality?.validation_errors)
@@ -203,6 +205,9 @@ function profileAssessment(route, status, profile) {
   const rawLeak = bodies.some(([, section]) => RAW_COPY_PATTERN.test(section.body));
   const objectLeak = Object.values(sections).some((section) => (
     section?.body != null && typeof section.body !== 'string'
+  ));
+  const placeholderCopy = Object.values(sections).some((section) => (
+    typeof section?.body === 'string' && PLACEHOLDER_COPY_PATTERN.test(section.body.trim())
   ));
   return {
     ...route,
@@ -224,10 +229,12 @@ function profileAssessment(route, status, profile) {
       return counts;
     }, {}),
     raw_object_leak: rawLeak || objectLeak,
+    placeholder_copy: placeholderCopy,
     missing_section_count: missing.length,
     honest_gaps: missing.every((path) => unsourced.has(path)),
     publication_state: profile?.quality?.publication_state || null,
     outcome_label: profile?.outcome?.label || null,
+    what_it_is: profile?.analysis?.sections?.what_it_is?.body || null,
     what_happened: profile?.analysis?.sections?.what_happened?.body || null,
     legacy_origin: profile?.extensions?.legacy_origin || null,
   };
