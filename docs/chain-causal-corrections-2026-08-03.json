@@ -1,0 +1,58 @@
+{
+  "schema": "chaindump-chain-causal-correction-v1",
+  "research_as_of": "2026-08-03",
+  "base_manifest": "docs/chain-causal-completion-2026-08-03.json",
+  "base_manifest_sha256": "87942a3895c35384d475095136922f63a04b46b030204f3b5f1650769a863244",
+  "reason": "A same-day DefiLlama revision changed the Near observation after the original migration was prepared. A full five-chain recheck then recorded later Aptos and Algorand revisions. The correction also replaces a repeated machine-like disclaimer with shorter public copy while preserving the exact retrieval window in structured data.",
+  "observation_window": {
+    "started_at": "2026-08-03T17:20:28.274Z",
+    "completed_at": "2026-08-03T17:20:30.954Z",
+    "method": "One sequential API client run: stablecoinchains once, then historical TVL, fee, revenue, and DEX endpoints for Stellar, Sui, Near, Aptos, and Algorand. Currency aggregates were canonicalized to cents. Same-day provider points can be revised later."
+  },
+  "cases": [
+    {
+      "chain": "Stellar",
+      "observation_snapshot_patch": {
+        "observed_at": "2026-08-03T17:20:28.274Z",
+        "observation_completed_at": "2026-08-03T17:20:30.954Z"
+      },
+      "outcome_summary": "Stellar is a successful specialist settlement network, not a broad smart-contract winner. In the DefiLlama API snapshot fetched at 2026-08-03T17:20:28.274Z, the latest 2026-08-03 historical point was $214.2 million of DeFi TVL, with roughly $890.7 million of dollar stablecoins, $35.4 million of 30-day DEX volume, $2.93 million of 30-day fees, and $226,657 of 30-day revenue. Those observations show a live payment and issuance base 12.2% below its TVL peak, while the much smaller DEX and revenue figures keep the outcome below a claim of category-wide dominance. These figures are a point-in-time snapshot."
+    },
+    {
+      "chain": "Sui",
+      "observation_snapshot_patch": {
+        "observed_at": "2026-08-03T17:20:28.274Z",
+        "observation_completed_at": "2026-08-03T17:20:30.954Z"
+      },
+      "outcome_summary": "Sui is a technically differentiated but middling L1. In the DefiLlama API snapshot fetched at 2026-08-03T17:20:28.274Z, the latest 2026-08-03 historical point was $417.2 million TVL, 84.2% below its October 2025 peak, alongside roughly $432.0 million of dollar stablecoins, $791.9 million of 30-day DEX volume, $4.86 million of 30-day fees, and $710,636 of 30-day revenue. That is meaningful current activity, but the deep capital drawdown and four officially documented halt or stall incidents across January and May 2026 prevent a stronger outcome call. These figures are a point-in-time snapshot."
+    },
+    {
+      "chain": "Near",
+      "observation_snapshot_patch": {
+        "observed_at": "2026-08-03T17:20:28.274Z",
+        "observation_completed_at": "2026-08-03T17:20:30.954Z"
+      },
+      "outcome_summary": "Near is a middling L1 whose strongest current signal comes from cross-chain execution rather than native capital depth. In the DefiLlama API snapshot fetched at 2026-08-03T17:20:28.274Z, the latest 2026-08-03 historical point was $60.1 million TVL, 87.5% below its May 2022 peak, alongside roughly $128.7 million of dollar stablecoins, $2.53 billion of 30-day DEX volume, $3.16 million of 30-day fees, and $558,558 of 30-day revenue. NEAR's own revenue dashboard reports additional Intents economics, but that operator-controlled series is not treated as independent proof of durable demand. These figures are a point-in-time snapshot."
+    },
+    {
+      "chain": "Aptos",
+      "observation_snapshot_patch": {
+        "observed_at": "2026-08-03T17:20:28.274Z",
+        "observation_completed_at": "2026-08-03T17:20:30.954Z",
+        "latest_tvl_usd": 61837836,
+        "tvl_drawdown_pct": 95.26
+      },
+      "outcome_summary": "Aptos is a middling L1 with a large stablecoin footprint but weak capital retention and fee capture. In the DefiLlama API snapshot fetched at 2026-08-03T17:20:28.274Z, the latest 2026-08-03 historical point was $61.8 million TVL, 95.3% below its December 2024 peak, alongside roughly $1.18 billion of dollar stablecoins, $801.8 million of 30-day DEX volume, $738,763 of 30-day fees, and $440,499 of 30-day revenue. The stablecoin and trading observations show active rails; they do not by themselves establish payment adoption, institutional settlement, or proportionate APT value capture. These figures are a point-in-time snapshot."
+    },
+    {
+      "chain": "Algorand",
+      "observation_snapshot_patch": {
+        "observed_at": "2026-08-03T17:20:28.274Z",
+        "observation_completed_at": "2026-08-03T17:20:30.954Z",
+        "latest_tvl_usd": 29658178,
+        "tvl_drawdown_pct": 90.71
+      },
+      "outcome_summary": "Algorand is a declining but operational L1. In the DefiLlama API snapshot fetched at 2026-08-03T17:20:28.274Z, the latest 2026-08-03 historical point was $29.7 million TVL, 90.7% below its February 2024 peak, alongside roughly $37.0 million of dollar stablecoins plus €0.85 million of euro stablecoins, $7.26 million of 30-day DEX volume, $9,465 of 30-day fees, and $3,917 of 30-day revenue. Those figures show a functioning residual economy, but not a self-reinforcing capital, application, or fee base comparable with the network's earlier peak. These figures are a point-in-time snapshot."
+    }
+  ]
+}
