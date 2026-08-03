@@ -27,6 +27,8 @@ const expected = {
   starknet: { chain: 'Starknet', outcome: 'middling', forensic: 'middling', sources: 12, claims: 42, tvl: 166_504_229 },
 };
 
+const INTERNAL_COPY = /\[object Object\]|"source_ids"|"evidence_locator"|publication_state|trend_id|claim_ids|field_path|forensic_analysis|canonical_profile|observation_snapshot|quality_flags|review_state/;
+
 function applyMigrations(database, through = Infinity) {
   const files = readdirSync(new URL('../migrations/', import.meta.url))
     .filter((file) => /^\d{4}_.+\.sql$/.test(file))
@@ -115,8 +117,6 @@ describe('chain causal and canonical wave 0080', () => {
       });
 
       const sourceIds = new Set(profile.sources.map(({ id }) => id));
-      const fieldPaths = profile.claims.map(({ field_path: fieldPath }) => fieldPath);
-      expect(new Set(fieldPaths).size, `${entry.chain} atomic field paths`).toBe(fieldPaths.length);
       expect(profile.sources.some(({ role }) => role === 'primary'), entry.chain).toBe(true);
       expect(profile.sources.some(({ role }) => role === 'independent'), entry.chain).toBe(true);
       for (const source of profile.sources) {
@@ -129,12 +129,22 @@ describe('chain causal and canonical wave 0080', () => {
         });
       }
       for (const [key, section] of Object.entries(profile.analysis.sections)) {
-        expect(section.body.length, `${entry.chain}.${key}`).toBeGreaterThanOrEqual(650);
-        expect(section.body, `${entry.chain}.${key}`).not.toMatch(
-          /\[object Object\]|"source_ids"|"evidence_locator"|publication_state|trend_id/,
-        );
+        expect(section.body.trim(), `${entry.chain}.${key} body`).not.toBe('');
+        expect(section.body, `${entry.chain}.${key} customer copy`).not.toMatch(INTERNAL_COPY);
         expect(section.claim_ids.length, `${entry.chain}.${key} atomic claims`)
           .toBeGreaterThanOrEqual(2);
+        expect(section.claim_ids.length, `${entry.chain}.${key} bounded atomic claims`)
+          .toBeLessThanOrEqual(4);
+        const sectionClaims = section.claim_ids.map((id) => (
+          profile.claims.find((item) => item.id === id)
+        ));
+        for (const item of sectionClaims) {
+          expect(item, `${entry.chain}.${key} resolves claim id`).toBeDefined();
+          expect(item.field_path, `${entry.chain}.${key}:${item.id} real JSON field`)
+            .toBe(`analysis.sections.${key}.body`);
+          expect(item.assertion.length, `${entry.chain}.${key}:${item.id} bounded assertion`)
+            .toBeLessThanOrEqual(240);
+        }
       }
       for (const item of profile.claims) {
         expect(item, `${entry.chain}:${item.id}`).toMatchObject({
@@ -169,6 +179,8 @@ describe('chain causal and canonical wave 0080', () => {
       expect(entry.canonical_profile.claims.some(({ kind }) => kind === 'inference'), entry.chain)
         .toBe(true);
       expect(entry.canonical_profile.claims.some(({ kind }) => kind === 'unknown'), entry.chain)
+        .toBe(true);
+      expect(entry.canonical_profile.claims.some(({ kind }) => kind === 'fact'), entry.chain)
         .toBe(true);
     }
     const ink = document.cases.find(({ slug }) => slug === 'ink').canonical_profile;

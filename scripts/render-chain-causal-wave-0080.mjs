@@ -95,7 +95,10 @@ function buildProfile(spec) {
       const id = `claim:${spec.slug}:section:${sectionKey}:${index + 1}`;
       claims.push({
         id,
-        field_path: `analysis.sections.${sectionKey}.claims[${index}]`,
+        // A section's claim ids support its published prose. Atomic claims live
+        // in the top-level claims array; the section envelope itself exposes a
+        // body, as_of date and claim_ids, not a nested claims collection.
+        field_path: `analysis.sections.${sectionKey}.body`,
         assertion: entry.assertion,
         value: entry.value,
         as_of: AS_OF,
@@ -910,10 +913,6 @@ for (const entry of document.cases) {
   if (!entry.sources.some(({ role }) => role === 'primary')
       || !entry.sources.some(({ role }) => role === 'independent')) {
     throw new Error(`${entry.chain}: primary and independent evidence are both required`);
-  }
-  const fieldPaths = entry.canonical_profile.claims.map(({ field_path: fieldPath }) => fieldPath);
-  if (new Set(fieldPaths).size !== fieldPaths.length) {
-    throw new Error(`${entry.chain}: atomic claim field paths must be unique`);
   }
   for (const item of entry.canonical_profile.claims) {
     if (!item.assertion || item.value == null || !item.as_of || !item.evidence_locator) {

@@ -702,7 +702,7 @@
           },
           {
             "id": "claim:x-layer:section:what_it_is:1",
-            "field_path": "analysis.sections.what_it_is.claims[0]",
+            "field_path": "analysis.sections.what_it_is.body",
             "assertion": "X Layer currently runs OP Stack execution and posts data to Ethereum.",
             "value": "X Layer currently runs OP Stack execution and posts data to Ethereum.",
             "as_of": "2026-08-03",
@@ -723,7 +723,7 @@
           },
           {
             "id": "claim:x-layer:section:what_it_is:2",
-            "field_path": "analysis.sections.what_it_is.claims[1]",
+            "field_path": "analysis.sections.what_it_is.body",
             "assertion": "OKB is the gas token and OKX is the chain’s main distribution channel.",
             "value": "OKB is the gas token and OKX is the chain’s main distribution channel.",
             "as_of": "2026-08-03",
@@ -744,7 +744,7 @@
           },
           {
             "id": "claim:x-layer:section:what_it_is:3",
-            "field_path": "analysis.sections.what_it_is.claims[2]",
+            "field_path": "analysis.sections.what_it_is.body",
             "assertion": "The AggLayer bridge remains a material dependency separate from Ethereum data availability.",
             "value": "The AggLayer bridge remains a material dependency separate from Ethereum data availability.",
             "as_of": "2026-08-03",
@@ -764,7 +764,7 @@
           },
           {
             "id": "claim:x-layer:section:what_happened:1",
-            "field_path": "analysis.sections.what_happened.claims[0]",
+            "field_path": "analysis.sections.what_happened.body",
             "assertion": "X Layer launched in April 2024 with Polygon CDK and later moved current execution to OP Stack.",
             "value": "X Layer launched in April 2024 with Polygon CDK and later moved current execution to OP Stack.",
             "as_of": "2026-08-03",
@@ -785,7 +785,7 @@
           },
           {
             "id": "claim:x-layer:section:what_happened:2",
-            "field_path": "analysis.sections.what_happened.claims[1]",
+            "field_path": "analysis.sections.what_happened.body",
             "assertion": "The latest TVL point was $111,137,879, the highest point in the reviewed series.",
             "value": 111137879,
             "as_of": "2026-08-03",
@@ -805,7 +805,7 @@
           },
           {
             "id": "claim:x-layer:section:what_happened:3",
-            "field_path": "analysis.sections.what_happened.claims[2]",
+            "field_path": "analysis.sections.what_happened.body",
             "assertion": "The 30-day DEX volume was $1,035,836,475.40 while 30-day retained revenue was $2,836.51.",
             "value": "volume 1035836475.40; revenue 2836.51",
             "as_of": "2026-08-03",
@@ -826,7 +826,7 @@
           },
           {
             "id": "claim:x-layer:section:why_this_outcome:1",
-            "field_path": "analysis.sections.why_this_outcome.claims[0]",
+            "field_path": "analysis.sections.why_this_outcome.body",
             "assertion": "OKX distribution and reused rollup infrastructure are plausible drivers of rapid adoption.",
             "value": "OKX distribution and reused rollup infrastructure are plausible drivers of rapid adoption.",
             "as_of": "2026-08-03",
@@ -848,7 +848,7 @@
           },
           {
             "id": "claim:x-layer:section:why_this_outcome:2",
-            "field_path": "analysis.sections.why_this_outcome.claims[1]",
+            "field_path": "analysis.sections.why_this_outcome.body",
             "assertion": "Current retained revenue is small relative to current fees and activity.",
             "value": "fees 106402.94; revenue 2836.51; volume 1035836475.40",
             "as_of": "2026-08-03",
@@ -870,7 +870,7 @@
           },
           {
             "id": "claim:x-layer:section:why_this_outcome:3",
-            "field_path": "analysis.sections.why_this_outcome.claims[2]",
+            "field_path": "analysis.sections.why_this_outcome.body",
             "assertion": "The evidence does not isolate organic demand from OKX-directed or campaign activity.",
             "value": "The evidence does not isolate organic demand from OKX-directed or campaign activity.",
             "as_of": "2026-08-03",
@@ -891,7 +891,7 @@
           },
           {
             "id": "claim:x-layer:section:strategic_choices:1",
-            "field_path": "analysis.sections.strategic_choices.claims[0]",
+            "field_path": "analysis.sections.strategic_choices.body",
             "assertion": "OKX chose a dedicated exchange-backed L2 and later migrated current execution from Polygon CDK to OP Stack.",
             "value": "OKX chose a dedicated exchange-backed L2 and later migrated current execution from Polygon CDK to OP Stack.",
             "as_of": "2026-08-03",
@@ -912,7 +912,7 @@
           },
           {
             "id": "claim:x-layer:section:strategic_choices:2",
-            "field_path": "analysis.sections.strategic_choices.claims[1]",
+            "field_path": "analysis.sections.strategic_choices.body",
             "assertion": "OKX fixed OKB supply at 21 million and retained it as the chain gas asset.",
             "value": "OKX fixed OKB supply at 21 million and retained it as the chain gas asset.",
             "as_of": "2026-08-03",
@@ -933,7 +933,7 @@
           },
           {
             "id": "claim:x-layer:section:strategic_choices:3",
-            "field_path": "analysis.sections.strategic_choices.claims[2]",
+            "field_path": "analysis.sections.strategic_choices.body",
             "assertion": "The 0.02 Gwei minimum base fee prioritizes cheap use over immediate fee capture.",
             "value": "The 0.02 Gwei minimum base fee prioritizes cheap use over immediate fee capture.",
             "as_of": "2026-08-03",
@@ -954,7 +954,7 @@
           },
           {
             "id": "claim:x-layer:section:operating_model:1",
-            "field_path": "analysis.sections.operating_model.claims[0]",
+            "field_path": "analysis.sections.operating_model.body",
             "assertion": "X Layer uses Ethereum for on-chain data availability.",
             "value": "X Layer uses Ethereum for on-chain data availability.",
             "as_of": "2026-08-03",
@@ -974,7 +974,7 @@
           },
           {
             "id": "claim:x-layer:section:operating_model:2",
-            "field_path": "analysis.sections.operating_model.claims[1]",
+            "field_path": "analysis.sections.operating_model.body",
             "assertion": "The reviewed proposer and challenger roles are permissioned.",
             "value": "The reviewed proposer and challenger roles are permissioned.",
             "as_of": "2026-08-03",
@@ -994,7 +994,7 @@
           },
           {
             "id": "claim:x-layer:section:operating_model:3",
-            "field_path": "analysis.sections.operating_model.claims[2]",
+            "field_path": "analysis.sections.operating_model.body",
             "assertion": "Some reviewed upgrade paths provide no practical exit window before changes take effect.",
             "value": "Some reviewed upgrade paths provide no practical exit window before changes take effect.",
             "as_of": "2026-08-03",
@@ -1014,7 +1014,7 @@
           },
           {
             "id": "claim:x-layer:section:token_and_value_capture:1",
-            "field_path": "analysis.sections.token_and_value_capture.claims[0]",
+            "field_path": "analysis.sections.token_and_value_capture.body",
             "assertion": "OKB supply was fixed at 21 million and OKB is X Layer gas.",
             "value": 21000000,
             "as_of": "2026-08-03",
@@ -1035,7 +1035,7 @@
           },
           {
             "id": "claim:x-layer:section:token_and_value_capture:2",
-            "field_path": "analysis.sections.token_and_value_capture.claims[1]",
+            "field_path": "analysis.sections.token_and_value_capture.body",
             "assertion": "OKB market capitalization was $1,806,378,867 at the observation date.",
             "value": 1806378867,
             "as_of": "2026-08-03",
@@ -1055,7 +1055,7 @@
           },
           {
             "id": "claim:x-layer:section:token_and_value_capture:3",
-            "field_path": "analysis.sections.token_and_value_capture.claims[2]",
+            "field_path": "analysis.sections.token_and_value_capture.body",
             "assertion": "The reviewed sources do not give OKB holders a contractual claim on X Layer or OKX revenue.",
             "value": "The reviewed sources do not give OKB holders a contractual claim on X Layer or OKX revenue.",
             "as_of": "2026-08-03",
@@ -1076,7 +1076,7 @@
           },
           {
             "id": "claim:x-layer:section:counterfactual:1",
-            "field_path": "analysis.sections.counterfactual.claims[0]",
+            "field_path": "analysis.sections.counterfactual.body",
             "assertion": "Remaining on the original stack would have avoided migration but preserved the prior architecture.",
             "value": "Remaining on the original stack would have avoided migration but preserved the prior architecture.",
             "as_of": "2026-08-03",
@@ -1097,7 +1097,7 @@
           },
           {
             "id": "claim:x-layer:section:counterfactual:2",
-            "field_path": "analysis.sections.counterfactual.claims[1]",
+            "field_path": "analysis.sections.counterfactual.body",
             "assertion": "Using public networks without a dedicated L2 would reduce direct infrastructure control and OKB gas linkage.",
             "value": "Using public networks without a dedicated L2 would reduce direct infrastructure control and OKB gas linkage.",
             "as_of": "2026-08-03",
@@ -1118,7 +1118,7 @@
           },
           {
             "id": "claim:x-layer:section:risks_and_unknowns:1",
-            "field_path": "analysis.sections.risks_and_unknowns.claims[0]",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
             "assertion": "X Layer has material operator, bridge and upgrade-control dependencies.",
             "value": "X Layer has material operator, bridge and upgrade-control dependencies.",
             "as_of": "2026-08-03",
@@ -1138,7 +1138,7 @@
           },
           {
             "id": "claim:x-layer:section:risks_and_unknowns:2",
-            "field_path": "analysis.sections.risks_and_unknowns.claims[1]",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
             "assertion": "Aggregate DEX volume does not identify unique or retained users.",
             "value": "Aggregate DEX volume does not identify unique or retained users.",
             "as_of": "2026-08-03",
@@ -1158,7 +1158,7 @@
           },
           {
             "id": "claim:x-layer:section:risks_and_unknowns:3",
-            "field_path": "analysis.sections.risks_and_unknowns.claims[2]",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
             "assertion": "A reconciled sequencer income and cost statement was not found in the reviewed sources.",
             "value": "A reconciled sequencer income and cost statement was not found in the reviewed sources.",
             "as_of": "2026-08-03",
@@ -1180,7 +1180,7 @@
           },
           {
             "id": "claim:x-layer:section:lifecycle:1",
-            "field_path": "analysis.sections.lifecycle.claims[0]",
+            "field_path": "analysis.sections.lifecycle.body",
             "assertion": "X Layer has passed launch and completed material token and architecture changes.",
             "value": "X Layer has passed launch and completed material token and architecture changes.",
             "as_of": "2026-08-03",
@@ -1202,7 +1202,7 @@
           },
           {
             "id": "claim:x-layer:section:lifecycle:2",
-            "field_path": "analysis.sections.lifecycle.claims[1]",
+            "field_path": "analysis.sections.lifecycle.body",
             "assertion": "The latest TVL point is a reviewed series high, but one point does not establish retention.",
             "value": "latest=peak=111137879",
             "as_of": "2026-08-03",
@@ -1222,7 +1222,7 @@
           },
           {
             "id": "claim:x-layer:section:lifecycle:3",
-            "field_path": "analysis.sections.lifecycle.claims[2]",
+            "field_path": "analysis.sections.lifecycle.body",
             "assertion": "Current economics do not yet establish a mature self-sustaining rollup business.",
             "value": "Current economics do not yet establish a mature self-sustaining rollup business.",
             "as_of": "2026-08-03",
@@ -1243,7 +1243,7 @@
           },
           {
             "id": "claim:x-layer:section:outlook_and_watch:1",
-            "field_path": "analysis.sections.outlook_and_watch.claims[0]",
+            "field_path": "analysis.sections.outlook_and_watch.body",
             "assertion": "Persistent capital, activity and revenue together would strengthen the X Layer outcome call.",
             "value": "Persistent capital, activity and revenue together would strengthen the X Layer outcome call.",
             "as_of": "2026-08-03",
@@ -1266,7 +1266,7 @@
           },
           {
             "id": "claim:x-layer:section:outlook_and_watch:2",
-            "field_path": "analysis.sections.outlook_and_watch.claims[1]",
+            "field_path": "analysis.sections.outlook_and_watch.body",
             "assertion": "More permissionless operation and meaningful upgrade exits would reduce current trust assumptions.",
             "value": "More permissionless operation and meaningful upgrade exits would reduce current trust assumptions.",
             "as_of": "2026-08-03",
@@ -2352,7 +2352,7 @@
           },
           {
             "id": "claim:plasma:section:what_it_is:1",
-            "field_path": "analysis.sections.what_it_is.claims[0]",
+            "field_path": "analysis.sections.what_it_is.body",
             "assertion": "Plasma is a stablecoin-focused EVM layer 1 with subsidized USDT transfers.",
             "value": "Plasma is a stablecoin-focused EVM layer 1 with subsidized USDT transfers.",
             "as_of": "2026-08-03",
@@ -2373,7 +2373,7 @@
           },
           {
             "id": "claim:plasma:section:what_it_is:2",
-            "field_path": "analysis.sections.what_it_is.claims[1]",
+            "field_path": "analysis.sections.what_it_is.body",
             "assertion": "XPL is designed for network fees, security and governance.",
             "value": "XPL is designed for network fees, security and governance.",
             "as_of": "2026-08-03",
@@ -2394,7 +2394,7 @@
           },
           {
             "id": "claim:plasma:section:what_it_is:3",
-            "field_path": "analysis.sections.what_it_is.claims[2]",
+            "field_path": "analysis.sections.what_it_is.body",
             "assertion": "Plasma One is the operator’s planned integrated consumer distribution surface.",
             "value": "Plasma One is the operator’s planned integrated consumer distribution surface.",
             "as_of": "2026-08-03",
@@ -2414,7 +2414,7 @@
           },
           {
             "id": "claim:plasma:section:what_happened:1",
-            "field_path": "analysis.sections.what_happened.claims[0]",
+            "field_path": "analysis.sections.what_happened.body",
             "assertion": "The public sale had a $50 million cap and about $373 million of commitments.",
             "value": "cap 50000000; commitments 373000000",
             "as_of": "2026-08-03",
@@ -2434,7 +2434,7 @@
           },
           {
             "id": "claim:plasma:section:what_happened:2",
-            "field_path": "analysis.sections.what_happened.claims[1]",
+            "field_path": "analysis.sections.what_happened.body",
             "assertion": "Mainnet beta launched on September 25, 2025 with more than 100 announced partners.",
             "value": "Mainnet beta launched on September 25, 2025 with more than 100 announced partners.",
             "as_of": "2026-08-03",
@@ -2454,7 +2454,7 @@
           },
           {
             "id": "claim:plasma:section:what_happened:3",
-            "field_path": "analysis.sections.what_happened.claims[2]",
+            "field_path": "analysis.sections.what_happened.body",
             "assertion": "TVL fell from a $6,360,114,429 peak to $706,896,181 by 2026-08-03.",
             "value": "peak 6360114429; latest 706896181",
             "as_of": "2026-08-03",
@@ -2474,7 +2474,7 @@
           },
           {
             "id": "claim:plasma:section:why_this_outcome:1",
-            "field_path": "analysis.sections.why_this_outcome.claims[0]",
+            "field_path": "analysis.sections.why_this_outcome.body",
             "assertion": "Stablecoin specialization and launch partnerships plausibly accelerated initial liquidity.",
             "value": "Stablecoin specialization and launch partnerships plausibly accelerated initial liquidity.",
             "as_of": "2026-08-03",
@@ -2496,7 +2496,7 @@
           },
           {
             "id": "claim:plasma:section:why_this_outcome:2",
-            "field_path": "analysis.sections.why_this_outcome.claims[1]",
+            "field_path": "analysis.sections.why_this_outcome.body",
             "assertion": "An 88.89% TVL drawdown shows that most peak capital did not remain.",
             "value": 88.89,
             "as_of": "2026-08-03",
@@ -2516,7 +2516,7 @@
           },
           {
             "id": "claim:plasma:section:why_this_outcome:3",
-            "field_path": "analysis.sections.why_this_outcome.claims[2]",
+            "field_path": "analysis.sections.why_this_outcome.body",
             "assertion": "The reviewed data does not measure repeat payment users or subsidy-adjusted economics.",
             "value": "The reviewed data does not measure repeat payment users or subsidy-adjusted economics.",
             "as_of": "2026-08-03",
@@ -2538,7 +2538,7 @@
           },
           {
             "id": "claim:plasma:section:strategic_choices:1",
-            "field_path": "analysis.sections.strategic_choices.claims[0]",
+            "field_path": "analysis.sections.strategic_choices.body",
             "assertion": "Plasma chose selected zero-fee USDT transfers and EVM compatibility.",
             "value": "Plasma chose selected zero-fee USDT transfers and EVM compatibility.",
             "as_of": "2026-08-03",
@@ -2559,7 +2559,7 @@
           },
           {
             "id": "claim:plasma:section:strategic_choices:2",
-            "field_path": "analysis.sections.strategic_choices.claims[1]",
+            "field_path": "analysis.sections.strategic_choices.body",
             "assertion": "Initial allocation assigned 40% to ecosystem, 25% to team and 25% to investors.",
             "value": "ecosystem 40%; team 25%; investors 25%",
             "as_of": "2026-08-03",
@@ -2579,7 +2579,7 @@
           },
           {
             "id": "claim:plasma:section:strategic_choices:3",
-            "field_path": "analysis.sections.strategic_choices.claims[2]",
+            "field_path": "analysis.sections.strategic_choices.body",
             "assertion": "Plasma paired network infrastructure with a consumer app and card strategy.",
             "value": "Plasma paired network infrastructure with a consumer app and card strategy.",
             "as_of": "2026-08-03",
@@ -2599,7 +2599,7 @@
           },
           {
             "id": "claim:plasma:section:operating_model:1",
-            "field_path": "analysis.sections.operating_model.claims[0]",
+            "field_path": "analysis.sections.operating_model.body",
             "assertion": "Plasma is an EVM-compatible sovereign network rather than an Ethereum rollup.",
             "value": "Plasma is an EVM-compatible sovereign network rather than an Ethereum rollup.",
             "as_of": "2026-08-03",
@@ -2619,7 +2619,7 @@
           },
           {
             "id": "claim:plasma:section:operating_model:2",
-            "field_path": "analysis.sections.operating_model.claims[1]",
+            "field_path": "analysis.sections.operating_model.body",
             "assertion": "Selected free USDT transfers still require a payment or subsidy mechanism for execution.",
             "value": "Selected free USDT transfers still require a payment or subsidy mechanism for execution.",
             "as_of": "2026-08-03",
@@ -2640,7 +2640,7 @@
           },
           {
             "id": "claim:plasma:section:operating_model:3",
-            "field_path": "analysis.sections.operating_model.claims[2]",
+            "field_path": "analysis.sections.operating_model.body",
             "assertion": "The reviewed materials describe external validators and delegation as staged features.",
             "value": "The reviewed materials describe external validators and delegation as staged features.",
             "as_of": "2026-08-03",
@@ -2660,7 +2660,7 @@
           },
           {
             "id": "claim:plasma:section:token_and_value_capture:1",
-            "field_path": "analysis.sections.token_and_value_capture.claims[0]",
+            "field_path": "analysis.sections.token_and_value_capture.body",
             "assertion": "XPL initial supply is 10 billion with the reviewed initial allocation.",
             "value": 10000000000,
             "as_of": "2026-08-03",
@@ -2680,7 +2680,7 @@
           },
           {
             "id": "claim:plasma:section:token_and_value_capture:2",
-            "field_path": "analysis.sections.token_and_value_capture.claims[1]",
+            "field_path": "analysis.sections.token_and_value_capture.body",
             "assertion": "XPL market cap was $207,022,660 and FDV $769,918,984 on 2026-08-03.",
             "value": "mcap 207022660; fdv 769918984",
             "as_of": "2026-08-03",
@@ -2700,7 +2700,7 @@
           },
           {
             "id": "claim:plasma:section:token_and_value_capture:3",
-            "field_path": "analysis.sections.token_and_value_capture.claims[2]",
+            "field_path": "analysis.sections.token_and_value_capture.body",
             "assertion": "Subsidized stablecoin transfers can reduce the direct need for users to acquire XPL.",
             "value": "Subsidized stablecoin transfers can reduce the direct need for users to acquire XPL.",
             "as_of": "2026-08-03",
@@ -2721,7 +2721,7 @@
           },
           {
             "id": "claim:plasma:section:counterfactual:1",
-            "field_path": "analysis.sections.counterfactual.claims[0]",
+            "field_path": "analysis.sections.counterfactual.body",
             "assertion": "A smaller launch program could improve signal quality while reducing early network effects.",
             "value": "A smaller launch program could improve signal quality while reducing early network effects.",
             "as_of": "2026-08-03",
@@ -2742,7 +2742,7 @@
           },
           {
             "id": "claim:plasma:section:counterfactual:2",
-            "field_path": "analysis.sections.counterfactual.claims[1]",
+            "field_path": "analysis.sections.counterfactual.body",
             "assertion": "Visible per-transfer fees could clarify economics while weakening the zero-fee product.",
             "value": "Visible per-transfer fees could clarify economics while weakening the zero-fee product.",
             "as_of": "2026-08-03",
@@ -2763,7 +2763,7 @@
           },
           {
             "id": "claim:plasma:section:risks_and_unknowns:1",
-            "field_path": "analysis.sections.risks_and_unknowns.claims[0]",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
             "assertion": "Plasma’s product is structurally concentrated around stablecoins and especially USDT.",
             "value": "Plasma’s product is structurally concentrated around stablecoins and especially USDT.",
             "as_of": "2026-08-03",
@@ -2785,7 +2785,7 @@
           },
           {
             "id": "claim:plasma:section:risks_and_unknowns:2",
-            "field_path": "analysis.sections.risks_and_unknowns.claims[1]",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
             "assertion": "Half of initial XPL supply was allocated to team and investors.",
             "value": 0.5,
             "as_of": "2026-08-03",
@@ -2805,7 +2805,7 @@
           },
           {
             "id": "claim:plasma:section:risks_and_unknowns:3",
-            "field_path": "analysis.sections.risks_and_unknowns.claims[2]",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
             "assertion": "Active payers, subsidy cost and validator concentration remain unresolved.",
             "value": "Active payers, subsidy cost and validator concentration remain unresolved.",
             "as_of": "2026-08-03",
@@ -2827,7 +2827,7 @@
           },
           {
             "id": "claim:plasma:section:lifecycle:1",
-            "field_path": "analysis.sections.lifecycle.claims[0]",
+            "field_path": "analysis.sections.lifecycle.body",
             "assertion": "Plasma is operating with material remaining TVL and stablecoin supply.",
             "value": "tvl 706896181; dollar stables 943345071.8178",
             "as_of": "2026-08-03",
@@ -2848,7 +2848,7 @@
           },
           {
             "id": "claim:plasma:section:lifecycle:2",
-            "field_path": "analysis.sections.lifecycle.claims[1]",
+            "field_path": "analysis.sections.lifecycle.body",
             "assertion": "TVL is 88.89% below peak and monthly DEX volume change was -87.82%.",
             "value": "tvl drawdown 88.89%; volume change -87.82%",
             "as_of": "2026-08-03",
@@ -2869,7 +2869,7 @@
           },
           {
             "id": "claim:plasma:section:lifecycle:3",
-            "field_path": "analysis.sections.lifecycle.claims[2]",
+            "field_path": "analysis.sections.lifecycle.body",
             "assertion": "Declining describes contraction without claiming the operating network has failed.",
             "value": "Declining describes contraction without claiming the operating network has failed.",
             "as_of": "2026-08-03",
@@ -2891,7 +2891,7 @@
           },
           {
             "id": "claim:plasma:section:outlook_and_watch:1",
-            "field_path": "analysis.sections.outlook_and_watch.claims[0]",
+            "field_path": "analysis.sections.outlook_and_watch.body",
             "assertion": "Payment retention and subsidy-adjusted revenue are the decisive recovery signals.",
             "value": "Payment retention and subsidy-adjusted revenue are the decisive recovery signals.",
             "as_of": "2026-08-03",
@@ -2913,7 +2913,7 @@
           },
           {
             "id": "claim:plasma:section:outlook_and_watch:2",
-            "field_path": "analysis.sections.outlook_and_watch.claims[1]",
+            "field_path": "analysis.sections.outlook_and_watch.body",
             "assertion": "TVL, stablecoins, volume, fees and token supply must be read separately.",
             "value": "TVL, stablecoins, volume, fees and token supply must be read separately.",
             "as_of": "2026-08-03",
@@ -4059,7 +4059,7 @@
           },
           {
             "id": "claim:megaeth:section:what_it_is:1",
-            "field_path": "analysis.sections.what_it_is.claims[0]",
+            "field_path": "analysis.sections.what_it_is.body",
             "assertion": "MegaETH separates sequencer, replica, full-node, prover and data-availability roles.",
             "value": "MegaETH separates sequencer, replica, full-node, prover and data-availability roles.",
             "as_of": "2026-08-03",
@@ -4079,7 +4079,7 @@
           },
           {
             "id": "claim:megaeth:section:what_it_is:2",
-            "field_path": "analysis.sections.what_it_is.claims[1]",
+            "field_path": "analysis.sections.what_it_is.body",
             "assertion": "Realtime API mini-blocks are 10-millisecond sequencer preconfirmations, not Ethereum finality.",
             "value": "Realtime API mini-blocks are 10-millisecond sequencer preconfirmations, not Ethereum finality.",
             "as_of": "2026-08-03",
@@ -4099,7 +4099,7 @@
           },
           {
             "id": "claim:megaeth:section:what_it_is:3",
-            "field_path": "analysis.sections.what_it_is.claims[2]",
+            "field_path": "analysis.sections.what_it_is.body",
             "assertion": "MegaETH is assessed as an Ethereum scaling project with material operator and upgrade dependencies.",
             "value": "MegaETH is assessed as an Ethereum scaling project with material operator and upgrade dependencies.",
             "as_of": "2026-08-03",
@@ -4119,7 +4119,7 @@
           },
           {
             "id": "claim:megaeth:section:what_happened:1",
-            "field_path": "analysis.sections.what_happened.claims[0]",
+            "field_path": "analysis.sections.what_happened.body",
             "assertion": "MEGA went live on April 30, 2026 after the first KPI milestone was announced April 23.",
             "value": "MEGA went live on April 30, 2026 after the first KPI milestone was announced April 23.",
             "as_of": "2026-08-03",
@@ -4140,7 +4140,7 @@
           },
           {
             "id": "claim:megaeth:section:what_happened:2",
-            "field_path": "analysis.sections.what_happened.claims[1]",
+            "field_path": "analysis.sections.what_happened.body",
             "assertion": "TVL fell from $245,592,022 to $43,211,981 by 2026-08-03.",
             "value": "peak 245592022; latest 43211981",
             "as_of": "2026-08-03",
@@ -4160,7 +4160,7 @@
           },
           {
             "id": "claim:megaeth:section:what_happened:3",
-            "field_path": "analysis.sections.what_happened.claims[2]",
+            "field_path": "analysis.sections.what_happened.body",
             "assertion": "Thirty-day DEX volume was $42,140,308.06 and provider change_1m was +300.67%.",
             "value": "42140308.06; change 300.67%",
             "as_of": "2026-08-03",
@@ -4180,7 +4180,7 @@
           },
           {
             "id": "claim:megaeth:section:why_this_outcome:1",
-            "field_path": "analysis.sections.why_this_outcome.claims[0]",
+            "field_path": "analysis.sections.why_this_outcome.body",
             "assertion": "Role specialization plausibly enables lower-latency application feedback.",
             "value": "Role specialization plausibly enables lower-latency application feedback.",
             "as_of": "2026-08-03",
@@ -4201,7 +4201,7 @@
           },
           {
             "id": "claim:megaeth:section:why_this_outcome:2",
-            "field_path": "analysis.sections.why_this_outcome.claims[1]",
+            "field_path": "analysis.sections.why_this_outcome.body",
             "assertion": "The network remains active despite an 82.40% TVL drawdown.",
             "value": "The network remains active despite an 82.40% TVL drawdown.",
             "as_of": "2026-08-03",
@@ -4224,7 +4224,7 @@
           },
           {
             "id": "claim:megaeth:section:why_this_outcome:3",
-            "field_path": "analysis.sections.why_this_outcome.claims[2]",
+            "field_path": "analysis.sections.why_this_outcome.body",
             "assertion": "Aggregate transactions and volume do not prove repeat paying users.",
             "value": "Aggregate transactions and volume do not prove repeat paying users.",
             "as_of": "2026-08-03",
@@ -4245,7 +4245,7 @@
           },
           {
             "id": "claim:megaeth:section:strategic_choices:1",
-            "field_path": "analysis.sections.strategic_choices.claims[0]",
+            "field_path": "analysis.sections.strategic_choices.body",
             "assertion": "MegaETH chose heterogeneous node roles and direct preconfirmation APIs.",
             "value": "MegaETH chose heterogeneous node roles and direct preconfirmation APIs.",
             "as_of": "2026-08-03",
@@ -4266,7 +4266,7 @@
           },
           {
             "id": "claim:megaeth:section:strategic_choices:2",
-            "field_path": "analysis.sections.strategic_choices.claims[1]",
+            "field_path": "analysis.sections.strategic_choices.body",
             "assertion": "The token launch used KPI milestones and assigned 53% to KPI rewards.",
             "value": 0.53,
             "as_of": "2026-08-03",
@@ -4286,7 +4286,7 @@
           },
           {
             "id": "claim:megaeth:section:strategic_choices:3",
-            "field_path": "analysis.sections.strategic_choices.claims[2]",
+            "field_path": "analysis.sections.strategic_choices.body",
             "assertion": "Proximity seats and sequencer rotation are described as future mechanisms, not current decentralization.",
             "value": "Proximity seats and sequencer rotation are described as future mechanisms, not current decentralization.",
             "as_of": "2026-08-03",
@@ -4307,7 +4307,7 @@
           },
           {
             "id": "claim:megaeth:section:operating_model:1",
-            "field_path": "analysis.sections.operating_model.claims[0]",
+            "field_path": "analysis.sections.operating_model.body",
             "assertion": "MegaETH performance relies on a specialized sequencer and differentiated node roles.",
             "value": "MegaETH performance relies on a specialized sequencer and differentiated node roles.",
             "as_of": "2026-08-03",
@@ -4327,7 +4327,7 @@
           },
           {
             "id": "claim:megaeth:section:operating_model:2",
-            "field_path": "analysis.sections.operating_model.claims[1]",
+            "field_path": "analysis.sections.operating_model.body",
             "assertion": "Current independent assessment reports no-delay upgrades and unreproducible program hashes.",
             "value": "Current independent assessment reports no-delay upgrades and unreproducible program hashes.",
             "as_of": "2026-08-03",
@@ -4347,7 +4347,7 @@
           },
           {
             "id": "claim:megaeth:section:operating_model:3",
-            "field_path": "analysis.sections.operating_model.claims[2]",
+            "field_path": "analysis.sections.operating_model.body",
             "assertion": "Application preconfirmation and Ethereum final settlement are separate stages.",
             "value": "Application preconfirmation and Ethereum final settlement are separate stages.",
             "as_of": "2026-08-03",
@@ -4368,7 +4368,7 @@
           },
           {
             "id": "claim:megaeth:section:token_and_value_capture:1",
-            "field_path": "analysis.sections.token_and_value_capture.claims[0]",
+            "field_path": "analysis.sections.token_and_value_capture.body",
             "assertion": "MEGA launched April 30, 2026 with a maximum supply of 10 billion.",
             "value": 10000000000,
             "as_of": "2026-08-03",
@@ -4390,7 +4390,7 @@
           },
           {
             "id": "claim:megaeth:section:token_and_value_capture:2",
-            "field_path": "analysis.sections.token_and_value_capture.claims[1]",
+            "field_path": "analysis.sections.token_and_value_capture.body",
             "assertion": "MEGA market cap was $42,327,720 and FDV $374,650,298 on 2026-08-03.",
             "value": "mcap 42327720; fdv 374650298",
             "as_of": "2026-08-03",
@@ -4410,7 +4410,7 @@
           },
           {
             "id": "claim:megaeth:section:token_and_value_capture:3",
-            "field_path": "analysis.sections.token_and_value_capture.claims[2]",
+            "field_path": "analysis.sections.token_and_value_capture.body",
             "assertion": "Planned buybacks and infrastructure roles are not equivalent to current contractual holder cash flow.",
             "value": "Planned buybacks and infrastructure roles are not equivalent to current contractual holder cash flow.",
             "as_of": "2026-08-03",
@@ -4430,7 +4430,7 @@
           },
           {
             "id": "claim:megaeth:section:counterfactual:1",
-            "field_path": "analysis.sections.counterfactual.claims[0]",
+            "field_path": "analysis.sections.counterfactual.body",
             "assertion": "Homogeneous high-performance nodes would reduce specialization while increasing participation requirements.",
             "value": "Homogeneous high-performance nodes would reduce specialization while increasing participation requirements.",
             "as_of": "2026-08-03",
@@ -4450,7 +4450,7 @@
           },
           {
             "id": "claim:megaeth:section:counterfactual:2",
-            "field_path": "analysis.sections.counterfactual.claims[1]",
+            "field_path": "analysis.sections.counterfactual.body",
             "assertion": "Removing KPI rewards would improve organic-demand measurement while reducing launch incentives.",
             "value": "Removing KPI rewards would improve organic-demand measurement while reducing launch incentives.",
             "as_of": "2026-08-03",
@@ -4471,7 +4471,7 @@
           },
           {
             "id": "claim:megaeth:section:risks_and_unknowns:1",
-            "field_path": "analysis.sections.risks_and_unknowns.claims[0]",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
             "assertion": "Current independent review identifies upgrade, reproducibility and liveness risks.",
             "value": "Current independent review identifies upgrade, reproducibility and liveness risks.",
             "as_of": "2026-08-03",
@@ -4491,7 +4491,7 @@
           },
           {
             "id": "claim:megaeth:section:risks_and_unknowns:2",
-            "field_path": "analysis.sections.risks_and_unknowns.claims[1]",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
             "assertion": "Preconfirmations can be mistaken for final settlement if applications label them poorly.",
             "value": "Preconfirmations can be mistaken for final settlement if applications label them poorly.",
             "as_of": "2026-08-03",
@@ -4511,7 +4511,7 @@
           },
           {
             "id": "claim:megaeth:section:risks_and_unknowns:3",
-            "field_path": "analysis.sections.risks_and_unknowns.claims[2]",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
             "assertion": "User retention, deposit concentration and sequencer economics remain unresolved.",
             "value": "User retention, deposit concentration and sequencer economics remain unresolved.",
             "as_of": "2026-08-03",
@@ -4533,7 +4533,7 @@
           },
           {
             "id": "claim:megaeth:section:lifecycle:1",
-            "field_path": "analysis.sections.lifecycle.claims[0]",
+            "field_path": "analysis.sections.lifecycle.body",
             "assertion": "MegaETH is active with nonzero volume, fees and retained revenue.",
             "value": "MegaETH is active with nonzero volume, fees and retained revenue.",
             "as_of": "2026-08-03",
@@ -4555,7 +4555,7 @@
           },
           {
             "id": "claim:megaeth:section:lifecycle:2",
-            "field_path": "analysis.sections.lifecycle.claims[1]",
+            "field_path": "analysis.sections.lifecycle.body",
             "assertion": "TVL is 82.40% below peak and MEGA is 82.79% below its recorded high.",
             "value": "tvl drawdown 82.40%; token drawdown 82.79%",
             "as_of": "2026-08-03",
@@ -4576,7 +4576,7 @@
           },
           {
             "id": "claim:megaeth:section:lifecycle:3",
-            "field_path": "analysis.sections.lifecycle.claims[2]",
+            "field_path": "analysis.sections.lifecycle.body",
             "assertion": "One month of improving volume is insufficient to classify recovery.",
             "value": "One month of improving volume is insufficient to classify recovery.",
             "as_of": "2026-08-03",
@@ -4596,7 +4596,7 @@
           },
           {
             "id": "claim:megaeth:section:outlook_and_watch:1",
-            "field_path": "analysis.sections.outlook_and_watch.claims[0]",
+            "field_path": "analysis.sections.outlook_and_watch.body",
             "assertion": "Multi-application user retention and organic revenue would validate the realtime thesis.",
             "value": "Multi-application user retention and organic revenue would validate the realtime thesis.",
             "as_of": "2026-08-03",
@@ -4618,7 +4618,7 @@
           },
           {
             "id": "claim:megaeth:section:outlook_and_watch:2",
-            "field_path": "analysis.sections.outlook_and_watch.claims[1]",
+            "field_path": "analysis.sections.outlook_and_watch.body",
             "assertion": "Delayed upgrades, reproducible code and sequencer rotation would reduce current control risks.",
             "value": "Delayed upgrades, reproducible code and sequencer rotation would reduce current control risks.",
             "as_of": "2026-08-03",
@@ -5683,7 +5683,7 @@
           },
           {
             "id": "claim:ink:section:what_it_is:1",
-            "field_path": "analysis.sections.what_it_is.claims[0]",
+            "field_path": "analysis.sections.what_it_is.body",
             "assertion": "Ink is a Kraken-backed OP Stack Ethereum L2 focused on DeFi.",
             "value": "Ink is a Kraken-backed OP Stack Ethereum L2 focused on DeFi.",
             "as_of": "2026-08-03",
@@ -5705,7 +5705,7 @@
           },
           {
             "id": "claim:ink:section:what_it_is:2",
-            "field_path": "analysis.sections.what_it_is.claims[1]",
+            "field_path": "analysis.sections.what_it_is.body",
             "assertion": "ETH is the operating gas asset and no INK token launch was verified by 2026-08-03.",
             "value": "INK token not launched/verified",
             "as_of": "2026-08-03",
@@ -5726,7 +5726,7 @@
           },
           {
             "id": "claim:ink:section:what_it_is:3",
-            "field_path": "analysis.sections.what_it_is.claims[2]",
+            "field_path": "analysis.sections.what_it_is.body",
             "assertion": "Ink Points are a separate loyalty program, not evidence of a token TGE.",
             "value": "Ink Points are a separate loyalty program, not evidence of a token TGE.",
             "as_of": "2026-08-03",
@@ -5747,7 +5747,7 @@
           },
           {
             "id": "claim:ink:section:what_happened:1",
-            "field_path": "analysis.sections.what_happened.claims[0]",
+            "field_path": "analysis.sections.what_happened.body",
             "assertion": "Ink mainnet launched on December 18, 2024.",
             "value": "Ink mainnet launched on December 18, 2024.",
             "as_of": "2026-08-03",
@@ -5767,7 +5767,7 @@
           },
           {
             "id": "claim:ink:section:what_happened:2",
-            "field_path": "analysis.sections.what_happened.claims[1]",
+            "field_path": "analysis.sections.what_happened.body",
             "assertion": "TVL fell from $572,838,055 to $118,012,547 by 2026-08-03.",
             "value": "peak 572838055; latest 118012547",
             "as_of": "2026-08-03",
@@ -5787,7 +5787,7 @@
           },
           {
             "id": "claim:ink:section:what_happened:3",
-            "field_path": "analysis.sections.what_happened.claims[2]",
+            "field_path": "analysis.sections.what_happened.body",
             "assertion": "Thirty-day fees were $3,072,521.69 and retained revenue $730,905.89.",
             "value": "fees 3072521.69; revenue 730905.89",
             "as_of": "2026-08-03",
@@ -5808,7 +5808,7 @@
           },
           {
             "id": "claim:ink:section:why_this_outcome:1",
-            "field_path": "analysis.sections.why_this_outcome.claims[0]",
+            "field_path": "analysis.sections.why_this_outcome.body",
             "assertion": "Kraken distribution and OP Stack compatibility plausibly reduced launch friction.",
             "value": "Kraken distribution and OP Stack compatibility plausibly reduced launch friction.",
             "as_of": "2026-08-03",
@@ -5829,7 +5829,7 @@
           },
           {
             "id": "claim:ink:section:why_this_outcome:2",
-            "field_path": "analysis.sections.why_this_outcome.claims[1]",
+            "field_path": "analysis.sections.why_this_outcome.body",
             "assertion": "Current activity coexists with a 79.40% TVL drawdown.",
             "value": "Current activity coexists with a 79.40% TVL drawdown.",
             "as_of": "2026-08-03",
@@ -5851,7 +5851,7 @@
           },
           {
             "id": "claim:ink:section:why_this_outcome:3",
-            "field_path": "analysis.sections.why_this_outcome.claims[2]",
+            "field_path": "analysis.sections.why_this_outcome.body",
             "assertion": "The reviewed aggregates do not show retained users or application concentration.",
             "value": "The reviewed aggregates do not show retained users or application concentration.",
             "as_of": "2026-08-03",
@@ -5872,7 +5872,7 @@
           },
           {
             "id": "claim:ink:section:strategic_choices:1",
-            "field_path": "analysis.sections.strategic_choices.claims[0]",
+            "field_path": "analysis.sections.strategic_choices.body",
             "assertion": "Kraken launched a dedicated OP Stack DeFi chain and initially used ETH rather than a native token.",
             "value": "Kraken launched a dedicated OP Stack DeFi chain and initially used ETH rather than a native token.",
             "as_of": "2026-08-03",
@@ -5893,7 +5893,7 @@
           },
           {
             "id": "claim:ink:section:strategic_choices:2",
-            "field_path": "analysis.sections.strategic_choices.claims[1]",
+            "field_path": "analysis.sections.strategic_choices.body",
             "assertion": "INK was announced for future integration while Points launched as a separate program.",
             "value": "INK was announced for future integration while Points launched as a separate program.",
             "as_of": "2026-08-03",
@@ -5915,7 +5915,7 @@
           },
           {
             "id": "claim:ink:section:strategic_choices:3",
-            "field_path": "analysis.sections.strategic_choices.claims[2]",
+            "field_path": "analysis.sections.strategic_choices.body",
             "assertion": "Exchange-led distribution can accelerate adoption while increasing corporate dependence.",
             "value": "Exchange-led distribution can accelerate adoption while increasing corporate dependence.",
             "as_of": "2026-08-03",
@@ -5936,7 +5936,7 @@
           },
           {
             "id": "claim:ink:section:operating_model:1",
-            "field_path": "analysis.sections.operating_model.claims[0]",
+            "field_path": "analysis.sections.operating_model.body",
             "assertion": "Ink uses Ethereum data availability and is assessed Stage 1.",
             "value": "Ink uses Ethereum data availability and is assessed Stage 1.",
             "as_of": "2026-08-03",
@@ -5956,7 +5956,7 @@
           },
           {
             "id": "claim:ink:section:operating_model:2",
-            "field_path": "analysis.sections.operating_model.claims[1]",
+            "field_path": "analysis.sections.operating_model.body",
             "assertion": "Fault-proof proposal is permissionless while sequencing remains centralized.",
             "value": "Fault-proof proposal is permissionless while sequencing remains centralized.",
             "as_of": "2026-08-03",
@@ -5976,7 +5976,7 @@
           },
           {
             "id": "claim:ink:section:operating_model:3",
-            "field_path": "analysis.sections.operating_model.claims[2]",
+            "field_path": "analysis.sections.operating_model.body",
             "assertion": "Reviewed regular and emergency upgrade paths have no delay.",
             "value": "Reviewed regular and emergency upgrade paths have no delay.",
             "as_of": "2026-08-03",
@@ -5996,7 +5996,7 @@
           },
           {
             "id": "claim:ink:section:token_and_value_capture:1",
-            "field_path": "analysis.sections.token_and_value_capture.claims[0]",
+            "field_path": "analysis.sections.token_and_value_capture.body",
             "assertion": "ETH is the verified gas token; INK launch details remain unverified.",
             "value": "ETH is the verified gas token; INK launch details remain unverified.",
             "as_of": "2026-08-03",
@@ -6018,7 +6018,7 @@
           },
           {
             "id": "claim:ink:section:token_and_value_capture:2",
-            "field_path": "analysis.sections.token_and_value_capture.claims[1]",
+            "field_path": "analysis.sections.token_and_value_capture.body",
             "assertion": "Points do not establish transferable supply, governance or revenue rights.",
             "value": "Points do not establish transferable supply, governance or revenue rights.",
             "as_of": "2026-08-03",
@@ -6038,7 +6038,7 @@
           },
           {
             "id": "claim:ink:section:token_and_value_capture:3",
-            "field_path": "analysis.sections.token_and_value_capture.claims[2]",
+            "field_path": "analysis.sections.token_and_value_capture.body",
             "assertion": "Thirty-day provider-reported retained revenue was $730,905.89.",
             "value": 730905.89,
             "as_of": "2026-08-03",
@@ -6058,7 +6058,7 @@
           },
           {
             "id": "claim:ink:section:counterfactual:1",
-            "field_path": "analysis.sections.counterfactual.claims[0]",
+            "field_path": "analysis.sections.counterfactual.body",
             "assertion": "Using only third-party chains would reduce direct control and infrastructure responsibility.",
             "value": "Using only third-party chains would reduce direct control and infrastructure responsibility.",
             "as_of": "2026-08-03",
@@ -6078,7 +6078,7 @@
           },
           {
             "id": "claim:ink:section:counterfactual:2",
-            "field_path": "analysis.sections.counterfactual.claims[1]",
+            "field_path": "analysis.sections.counterfactual.body",
             "assertion": "An immediate token could clarify incentives while adding dilution and launch pressure.",
             "value": "An immediate token could clarify incentives while adding dilution and launch pressure.",
             "as_of": "2026-08-03",
@@ -6099,7 +6099,7 @@
           },
           {
             "id": "claim:ink:section:risks_and_unknowns:1",
-            "field_path": "analysis.sections.risks_and_unknowns.claims[0]",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
             "assertion": "Ink currently has centralized sequencing and no-delay upgrade risk.",
             "value": "Ink currently has centralized sequencing and no-delay upgrade risk.",
             "as_of": "2026-08-03",
@@ -6119,7 +6119,7 @@
           },
           {
             "id": "claim:ink:section:risks_and_unknowns:2",
-            "field_path": "analysis.sections.risks_and_unknowns.claims[1]",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
             "assertion": "INK allocation, vesting, rights and launch date were not verified.",
             "value": "INK allocation, vesting, rights and launch date were not verified.",
             "as_of": "2026-08-03",
@@ -6140,7 +6140,7 @@
           },
           {
             "id": "claim:ink:section:risks_and_unknowns:3",
-            "field_path": "analysis.sections.risks_and_unknowns.claims[2]",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
             "assertion": "Kraken conversion and application concentration are not reported by chain aggregates.",
             "value": "Kraken conversion and application concentration are not reported by chain aggregates.",
             "as_of": "2026-08-03",
@@ -6161,7 +6161,7 @@
           },
           {
             "id": "claim:ink:section:lifecycle:1",
-            "field_path": "analysis.sections.lifecycle.claims[0]",
+            "field_path": "analysis.sections.lifecycle.body",
             "assertion": "Ink is operating with $118.01 million TVL and $136.46 million dollar stablecoins.",
             "value": "tvl 118012547; stables 136459848.121",
             "as_of": "2026-08-03",
@@ -6182,7 +6182,7 @@
           },
           {
             "id": "claim:ink:section:lifecycle:2",
-            "field_path": "analysis.sections.lifecycle.claims[1]",
+            "field_path": "analysis.sections.lifecycle.body",
             "assertion": "TVL is 79.40% below peak despite improving recent DEX volume.",
             "value": "TVL is 79.40% below peak despite improving recent DEX volume.",
             "as_of": "2026-08-03",
@@ -6203,7 +6203,7 @@
           },
           {
             "id": "claim:ink:section:lifecycle:3",
-            "field_path": "analysis.sections.lifecycle.claims[2]",
+            "field_path": "analysis.sections.lifecycle.body",
             "assertion": "Token speculation is excluded from the current lifecycle result.",
             "value": "Token speculation is excluded from the current lifecycle result.",
             "as_of": "2026-08-03",
@@ -6224,7 +6224,7 @@
           },
           {
             "id": "claim:ink:section:outlook_and_watch:1",
-            "field_path": "analysis.sections.outlook_and_watch.claims[0]",
+            "field_path": "analysis.sections.outlook_and_watch.body",
             "assertion": "Repeat conversion and independent application revenue are the decisive growth signals.",
             "value": "Repeat conversion and independent application revenue are the decisive growth signals.",
             "as_of": "2026-08-03",
@@ -6246,7 +6246,7 @@
           },
           {
             "id": "claim:ink:section:outlook_and_watch:2",
-            "field_path": "analysis.sections.outlook_and_watch.claims[1]",
+            "field_path": "analysis.sections.outlook_and_watch.body",
             "assertion": "Token terms should be updated only after official publication and verified launch.",
             "value": "Token terms should be updated only after official publication and verified launch.",
             "as_of": "2026-08-03",
@@ -6267,7 +6267,7 @@
           },
           {
             "id": "claim:ink:section:outlook_and_watch:3",
-            "field_path": "analysis.sections.outlook_and_watch.claims[2]",
+            "field_path": "analysis.sections.outlook_and_watch.body",
             "assertion": "Sequencer, fault-proof and upgrade controls should be tracked with economic metrics.",
             "value": "Sequencer, fault-proof and upgrade controls should be tracked with economic metrics.",
             "as_of": "2026-08-03",
@@ -7400,7 +7400,7 @@
           },
           {
             "id": "claim:starknet:section:what_it_is:1",
-            "field_path": "analysis.sections.what_it_is.claims[0]",
+            "field_path": "analysis.sections.what_it_is.body",
             "assertion": "Starknet is a STARK validity rollup with Cairo-based execution.",
             "value": "Starknet is a STARK validity rollup with Cairo-based execution.",
             "as_of": "2026-08-03",
@@ -7421,7 +7421,7 @@
           },
           {
             "id": "claim:starknet:section:what_it_is:2",
-            "field_path": "analysis.sections.what_it_is.claims[1]",
+            "field_path": "analysis.sections.what_it_is.body",
             "assertion": "Ethereum verifies Starknet state transitions through validity proofs.",
             "value": "Ethereum verifies Starknet state transitions through validity proofs.",
             "as_of": "2026-08-03",
@@ -7441,7 +7441,7 @@
           },
           {
             "id": "claim:starknet:section:what_it_is:3",
-            "field_path": "analysis.sections.what_it_is.claims[2]",
+            "field_path": "analysis.sections.what_it_is.body",
             "assertion": "STRK is used for fees, staking and governance.",
             "value": "STRK is used for fees, staking and governance.",
             "as_of": "2026-08-03",
@@ -7461,7 +7461,7 @@
           },
           {
             "id": "claim:starknet:section:what_happened:1",
-            "field_path": "analysis.sections.what_happened.claims[0]",
+            "field_path": "analysis.sections.what_happened.body",
             "assertion": "Starknet Alpha launched on mainnet on November 29, 2021.",
             "value": "Starknet Alpha launched on mainnet on November 29, 2021.",
             "as_of": "2026-08-03",
@@ -7481,7 +7481,7 @@
           },
           {
             "id": "claim:starknet:section:what_happened:2",
-            "field_path": "analysis.sections.what_happened.claims[1]",
+            "field_path": "analysis.sections.what_happened.body",
             "assertion": "TVL was $166,504,229, 49.66% below the $330,779,212 peak.",
             "value": "latest 166504229; peak 330779212; drawdown 49.66%",
             "as_of": "2026-08-03",
@@ -7501,7 +7501,7 @@
           },
           {
             "id": "claim:starknet:section:what_happened:3",
-            "field_path": "analysis.sections.what_happened.claims[2]",
+            "field_path": "analysis.sections.what_happened.body",
             "assertion": "The 2025 and 2026 incidents caused reorgs and downtime while proof rejection protected correctness.",
             "value": "The 2025 and 2026 incidents caused reorgs and downtime while proof rejection protected correctness.",
             "as_of": "2026-08-03",
@@ -7522,7 +7522,7 @@
           },
           {
             "id": "claim:starknet:section:why_this_outcome:1",
-            "field_path": "analysis.sections.why_this_outcome.claims[0]",
+            "field_path": "analysis.sections.why_this_outcome.body",
             "assertion": "The custom Cairo/STARK stack provides technical differentiation and adoption friction.",
             "value": "The custom Cairo/STARK stack provides technical differentiation and adoption friction.",
             "as_of": "2026-08-03",
@@ -7543,7 +7543,7 @@
           },
           {
             "id": "claim:starknet:section:why_this_outcome:2",
-            "field_path": "analysis.sections.why_this_outcome.claims[1]",
+            "field_path": "analysis.sections.why_this_outcome.body",
             "assertion": "Proof rejection protected correctness during the January 2026 execution bug.",
             "value": "Proof rejection protected correctness during the January 2026 execution bug.",
             "as_of": "2026-08-03",
@@ -7563,7 +7563,7 @@
           },
           {
             "id": "claim:starknet:section:why_this_outcome:3",
-            "field_path": "analysis.sections.why_this_outcome.claims[2]",
+            "field_path": "analysis.sections.why_this_outcome.body",
             "assertion": "Current capital is meaningful while retained revenue remains small.",
             "value": "tvl 166504229; stables 160856376.813; revenue30d 11749.53",
             "as_of": "2026-08-03",
@@ -7585,7 +7585,7 @@
           },
           {
             "id": "claim:starknet:section:strategic_choices:1",
-            "field_path": "analysis.sections.strategic_choices.claims[0]",
+            "field_path": "analysis.sections.strategic_choices.body",
             "assertion": "Starknet chose a Cairo/STARK proving stack rather than EVM equivalence.",
             "value": "Starknet chose a Cairo/STARK proving stack rather than EVM equivalence.",
             "as_of": "2026-08-03",
@@ -7606,7 +7606,7 @@
           },
           {
             "id": "claim:starknet:section:strategic_choices:2",
-            "field_path": "analysis.sections.strategic_choices.claims[1]",
+            "field_path": "analysis.sections.strategic_choices.body",
             "assertion": "Decentralization and staking responsibilities are being introduced in phases.",
             "value": "Decentralization and staking responsibilities are being introduced in phases.",
             "as_of": "2026-08-03",
@@ -7627,7 +7627,7 @@
           },
           {
             "id": "claim:starknet:section:strategic_choices:3",
-            "field_path": "analysis.sections.strategic_choices.claims[2]",
+            "field_path": "analysis.sections.strategic_choices.body",
             "assertion": "The operator published detailed root causes and remediation after both reviewed incidents.",
             "value": "The operator published detailed root causes and remediation after both reviewed incidents.",
             "as_of": "2026-08-03",
@@ -7648,7 +7648,7 @@
           },
           {
             "id": "claim:starknet:section:operating_model:1",
-            "field_path": "analysis.sections.operating_model.claims[0]",
+            "field_path": "analysis.sections.operating_model.body",
             "assertion": "Starknet separates sequenced execution from STARK proof verification on Ethereum.",
             "value": "Starknet separates sequenced execution from STARK proof verification on Ethereum.",
             "as_of": "2026-08-03",
@@ -7669,7 +7669,7 @@
           },
           {
             "id": "claim:starknet:section:operating_model:2",
-            "field_path": "analysis.sections.operating_model.claims[1]",
+            "field_path": "analysis.sections.operating_model.body",
             "assertion": "A 9-of-12 Security Council has immediate reviewed authority and a 2-of-4 StarkWare multisig has an eight-day path.",
             "value": "Security Council 9/12 immediate; StarkWare 2/4 with 8-day path",
             "as_of": "2026-08-03",
@@ -7689,7 +7689,7 @@
           },
           {
             "id": "claim:starknet:section:operating_model:3",
-            "field_path": "analysis.sections.operating_model.claims[2]",
+            "field_path": "analysis.sections.operating_model.body",
             "assertion": "Broader validator responsibility remains a roadmap objective rather than complete current operation.",
             "value": "Broader validator responsibility remains a roadmap objective rather than complete current operation.",
             "as_of": "2026-08-03",
@@ -7709,7 +7709,7 @@
           },
           {
             "id": "claim:starknet:section:token_and_value_capture:1",
-            "field_path": "analysis.sections.token_and_value_capture.claims[0]",
+            "field_path": "analysis.sections.token_and_value_capture.body",
             "assertion": "STRK has fee, staking and governance roles and a 10 billion total supply.",
             "value": 10000000000,
             "as_of": "2026-08-03",
@@ -7730,7 +7730,7 @@
           },
           {
             "id": "claim:starknet:section:token_and_value_capture:2",
-            "field_path": "analysis.sections.token_and_value_capture.claims[1]",
+            "field_path": "analysis.sections.token_and_value_capture.body",
             "assertion": "STRK market cap was $168,722,374 and FDV $247,675,036 on 2026-08-03.",
             "value": "mcap 168722374; fdv 247675036",
             "as_of": "2026-08-03",
@@ -7750,7 +7750,7 @@
           },
           {
             "id": "claim:starknet:section:token_and_value_capture:3",
-            "field_path": "analysis.sections.token_and_value_capture.claims[2]",
+            "field_path": "analysis.sections.token_and_value_capture.body",
             "assertion": "Thirty-day retained revenue was $11,749.53 against $1,644,711.97 of gross fees.",
             "value": "fees 1644711.97; revenue 11749.53",
             "as_of": "2026-08-03",
@@ -7771,7 +7771,7 @@
           },
           {
             "id": "claim:starknet:section:counterfactual:1",
-            "field_path": "analysis.sections.counterfactual.claims[0]",
+            "field_path": "analysis.sections.counterfactual.body",
             "assertion": "EVM compatibility could reduce developer friction while limiting the custom Cairo design.",
             "value": "EVM compatibility could reduce developer friction while limiting the custom Cairo design.",
             "as_of": "2026-08-03",
@@ -7792,7 +7792,7 @@
           },
           {
             "id": "claim:starknet:section:counterfactual:2",
-            "field_path": "analysis.sections.counterfactual.claims[1]",
+            "field_path": "analysis.sections.counterfactual.body",
             "assertion": "A faster multi-sequencer rollout could decentralize sooner while adding transition risk.",
             "value": "A faster multi-sequencer rollout could decentralize sooner while adding transition risk.",
             "as_of": "2026-08-03",
@@ -7813,7 +7813,7 @@
           },
           {
             "id": "claim:starknet:section:risks_and_unknowns:1",
-            "field_path": "analysis.sections.risks_and_unknowns.claims[0]",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
             "assertion": "Recent incidents demonstrate software and liveness risk without a proof-system safety failure.",
             "value": "Recent incidents demonstrate software and liveness risk without a proof-system safety failure.",
             "as_of": "2026-08-03",
@@ -7834,7 +7834,7 @@
           },
           {
             "id": "claim:starknet:section:risks_and_unknowns:2",
-            "field_path": "analysis.sections.risks_and_unknowns.claims[1]",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
             "assertion": "Current governance retains concentrated emergency and upgrade authority.",
             "value": "Current governance retains concentrated emergency and upgrade authority.",
             "as_of": "2026-08-03",
@@ -7854,7 +7854,7 @@
           },
           {
             "id": "claim:starknet:section:risks_and_unknowns:3",
-            "field_path": "analysis.sections.risks_and_unknowns.claims[2]",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
             "assertion": "Entity-level infrastructure concentration and repeat-user retention remain unresolved.",
             "value": "Entity-level infrastructure concentration and repeat-user retention remain unresolved.",
             "as_of": "2026-08-03",
@@ -7875,7 +7875,7 @@
           },
           {
             "id": "claim:starknet:section:lifecycle:1",
-            "field_path": "analysis.sections.lifecycle.claims[0]",
+            "field_path": "analysis.sections.lifecycle.body",
             "assertion": "Starknet has more than four years of mainnet operating history.",
             "value": "Starknet has more than four years of mainnet operating history.",
             "as_of": "2026-08-03",
@@ -7895,7 +7895,7 @@
           },
           {
             "id": "claim:starknet:section:lifecycle:2",
-            "field_path": "analysis.sections.lifecycle.claims[1]",
+            "field_path": "analysis.sections.lifecycle.body",
             "assertion": "The chain retains material capital but remains below peak and has weak recent market performance.",
             "value": "The chain retains material capital but remains below peak and has weak recent market performance.",
             "as_of": "2026-08-03",
@@ -7918,7 +7918,7 @@
           },
           {
             "id": "claim:starknet:section:lifecycle:3",
-            "field_path": "analysis.sections.lifecycle.claims[2]",
+            "field_path": "analysis.sections.lifecycle.body",
             "assertion": "Middling reflects a durable operating network without leading adoption or complete decentralization.",
             "value": "Middling reflects a durable operating network without leading adoption or complete decentralization.",
             "as_of": "2026-08-03",
@@ -7940,7 +7940,7 @@
           },
           {
             "id": "claim:starknet:section:outlook_and_watch:1",
-            "field_path": "analysis.sections.outlook_and_watch.claims[0]",
+            "field_path": "analysis.sections.outlook_and_watch.body",
             "assertion": "Sustained application demand plus safer decentralization would strengthen the outcome.",
             "value": "Sustained application demand plus safer decentralization would strengthen the outcome.",
             "as_of": "2026-08-03",
@@ -7962,7 +7962,7 @@
           },
           {
             "id": "claim:starknet:section:outlook_and_watch:2",
-            "field_path": "analysis.sections.outlook_and_watch.claims[1]",
+            "field_path": "analysis.sections.outlook_and_watch.body",
             "assertion": "Incident remediation and liveness must be monitored independently of proof correctness.",
             "value": "Incident remediation and liveness must be monitored independently of proof correctness.",
             "as_of": "2026-08-03",
@@ -7983,7 +7983,7 @@
           },
           {
             "id": "claim:starknet:section:outlook_and_watch:3",
-            "field_path": "analysis.sections.outlook_and_watch.claims[2]",
+            "field_path": "analysis.sections.outlook_and_watch.body",
             "assertion": "Staking participation and entity concentration determine whether STRK security utility broadens.",
             "value": "Staking participation and entity concentration determine whether STRK security utility broadens.",
             "as_of": "2026-08-03",
