@@ -2559,10 +2559,16 @@ function sparkline(values, w = 78, h = 22, pad = 3) {
 
 const HUES = ['#3b82f6','#8b5cf6','#ec4899','#f59e0b','#10b981','#06b6d4','#ef4444','#a3e635'];
 function hueFor(name){ return HUES[Math.abs([...name].reduce((a,ch)=>a+ch.charCodeAt(0),0)) % HUES.length]; }
+function chainIconUrl(name) {
+  const slug = name.toLowerCase().trim().replace(/\s+/g, '-');
+  // These upstream assets are published as PNG; the rest of the current board
+  // uses the provider's JPG convention. Keep the monogram as fallback.
+  const extension = ['dexalot', 'starknet'].includes(slug) ? 'png' : 'jpg';
+  return `https://icons.llamao.fi/icons/chains/rsz_${encodeURIComponent(slug)}.${extension}`;
+}
 function logo(c) {
-  const slug = c.name.toLowerCase().trim().replace(/\s+/g,'-');
   // Monogram tile is the reliable base; the real icon layers on top and removes itself if it 404s.
-  return `<span class="logo" style="background:${hueFor(c.name)}">${esc(c.name[0].toUpperCase())}<img src="https://icons.llamao.fi/icons/chains/rsz_${encodeURIComponent(slug)}.jpg" alt="" loading="lazy" onerror="this.remove()"></span>`;
+  return `<span class="logo" style="background:${hueFor(c.name)}">${esc(c.name[0].toUpperCase())}<img src="${esc(chainIconUrl(c.name))}" alt="" loading="lazy" onerror="this.remove()"></span>`;
 }
 
 function riskBanner(risk){
@@ -3607,7 +3613,7 @@ function detailHtml(c) {
   return `<div class="detail">${head}${dqNote(dq)}${d&&d.risk?riskBanner(d.risk):''}${verdict}${accordionHtml('Snapshot — metrics, 30d trend & fundamentals', snapshot, true)}${relatedAcc}${accordionHtml('Analysis & outlook', analystHtml(d), true)}${accordionHtml('Ecosystem — markets · tokens · NFTs · apps', ecosystem, false)}</div>`;
 }
 
-function logoBig(c){ const slug=c.name.toLowerCase().trim().replace(/\s+/g,'-'); return `<span class="logo big" style="background:${hueFor(c.name)}">${esc(c.name[0].toUpperCase())}<img src="https://icons.llamao.fi/icons/chains/rsz_${encodeURIComponent(slug)}.jpg" alt="" onerror="this.remove()"></span>`; }
+function logoBig(c){ return `<span class="logo big" style="background:${hueFor(c.name)}">${esc(c.name[0].toUpperCase())}<img src="${esc(chainIconUrl(c.name))}" alt="" onerror="this.remove()"></span>`; }
 function cssId(s){ return s.replace(/[^a-z0-9]/gi,'_'); }
 
 async function loadDetail(name){

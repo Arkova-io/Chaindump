@@ -8,6 +8,17 @@ describe('public UI/UX audit guards', () => {
     expect(html).toContain('td.rank{ position:absolute; opacity:.5; padding:6px 10px; width:36px !important; }');
   });
 
+  it('uses published icon formats instead of known 404 paths', () => {
+    const start = html.indexOf('function chainIconUrl(name)');
+    const end = html.indexOf('function logo(c)', start);
+    const source = html.slice(start, end);
+    const chainIconUrl = new Function(`${source}\nreturn chainIconUrl;`)();
+
+    expect(chainIconUrl('Starknet')).toBe('https://icons.llamao.fi/icons/chains/rsz_starknet.png');
+    expect(chainIconUrl('Dexalot')).toBe('https://icons.llamao.fi/icons/chains/rsz_dexalot.png');
+    expect(chainIconUrl('Ethereum')).toBe('https://icons.llamao.fi/icons/chains/rsz_ethereum.jpg');
+  });
+
   it('forces report grids and card headers to fit a 390px viewport', () => {
     expect(html).toContain('.gwrap { display:grid; grid-template-columns:repeat(2,minmax(0,1fr));');
     expect(html).toContain('.gcard { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; min-width:0; overflow-wrap:anywhere; }');
