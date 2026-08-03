@@ -169,10 +169,17 @@ describe('Ethereum gold-standard profile refresh migration', () => {
         .toContain(source.source_date_kind);
       expect(['historical_event', 'mechanism', 'current_state', 'terminal_outcome'])
         .toContain(source.evidence_scope);
+      expect(['primary', 'data']).toContain(source.source_role);
+      const sourceHost = new URL(source.url).hostname;
+      expect(source.source_role).toBe(
+        ['api.coingecko.com', 'api.llama.fi', 'stablecoins.llama.fi'].includes(sourceHost)
+          ? 'data'
+          : 'primary',
+      );
       if (source.evidence_scope === 'current_state') {
         expect(source.stale_after).toBe('2026-08-10');
       }
-      expect(ALLOWED_SOURCE_HOSTS.has(new URL(source.url).hostname), source.url).toBe(true);
+      expect(ALLOWED_SOURCE_HOSTS.has(sourceHost), source.url).toBe(true);
       expect(source.url).not.toContain('chaindump.xyz');
     }
 
