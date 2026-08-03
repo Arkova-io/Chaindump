@@ -40,6 +40,56 @@ describe('background refresh UX contract', () => {
     expect(html).toContain('document.addEventListener(\'input\', preserveControlAfterEvent, true);');
   });
 
+  it('restores a focused profile link and an open panel after DOM replacement', () => {
+    const start = html.indexOf('function captureUiSnapshot()');
+    const end = html.indexOf('const fmtUsd', start);
+    const functions = html.slice(start, end);
+    const body = {};
+    const oldLink = {
+      id: '',
+      dataset: { profileType: 'blockchain', profileSlug: 'ethereum' },
+    };
+    const oldPanel = { dataset: { uiKey: 'accordion-report' } };
+    const newToggle = { textContent: 'Show full ▾' };
+    const newPanel = {
+      dataset: { uiKey: 'accordion-report' },
+      opened: false,
+      classList: { add() { newPanel.opened = true; } },
+      querySelector() { return newToggle; },
+    };
+    const document = {
+      body,
+      activeElement: oldLink,
+      getElementById() { return null; },
+      querySelectorAll(selector) {
+        if (selector.includes('.acc.open')) return [oldPanel];
+        if (selector === '.acc[data-ui-key], .prosebox[data-ui-key]') return [newPanel];
+        return [newLink];
+      },
+    };
+    const newLink = {
+      dataset: { profileType: 'blockchain', profileSlug: 'ethereum' },
+      focus() { document.activeElement = newLink; },
+    };
+    const scrolled = [];
+    const window = {
+      scrollX: 12,
+      scrollY: 480,
+      scrollTo(value) { scrolled.push(value); },
+    };
+    const state = { activeView: 'blockchain-analysis' };
+    const api = new Function('state', 'document', 'window', `${functions}; return { captureUiSnapshot, restoreUiSnapshot };`)(state, document, window);
+
+    const snapshot = api.captureUiSnapshot();
+    document.activeElement = body;
+    api.restoreUiSnapshot(snapshot);
+
+    expect(scrolled).toEqual([{ left: 12, top: 480, behavior: 'auto' }]);
+    expect(document.activeElement).toBe(newLink);
+    expect(newPanel.opened).toBe(true);
+    expect(newToggle.textContent).toBe('Show less ▲');
+  });
+
   it('does not remount the traces page on every route visit', () => {
     expect(html).toContain('if (state.tracesData) renderTraces(state.tracesData);');
     expect(html).toContain('if (!state.tracesData) document.getElementById(\'tracesview\').innerHTML');

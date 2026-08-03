@@ -112,10 +112,10 @@ describe('cross-vertical publication-depth UI', () => {
     ].join('');
 
     expect(output).not.toContain('UNSUPPORTED EXCHANGE WHY');
-    expect(output).toContain('What happened withheld — independent support pending.');
+    expect(output).toContain('What happened is still open.');
     expect(output).toContain('available sources do not support a firm call yet');
     expect(output).toContain('Registered source');
-    expect(output).toContain('link available · desk check pending');
+    expect(output).not.toContain('desk check pending');
   });
 
   it('withholds NFT card/detail lifecycle prose and preserves source access', () => {
@@ -134,9 +134,9 @@ describe('cross-vertical publication-depth UI', () => {
     ].join('');
 
     expect(output).not.toContain('UNSUPPORTED NFT LIFECYCLE');
-    expect(output).toContain('Lifecycle read withheld — independent support pending.');
+    expect(output).toContain('Lifecycle read is still open.');
     expect(output).toContain('Registered source');
-    expect(output).toContain('link available · desk check pending');
+    expect(output).not.toContain('desk check pending');
   });
 
   it('renders non-high-risk sections when no predicate is supplied', () => {
@@ -161,8 +161,8 @@ describe('cross-vertical publication-depth UI', () => {
 
     expect(output).not.toContain('UNSUPPORTED EXCHANGE RISK');
     expect(output).not.toContain('UNSUPPORTED EXCHANGE OUTLOOK');
-    expect(output).toContain('Risk notes withheld');
-    expect(output).toContain('Outlook withheld');
+    expect(output).toContain('Risk notes is still open');
+    expect(output).toContain('Outlook is still open');
   });
 
   it('qualifies the exchange card badge while preserving the sortable indexed cohort', () => {
@@ -192,8 +192,9 @@ describe('cross-vertical publication-depth UI', () => {
       },
     });
 
-    expect(output).toContain('support pending');
-    expect(output).toContain('outcome: dead / winding down');
+    expect(output).toContain('outcome unclear');
+    expect(output).toContain('some evidence gaps');
+    expect(output).not.toContain('outcome: dead / winding down');
     expect(output).not.toContain('>dead / winding down<');
   });
 });
