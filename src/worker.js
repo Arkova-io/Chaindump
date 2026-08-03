@@ -4084,9 +4084,7 @@ async function simpleEntityProfile(type, slug) {
   const isDepin = String(row.category || '').startsWith('depin-');
   if ((type === 'rwa' && !isRwa) || (type === 'depin' && !isDepin)) return null;
   const profile = profileJson(row.profile, {});
-  const canonicalSource = type === 'stablecoin'
-    ? profileJson(profile.canonical_profile, {})
-    : {};
+  const canonicalSource = profileJson(profile.canonical_profile, {});
   const hasCanonicalSource = canonicalSource.schema === 'chaindump-entity-profile-source'
     && Number(canonicalSource.version) === 1;
   const asOf = latestProfileDate(profile.evidence_policy?.last_verified_at, row.updated_at);
