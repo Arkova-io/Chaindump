@@ -61,6 +61,28 @@ describe('customer-facing analysis copy', () => {
     expect(categorySurface).toContain('Open report →');
   });
 
+  it('keeps a compact chart visible while making every report list one tap away', () => {
+    const renderers = [
+      ['blockchain-analysis', block('function renderBlockchainAnalysis()', 'async function loadBlockchainAnalysis()')],
+      ['exchange-analysis', block('function renderExchangeAnalysis()', 'async function fetchExchangeAnalysisKind(')],
+      ['casino-analysis', block('function renderCasinoAnalysis()', 'async function loadCasinoAnalysis()')],
+      ['nft-analysis', block('function renderNft(data)', 'function catCardHtml(')],
+    ];
+
+    for (const [anchor, source] of renderers) {
+      const template = source.slice(source.lastIndexOf('el.innerHTML ='));
+      expect(template.indexOf('<div class="gwrap">')).toBeGreaterThan(-1);
+      expect(template.indexOf('${cohortPanel}')).toBeLessThan(template.indexOf('<div class="gwrap">'));
+      expect(template).toContain(`href="#${anchor}-reports"`);
+      expect(template).toContain(`id="${anchor}-reports"`);
+    }
+
+    const exchange = renderers[1][1].slice(renderers[1][1].lastIndexOf('el.innerHTML ='));
+    expect(exchange.indexOf('exchangeTrendSummary(')).toBeGreaterThan(exchange.indexOf('<div class="gwrap">'));
+    expect(exchange.indexOf('exchangeAssociationPanel(')).toBeGreaterThan(exchange.indexOf('<div class="gwrap">'));
+    expect(exchange).toContain('id="exchange-analysis-patterns"');
+  });
+
   it('keeps generated market essays off overview pages', () => {
     expect(categorySurface).not.toContain('State of the crypto-equity complex');
     expect(categorySurface).not.toContain('State of stablecoins');
@@ -78,6 +100,8 @@ describe('customer-facing analysis copy', () => {
     expect(translate('Two dossiers use the source registry; human promotion is pending.'))
       .toBe('Two reports use the source list; human review is pending.');
     expect(translate('GPU model training demand')).toBe('GPU model training demand');
+    expect(translate("Injective is pivoting (verdict quietly_building/pivoting). WHY: demand stayed thin. WHAT'S UNIQUE: a native order book."))
+      .toBe('Injective is pivoting (current read: quietly building/pivoting). The reason: demand stayed thin. What makes it different: a native order book.');
   });
 
   it('keeps public page metadata and share copy in reader language', () => {

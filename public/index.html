@@ -274,6 +274,7 @@
   .stat .sl { color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.05em; }
   .stat .sv { font-size:14px; font-weight:600; margin-top:3px; font-variant-numeric:tabular-nums; }
   .dsec { font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); font-weight:600; margin-bottom:9px; }
+  .analysis-below-results { margin-top:32px; }
   .projgrid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
   .proj { background:var(--surface); border:1px solid var(--border); border-radius:9px; padding:10px 12px; }
   .proj .pn { font-weight:600; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -1045,6 +1046,11 @@ function analysisText(value) {
 // reader sees a report, an explanation and an evidence record—not desk jargon.
 function customerCopy(value) {
   return analysisText(value)
+    .replace(/\(verdict ([^)]+)\)/gi, '(current read: $1)')
+    .replace(/\bWHY:\s*/g, 'The reason: ')
+    .replace(/\bHOW IT(?:'|’)S GOING:\s*/g, 'So far: ')
+    .replace(/\bWHAT(?:'|’)S UNIQUE:\s*/g, 'What makes it different: ')
+    .replace(/\b[a-z][a-z0-9]*(?:_[a-z0-9]+)+\b/g, (token) => token.replaceAll('_', ' '))
     .replace(/\bdossiers\b/gi, 'reports')
     .replace(/\bdossier\b/gi, 'report')
     .replace(/\bcausal maps\b/gi, 'reasoned explanations')
@@ -1400,11 +1406,12 @@ function renderBlockchainAnalysis() {
     <div class="gdd" style="color:var(--muted2);font-size:14px">${blockchainMetricHtml(row)}</div></div>
     <div class="gmeta">${blockchainMetaHtml(row)}</div>
     ${plainEnglishRead({ summary: row.summary }) || blockchainSummary(row)}
-    <div class="gexpand"><a class="profile-open-link" href="${profileHref('blockchain', row.name)}" data-profile-type="blockchain" data-profile-slug="${esc(profileRouteSlug(row.name))}">Open full report →</a></div>
+    <div class="gexpand"><a class="profile-open-link" href="${profileHref('blockchain', row.name)}" data-profile-type="blockchain" data-profile-slug="${esc(profileRouteSlug(row.name))}">Open report →</a></div>
   </div>`).join('');
   el.innerHTML = `${head}
     <div class="analysis-note">Use the filters to compare thriving, stalled and failed chains. Each full report covers what happened, why it happened, what could change the outlook and the sources behind the call.</div>
     <div class="gstats">${gstat(rows.length, 'chains covered')}${gstat(researched, 'full research reports')}${gstat(causal, 'reports that explain the outcome')}${gstat(rows.length - causal, 'explanations still open')}</div>
+    <div class="analysis-actions"><a class="kindbtn" href="#blockchain-analysis-reports">Browse reports ↓</a></div>
     ${cohortPanel}
     <div class="toolbar"><div class="analysis-controls">
       <input id="blockchainAnalysisSearch" class="search" placeholder="Search chains or lifecycle…" value="${esc(state.blockchainAnalysisQuery)}" />
@@ -1431,7 +1438,7 @@ function renderBlockchainAnalysis() {
       </select>
     </div></div>
     <div class="analysis-actions">${analysisButton('live','Live top 50')}${analysisButton('mid','Stuck / mid reports')}${analysisButton('grave','Dead & fading reports')}</div>
-    <div class="dsec" style="margin:20px 0 10px">${filtered.length} chain${filtered.length===1?'':'s'} shown</div>
+    <div class="dsec" id="blockchain-analysis-reports" style="margin:20px 0 10px">${filtered.length} chain${filtered.length===1?'':'s'} shown</div>
     <div class="gwrap">${cards || '<div class="skel">No chains match.</div>'}</div>`;
 }
 async function loadBlockchainAnalysis() {
@@ -1819,11 +1826,8 @@ function renderExchangeAnalysis() {
   el.innerHTML = `${head}${errors}
     <div class="gstats">${gstat(rows.filter(r=>r.kind==='dex').length, 'DEX reports')}${gstat(rows.filter(r=>r.kind==='cex').length, 'CEX reports')}${gstat(rows.filter(r=>r.lifecycle==='successful').length, 'successful venues')}${gstat(rows.filter(r=>r.lifecycle==='dead').length, 'closed or winding down')}</div>
     <div class="analysis-note">${cited} of ${rows.length} reports include source links. When the evidence is too thin to support a conclusion, the report leaves that conclusion open. Comparisons use the same venue type, metric and time window.</div>
+    <div class="analysis-actions"><a class="kindbtn" href="#exchange-analysis-reports">Browse reports ↓</a><a class="kindbtn" href="#exchange-analysis-patterns">Deeper patterns ↓</a></div>
     ${cohortPanel}
-    ${exchangeTrendSummary(state.exchangeAnalysisSummaries.dex, 'DEX')}
-    ${exchangeTrendSummary(state.exchangeAnalysisSummaries.cex, 'CEX')}
-    ${exchangeAssociationPanel(state.exchangeAnalysisSummaries.dex, 'DEX')}
-    ${exchangeAssociationPanel(state.exchangeAnalysisSummaries.cex, 'CEX')}
     <div class="toolbar"><div class="analysis-controls">
       <input id="exchangeAnalysisSearch" class="search" placeholder="Search exchanges, chains or findings…" value="${esc(state.exchangeAnalysisQuery)}" />
       <div class="kindtoggle">
@@ -1869,8 +1873,13 @@ function renderExchangeAnalysis() {
       </select>
       <button type="button" class="kindbtn" data-exchange-sort-dir="${state.exchangeAnalysisDir}">${state.exchangeAnalysisDir === 1 ? 'Ascending ↑' : 'Descending ↓'}</button>
     </div></div>
-    <div class="dsec" style="margin:18px 0 10px">${filtered.length} report${filtered.length===1?'':'s'} shown</div>
-    <div class="gwrap">${filtered.map(exchangeAnalysisCard).join('') || '<div class="skel">No reports match these filters.</div>'}</div>`;
+    <div class="dsec" id="exchange-analysis-reports" style="margin:18px 0 10px">${filtered.length} report${filtered.length===1?'':'s'} shown</div>
+    <div class="gwrap">${filtered.map(exchangeAnalysisCard).join('') || '<div class="skel">No reports match these filters.</div>'}</div>
+    <div class="dsec analysis-below-results" id="exchange-analysis-patterns">Deeper patterns across these reports</div>
+    ${exchangeTrendSummary(state.exchangeAnalysisSummaries.dex, 'DEX')}
+    ${exchangeTrendSummary(state.exchangeAnalysisSummaries.cex, 'CEX')}
+    ${exchangeAssociationPanel(state.exchangeAnalysisSummaries.dex, 'DEX')}
+    ${exchangeAssociationPanel(state.exchangeAnalysisSummaries.cex, 'CEX')}`;
 }
 async function fetchExchangeAnalysisKind(kind) {
   const response = await fetch(`/api/exchange-analysis?kind=${kind}`);
@@ -2191,6 +2200,7 @@ function renderCasinoAnalysis() {
   );
   el.innerHTML = `${head}
     <div class="gstats">${gstat(cases.length, 'casino reports')}${gstat(cases.filter(item=>item.status==='active').length, 'active businesses')}${gstat(cases.filter(item=>item.status!=='active').length, 'closed, paused or unclear')}${gstat(cases.filter(item=>item.token_status==='documented').length, 'venues with a documented token')}</div>
+    <div class="analysis-actions"><a class="kindbtn" href="#casino-analysis-reports">Browse reports ↓</a></div>
     ${cohortPanel}
     <div class="analysis-note">Open any report for the operating model, lifecycle, risks, outlook and source links. Missing evidence stays labeled as a research gap.</div>
     <div class="toolbar"><div class="analysis-controls">
@@ -2210,7 +2220,7 @@ function renderCasinoAnalysis() {
       <label class="muted" for="casinoAnalysisSort">Sort</label>
       <select id="casinoAnalysisSort" class="analysis-select"><option value="reviewed"${state.casinoAnalysisSort==='reviewed'?' selected':''}>Last checked</option><option value="name"${state.casinoAnalysisSort==='name'?' selected':''}>Name</option><option value="sources"${state.casinoAnalysisSort==='sources'?' selected':''}>Most sources</option></select>
     </div></div>
-    <div class="dsec" style="margin:18px 0 10px">${filtered.length} report${filtered.length===1?'':'s'} shown · research current through ${esc(coverage.universe_as_of || state.casinoAnalysisData.as_of || '—')}</div>
+    <div class="dsec" id="casino-analysis-reports" style="margin:18px 0 10px">${filtered.length} report${filtered.length===1?'':'s'} shown · research current through ${esc(coverage.universe_as_of || state.casinoAnalysisData.as_of || '—')}</div>
     <div class="gwrap">${filtered.map(casinoAnalysisCard).join('') || '<div class="skel">No casino reports match these filters.</div>'}</div>`;
 }
 async function loadCasinoAnalysis() {
@@ -4319,6 +4329,7 @@ function renderNft(data){
   }).join('');
   el.innerHTML = `${NFT_HEAD}${stats}
   <div class="analysis-note">These case studies show what happened, why the project reached its current state, and what could change the outlook. Every project uses the same report structure. Some are deep lifecycle studies; others remain partial. When the sources are too thin for a firm conclusion, the report says so.</div>
+  <div class="analysis-actions"><a class="kindbtn" href="#nft-analysis-reports">Browse reports ↓</a></div>
   ${cohortPanel}
   <div class="toolbar"><div class="analysis-controls">
     <input id="casesearch" class="search" placeholder="Search case studies by name, chain or status…" value="${esc(caseQ)}" />
@@ -4337,7 +4348,7 @@ function renderNft(data){
     </select>
   </div></div>
   <div class="analysis-actions"><a class="kindbtn" href="#nftcatalog">Browse live catalog ↓</a></div>
-  <div class="dsec" style="margin:20px 0 10px">${caseList.length} lifecycle report${caseList.length===1?'':'s'} shown · ${data.collections.length} total</div>
+  <div class="dsec" id="nft-analysis-reports" style="margin:20px 0 10px">${caseList.length} lifecycle report${caseList.length===1?'':'s'} shown · ${data.collections.length} total</div>
   <div class="gwrap">${cards || '<div class="skel">No case studies match.</div>'}</div>
   <div class="dsec" style="margin:28px 0 4px">Browse the full catalog by chain</div>
   <div class="gnar muted" style="margin-bottom:12px">Every NFT &amp; Ordinals collection tracked, grouped by chain — open a chain to browse its collections, or search across all chains. Each card opens live floor, market cap, 24h volume and holders.</div>
