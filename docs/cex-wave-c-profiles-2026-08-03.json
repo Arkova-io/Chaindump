@@ -1,0 +1,4315 @@
+{
+  "schema": "chaindump-cex-wave-c-v1",
+  "as_of": "2026-08-03",
+  "generated_migration": "0084_cex_wave_c_profiles.sql",
+  "cases": [
+    {
+      "table": "successful_exchanges",
+      "slug": "coinbase",
+      "canonical_profile": {
+        "schema": "chaindump-entity-profile",
+        "version": 1,
+        "identity": {
+          "id": "cex:coinbase",
+          "type": "cex",
+          "slug": "coinbase",
+          "name": "Coinbase",
+          "aliases": [
+            "Coinbase Global",
+            "Coinbase Exchange"
+          ]
+        },
+        "classification": {
+          "subtype": "centralized_multi_product_exchange",
+          "tags": [
+            "custodial",
+            "public_company",
+            "spot",
+            "derivatives",
+            "payments",
+            "institutional"
+          ],
+          "chains": [],
+          "jurisdictions": [
+            "United States",
+            "European Economic Area",
+            "multiple additional markets"
+          ]
+        },
+        "status": {
+          "operating_state": "operating",
+          "as_of": "2026-08-03",
+          "claim_ids": [
+            "claim:coinbase:status"
+          ]
+        },
+        "outcome": {
+          "label": "successful_established",
+          "as_of": "2026-08-03",
+          "rule_id": "exchange-lifecycle-v1",
+          "confidence": "high",
+          "claim_ids": [
+            "claim:coinbase:outcome"
+          ]
+        },
+        "analysis": {
+          "sections": {
+            "what_it_is": {
+              "body": "Coinbase is a U.S.-listed financial company built around a custodial crypto exchange. It also sells custody, stablecoin services, staking, derivatives, payments and institutional trading. Different legal entities and licences serve different places and products, so a licence in one market does not authorize every Coinbase service worldwide.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:coinbase:section:what_it_is:1",
+                "claim:coinbase:section:what_it_is:2"
+              ]
+            },
+            "what_happened": {
+              "body": "In 2025 Coinbase reported 9.2 million monthly transacting users, $376 billion of assets on platform and $6.88 billion of net revenue. Its Form 10-K defines $1.221 trillion of annual spot trading volume, while the shareholder letter reports $5.2 trillion of broader “Total Coinbase trading volume.” Those are different definitions: the larger figure spans a wider product family and must not be presented as spot volume.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:coinbase:section:what_happened:1",
+                "claim:coinbase:section:what_happened:2"
+              ]
+            },
+            "why_this_outcome": {
+              "body": "Coinbase converted an early U.S. retail brand into regulated custody, institutional execution and a public-company balance sheet. It then widened the revenue mix beyond transaction fees. That distribution and compliance investment help explain durability, but they do not remove market sensitivity: 2025 transaction revenue still exceeded subscription and services revenue, and Reuters reported a quarterly loss when trading slowed.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:coinbase:section:why_this_outcome:1",
+                "claim:coinbase:section:why_this_outcome:2"
+              ]
+            },
+            "strategic_choices": {
+              "body": "Management chose a compliance-heavy U.S. base, public listing and custody-led institutional strategy instead of operating as an offshore venue. It also deliberately changed stablecoin-pair pricing in March 2025; the 10-K attributes a $101 billion decline in stablecoin-pair volume to that choice. More recently it expanded toward an “everything exchange” with derivatives, stocks and prediction products, increasing both reach and operating complexity.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:coinbase:section:strategic_choices:1",
+                "claim:coinbase:section:strategic_choices:2"
+              ]
+            },
+            "operating_model": {
+              "body": "Customers place trades or use Coinbase products through custodial accounts, while institutions also use prime, custody and execution services. The company earns transaction fees and spreads, plus subscription and services revenue from stablecoins, blockchain rewards, interest, custody and other products. Revenue is company revenue; a customer balance, Base activity or USDC circulation is not automatically Coinbase profit.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:coinbase:section:operating_model:1",
+                "claim:coinbase:section:operating_model:2"
+              ]
+            },
+            "token_and_value_capture": {
+              "body": "Coinbase has not launched a Coinbase exchange utility token. COIN is public equity, not a venue token, and gives shareholders corporate rights rather than exchange discounts or on-chain governance. USDC is issued through a separate arrangement and Base is an Ethereum layer-2 product; neither gives users an automatic claim on Coinbase revenue. Value capture therefore sits primarily in company fees, cash flows and equity.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:coinbase:section:token_and_value_capture:1",
+                "claim:coinbase:section:token_and_value_capture:2"
+              ]
+            },
+            "counterfactual": {
+              "body": "Coinbase would be less resilient if it had remained a U.S. retail spot broker funded almost entirely by volatile transaction fees. The institutional, custody and subscription businesses provided a wider base. The opposite risk is overexpansion: if new products add compliance cost without retained users or durable revenue, a narrower exchange could have produced better margins.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:coinbase:section:counterfactual:1",
+                "claim:coinbase:section:counterfactual:2"
+              ]
+            },
+            "risks_and_unknowns": {
+              "body": "Trading volume, crypto prices and interest rates can move Coinbase revenue quickly. Regulation remains entity- and product-specific: the SEC dismissed its 2023 case in 2025 as a policy decision, not a blanket legal endorsement, while the 2023 NYDFS order documented earlier compliance failures and required a $50 million penalty plus $50 million of compliance investment. Current product-level profitability and unique-user retention are not publicly broken out.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:coinbase:section:risks_and_unknowns:1",
+                "claim:coinbase:section:risks_and_unknowns:2"
+              ]
+            },
+            "lifecycle": {
+              "body": "Coinbase moved from a retail bitcoin broker to a public, multi-product financial platform. The current phase is expansion under a larger regulatory footprint: Luxembourg MiCA authorization supports EEA service through the named entity, and 2026 results reported an 8.6% crypto-trading market share under Coinbase’s own broad definition. That market-share figure is operator-reported and is not a verified share of global spot volume.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:coinbase:section:lifecycle:1",
+                "claim:coinbase:section:lifecycle:2"
+              ]
+            },
+            "outlook_and_watch": {
+              "body": "The outlook is established but cycle-sensitive. Watch monthly users, assets on platform, spot and derivatives volume separately, transaction versus subscription revenue, custody growth, product-level regulatory permissions and operating margin. A stronger call requires evidence that newer products retain customers and earn durable revenue without weakening controls; a weaker call follows falling users, assets and revenue across several quarters.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:coinbase:section:outlook_and_watch:1",
+                "claim:coinbase:section:outlook_and_watch:2"
+              ]
+            }
+          }
+        },
+        "metrics": [
+          {
+            "id": "metric:coinbase:spot-volume-2025:2025-12-31",
+            "dimension": "spot_volume",
+            "label": "2025 defined spot trading volume",
+            "value": 1221000000000,
+            "unit": "USD",
+            "currency": "USD",
+            "window": {
+              "start": "2025-01-01",
+              "end": "2025-12-31",
+              "definition": "Coinbase-defined full-year spot volume; excludes derivatives, equities and event contracts and includes one-half of routed-off-platform spot trades."
+            },
+            "as_of": "2025-12-31",
+            "method": "Company-reported Form 10-K measure.",
+            "scope": {
+              "product": "Coinbase-defined spot trading",
+              "jurisdictions": [
+                "global platform scope"
+              ]
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:coinbase:metric:spot-volume-2025"
+            ],
+            "quality_flags": [
+              "operator_reported",
+              "definition_specific"
+            ]
+          },
+          {
+            "id": "metric:coinbase:assets-2025:2025-12-31",
+            "dimension": "customer_assets",
+            "label": "Assets on Platform",
+            "value": 376000000000,
+            "unit": "USD",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2025-12-31",
+              "definition": "Point-in-time company measure at December 31, 2025."
+            },
+            "as_of": "2025-12-31",
+            "method": "Company-reported Form 10-K measure.",
+            "scope": {
+              "product": "assets on platform",
+              "jurisdictions": [
+                "global platform scope"
+              ]
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:coinbase:metric:assets-2025"
+            ],
+            "quality_flags": [
+              "operator_reported",
+              "not_customer_liabilities"
+            ]
+          },
+          {
+            "id": "metric:coinbase:mtu-2025:2025-12-31",
+            "dimension": "active_users",
+            "label": "Average monthly transacting users",
+            "value": 9200000,
+            "unit": "users",
+            "currency": null,
+            "window": {
+              "start": "2025-01-01",
+              "end": "2025-12-31",
+              "definition": "Company-defined average monthly transacting users for 2025."
+            },
+            "as_of": "2025-12-31",
+            "method": "Company-reported Form 10-K measure.",
+            "scope": {
+              "product": "Coinbase platform",
+              "jurisdictions": [
+                "global platform scope"
+              ]
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:coinbase:metric:mtu-2025"
+            ],
+            "quality_flags": [
+              "operator_reported",
+              "company_defined_user_metric"
+            ]
+          },
+          {
+            "id": "metric:coinbase:nydfs-fine:2023-01-04",
+            "dimension": "regulatory_fines",
+            "label": "2023 NYDFS civil monetary penalty",
+            "value": 50000000,
+            "unit": "USD",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2023-01-04",
+              "definition": "One-time civil monetary penalty in the January 2023 consent order."
+            },
+            "as_of": "2023-01-04",
+            "method": "Regulator order.",
+            "scope": {
+              "product": "New York compliance program",
+              "jurisdictions": [
+                "New York, United States"
+              ]
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:coinbase:metric:nydfs-fine"
+            ],
+            "quality_flags": [
+              "regulator_order",
+              "scoped_entity_and_period"
+            ]
+          }
+        ],
+        "events": [
+          {
+            "id": "event:coinbase:public-listing",
+            "type": "public_listing",
+            "date": "2021-04-14",
+            "description": "Coinbase Global became a U.S.-listed public company through a direct listing.",
+            "claim_ids": [
+              "claim:coinbase:event:public-listing"
+            ]
+          },
+          {
+            "id": "event:coinbase:sec-dismissal",
+            "type": "legal_case_dismissed",
+            "date": "2025-02-27",
+            "description": "The SEC dismissed its civil enforcement action against Coinbase with prejudice as a policy decision.",
+            "claim_ids": [
+              "claim:coinbase:event:sec-dismissal"
+            ]
+          },
+          {
+            "id": "event:coinbase:mica",
+            "type": "regulatory_authorization",
+            "date": "2025-06-24",
+            "description": "Coinbase secured a MiCA licence from Luxembourg for EEA service through the named licensed entity.",
+            "claim_ids": [
+              "claim:coinbase:event:mica"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "id": "source:coinbase:10k",
+            "title": "Coinbase Global 2025 Form 10-K",
+            "url": "https://www.sec.gov/Archives/edgar/data/1679788/000167978826000015/coin-20251231.htm",
+            "publisher": "U.S. Securities and Exchange Commission",
+            "published_at": "2026-02-12",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:coinbase:q4",
+            "title": "Q4 2025 Shareholder Letter",
+            "url": "https://www.sec.gov/Archives/edgar/data/1679788/000167978826000011/q425shareholderletter.htm",
+            "publisher": "Coinbase Global",
+            "published_at": "2026-02-12",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:coinbase:q1",
+            "title": "Coinbase Q1 2026 Financial Results",
+            "url": "https://investor.coinbase.com/news/news-details/2026/Coinbase-Q1-Financial-Results-Show-Resilient-Financial-Performance-Driven-by-New-All-Time-High-Crypto-Trading-Volume-Market-Share/default.aspx",
+            "publisher": "Coinbase Global",
+            "published_at": "2026-05-07",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:coinbase:sec-dismissal",
+            "title": "SEC Announces Dismissal of Civil Enforcement Action Against Coinbase",
+            "url": "https://www.sec.gov/newsroom/press-releases/2025-47",
+            "publisher": "U.S. Securities and Exchange Commission",
+            "published_at": "2025-02-27",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:coinbase:nydfs",
+            "title": "Coinbase NYDFS Consent Order",
+            "url": "https://www.dfs.ny.gov/system/files/documents/2023/01/ea20230104_coinbase.pdf",
+            "publisher": "New York Department of Financial Services",
+            "published_at": "2023-01-04",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:coinbase:mica",
+            "title": "Coinbase MiCA licence announcement",
+            "url": "https://sanfrancisco.mae.lu/en/actualites/2025/june-24-coinbase-has-secured-its-markets-in-crypto-assets-mica-licence-from-luxembourgs-regulator.html",
+            "publisher": "Government of Luxembourg",
+            "published_at": "2025-06-24",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:coinbase:products",
+            "title": "System Update: The future of finance is on Coinbase",
+            "url": "https://www.coinbase.com/blog/system-update-the-future-of-finance-is-on-coinbase",
+            "publisher": "Coinbase",
+            "published_at": "2025-12-17",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:coinbase:loss",
+            "title": "Coinbase swings to quarterly loss on trading slowdown",
+            "url": "https://www.investing.com/news/stock-market-news/cryptocurrency-exchange-coinbases-swings-to-quarterly-loss-on-trading-slowdown-4504006",
+            "publisher": "Reuters via Investing.com",
+            "published_at": "2026-02-12",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          }
+        ],
+        "claims": [
+          {
+            "id": "claim:coinbase:status",
+            "field_path": "status.operating_state",
+            "source_ids": [
+              "source:coinbase:10k",
+              "source:coinbase:q1",
+              "source:coinbase:products"
+            ],
+            "evidence_locator": "2025 Form 10-K, Q1 2026 results and current product announcement.",
+            "assertion": "Coinbase remained an operating public-company exchange and financial platform as of August 3, 2026.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:outcome",
+            "field_path": "outcome.label",
+            "source_ids": [
+              "source:coinbase:10k",
+              "source:coinbase:q1",
+              "source:coinbase:loss"
+            ],
+            "evidence_locator": "Full-year operating scale, Q1 2026 market-share update and independent earnings coverage.",
+            "assertion": "Coinbase is established and large, while still exposed to trading cycles and product-execution risk.",
+            "support_direction": "supports",
+            "note": "Analyst lifecycle classification, not a token-price recommendation.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:what_it_is:1",
+            "field_path": "analysis.sections.what_it_is.body",
+            "source_ids": [
+              "source:coinbase:10k"
+            ],
+            "evidence_locator": "Business and revenue descriptions in the 2025 Form 10-K.",
+            "assertion": "Coinbase combines a custodial exchange with subscription, institutional and payments businesses.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:what_it_is:2",
+            "field_path": "analysis.sections.what_it_is.body",
+            "source_ids": [
+              "source:coinbase:10k",
+              "source:coinbase:mica"
+            ],
+            "evidence_locator": "Regulation discussion and Luxembourg MiCA announcement.",
+            "assertion": "Coinbase serves markets through different regulated entities rather than one worldwide licence.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:what_happened:1",
+            "field_path": "analysis.sections.what_happened.body",
+            "source_ids": [
+              "source:coinbase:10k"
+            ],
+            "evidence_locator": "2025 operating metrics and consolidated statements.",
+            "assertion": "Coinbase reported 9.2 million MTUs, $376 billion of assets on platform and $6.88 billion of 2025 net revenue.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:what_happened:2",
+            "field_path": "analysis.sections.what_happened.body",
+            "source_ids": [
+              "source:coinbase:10k",
+              "source:coinbase:q4"
+            ],
+            "evidence_locator": "10-K trading-volume definition compared with the shareholder-letter platform measure.",
+            "assertion": "The $1.221 trillion spot figure and $5.2 trillion broad platform figure use different definitions.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:why_this_outcome:1",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "source_ids": [
+              "source:coinbase:10k",
+              "source:coinbase:products"
+            ],
+            "evidence_locator": "Business segments, customer groups and product expansion.",
+            "assertion": "Institutional, retail and subscription products reduce reliance on a single customer or product.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:why_this_outcome:2",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "source_ids": [
+              "source:coinbase:10k",
+              "source:coinbase:loss"
+            ],
+            "evidence_locator": "2025 revenue mix and independent Q4 earnings coverage.",
+            "assertion": "Coinbase remains materially exposed to trading activity even after diversifying revenue.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:strategic_choices:1",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "source_ids": [
+              "source:coinbase:10k",
+              "source:coinbase:mica"
+            ],
+            "evidence_locator": "Corporate structure, licences and custody business disclosures.",
+            "assertion": "Coinbase chose regulated custody and public-company reporting as core distribution advantages.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:strategic_choices:2",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "source_ids": [
+              "source:coinbase:10k"
+            ],
+            "evidence_locator": "2025 trading-volume discussion.",
+            "assertion": "A March 2025 pricing change intentionally reduced reported stablecoin-pair trading volume by $101 billion.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:operating_model:1",
+            "field_path": "analysis.sections.operating_model.body",
+            "source_ids": [
+              "source:coinbase:10k"
+            ],
+            "evidence_locator": "Revenue recognition and disaggregated revenue tables.",
+            "assertion": "Coinbase earns transaction revenue plus subscription and services revenue.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:operating_model:2",
+            "field_path": "analysis.sections.operating_model.body",
+            "source_ids": [
+              "source:coinbase:10k"
+            ],
+            "evidence_locator": "Business and revenue-recognition sections.",
+            "assertion": "Custody, stablecoin and blockchain-reward activity have distinct economics and accounting treatment.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:token_and_value_capture:1",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "source_ids": [
+              "source:coinbase:10k"
+            ],
+            "evidence_locator": "Capital stock and business descriptions.",
+            "assertion": "Coinbase has no exchange utility token; COIN is public-company equity.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:token_and_value_capture:2",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "source_ids": [
+              "source:coinbase:10k"
+            ],
+            "evidence_locator": "Stablecoin and blockchain platform disclosures.",
+            "assertion": "USDC economics and Base activity do not create a general customer claim on Coinbase revenue.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:counterfactual:1",
+            "field_path": "analysis.sections.counterfactual.body",
+            "source_ids": [
+              "source:coinbase:10k"
+            ],
+            "evidence_locator": "Transaction versus subscription and services revenue.",
+            "assertion": "The reported revenue mix supports the view that non-trading products broadened the business.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:counterfactual:2",
+            "field_path": "analysis.sections.counterfactual.body",
+            "source_ids": [
+              "source:coinbase:products",
+              "source:coinbase:q1"
+            ],
+            "evidence_locator": "Recent product launches and current financial update.",
+            "assertion": "Whether newer products improve long-run margins remains unproven as of August 3, 2026.",
+            "support_direction": "context_only",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:risks_and_unknowns:1",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "source_ids": [
+              "source:coinbase:sec-dismissal"
+            ],
+            "evidence_locator": "SEC dismissal announcement.",
+            "assertion": "The SEC dismissal was a discretionary policy decision rather than a merits ruling on every Coinbase product.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:risks_and_unknowns:2",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "source_ids": [
+              "source:coinbase:nydfs"
+            ],
+            "evidence_locator": "Consent order findings and monetary terms.",
+            "assertion": "NYDFS imposed a $50 million penalty and separate $50 million compliance investment in 2023.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:lifecycle:1",
+            "field_path": "analysis.sections.lifecycle.body",
+            "source_ids": [
+              "source:coinbase:mica"
+            ],
+            "evidence_locator": "Luxembourg government announcement.",
+            "assertion": "Coinbase’s Luxembourg authorization supports service across the EEA through its licensed entity.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:lifecycle:2",
+            "field_path": "analysis.sections.lifecycle.body",
+            "source_ids": [
+              "source:coinbase:q1"
+            ],
+            "evidence_locator": "Q1 2026 company results.",
+            "assertion": "Coinbase reported 8.6% crypto-trading market share for Q1 2026 using its platform definition.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:outlook_and_watch:1",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "source_ids": [
+              "source:coinbase:10k",
+              "source:coinbase:q1",
+              "source:coinbase:loss"
+            ],
+            "evidence_locator": "Full-year and quarterly operating evidence.",
+            "assertion": "Current scale supports an established outlook, but trading sensitivity remains material.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:section:outlook_and_watch:2",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "source_ids": [
+              "source:coinbase:10k",
+              "source:coinbase:products"
+            ],
+            "evidence_locator": "Segment and product disclosure boundaries.",
+            "assertion": "Product retention and product-level profitability remain important disclosed-data gaps.",
+            "support_direction": "context_only",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:metric:spot-volume-2025",
+            "field_path": "metrics[metric:coinbase:spot-volume-2025:2025-12-31].value",
+            "source_ids": [
+              "source:coinbase:10k"
+            ],
+            "evidence_locator": "2025 key business metrics and volume definition.",
+            "assertion": "Coinbase reported $1.221 trillion of defined spot trading volume for 2025.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:metric:assets-2025",
+            "field_path": "metrics[metric:coinbase:assets-2025:2025-12-31].value",
+            "source_ids": [
+              "source:coinbase:10k"
+            ],
+            "evidence_locator": "2025 key business metrics.",
+            "assertion": "Coinbase reported $376 billion of assets on platform at December 31, 2025.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:metric:mtu-2025",
+            "field_path": "metrics[metric:coinbase:mtu-2025:2025-12-31].value",
+            "source_ids": [
+              "source:coinbase:10k"
+            ],
+            "evidence_locator": "2025 key business metrics and MTU definition.",
+            "assertion": "Coinbase reported 9.2 million average monthly transacting users for 2025.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:metric:nydfs-fine",
+            "field_path": "metrics[metric:coinbase:nydfs-fine:2023-01-04].value",
+            "source_ids": [
+              "source:coinbase:nydfs"
+            ],
+            "evidence_locator": "Consent order monetary provisions.",
+            "assertion": "NYDFS imposed a $50 million penalty; the separate $50 million compliance investment is not part of this metric.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:event:public-listing",
+            "field_path": "events[event:coinbase:public-listing]",
+            "source_ids": [
+              "source:coinbase:10k"
+            ],
+            "evidence_locator": "Corporate history and equity disclosures.",
+            "assertion": "Coinbase became publicly listed in April 2021.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:event:sec-dismissal",
+            "field_path": "events[event:coinbase:sec-dismissal]",
+            "source_ids": [
+              "source:coinbase:sec-dismissal"
+            ],
+            "evidence_locator": "SEC announcement.",
+            "assertion": "The SEC dismissed its Coinbase civil action with prejudice in February 2025.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:coinbase:event:mica",
+            "field_path": "events[event:coinbase:mica]",
+            "source_ids": [
+              "source:coinbase:mica"
+            ],
+            "evidence_locator": "Luxembourg government announcement.",
+            "assertion": "Luxembourg announced Coinbase’s MiCA authorization in June 2025.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          }
+        ],
+        "freshness": {
+          "state": "current",
+          "last_reviewed_at": "2026-08-03T19:00:00Z",
+          "next_review_at": "2026-08-10T19:00:00Z",
+          "field_reviews": []
+        },
+        "quality": {
+          "publication_state": "review",
+          "completeness_pct": 100,
+          "confidence": "high",
+          "unsourced_fields": [
+            "Product-level profitability",
+            "Unique-user retention by product",
+            "Comparable worldwide share of spot-only volume"
+          ]
+        },
+        "extensions": {
+          "legacy_origin": "successful_exchanges",
+          "methodology_notes": [
+            "Freshness records evidence assembly and source verification, not human approval; every claim remains pending until an editor reviews it.",
+            "Corporate reports, proof-of-reserves exercises, court records and regulator orders answer different questions and are not treated as interchangeable.",
+            "Coinbase’s $1.221 trillion spot metric is kept separate from the $5.2 trillion broader platform measure."
+          ]
+        }
+      },
+      "legacy": {
+        "lifecycle": "successful",
+        "status": "successful_established",
+        "metric_label": "Assets on Platform at 2025 year-end",
+        "metric_type": "customer_assets",
+        "metric_unit": "USD",
+        "metric": 376000000000,
+        "why_successful": "Coinbase combined a large U.S. retail funnel with custody, institutional execution, stablecoin services and public-company access to capital. Its breadth improves resilience, while trading cycles and product-level regulation still shape results.",
+        "outlook": "Established but cycle-sensitive. Watch users, assets, spot and derivatives separately, transaction versus subscription revenue, product permissions and operating margin."
+      }
+    },
+    {
+      "table": "successful_exchanges",
+      "slug": "kraken",
+      "canonical_profile": {
+        "schema": "chaindump-entity-profile",
+        "version": 1,
+        "identity": {
+          "id": "cex:kraken",
+          "type": "cex",
+          "slug": "kraken",
+          "name": "Kraken",
+          "aliases": [
+            "Payward",
+            "Kraken Exchange"
+          ]
+        },
+        "classification": {
+          "subtype": "centralized_multi_product_exchange",
+          "tags": [
+            "custodial",
+            "private_company",
+            "spot",
+            "derivatives",
+            "tokenized_equities"
+          ],
+          "chains": [],
+          "jurisdictions": [
+            "United States",
+            "European Economic Area",
+            "multiple additional markets"
+          ]
+        },
+        "status": {
+          "operating_state": "operating",
+          "as_of": "2026-08-03",
+          "claim_ids": [
+            "claim:kraken:status"
+          ]
+        },
+        "outcome": {
+          "label": "successful_diversifying",
+          "as_of": "2026-08-03",
+          "rule_id": "exchange-lifecycle-v1",
+          "confidence": "high",
+          "claim_ids": [
+            "claim:kraken:outcome"
+          ]
+        },
+        "analysis": {
+          "sections": {
+            "what_it_is": {
+              "body": "Kraken is a custodial exchange operated through the Payward group and related licensed entities. It offers spot, margin, derivatives, custody and consumer products, with availability depending on the customer, jurisdiction and legal entity. Recent expansion into xStocks and acquired infrastructure does not turn every Kraken customer into a securities customer or authorize every product worldwide.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:kraken:section:what_it_is:1",
+                "claim:kraken:section:what_it_is:2"
+              ]
+            },
+            "what_happened": {
+              "body": "Kraken reported $2.2 billion of adjusted revenue, $531 million of adjusted EBITDA, $2.0 trillion of total platform transaction volume, $48.2 billion of assets and 5.7 million funded accounts for 2025. The $2.0 trillion figure is not spot-only: Kraken says it spans spot, margin, consumer, OTC spot, equities, xStocks, Krak, Earn, funding and affiliated NinjaTrader activity. The company also notes revised prior periods and acquisition timing.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:kraken:section:what_happened:1",
+                "claim:kraken:section:what_happened:2"
+              ]
+            },
+            "why_this_outcome": {
+              "body": "Kraken survived multiple market cycles by combining a security-focused brand with professional trading, broad asset coverage and geographic licensing. It is now using acquisitions and product expansion to reach traditional assets and derivatives. That strategy broadens distribution, but the public evidence does not isolate organic growth from acquired activity or show product-level profit.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:kraken:section:why_this_outcome:1",
+                "claim:kraken:section:why_this_outcome:2"
+              ]
+            },
+            "strategic_choices": {
+              "body": "Kraken remained privately held while investing in regulated entities, professional execution and a wider product suite. It exited U.S. staking-as-a-service in the 2023 SEC settlement, later activated a MiCA licence across the EEA and bought Backed to bring tokenized-equity infrastructure in-house. These choices favor regulated breadth, but add integration and legal complexity.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:kraken:section:strategic_choices:1",
+                "claim:kraken:section:strategic_choices:2"
+              ]
+            },
+            "operating_model": {
+              "body": "Kraken holds customer assets for custodial products, matches trades and sells execution, custody, staking and other services. Company-reported financials aggregate a broader platform that now includes affiliated and acquired businesses. Its proof-of-reserves page describes an accountant-assisted check of covered assets and customer claims; that exercise is useful but is not a complete financial-statement audit or proof of every corporate liability.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:kraken:section:operating_model:1",
+                "claim:kraken:section:operating_model:2"
+              ]
+            },
+            "token_and_value_capture": {
+              "body": "Kraken has not launched a Kraken exchange utility token. The business captures value through private-company revenue and ownership, not a token that gives customers equity or a general share of fees. xStocks are separately issued tokenized-equity products with their own legal terms; they are not a Kraken ownership token.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:kraken:section:token_and_value_capture:1",
+                "claim:kraken:section:token_and_value_capture:2"
+              ]
+            },
+            "counterfactual": {
+              "body": "Kraken might have stayed simpler by remaining a crypto-only exchange, but that would leave more revenue tied to one market cycle. Diversification can improve resilience if acquired users, licences and products generate durable margins. It can destroy value if integrations, regulatory fragmentation and operating costs grow faster than retained demand; current public reporting cannot yet settle that trade-off.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:kraken:section:counterfactual:1",
+                "claim:kraken:section:counterfactual:2"
+              ]
+            },
+            "risks_and_unknowns": {
+              "body": "Kraken faces custody, market, derivatives and multi-jurisdiction compliance risk. The SEC dismissed its 2023 exchange case with prejudice in March 2025, while expressly saying the decision reflected policy and discretion rather than the merits of other cases. The separate 2023 staking settlement and $30 million payment remain historical facts. Audited consolidated financial statements, current product margins and unique-person counts were not public in the reviewed sources.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:kraken:section:risks_and_unknowns:1",
+                "claim:kraken:section:risks_and_unknowns:2"
+              ]
+            },
+            "lifecycle": {
+              "body": "Kraken grew from a crypto spot exchange into a wider trading and asset platform. Its current phase combines EEA MiCA operation, tokenized-equity distribution and derivatives expansion. The March 31, 2026 proof-of-reserves exercise offers a current check for covered assets and customer claims, but it should not be read as proof of company-wide solvency.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:kraken:section:lifecycle:1",
+                "claim:kraken:section:lifecycle:2"
+              ]
+            },
+            "outlook_and_watch": {
+              "body": "The outlook is established and diversifying. Watch funded accounts, assets, spot and derivatives activity separately, recurring versus transaction revenue, proof-of-reserves coverage, licence changes and the economics of xStocks and acquisitions. A stronger call requires transparent retention and margin evidence across the expanded platform; a weaker call follows declining assets and users, control failures or costly integration without durable demand.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:kraken:section:outlook_and_watch:1",
+                "claim:kraken:section:outlook_and_watch:2"
+              ]
+            }
+          }
+        },
+        "metrics": [
+          {
+            "id": "metric:kraken:assets-2025:2025-12-31",
+            "dimension": "customer_assets",
+            "label": "Company-reported platform assets",
+            "value": 48200000000,
+            "unit": "USD",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2025-12-31",
+              "definition": "Point-in-time company measure at December 31, 2025."
+            },
+            "as_of": "2025-12-31",
+            "method": "Company-reported 2025 financial measure.",
+            "scope": {
+              "product": "Kraken platform assets",
+              "jurisdictions": [
+                "reported platform scope"
+              ]
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:kraken:metric:assets-2025"
+            ],
+            "quality_flags": [
+              "operator_reported",
+              "not_liability_matched",
+              "not_financial_audit"
+            ]
+          },
+          {
+            "id": "metric:kraken:funded-accounts-2025:2025-12-31",
+            "dimension": "active_users",
+            "label": "Funded accounts",
+            "value": 5700000,
+            "unit": "accounts",
+            "currency": null,
+            "window": {
+              "start": null,
+              "end": "2025-12-31",
+              "definition": "Company-reported funded accounts at year-end 2025."
+            },
+            "as_of": "2025-12-31",
+            "method": "Company-reported account measure.",
+            "scope": {
+              "product": "Kraken platform",
+              "jurisdictions": [
+                "reported platform scope"
+              ]
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:kraken:metric:funded-accounts-2025"
+            ],
+            "quality_flags": [
+              "operator_reported",
+              "accounts_not_unique_people"
+            ]
+          },
+          {
+            "id": "metric:kraken:staking-settlement:2023-02-09",
+            "dimension": "regulatory_fines",
+            "label": "2023 U.S. staking settlement payment",
+            "value": 30000000,
+            "unit": "USD",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2023-02-09",
+              "definition": "One-time SEC settlement payment."
+            },
+            "as_of": "2023-02-09",
+            "method": "Regulator announcement.",
+            "scope": {
+              "product": "U.S. staking-as-a-service",
+              "jurisdictions": [
+                "United States"
+              ]
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:kraken:metric:staking-settlement"
+            ],
+            "quality_flags": [
+              "regulator_order",
+              "scoped_service_and_entities"
+            ]
+          }
+        ],
+        "events": [
+          {
+            "id": "event:kraken:staking-settlement",
+            "type": "regulatory_settlement",
+            "date": "2023-02-09",
+            "description": "Kraken-affiliated entities agreed to end U.S. staking-as-a-service and pay $30 million.",
+            "claim_ids": [
+              "claim:kraken:event:staking-settlement"
+            ]
+          },
+          {
+            "id": "event:kraken:sec-dismissal",
+            "type": "legal_case_dismissed",
+            "date": "2025-03-27",
+            "description": "The SEC dismissed its exchange civil action against Payward entities with prejudice.",
+            "claim_ids": [
+              "claim:kraken:event:sec-dismissal"
+            ]
+          },
+          {
+            "id": "event:kraken:backed-acquisition",
+            "type": "acquisition",
+            "date": "2026-05-12",
+            "description": "Kraken announced the acquisition of Backed Finance to internalize tokenized-equity infrastructure.",
+            "claim_ids": [
+              "claim:kraken:event:backed-acquisition"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "id": "source:kraken:financials",
+            "title": "Kraken 2025 financials",
+            "url": "https://blog.kraken.com/news/kraken-2025-financials",
+            "publisher": "Kraken",
+            "published_at": "2026-02-03",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:kraken:por",
+            "title": "Kraken Proof of Reserves",
+            "url": "https://www.kraken.com/au/proof-of-reserves",
+            "publisher": "Kraken",
+            "published_at": null,
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:kraken:sec-dismissal",
+            "title": "SEC v. Payward dismissal",
+            "url": "https://www.sec.gov/enforcement-litigation/litigation-releases/lr-26278",
+            "publisher": "U.S. Securities and Exchange Commission",
+            "published_at": "2025-03-27",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:kraken:staking",
+            "title": "Kraken agrees to end U.S. staking service and pay $30 million",
+            "url": "https://www.sec.gov/newsroom/press-releases/2023-25",
+            "publisher": "U.S. Securities and Exchange Commission",
+            "published_at": "2023-02-09",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:kraken:licenses",
+            "title": "Where is Kraken licensed or regulated?",
+            "url": "https://support.kraken.com/articles/where-is-kraken-licensed-or-regulated",
+            "publisher": "Kraken",
+            "published_at": "2026-06-08",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:kraken:mica",
+            "title": "Kraken activates MiCA licence across all 30 EEA countries",
+            "url": "https://blog.kraken.com/news/all-30-eea-countries-mica",
+            "publisher": "Kraken",
+            "published_at": "2025-08-12",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:kraken:xstocks",
+            "title": "xStocks eligible as collateral for futures and margin",
+            "url": "https://blog.kraken.com/product/xstocks/eligible-as-collateral-for-futures-and-margin",
+            "publisher": "Kraken",
+            "published_at": "2026-06-16",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:kraken:backed",
+            "title": "Kraken acquires Backed Finance",
+            "url": "https://blog.kraken.com/news/backed-acquisition",
+            "publisher": "Kraken",
+            "published_at": "2026-05-12",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          }
+        ],
+        "claims": [
+          {
+            "id": "claim:kraken:status",
+            "field_path": "status.operating_state",
+            "source_ids": [
+              "source:kraken:financials",
+              "source:kraken:licenses",
+              "source:kraken:xstocks"
+            ],
+            "evidence_locator": "2025 financials and current licensing and product pages.",
+            "assertion": "Kraken remained an operating, multi-product centralized exchange as of August 3, 2026.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:outcome",
+            "field_path": "outcome.label",
+            "source_ids": [
+              "source:kraken:financials",
+              "source:kraken:licenses"
+            ],
+            "evidence_locator": "2025 scale and current regulatory footprint.",
+            "assertion": "Kraken is an established private exchange that is diversifying beyond crypto spot trading.",
+            "support_direction": "supports",
+            "note": "Analyst lifecycle classification, not a token-price recommendation.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:what_it_is:1",
+            "field_path": "analysis.sections.what_it_is.body",
+            "source_ids": [
+              "source:kraken:licenses",
+              "source:kraken:financials"
+            ],
+            "evidence_locator": "Current licensing page and 2025 business scope.",
+            "assertion": "Kraken is a Payward-operated custodial exchange with several product and legal-entity boundaries.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:what_it_is:2",
+            "field_path": "analysis.sections.what_it_is.body",
+            "source_ids": [
+              "source:kraken:xstocks",
+              "source:kraken:licenses"
+            ],
+            "evidence_locator": "Current product and licensing restrictions.",
+            "assertion": "xStocks and derivatives are jurisdiction- and eligibility-dependent products.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:what_happened:1",
+            "field_path": "analysis.sections.what_happened.body",
+            "source_ids": [
+              "source:kraken:financials"
+            ],
+            "evidence_locator": "2025 financial highlights and definitions.",
+            "assertion": "Kraken reported $2.2 billion adjusted revenue and $531 million adjusted EBITDA for 2025.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:what_happened:2",
+            "field_path": "analysis.sections.what_happened.body",
+            "source_ids": [
+              "source:kraken:financials"
+            ],
+            "evidence_locator": "Total platform transaction volume definition.",
+            "assertion": "The reported $2.0 trillion transaction volume covers a broad product family and is not spot-only.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:why_this_outcome:1",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "source_ids": [
+              "source:kraken:financials",
+              "source:kraken:backed"
+            ],
+            "evidence_locator": "2025 scope and Backed acquisition.",
+            "assertion": "Kraken’s current scale spans consumer, professional and acquired product lines.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:why_this_outcome:2",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "source_ids": [
+              "source:kraken:financials"
+            ],
+            "evidence_locator": "Methodology notes and consolidated adjusted figures.",
+            "assertion": "Reported company totals do not isolate organic growth or product-level profit.",
+            "support_direction": "context_only",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:strategic_choices:1",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "source_ids": [
+              "source:kraken:staking"
+            ],
+            "evidence_locator": "SEC settlement terms.",
+            "assertion": "Kraken ended U.S. staking-as-a-service under a 2023 SEC settlement.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:strategic_choices:2",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "source_ids": [
+              "source:kraken:mica",
+              "source:kraken:backed"
+            ],
+            "evidence_locator": "MiCA activation and acquisition announcement.",
+            "assertion": "Kraken expanded EEA licensing and acquired Backed for tokenized-equity infrastructure.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:operating_model:1",
+            "field_path": "analysis.sections.operating_model.body",
+            "source_ids": [
+              "source:kraken:financials"
+            ],
+            "evidence_locator": "Financial metric definitions.",
+            "assertion": "Kraken’s reported platform combines exchange and adjacent financial products.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:operating_model:2",
+            "field_path": "analysis.sections.operating_model.body",
+            "source_ids": [
+              "source:kraken:por"
+            ],
+            "evidence_locator": "Current proof-of-reserves scope and limitations.",
+            "assertion": "Proof of reserves covers named assets and claims, not every corporate asset, liability or control.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:token_and_value_capture:1",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "source_ids": [
+              "source:kraken:financials"
+            ],
+            "evidence_locator": "Company financial reporting and product description.",
+            "assertion": "Kraken’s reported value capture is private-company revenue rather than a venue token.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:token_and_value_capture:2",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "source_ids": [
+              "source:kraken:xstocks",
+              "source:kraken:backed"
+            ],
+            "evidence_locator": "xStocks product and infrastructure descriptions.",
+            "assertion": "xStocks are distinct tokenized-equity products, not equity in Kraken.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:counterfactual:1",
+            "field_path": "analysis.sections.counterfactual.body",
+            "source_ids": [
+              "source:kraken:financials",
+              "source:kraken:xstocks",
+              "source:kraken:backed"
+            ],
+            "evidence_locator": "Current platform scope and acquisitions.",
+            "assertion": "Kraken has deliberately expanded beyond crypto-only spot trading.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:counterfactual:2",
+            "field_path": "analysis.sections.counterfactual.body",
+            "source_ids": [
+              "source:kraken:financials"
+            ],
+            "evidence_locator": "Consolidated adjusted reporting boundaries.",
+            "assertion": "Public reporting does not yet show product-level acquisition returns or retention.",
+            "support_direction": "context_only",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:risks_and_unknowns:1",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "source_ids": [
+              "source:kraken:sec-dismissal"
+            ],
+            "evidence_locator": "SEC litigation release.",
+            "assertion": "The 2025 SEC dismissal was policy-based and did not decide broader legal merits.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:risks_and_unknowns:2",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "source_ids": [
+              "source:kraken:staking"
+            ],
+            "evidence_locator": "SEC settlement announcement.",
+            "assertion": "The 2023 staking settlement required a $30 million payment and U.S. service closure.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:lifecycle:1",
+            "field_path": "analysis.sections.lifecycle.body",
+            "source_ids": [
+              "source:kraken:mica",
+              "source:kraken:licenses"
+            ],
+            "evidence_locator": "Current MiCA and licensing pages.",
+            "assertion": "Kraken activated MiCA service across the EEA through its licensed entity.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:lifecycle:2",
+            "field_path": "analysis.sections.lifecycle.body",
+            "source_ids": [
+              "source:kraken:por"
+            ],
+            "evidence_locator": "Current proof-of-reserves page.",
+            "assertion": "The March 31, 2026 reserve exercise is limited to covered assets and participating claims.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:outlook_and_watch:1",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "source_ids": [
+              "source:kraken:financials",
+              "source:kraken:licenses"
+            ],
+            "evidence_locator": "Financial and regulatory evidence.",
+            "assertion": "Current scale and licensing support an established operating outlook.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:section:outlook_and_watch:2",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "source_ids": [
+              "source:kraken:financials",
+              "source:kraken:backed"
+            ],
+            "evidence_locator": "Consolidated reporting and acquisition announcement.",
+            "assertion": "Acquisition economics and product-level retention remain important unknowns.",
+            "support_direction": "context_only",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:metric:assets-2025",
+            "field_path": "metrics[metric:kraken:assets-2025:2025-12-31].value",
+            "source_ids": [
+              "source:kraken:financials"
+            ],
+            "evidence_locator": "2025 financial highlights.",
+            "assertion": "Kraken reported $48.2 billion of platform assets at year-end 2025.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:metric:funded-accounts-2025",
+            "field_path": "metrics[metric:kraken:funded-accounts-2025:2025-12-31].value",
+            "source_ids": [
+              "source:kraken:financials"
+            ],
+            "evidence_locator": "2025 financial highlights.",
+            "assertion": "Kraken reported 5.7 million funded accounts for 2025; accounts are not necessarily unique people.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:metric:staking-settlement",
+            "field_path": "metrics[metric:kraken:staking-settlement:2023-02-09].value",
+            "source_ids": [
+              "source:kraken:staking"
+            ],
+            "evidence_locator": "SEC settlement terms.",
+            "assertion": "Kraken-affiliated entities agreed to pay $30 million in the 2023 U.S. staking settlement.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:event:staking-settlement",
+            "field_path": "events[event:kraken:staking-settlement]",
+            "source_ids": [
+              "source:kraken:staking"
+            ],
+            "evidence_locator": "SEC announcement.",
+            "assertion": "The 2023 settlement ended Kraken’s U.S. staking-as-a-service offering.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:event:sec-dismissal",
+            "field_path": "events[event:kraken:sec-dismissal]",
+            "source_ids": [
+              "source:kraken:sec-dismissal"
+            ],
+            "evidence_locator": "SEC litigation release.",
+            "assertion": "The SEC dismissed its Payward exchange action in March 2025.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:kraken:event:backed-acquisition",
+            "field_path": "events[event:kraken:backed-acquisition]",
+            "source_ids": [
+              "source:kraken:backed"
+            ],
+            "evidence_locator": "Kraken acquisition announcement.",
+            "assertion": "Kraken announced its Backed Finance acquisition in May 2026.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          }
+        ],
+        "freshness": {
+          "state": "current",
+          "last_reviewed_at": "2026-08-03T19:00:00Z",
+          "next_review_at": "2026-08-10T19:00:00Z",
+          "field_reviews": []
+        },
+        "quality": {
+          "publication_state": "review",
+          "completeness_pct": 100,
+          "confidence": "high",
+          "unsourced_fields": [
+            "Audited consolidated financial statements",
+            "Product-level profitability",
+            "Unique natural-person users",
+            "Organic versus acquired growth"
+          ]
+        },
+        "extensions": {
+          "legacy_origin": "successful_exchanges",
+          "methodology_notes": [
+            "Freshness records evidence assembly and source verification, not human approval; every claim remains pending until an editor reviews it.",
+            "Corporate reports, proof-of-reserves exercises, court records and regulator orders answer different questions and are not treated as interchangeable.",
+            "Kraken’s $2.0 trillion total platform transaction volume is not forced into a spot or derivatives metric because the published scope mixes product families."
+          ]
+        }
+      },
+      "legacy": {
+        "lifecycle": "successful",
+        "status": "successful_diversifying",
+        "metric_label": "Company-reported platform assets at 2025 year-end",
+        "metric_type": "customer_assets",
+        "metric_unit": "USD",
+        "metric": 48200000000,
+        "why_successful": "Kraken combined a security-focused trading brand with professional products and a widening regulatory footprint, then diversified through tokenized equities, derivatives and acquisitions.",
+        "outlook": "Established and diversifying. Watch funded accounts, assets, product-level retention, proof-of-reserves coverage, licences and acquisition economics."
+      }
+    },
+    {
+      "table": "dead_exchanges",
+      "slug": "bitmex",
+      "canonical_profile": {
+        "schema": "chaindump-entity-profile",
+        "version": 1,
+        "identity": {
+          "id": "cex:bitmex",
+          "type": "cex",
+          "slug": "bitmex",
+          "name": "BitMEX",
+          "aliases": [
+            "Bitcoin Mercantile Exchange"
+          ]
+        },
+        "classification": {
+          "subtype": "centralized_derivatives_exchange",
+          "tags": [
+            "custodial",
+            "derivatives",
+            "perpetual_swaps",
+            "wind_down_announced"
+          ],
+          "chains": [],
+          "jurisdictions": [
+            "Global excluding restricted jurisdictions",
+            "United States excluded"
+          ]
+        },
+        "status": {
+          "operating_state": "wind_down_announced",
+          "as_of": "2026-08-03",
+          "claim_ids": [
+            "claim:bitmex:status"
+          ]
+        },
+        "outcome": {
+          "label": "declining_wind_down_announced",
+          "as_of": "2026-08-03",
+          "rule_id": "exchange-lifecycle-v1",
+          "confidence": "high",
+          "claim_ids": [
+            "claim:bitmex:outcome"
+          ]
+        },
+        "analysis": {
+          "sections": {
+            "what_it_is": {
+              "body": "BitMEX is a custodial crypto derivatives exchange owned and operated by HDR Global Trading Limited. It helped popularize the perpetual swap and built its brand around leveraged, crypto-margined trading. The 2026 notice covers the whole BitMEX Exchange, not only a country, product or affiliate, while the earlier U.S. enforcement action concerned a separate geographic and legal boundary.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bitmex:section:what_it_is:1",
+                "claim:bitmex:section:what_it_is:2"
+              ]
+            },
+            "what_happened": {
+              "body": "On July 23, 2026, BitMEX stopped accepting new account registrations and announced that the exchange would close on September 23, 2026 at 04:00 UTC. Risk limits and reduce-only trading are scheduled to begin August 26. The venue was still operating on August 3, so describing it as already shut would be wrong. Reuters independently confirmed the scheduled closure and that BitMEX did not state a specific reason.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bitmex:section:what_happened:1",
+                "claim:bitmex:section:what_happened:2"
+              ]
+            },
+            "why_this_outcome": {
+              "body": "The board said the decision followed a strategic review of the business and broader crypto industry. It has not published a specific cause. Competition is a plausible outside explanation discussed by an analyst quoted by Reuters, but it is not an established company finding. The reviewed evidence does not prove insolvency, a security loss, regulation, BMEX performance or a single market-share event caused the closure.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bitmex:section:why_this_outcome:1",
+                "claim:bitmex:section:why_this_outcome:2"
+              ]
+            },
+            "strategic_choices": {
+              "body": "BitMEX chose extreme derivatives specialization, crypto-collateralized leverage and a global offshore model. It also operated without an adequate U.S. registration and AML/KYC program before the 2021 CFTC order, then excluded U.S. customers and changed controls. In the final wind-down, management chose a two-month runway with reduce-only trading before forced closure rather than an immediate halt.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bitmex:section:strategic_choices:1",
+                "claim:bitmex:section:strategic_choices:2"
+              ]
+            },
+            "operating_model": {
+              "body": "Customers deposit assets with BitMEX and trade centrally matched derivatives. The exchange manages margin, liquidation and custody, so users depend on its controls and withdrawal process. BitMEX publishes reserve addresses and a Merkle-based liabilities check twice weekly for covered assets. That is a useful point-in-time reconciliation tool, not a financial-statement audit or proof of every corporate obligation.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bitmex:section:operating_model:1",
+                "claim:bitmex:section:operating_model:2"
+              ]
+            },
+            "token_and_value_capture": {
+              "body": "BMEX is an exchange utility and rewards token described in the 2025 litepaper; it is not equity and does not guarantee exchange revenue or continued operation. The closure notice says all staked BMEX was unstaked immediately. That makes the boundary clear: token utility depended on an operating venue, but the evidence does not establish that BMEX caused the wind-down.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bitmex:section:token_and_value_capture:1",
+                "claim:bitmex:section:token_and_value_capture:2"
+              ]
+            },
+            "counterfactual": {
+              "body": "A broader spot, custody or institutional franchise might have reduced dependence on leveraged derivatives and a shrinking brand position. Earlier regulatory investment could also have avoided part of the legal damage and management distraction documented in 2021 and 2022. Neither counterfactual proves the 2026 decision would have changed, because BitMEX has not disclosed the economics or board thresholds behind the closure.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bitmex:section:counterfactual:1",
+                "claim:bitmex:section:counterfactual:2"
+              ]
+            },
+            "risks_and_unknowns": {
+              "body": "The immediate customer risks are position closure, pricing during reduce-only trading and leaving assets behind. After September 23, users may still log in, view history and withdraw, but open positions will be force-closed and balances left after closure can incur a monthly charge equal to the greater of $50 or 1% a year for KYC users. BitMEX has not published audited wind-down financials, expected residual balances or a specific closure cause.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bitmex:section:risks_and_unknowns:1",
+                "claim:bitmex:section:risks_and_unknowns:2"
+              ]
+            },
+            "lifecycle": {
+              "body": "BitMEX evolved from a category-defining derivatives venue into a regulated-exit and wind-down case. It settled the U.S. CFTC action in 2021, with named BitMEX entities paying $100 million and certifying the U.S. operating boundary. As of August 3, 2026 it remains open in a managed wind-down: reduce-only restrictions start August 26, the exchange closes September 23, 2026, and withdrawals remain available after closure.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bitmex:section:lifecycle:1",
+                "claim:bitmex:section:lifecycle:2"
+              ]
+            },
+            "outlook_and_watch": {
+              "body": "The base case is orderly exchange closure on September 23, followed by a withdrawal-only account service. Watch whether reduce-only and forced-close mechanics work as stated, whether users can withdraw promptly, whether the board publishes a fuller rationale and whether any buyer or successor service emerges. Do not label BitMEX insolvent or already closed without new evidence.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bitmex:section:outlook_and_watch:1",
+                "claim:bitmex:section:outlook_and_watch:2"
+              ]
+            }
+          }
+        },
+        "metrics": [
+          {
+            "id": "metric:bitmex:cftc-settlement:2021-08-10",
+            "dimension": "regulatory_fines",
+            "label": "2021 CFTC monetary penalty",
+            "value": 100000000,
+            "unit": "USD",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2021-08-10",
+              "definition": "One-time monetary penalty in the 2021 CFTC settlement."
+            },
+            "as_of": "2021-08-10",
+            "method": "Federal court consent order reported by the regulator.",
+            "scope": {
+              "product": "BitMEX U.S. regulatory case",
+              "jurisdictions": [
+                "United States"
+              ]
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:bitmex:metric:cftc-settlement"
+            ],
+            "quality_flags": [
+              "regulator_order",
+              "scoped_entities_and_period"
+            ]
+          }
+        ],
+        "events": [
+          {
+            "id": "event:bitmex:cftc-settlement",
+            "type": "regulatory_settlement",
+            "date": "2021-08-10",
+            "description": "A federal court ordered named BitMEX entities to pay $100 million and comply with U.S. registration and AML requirements.",
+            "claim_ids": [
+              "claim:bitmex:event:cftc-settlement"
+            ]
+          },
+          {
+            "id": "event:bitmex:closure-announcement",
+            "type": "wind_down_announced",
+            "date": "2026-07-23",
+            "description": "BitMEX stopped new registrations and announced a whole-exchange closure for September 23, 2026.",
+            "claim_ids": [
+              "claim:bitmex:event:closure-announcement"
+            ]
+          },
+          {
+            "id": "event:bitmex:reduce-only",
+            "type": "wind_down_restriction",
+            "date": "2026-08-26",
+            "description": "BitMEX scheduled risk-limit reductions and reduce-only trading to begin at 04:00 UTC.",
+            "claim_ids": [
+              "claim:bitmex:event:reduce-only"
+            ]
+          },
+          {
+            "id": "event:bitmex:scheduled-closure",
+            "type": "scheduled_closure",
+            "date": "2026-09-23",
+            "description": "BitMEX scheduled exchange closure and forced closure of remaining positions for 04:00 UTC; account history and withdrawals remain available.",
+            "claim_ids": [
+              "claim:bitmex:event:scheduled-closure"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "id": "source:bitmex:closure",
+            "title": "BitMEX closure notice",
+            "url": "https://www.bitmex.com/blog/bitmex-closure",
+            "publisher": "BitMEX",
+            "published_at": "2026-07-23",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:bitmex:reuters",
+            "title": "Cryptocurrency exchange BitMEX to shut down",
+            "url": "https://live.euronext.com/en/financial-news/cryptocurrency-exchange-bitmex-shut-down",
+            "publisher": "Reuters via Euronext",
+            "published_at": "2026-07-23",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "independent",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:bitmex:cftc",
+            "title": "Federal Court Orders BitMEX to Pay $100 Million",
+            "url": "https://www.cftc.gov/PressRoom/PressReleases/8412-21",
+            "publisher": "Commodity Futures Trading Commission",
+            "published_at": "2021-08-10",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:bitmex:doj",
+            "title": "Third BitMEX founder pleads guilty to Bank Secrecy Act violations",
+            "url": "https://www.justice.gov/usao-sdny/pr/third-founder-cryptocurrency-exchange-pleads-guilty-bank-secrecy-act-violations",
+            "publisher": "U.S. Department of Justice",
+            "published_at": "2022-03-09",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:bitmex:por",
+            "title": "BitMEX Proof of Reserves and Liabilities",
+            "url": "https://www.bitmex.com/app/porlDetails",
+            "publisher": "BitMEX",
+            "published_at": null,
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:bitmex:security",
+            "title": "BitMEX Security and Custody",
+            "url": "https://www.bitmex.com/security-and-custody",
+            "publisher": "BitMEX",
+            "published_at": null,
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:bitmex:perpetual",
+            "title": "Five years ago, the perpetual swap was born",
+            "url": "https://www.bitmex.com/blog/five-years-ago-the-perpetual-swap-was-born-everything-changed",
+            "publisher": "BitMEX",
+            "published_at": "2021-05-13",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:bitmex:bmex",
+            "title": "BMEX Litepaper 2025",
+            "url": "https://static.bitmex.com/documents/2025_BMEX_LITEPAPER.pdf",
+            "publisher": "BitMEX",
+            "published_at": "2025-01-01",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:bitmex:leverage",
+            "title": "Cryptocurrency leverage trading: the case for BitMEX",
+            "url": "https://arxiv.org/abs/2102.04591",
+            "publisher": "arXiv",
+            "published_at": "2021-02-09",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          }
+        ],
+        "claims": [
+          {
+            "id": "claim:bitmex:status",
+            "field_path": "status.operating_state",
+            "source_ids": [
+              "source:bitmex:closure",
+              "source:bitmex:reuters"
+            ],
+            "evidence_locator": "Dated closure timetable and independent confirmation.",
+            "assertion": "BitMEX was still operating on August 3, 2026, with exchange closure scheduled for September 23, 2026 at 04:00 UTC.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:outcome",
+            "field_path": "outcome.label",
+            "source_ids": [
+              "source:bitmex:closure",
+              "source:bitmex:reuters"
+            ],
+            "evidence_locator": "Operator wind-down timetable and independent report.",
+            "assertion": "BitMEX is in an announced global exchange wind-down; the specific business cause remains undisclosed.",
+            "support_direction": "supports",
+            "note": "Analyst lifecycle classification, not a token-price recommendation.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:what_it_is:1",
+            "field_path": "analysis.sections.what_it_is.body",
+            "source_ids": [
+              "source:bitmex:closure"
+            ],
+            "evidence_locator": "Closure notice owner and operator statement.",
+            "assertion": "HDR Global Trading Limited is the named owner and operator of the BitMEX Exchange.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:what_it_is:2",
+            "field_path": "analysis.sections.what_it_is.body",
+            "source_ids": [
+              "source:bitmex:closure",
+              "source:bitmex:cftc"
+            ],
+            "evidence_locator": "Global closure timetable compared with CFTC entity and U.S. operations order.",
+            "assertion": "The 2026 whole-exchange wind-down is distinct from BitMEX’s 2021 U.S. regulatory exit.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:what_happened:1",
+            "field_path": "analysis.sections.what_happened.body",
+            "source_ids": [
+              "source:bitmex:closure"
+            ],
+            "evidence_locator": "Closure timetable.",
+            "assertion": "BitMEX stopped new registrations on July 23 and scheduled closure for September 23, 2026 at 04:00 UTC.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:what_happened:2",
+            "field_path": "analysis.sections.what_happened.body",
+            "source_ids": [
+              "source:bitmex:closure",
+              "source:bitmex:reuters"
+            ],
+            "evidence_locator": "Future-dated closure and independent report.",
+            "assertion": "BitMEX was still operating during the announced wind-down on August 3, 2026.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:why_this_outcome:1",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "source_ids": [
+              "source:bitmex:closure"
+            ],
+            "evidence_locator": "Board rationale in closure notice.",
+            "assertion": "BitMEX publicly attributed the decision only to a strategic review of the business and industry.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:why_this_outcome:2",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "source_ids": [
+              "source:bitmex:reuters"
+            ],
+            "evidence_locator": "Reuters report distinguishing company silence from analyst interpretation.",
+            "assertion": "Competition is outside analysis, not an established cause published by BitMEX.",
+            "support_direction": "context_only",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:strategic_choices:1",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "source_ids": [
+              "source:bitmex:perpetual",
+              "source:bitmex:leverage"
+            ],
+            "evidence_locator": "Product history and independent leverage study.",
+            "assertion": "BitMEX built around leveraged crypto derivatives and the perpetual swap.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:strategic_choices:2",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "source_ids": [
+              "source:bitmex:cftc"
+            ],
+            "evidence_locator": "CFTC settlement findings and certifications.",
+            "assertion": "The 2021 CFTC order addressed registration and AML/KYC failures and required U.S. operational separation.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:operating_model:1",
+            "field_path": "analysis.sections.operating_model.body",
+            "source_ids": [
+              "source:bitmex:security",
+              "source:bitmex:perpetual"
+            ],
+            "evidence_locator": "Custody and product descriptions.",
+            "assertion": "BitMEX centrally manages collateral, matching, margin and custody for derivatives trading.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:operating_model:2",
+            "field_path": "analysis.sections.operating_model.body",
+            "source_ids": [
+              "source:bitmex:por"
+            ],
+            "evidence_locator": "Proof-of-reserves methodology and coverage.",
+            "assertion": "Its reserve-and-liability process covers published assets and Merkle claims but is not a full corporate audit.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:token_and_value_capture:1",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "source_ids": [
+              "source:bitmex:bmex"
+            ],
+            "evidence_locator": "BMEX litepaper utility and rights.",
+            "assertion": "BMEX provides exchange-linked utility and rewards rather than equity ownership.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:token_and_value_capture:2",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "source_ids": [
+              "source:bitmex:closure"
+            ],
+            "evidence_locator": "Customer and token instructions in closure notice.",
+            "assertion": "BitMEX unstaked all staked BMEX when it announced the closure.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:counterfactual:1",
+            "field_path": "analysis.sections.counterfactual.body",
+            "source_ids": [
+              "source:bitmex:cftc",
+              "source:bitmex:doj"
+            ],
+            "evidence_locator": "Regulator and criminal-case findings.",
+            "assertion": "Earlier compliant U.S. controls could have avoided the violations established in the CFTC and DOJ cases.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:counterfactual:2",
+            "field_path": "analysis.sections.counterfactual.body",
+            "source_ids": [
+              "source:bitmex:closure",
+              "source:bitmex:reuters"
+            ],
+            "evidence_locator": "Limited published rationale.",
+            "assertion": "The effect of product breadth on the 2026 closure cannot be proven from the disclosed record.",
+            "support_direction": "context_only",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:risks_and_unknowns:1",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "source_ids": [
+              "source:bitmex:closure"
+            ],
+            "evidence_locator": "Closure and position-handling instructions.",
+            "assertion": "Open positions remaining at closure will be force-closed under the published timetable.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:risks_and_unknowns:2",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "source_ids": [
+              "source:bitmex:closure"
+            ],
+            "evidence_locator": "Post-closure account and fee terms.",
+            "assertion": "Post-closure login and withdrawals remain available, while qualifying residual balances can incur a fee.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:lifecycle:1",
+            "field_path": "analysis.sections.lifecycle.body",
+            "source_ids": [
+              "source:bitmex:cftc"
+            ],
+            "evidence_locator": "Settlement terms and entity scope.",
+            "assertion": "The 2021 $100 million CFTC settlement addressed the earlier U.S. regulatory boundary.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:lifecycle:2",
+            "field_path": "analysis.sections.lifecycle.body",
+            "source_ids": [
+              "source:bitmex:closure"
+            ],
+            "evidence_locator": "Wind-down schedule and post-closure access.",
+            "assertion": "BitMEX operates through the announced September 23 closure date, with withdrawals continuing afterward.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:outlook_and_watch:1",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "source_ids": [
+              "source:bitmex:closure"
+            ],
+            "evidence_locator": "Closure notice timetable.",
+            "assertion": "The published base case is scheduled closure followed by continued account and withdrawal access.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:section:outlook_and_watch:2",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "source_ids": [
+              "source:bitmex:closure",
+              "source:bitmex:reuters"
+            ],
+            "evidence_locator": "Operator notice and independent report.",
+            "assertion": "Insolvency, a sale and a specific closure cause remain unconfirmed as of August 3, 2026.",
+            "support_direction": "context_only",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:metric:cftc-settlement",
+            "field_path": "metrics[metric:bitmex:cftc-settlement:2021-08-10].value",
+            "source_ids": [
+              "source:bitmex:cftc"
+            ],
+            "evidence_locator": "CFTC settlement amount and entity scope.",
+            "assertion": "Named BitMEX entities were ordered to pay a $100 million civil monetary penalty in 2021.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:event:cftc-settlement",
+            "field_path": "events[event:bitmex:cftc-settlement]",
+            "source_ids": [
+              "source:bitmex:cftc"
+            ],
+            "evidence_locator": "CFTC announcement.",
+            "assertion": "The 2021 CFTC settlement imposed a $100 million penalty and U.S. compliance obligations.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:event:closure-announcement",
+            "field_path": "events[event:bitmex:closure-announcement]",
+            "source_ids": [
+              "source:bitmex:closure",
+              "source:bitmex:reuters"
+            ],
+            "evidence_locator": "Operator closure notice and independent confirmation.",
+            "assertion": "BitMEX announced the exchange wind-down on July 23, 2026.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:event:reduce-only",
+            "field_path": "events[event:bitmex:reduce-only]",
+            "source_ids": [
+              "source:bitmex:closure"
+            ],
+            "evidence_locator": "Closure timetable.",
+            "assertion": "BitMEX scheduled reduce-only restrictions for August 26, 2026 at 04:00 UTC.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bitmex:event:scheduled-closure",
+            "field_path": "events[event:bitmex:scheduled-closure]",
+            "source_ids": [
+              "source:bitmex:closure"
+            ],
+            "evidence_locator": "Closure and post-closure instructions.",
+            "assertion": "BitMEX scheduled exchange closure for September 23, 2026 at 04:00 UTC.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          }
+        ],
+        "freshness": {
+          "state": "current",
+          "last_reviewed_at": "2026-08-03T19:00:00Z",
+          "next_review_at": "2026-08-10T19:00:00Z",
+          "field_reviews": []
+        },
+        "quality": {
+          "publication_state": "review",
+          "completeness_pct": 100,
+          "confidence": "high",
+          "unsourced_fields": [
+            "Specific board closure cause",
+            "Audited wind-down balance sheet",
+            "Expected residual customer balances",
+            "Potential buyer or successor service"
+          ]
+        },
+        "extensions": {
+          "legacy_origin": "dead_exchanges",
+          "methodology_notes": [
+            "Freshness records evidence assembly and source verification, not human approval; every claim remains pending until an editor reviews it.",
+            "Corporate reports, proof-of-reserves exercises, court records and regulator orders answer different questions and are not treated as interchangeable.",
+            "The 2026 global exchange wind-down is kept separate from the 2021 U.S. regulatory exit.",
+            "Analyst commentary about competition is not promoted to a proven cause."
+          ]
+        }
+      },
+      "legacy": {
+        "lifecycle": "dead",
+        "verdict": "wind_down_announced",
+        "metric_label": "Scheduled exchange closure",
+        "metric_type": "operational_status",
+        "metric_unit": "status",
+        "current_metric": null,
+        "why": "BitMEX announced a whole-exchange wind-down after a strategic review. It has not disclosed a more specific cause; competition, regulation, insolvency, security and BMEX performance are not established closure causes.",
+        "outlook": "Still operating as of August 3, 2026. Reduce-only begins August 26, closure is scheduled for September 23 at 04:00 UTC, and login, history and withdrawals remain after closure."
+      }
+    },
+    {
+      "table": "dead_exchanges",
+      "slug": "ftx",
+      "canonical_profile": {
+        "schema": "chaindump-entity-profile",
+        "version": 1,
+        "identity": {
+          "id": "cex:ftx",
+          "type": "cex",
+          "slug": "ftx",
+          "name": "FTX",
+          "aliases": [
+            "FTX.com",
+            "FTX Trading Ltd"
+          ]
+        },
+        "classification": {
+          "subtype": "collapsed_centralized_exchange",
+          "tags": [
+            "custodial",
+            "bankruptcy",
+            "fraud",
+            "creditor_recovery"
+          ],
+          "chains": [],
+          "jurisdictions": [
+            "United States bankruptcy proceedings",
+            "Bahamas liquidation proceedings",
+            "global former customer base"
+          ]
+        },
+        "status": {
+          "operating_state": "closed_bankruptcy_recovery",
+          "as_of": "2026-08-03",
+          "claim_ids": [
+            "claim:ftx:status"
+          ]
+        },
+        "outcome": {
+          "label": "failed_fraud_and_governance_collapse",
+          "as_of": "2026-08-03",
+          "rule_id": "exchange-lifecycle-v1",
+          "confidence": "high",
+          "claim_ids": [
+            "claim:ftx:outcome"
+          ]
+        },
+        "analysis": {
+          "sections": {
+            "what_it_is": {
+              "body": "FTX.com was the international custodial exchange associated with FTX Trading Ltd and the wider FTX group. FTX.US was a separate customer platform inside the debtor group, and FTX Digital Markets in the Bahamas follows a separate liquidation process. The FTX Recovery Trust now administers distributions under the U.S. plan; it is not a relaunched exchange.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:ftx:section:what_it_is:1",
+                "claim:ftx:section:what_it_is:2"
+              ]
+            },
+            "what_happened": {
+              "body": "FTX collapsed in November 2022 after customer withdrawals exposed a large hole and the group entered bankruptcy. A federal jury later convicted Sam Bankman-Fried, and the sentencing record says customer assets were secretly diverted to Alameda through special code and false segregation claims. The CFTC final judgment ordered $8.7 billion in restitution and $4 billion in disgorgement; that $12.7 billion legal remedy is not a current customer-shortfall measure.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:ftx:section:what_happened:1",
+                "claim:ftx:section:what_happened:2"
+              ]
+            },
+            "why_this_outcome": {
+              "body": "FTX did not fail because a token price happened to fall. The adjudicated record points to customer-asset misuse, undisclosed Alameda privileges, concentrated control and false claims about segregation. Falling FTT and withdrawals accelerated discovery of the problem, while FTT-linked collateral and the exchange’s relationship with Alameda amplified fragility. They exposed the failure; they did not create the underlying misconduct.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:ftx:section:why_this_outcome:1",
+                "claim:ftx:section:why_this_outcome:2"
+              ]
+            },
+            "strategic_choices": {
+              "body": "Leadership combined an exchange, market maker, venture activity and an exchange-linked token inside a tightly controlled group. It gave Alameda special access and used customer assets outside the promised custody boundary. The group also expanded faster than its governance, accounting and risk controls. Those were management choices, not unavoidable blockchain mechanics.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:ftx:section:strategic_choices:1",
+                "claim:ftx:section:strategic_choices:2"
+              ]
+            },
+            "operating_model": {
+              "body": "FTX was a custodial exchange: customers depended on the company to safeguard deposits, maintain ledgers and honor withdrawals. Alameda was presented as a market participant but received hidden privileges and access. After bankruptcy, claims, distributions and identity checks moved to court-supervised and service-provider workflows. Those recovery systems should not be confused with exchange operations or normal withdrawals.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:ftx:section:operating_model:1",
+                "claim:ftx:section:operating_model:2"
+              ]
+            },
+            "token_and_value_capture": {
+              "body": "FTT was an exchange-linked utility token used for discounts and ecosystem incentives; it was not equity and did not give holders a bankruptcy-proof claim on FTX assets. Its use inside the FTX–Alameda balance-sheet relationship created reflexive collateral risk. The token’s fall was a warning and liquidity trigger, while the proven customer-asset misuse remained the core failure.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:ftx:section:token_and_value_capture:1",
+                "claim:ftx:section:token_and_value_capture:2"
+              ]
+            },
+            "counterfactual": {
+              "body": "Independent custody controls, a genuinely separate Alameda relationship, audited financial reporting and a board able to stop related-party transfers could have prevented or limited the loss. A lower-growth exchange with enforceable asset segregation would have been more valuable than rapid expansion funded by customer money. Better token design alone would not have fixed the governance failure.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:ftx:section:counterfactual:1",
+                "claim:ftx:section:counterfactual:2"
+              ]
+            },
+            "risks_and_unknowns": {
+              "body": "Recovery remains procedural and jurisdiction-specific. Eligibility, identity checks, distribution providers, claim class and election between processes can affect timing and amount. Crypto prices after the petition date are not restored by a dollar claim calculated under plan rules. The reviewed sources do not establish one universal recovery percentage, that every July 31 payment reached its recipient, or that all customers were made whole.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:ftx:section:risks_and_unknowns:1",
+                "claim:ftx:section:risks_and_unknowns:2"
+              ]
+            },
+            "lifecycle": {
+              "body": "FTX moved from rapid exchange growth to a November 2022 collapse, criminal conviction, plan administration and creditor distributions. The fifth U.S. distribution was announced for July 31, 2026 at approximately $900 million. For Classes 6A and 6B, the extra 3% brought stated cumulative distributions to 103% of petition-date dollar claims. That narrow measure does not mean customers were made whole in crypto terms or that every class received 103%.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:ftx:section:lifecycle:1",
+                "claim:ftx:section:lifecycle:2"
+              ]
+            },
+            "outlook_and_watch": {
+              "body": "FTX will remain a recovery and litigation case, not an operating exchange, unless a genuinely new venue is separately authorized and launched. Watch completed distributions rather than announcements, class-specific recovery, disputed claims, provider and jurisdiction delays, Bahamas coordination and final estate costs. Never compare plan percentages directly with token returns or call all creditors fully repaid.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:ftx:section:outlook_and_watch:1",
+                "claim:ftx:section:outlook_and_watch:2"
+              ]
+            }
+          }
+        },
+        "metrics": [
+          {
+            "id": "metric:ftx:class-6ab-recovery:2026-07-31",
+            "dimension": "creditor_recovery",
+            "label": "Classes 6A and 6B cumulative petition-date dollar distributions",
+            "value": 103,
+            "unit": "percent",
+            "currency": null,
+            "window": {
+              "start": null,
+              "end": "2026-07-31",
+              "definition": "Cumulative percentage stated after the fifth distribution for Classes 6A and 6B only."
+            },
+            "as_of": "2026-07-31",
+            "method": "Recovery Trust class-specific distribution statement.",
+            "scope": {
+              "product": "U.S. plan Classes 6A and 6B",
+              "jurisdictions": [
+                "U.S. plan distribution process"
+              ]
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:ftx:metric:class-6ab-recovery"
+            ],
+            "quality_flags": [
+              "class_specific",
+              "petition_date_dollars",
+              "not_original_crypto_recovery",
+              "announcement_not_recipient_confirmation"
+            ]
+          }
+        ],
+        "events": [
+          {
+            "id": "event:ftx:bankruptcy",
+            "type": "bankruptcy",
+            "date": "2022-11-11",
+            "description": "FTX group entities entered Chapter 11 proceedings after the exchange collapse.",
+            "claim_ids": [
+              "claim:ftx:event:bankruptcy"
+            ]
+          },
+          {
+            "id": "event:ftx:sentence",
+            "type": "criminal_sentence",
+            "date": "2024-03-28",
+            "description": "Sam Bankman-Fried received a 25-year federal prison sentence and more than $11 billion in forfeiture after conviction.",
+            "claim_ids": [
+              "claim:ftx:event:sentence"
+            ]
+          },
+          {
+            "id": "event:ftx:cftc-judgment",
+            "type": "civil_judgment",
+            "date": "2024-08-08",
+            "description": "The CFTC final judgment ordered $8.7 billion restitution and $4 billion disgorgement against FTX and Alameda.",
+            "claim_ids": [
+              "claim:ftx:event:cftc-judgment"
+            ]
+          },
+          {
+            "id": "event:ftx:fifth-distribution",
+            "type": "creditor_distribution",
+            "date": "2026-07-31",
+            "description": "The Recovery Trust announced commencement of an approximately $900 million fifth distribution to eligible classes.",
+            "claim_ids": [
+              "claim:ftx:event:fifth-distribution"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "id": "source:ftx:doj-sentence",
+            "title": "Samuel Bankman-Fried sentenced to 25 years",
+            "url": "https://www.justice.gov/usao-sdny/pr/samuel-bankman-fried-sentenced-25-years-prison",
+            "publisher": "U.S. Department of Justice",
+            "published_at": "2024-03-28",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:ftx:cftc",
+            "title": "Court orders FTX and Alameda to pay $12.7 billion",
+            "url": "https://www.cftc.gov/PressRoom/PressReleases/8938-24",
+            "publisher": "Commodity Futures Trading Commission",
+            "published_at": "2024-08-08",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:ftx:distribution",
+            "title": "FTX announces fifth distribution of approximately $900 million",
+            "url": "https://www.prnewswire.com/news-releases/ftx-announces-fifth-distribution-of-approximately-900-million-to-creditors-on-july-31-2026-302828726.html",
+            "publisher": "FTX Recovery Trust via PR Newswire",
+            "published_at": "2026-07-17",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:ftx:faq",
+            "title": "FTX Distributions Dashboard FAQs",
+            "url": "https://support.ftx.com/hc/en-us/articles/34522100742804-Distributions-Dashboard-FAQs",
+            "publisher": "FTX Recovery Trust",
+            "published_at": null,
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:ftx:providers",
+            "title": "General Information on Distribution Service Providers",
+            "url": "https://support.ftx.com/hc/en-us/articles/33190623459092-General-Information-on-Distribution-Service-Providers",
+            "publisher": "FTX Recovery Trust",
+            "published_at": null,
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:ftx:claims",
+            "title": "Using the FTX Customer Claims Portal",
+            "url": "https://support.ftx.com/hc/en-us/articles/19519576531476-Using-the-Customer-Claims-Portal",
+            "publisher": "FTX Recovery Trust",
+            "published_at": null,
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:ftx:bahamas",
+            "title": "FTX Digital Markets distribution notice",
+            "url": "https://www.pwc.com/bs/en/services/business-restructuring-ftx-digital-markets/assets/fdm-notice-of-distribution-record-date-270526.pdf",
+            "publisher": "PricewaterhouseCoopers Bahamas",
+            "published_at": "2026-05-27",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:ftx:case",
+            "title": "United States v. Samuel Bankman-Fried case page",
+            "url": "https://www.justice.gov/usao-sdny/united-states-v-samuel-bankman-fried-aka-sbf-22-cr-673-lak",
+            "publisher": "U.S. Department of Justice",
+            "published_at": null,
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          }
+        ],
+        "claims": [
+          {
+            "id": "claim:ftx:status",
+            "field_path": "status.operating_state",
+            "source_ids": [
+              "source:ftx:distribution",
+              "source:ftx:faq",
+              "source:ftx:bahamas"
+            ],
+            "evidence_locator": "Current Recovery Trust and Bahamas liquidation notices.",
+            "assertion": "FTX is closed; separate U.S. plan and Bahamas liquidation recovery processes remained active on August 3, 2026.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:outcome",
+            "field_path": "outcome.label",
+            "source_ids": [
+              "source:ftx:doj-sentence",
+              "source:ftx:cftc"
+            ],
+            "evidence_locator": "Criminal conviction and final CFTC judgment.",
+            "assertion": "FTX failed after criminal misuse of customer assets, false representations and intertwined Alameda controls.",
+            "support_direction": "supports",
+            "note": "Analyst lifecycle classification, not a token-price recommendation.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:what_it_is:1",
+            "field_path": "analysis.sections.what_it_is.body",
+            "source_ids": [
+              "source:ftx:doj-sentence",
+              "source:ftx:bahamas",
+              "source:ftx:faq"
+            ],
+            "evidence_locator": "Criminal-case entity description and separate recovery notices.",
+            "assertion": "FTX.com, FTX.US and FTX Digital Markets had distinct platform and legal-process boundaries.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:what_it_is:2",
+            "field_path": "analysis.sections.what_it_is.body",
+            "source_ids": [
+              "source:ftx:distribution",
+              "source:ftx:faq"
+            ],
+            "evidence_locator": "Distribution announcement and dashboard guidance.",
+            "assertion": "The Recovery Trust distributes estate value and does not operate a revived FTX exchange.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:what_happened:1",
+            "field_path": "analysis.sections.what_happened.body",
+            "source_ids": [
+              "source:ftx:doj-sentence",
+              "source:ftx:case"
+            ],
+            "evidence_locator": "Sentencing release and case record.",
+            "assertion": "The criminal record established secret Alameda access, customer-fund misuse and false representations.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:what_happened:2",
+            "field_path": "analysis.sections.what_happened.body",
+            "source_ids": [
+              "source:ftx:cftc"
+            ],
+            "evidence_locator": "Final judgment monetary breakdown.",
+            "assertion": "The CFTC’s $12.7 billion remedy combines restitution and disgorgement and is not a live shortfall metric.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:why_this_outcome:1",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "source_ids": [
+              "source:ftx:doj-sentence"
+            ],
+            "evidence_locator": "Sentencing findings.",
+            "assertion": "Customer-asset misuse and secret Alameda privileges were established in the criminal case.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:why_this_outcome:2",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "source_ids": [
+              "source:ftx:doj-sentence",
+              "source:ftx:cftc"
+            ],
+            "evidence_locator": "Criminal and civil findings.",
+            "assertion": "Market stress exposed a pre-existing governance and asset-control failure rather than serving as its sole cause.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:strategic_choices:1",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "source_ids": [
+              "source:ftx:doj-sentence"
+            ],
+            "evidence_locator": "Sentencing description of special code access.",
+            "assertion": "FTX gave Alameda secret, effectively unlimited access that ordinary customers did not have.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:strategic_choices:2",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "source_ids": [
+              "source:ftx:doj-sentence",
+              "source:ftx:cftc"
+            ],
+            "evidence_locator": "Criminal and CFTC findings.",
+            "assertion": "Management represented customer assets as segregated while using them elsewhere.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:operating_model:1",
+            "field_path": "analysis.sections.operating_model.body",
+            "source_ids": [
+              "source:ftx:doj-sentence",
+              "source:ftx:cftc"
+            ],
+            "evidence_locator": "Customer-asset and exchange-control findings.",
+            "assertion": "FTX customers depended on a centralized custody and ledger system.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:operating_model:2",
+            "field_path": "analysis.sections.operating_model.body",
+            "source_ids": [
+              "source:ftx:faq",
+              "source:ftx:providers",
+              "source:ftx:claims"
+            ],
+            "evidence_locator": "Current distribution and claims guidance.",
+            "assertion": "Post-bankruptcy claims and distributions use separate Recovery Trust and service-provider workflows.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:token_and_value_capture:1",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "source_ids": [
+              "source:ftx:doj-sentence",
+              "source:ftx:cftc"
+            ],
+            "evidence_locator": "Legal findings and asset-control record.",
+            "assertion": "FTT did not provide equity or a protected claim on FTX customer assets.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:token_and_value_capture:2",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "source_ids": [
+              "source:ftx:doj-sentence"
+            ],
+            "evidence_locator": "Sentencing account of misconduct and collapse.",
+            "assertion": "FTT-linked balance-sheet exposure amplified liquidity stress but does not replace the adjudicated cause.",
+            "support_direction": "context_only",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:counterfactual:1",
+            "field_path": "analysis.sections.counterfactual.body",
+            "source_ids": [
+              "source:ftx:doj-sentence",
+              "source:ftx:cftc"
+            ],
+            "evidence_locator": "Customer-asset and control findings.",
+            "assertion": "Enforced segregation and independent controls directly address the misconduct established in court.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:counterfactual:2",
+            "field_path": "analysis.sections.counterfactual.body",
+            "source_ids": [
+              "source:ftx:doj-sentence"
+            ],
+            "evidence_locator": "Mechanism of the proven fraud.",
+            "assertion": "Changing FTT alone would not correct secret related-party access to customer funds.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:risks_and_unknowns:1",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "source_ids": [
+              "source:ftx:distribution",
+              "source:ftx:faq",
+              "source:ftx:providers"
+            ],
+            "evidence_locator": "Current distribution rules and service-provider guidance.",
+            "assertion": "Distribution timing and eligibility vary by claim class, provider and jurisdiction.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:risks_and_unknowns:2",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "source_ids": [
+              "source:ftx:distribution",
+              "source:ftx:faq"
+            ],
+            "evidence_locator": "Plan distribution description and dashboard FAQ.",
+            "assertion": "A petition-date dollar recovery percentage is not the same as returning the original crypto.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:lifecycle:1",
+            "field_path": "analysis.sections.lifecycle.body",
+            "source_ids": [
+              "source:ftx:distribution"
+            ],
+            "evidence_locator": "Dated distribution announcement.",
+            "assertion": "The Recovery Trust announced a roughly $900 million fifth distribution for July 31, 2026.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:lifecycle:2",
+            "field_path": "analysis.sections.lifecycle.body",
+            "source_ids": [
+              "source:ftx:distribution"
+            ],
+            "evidence_locator": "Class-specific distribution table and explanation.",
+            "assertion": "The 103% cumulative figure applies to Classes 6A and 6B and petition-date dollar claims.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:outlook_and_watch:1",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "source_ids": [
+              "source:ftx:distribution",
+              "source:ftx:faq",
+              "source:ftx:bahamas"
+            ],
+            "evidence_locator": "Current U.S. and Bahamas recovery documents.",
+            "assertion": "Current activity is estate recovery rather than exchange operation.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:section:outlook_and_watch:2",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "source_ids": [
+              "source:ftx:distribution",
+              "source:ftx:providers"
+            ],
+            "evidence_locator": "Distribution timing and provider process.",
+            "assertion": "Future assessment should separate announced distributions, completed payments and claim-class percentages.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:metric:class-6ab-recovery",
+            "field_path": "metrics[metric:ftx:class-6ab-recovery:2026-07-31].value",
+            "source_ids": [
+              "source:ftx:distribution"
+            ],
+            "evidence_locator": "Fifth distribution class table and cumulative percentage.",
+            "assertion": "The Recovery Trust stated 103% cumulative petition-date dollar distributions for Classes 6A and 6B after the fifth distribution.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:event:bankruptcy",
+            "field_path": "events[event:ftx:bankruptcy]",
+            "source_ids": [
+              "source:ftx:doj-sentence",
+              "source:ftx:case"
+            ],
+            "evidence_locator": "Criminal-case chronology.",
+            "assertion": "FTX entered bankruptcy proceedings in November 2022.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:event:sentence",
+            "field_path": "events[event:ftx:sentence]",
+            "source_ids": [
+              "source:ftx:doj-sentence"
+            ],
+            "evidence_locator": "DOJ sentencing announcement.",
+            "assertion": "Bankman-Fried was sentenced to 25 years and ordered to forfeit more than $11 billion.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:event:cftc-judgment",
+            "field_path": "events[event:ftx:cftc-judgment]",
+            "source_ids": [
+              "source:ftx:cftc"
+            ],
+            "evidence_locator": "CFTC final judgment announcement.",
+            "assertion": "The CFTC judgment ordered $12.7 billion split between restitution and disgorgement.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:ftx:event:fifth-distribution",
+            "field_path": "events[event:ftx:fifth-distribution]",
+            "source_ids": [
+              "source:ftx:distribution"
+            ],
+            "evidence_locator": "Fifth distribution announcement.",
+            "assertion": "The Recovery Trust announced the fifth distribution for July 31, 2026.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          }
+        ],
+        "freshness": {
+          "state": "current",
+          "last_reviewed_at": "2026-08-03T19:00:00Z",
+          "next_review_at": "2026-08-10T19:00:00Z",
+          "field_reviews": []
+        },
+        "quality": {
+          "publication_state": "review",
+          "completeness_pct": 100,
+          "confidence": "high",
+          "unsourced_fields": [
+            "Universal customer recovery percentage",
+            "Recipient-level payment completion",
+            "Final estate cost",
+            "Final timing for all disputed claims"
+          ]
+        },
+        "extensions": {
+          "legacy_origin": "dead_exchanges",
+          "methodology_notes": [
+            "Freshness records evidence assembly and source verification, not human approval; every claim remains pending until an editor reviews it.",
+            "Corporate reports, proof-of-reserves exercises, court records and regulator orders answer different questions and are not treated as interchangeable.",
+            "FTX.com, FTX.US, the Recovery Trust and FTX Digital Markets Bahamas are not collapsed into one legal process.",
+            "Recovery percentages are labeled by claim class and petition-date dollar basis."
+          ]
+        }
+      },
+      "legacy": {
+        "lifecycle": "dead",
+        "verdict": "closed_bankruptcy_recovery",
+        "metric_label": "Classes 6A and 6B cumulative petition-date dollar recovery",
+        "metric_type": "creditor_recovery",
+        "metric_unit": "percent",
+        "current_metric": 103,
+        "why": "FTX collapsed because customer assets were misused through hidden Alameda privileges and concentrated, deceptive control. Falling FTT and withdrawals exposed and amplified the failure; they did not create the underlying misconduct.",
+        "outlook": "Closed. Track completed, class-specific distributions across the U.S. and Bahamas processes; do not equate petition-date dollar recovery with return of original crypto or universal repayment."
+      }
+    },
+    {
+      "table": "dead_exchanges",
+      "slug": "bittrex",
+      "canonical_profile": {
+        "schema": "chaindump-entity-profile",
+        "version": 1,
+        "identity": {
+          "id": "cex:bittrex",
+          "type": "cex",
+          "slug": "bittrex",
+          "name": "Bittrex",
+          "aliases": [
+            "Bittrex Inc.",
+            "Bittrex Global"
+          ]
+        },
+        "classification": {
+          "subtype": "closed_centralized_exchange_group",
+          "tags": [
+            "custodial",
+            "closed",
+            "regulatory_pressure",
+            "liquidation"
+          ],
+          "chains": [],
+          "jurisdictions": [
+            "United States",
+            "Liechtenstein",
+            "Bermuda"
+          ]
+        },
+        "status": {
+          "operating_state": "closed_recovery_processes",
+          "as_of": "2026-08-03",
+          "claim_ids": [
+            "claim:bittrex:status"
+          ]
+        },
+        "outcome": {
+          "label": "closed_regulatory_and_business_wind_down",
+          "as_of": "2026-08-03",
+          "rule_id": "exchange-lifecycle-v1",
+          "confidence": "medium",
+          "claim_ids": [
+            "claim:bittrex:outcome"
+          ]
+        },
+        "analysis": {
+          "sections": {
+            "what_it_is": {
+              "body": "“Bittrex” now describes several closed businesses and recovery tracks, not one live exchange. Bittrex Inc. operated the U.S. venue. Bittrex Global GmbH served international customers through Liechtenstein, while Bittrex Global (Bermuda) Ltd entered a separate Bermuda liquidation. They are separate legal entities, so one settlement, balance or recovery process must not be assigned automatically to the others.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bittrex:section:what_it_is:1",
+                "claim:bittrex:section:what_it_is:2"
+              ]
+            },
+            "what_happened": {
+              "body": "Bittrex Inc. stopped U.S. trading in April 2023 and entered bankruptcy in May. Bittrex Global later stopped international trading in December 2023. Earlier, Bittrex Inc. agreed to a $24.28 million OFAC sanctions settlement in 2022, and Bittrex Inc. plus Bittrex Global GmbH reached a $24 million SEC settlement in 2023. These are separate remedies with different legal scopes, not one $48 million fine against every Bittrex entity.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bittrex:section:what_happened:1",
+                "claim:bittrex:section:what_happened:2"
+              ]
+            },
+            "why_this_outcome": {
+              "body": "The evidence supports a combined regulatory-and-business wind-down, not one proven insolvency story for the whole brand. U.S. sanctions and securities cases raised compliance cost and legal risk. Management then closed the U.S. venue and later the international exchange. Bermuda court records concern liquidation governance and creditor treatment; they do not show the trading venue has revived.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bittrex:section:why_this_outcome:1",
+                "claim:bittrex:section:why_this_outcome:2"
+              ]
+            },
+            "strategic_choices": {
+              "body": "Bittrex built a broad-token custodial exchange and served U.S. customers through Bittrex Inc. Its controls did not prevent the sanctions violations described by OFAC, and the SEC alleged the companies coordinated with issuers to remove problematic public statements before listings. Rather than continue the U.S. fight, Bittrex exited U.S. trading and settled without admitting or denying the SEC allegations, then wound down the international venue.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bittrex:section:strategic_choices:1",
+                "claim:bittrex:section:strategic_choices:2"
+              ]
+            },
+            "operating_model": {
+              "body": "The venues used a conventional custodial exchange model: customer assets and orders depended on centralized accounts, wallets and compliance systems. Once trading stopped, customers moved into withdrawal, bankruptcy or liquidation workflows controlled by the relevant legal entity and court. A customer claim against one Bittrex company is not automatically a claim against another.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bittrex:section:operating_model:1",
+                "claim:bittrex:section:operating_model:2"
+              ]
+            },
+            "token_and_value_capture": {
+              "body": "Bittrex did not launch a Bittrex venue token. The businesses captured value through exchange fees and corporate ownership rather than a token that shared revenue or governed the venue. That avoids an exchange-token reflexivity problem like FTT, but it did not solve regulatory cost, compliance controls or the loss of a durable competitive position.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bittrex:section:token_and_value_capture:1",
+                "claim:bittrex:section:token_and_value_capture:2"
+              ]
+            },
+            "counterfactual": {
+              "body": "Stronger sanctions screening, clearer listing governance and earlier regulatory investment could have reduced the enforcement burden. A sharper product advantage or larger institutional franchise might have made that compliance investment economically worthwhile. The record does not establish that either change would have kept every Bittrex entity open, and token launch would not have corrected the documented control failures.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bittrex:section:counterfactual:1",
+                "claim:bittrex:section:counterfactual:2"
+              ]
+            },
+            "risks_and_unknowns": {
+              "body": "Former customers must identify the entity that held their account, the governing court and the applicable deadline. Bermuda and Liechtenstein proceedings should not be merged, and a Bermuda ruling about liquidators or shareholders is not a universal customer-recovery percentage. The reviewed sources do not provide one current, verified recovery rate for all Bittrex users or a single audited group balance sheet.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bittrex:section:risks_and_unknowns:1",
+                "claim:bittrex:section:risks_and_unknowns:2"
+              ]
+            },
+            "lifecycle": {
+              "body": "Bittrex moved from a long-running U.S. altcoin exchange to a staged closure. The U.S. venue ceased trading and entered bankruptcy in 2023; the international venue stopped trading later that year. In 2026, Bermuda appellate litigation remained active around the liquidation of Bittrex Global (Bermuda) Ltd. That continuing court activity is recovery administration, not proof of renewed exchange operations.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bittrex:section:lifecycle:1",
+                "claim:bittrex:section:lifecycle:2"
+              ]
+            },
+            "outlook_and_watch": {
+              "body": "The exchange outlook is closed; the remaining work is legal and creditor administration. Watch entity-specific court orders, distribution notices, claim deadlines, undistributed balances and final dissolution. Any future business using the Bittrex name should be treated as a new legal and operating claim until ownership, licences, customer assets and management are verified.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:bittrex:section:outlook_and_watch:1",
+                "claim:bittrex:section:outlook_and_watch:2"
+              ]
+            }
+          }
+        },
+        "metrics": [
+          {
+            "id": "metric:bittrex:ofac-settlement:2022-10-11",
+            "dimension": "regulatory_fines",
+            "label": "2022 OFAC settlement by Bittrex Inc.",
+            "value": 24280829.2,
+            "unit": "USD",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2022-10-11",
+              "definition": "One-time OFAC settlement by Bittrex Inc."
+            },
+            "as_of": "2022-10-11",
+            "method": "Regulator settlement announcement.",
+            "scope": {
+              "product": "Bittrex Inc. sanctions compliance",
+              "jurisdictions": [
+                "United States"
+              ]
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:bittrex:metric:ofac-settlement"
+            ],
+            "quality_flags": [
+              "regulator_settlement",
+              "entity_specific"
+            ]
+          },
+          {
+            "id": "metric:bittrex:sec-settlement:2023-08-10",
+            "dimension": "regulatory_fines",
+            "label": "2023 SEC settlement by Bittrex Inc. and Bittrex Global GmbH",
+            "value": 24000000,
+            "unit": "USD",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2023-08-10",
+              "definition": "Joint and several settlement amount in the 2023 SEC case."
+            },
+            "as_of": "2023-08-10",
+            "method": "Regulator settlement announcement.",
+            "scope": {
+              "product": "U.S. securities enforcement case",
+              "jurisdictions": [
+                "United States"
+              ]
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:bittrex:metric:sec-settlement"
+            ],
+            "quality_flags": [
+              "regulator_settlement",
+              "entity_specific",
+              "not_added_to_ofac_metric"
+            ]
+          }
+        ],
+        "events": [
+          {
+            "id": "event:bittrex:ofac-settlement",
+            "type": "regulatory_settlement",
+            "date": "2022-10-11",
+            "description": "Bittrex Inc. agreed to pay $24.28 million to settle OFAC sanctions-related liability.",
+            "claim_ids": [
+              "claim:bittrex:event:ofac-settlement"
+            ]
+          },
+          {
+            "id": "event:bittrex:us-closure",
+            "type": "venue_closure",
+            "date": "2023-04-30",
+            "description": "Bittrex Inc. ceased U.S. trading before entering Chapter 11 proceedings.",
+            "claim_ids": [
+              "claim:bittrex:event:us-closure"
+            ]
+          },
+          {
+            "id": "event:bittrex:sec-settlement",
+            "type": "regulatory_settlement",
+            "date": "2023-08-10",
+            "description": "Bittrex Inc. and Bittrex Global GmbH agreed to a $24 million SEC settlement without admitting or denying the allegations.",
+            "claim_ids": [
+              "claim:bittrex:event:sec-settlement"
+            ]
+          },
+          {
+            "id": "event:bittrex:global-closure",
+            "type": "venue_closure",
+            "date": "2023-12-04",
+            "description": "Bittrex Global stopped trading and moved customers into withdrawal and liquidation processes.",
+            "claim_ids": [
+              "claim:bittrex:event:global-closure"
+            ]
+          },
+          {
+            "id": "event:bittrex:bermuda-appeal",
+            "type": "liquidation_litigation",
+            "date": "2026-03-01",
+            "description": "A Bermuda Court of Appeal judgment addressed the liquidation of Bittrex Global (Bermuda) Ltd.",
+            "claim_ids": [
+              "claim:bittrex:event:bermuda-appeal"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "id": "source:bittrex:sec-settlement",
+            "title": "Bittrex and former CEO settle SEC charges",
+            "url": "https://www.sec.gov/newsroom/press-releases/2023-150",
+            "publisher": "U.S. Securities and Exchange Commission",
+            "published_at": "2023-08-10",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:bittrex:sec-charge",
+            "title": "SEC charges Bittrex and former CEO",
+            "url": "https://www.sec.gov/newsroom/press-releases/2023-78",
+            "publisher": "U.S. Securities and Exchange Commission",
+            "published_at": "2023-04-17",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:bittrex:ofac",
+            "title": "OFAC announces Bittrex settlement",
+            "url": "https://ofac.treasury.gov/recent-actions/20221011",
+            "publisher": "U.S. Department of the Treasury",
+            "published_at": "2022-10-11",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:bittrex:bermuda-appeal",
+            "title": "Bittrex Global (Bermuda) Ltd Court of Appeal judgment",
+            "url": "https://www.gov.bm/sites/default/files/2026-03/Bittrex-Global.pdf",
+            "publisher": "Government of Bermuda",
+            "published_at": "2026-03-01",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:bittrex:bermuda-ruling",
+            "title": "In re Bittrex Global (Bermuda) Ltd",
+            "url": "https://www.gov.bm/sites/default/files/2025-11/2024-No52-In-ReBittrex-Global.pdf",
+            "publisher": "Supreme Court of Bermuda",
+            "published_at": "2025-11-01",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:bittrex:customer",
+            "title": "Important information for Bittrex Global Bermuda customers",
+            "url": "https://bittrexglobal.zendesk.com/hc/en-us/articles/17327877118621-Important-Information-for-Bittrex-Global-Bermuda-Customers",
+            "publisher": "Bittrex Global",
+            "published_at": null,
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          },
+          {
+            "id": "source:bittrex:analysis",
+            "title": "Bermuda case insights: Re Bittrex Global",
+            "url": "https://www.conyers.com/publications/view/bermuda-case-insights-re-bittrex-global-bermuda-ltd-in-liquidation/",
+            "publisher": "Conyers",
+            "published_at": "2025-12-08",
+            "accessed_at": "2026-08-03T19:00:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "resolving": true,
+            "checked_at": "2026-08-03T19:00:00Z",
+            "content_hash": null
+          }
+        ],
+        "claims": [
+          {
+            "id": "claim:bittrex:status",
+            "field_path": "status.operating_state",
+            "source_ids": [
+              "source:bittrex:bermuda-appeal",
+              "source:bittrex:customer",
+              "source:bittrex:sec-settlement"
+            ],
+            "evidence_locator": "Regulatory case, customer notice and current Bermuda proceeding.",
+            "assertion": "The Bittrex trading venues are closed, while separate legal and recovery processes continue.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:outcome",
+            "field_path": "outcome.label",
+            "source_ids": [
+              "source:bittrex:sec-settlement",
+              "source:bittrex:ofac",
+              "source:bittrex:bermuda-ruling"
+            ],
+            "evidence_locator": "Regulatory settlements and liquidation record.",
+            "assertion": "Bittrex closed through a staged U.S. and international wind-down amid regulatory and business pressure.",
+            "support_direction": "supports",
+            "note": "Analyst lifecycle classification, not a token-price recommendation.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:what_it_is:1",
+            "field_path": "analysis.sections.what_it_is.body",
+            "source_ids": [
+              "source:bittrex:sec-charge",
+              "source:bittrex:sec-settlement"
+            ],
+            "evidence_locator": "SEC entity and platform descriptions.",
+            "assertion": "Bittrex Inc. and Bittrex Global GmbH were separately named exchange entities in the SEC case.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:what_it_is:2",
+            "field_path": "analysis.sections.what_it_is.body",
+            "source_ids": [
+              "source:bittrex:bermuda-appeal",
+              "source:bittrex:bermuda-ruling"
+            ],
+            "evidence_locator": "Bermuda judgments and entity naming.",
+            "assertion": "Bittrex Global (Bermuda) Ltd follows its own Bermuda liquidation and court process.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:what_happened:1",
+            "field_path": "analysis.sections.what_happened.body",
+            "source_ids": [
+              "source:bittrex:sec-settlement",
+              "source:bittrex:customer"
+            ],
+            "evidence_locator": "SEC and customer-facing closure records.",
+            "assertion": "The U.S. and international venues closed on different timetables and through different entities.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:what_happened:2",
+            "field_path": "analysis.sections.what_happened.body",
+            "source_ids": [
+              "source:bittrex:ofac",
+              "source:bittrex:sec-settlement"
+            ],
+            "evidence_locator": "Regulator settlement announcements.",
+            "assertion": "The OFAC and SEC settlements had distinct amounts, entities and legal issues.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:why_this_outcome:1",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "source_ids": [
+              "source:bittrex:ofac",
+              "source:bittrex:sec-charge",
+              "source:bittrex:sec-settlement"
+            ],
+            "evidence_locator": "Regulator findings and settlements.",
+            "assertion": "Bittrex faced separate sanctions-compliance and securities-regulation actions before closure.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:why_this_outcome:2",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "source_ids": [
+              "source:bittrex:bermuda-appeal",
+              "source:bittrex:bermuda-ruling"
+            ],
+            "evidence_locator": "Court proceeding and orders.",
+            "assertion": "Current Bermuda litigation concerns liquidation administration rather than exchange operation.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:strategic_choices:1",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "source_ids": [
+              "source:bittrex:ofac"
+            ],
+            "evidence_locator": "OFAC enforcement announcement.",
+            "assertion": "OFAC documented sanctions-screening failures at Bittrex Inc.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:strategic_choices:2",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "source_ids": [
+              "source:bittrex:sec-settlement",
+              "source:bittrex:sec-charge"
+            ],
+            "evidence_locator": "SEC charge and settlement terms.",
+            "assertion": "The SEC settlement resolved exchange and listing allegations without admission or denial.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:operating_model:1",
+            "field_path": "analysis.sections.operating_model.body",
+            "source_ids": [
+              "source:bittrex:sec-charge",
+              "source:bittrex:customer"
+            ],
+            "evidence_locator": "Regulator entity description and customer notice.",
+            "assertion": "Bittrex operated custodial trading platforms through distinct U.S. and international entities.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:operating_model:2",
+            "field_path": "analysis.sections.operating_model.body",
+            "source_ids": [
+              "source:bittrex:customer",
+              "source:bittrex:bermuda-ruling"
+            ],
+            "evidence_locator": "Bermuda customer and court materials.",
+            "assertion": "Post-closure customer rights depend on the specific entity and legal process.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:token_and_value_capture:1",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "source_ids": [
+              "source:bittrex:sec-charge",
+              "source:bittrex:sec-settlement"
+            ],
+            "evidence_locator": "Business and charged-product descriptions.",
+            "assertion": "The reviewed Bittrex sources do not identify a Bittrex exchange token.",
+            "support_direction": "context_only",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:token_and_value_capture:2",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "source_ids": [
+              "source:bittrex:ofac",
+              "source:bittrex:sec-settlement"
+            ],
+            "evidence_locator": "Enforcement scope and settlement terms.",
+            "assertion": "Regulatory and operating outcomes were tied to the companies and controls, not a venue-token mechanism.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:counterfactual:1",
+            "field_path": "analysis.sections.counterfactual.body",
+            "source_ids": [
+              "source:bittrex:ofac",
+              "source:bittrex:sec-charge"
+            ],
+            "evidence_locator": "Enforcement findings and allegations.",
+            "assertion": "Better sanctions and listing controls address failures described by OFAC and the SEC.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:counterfactual:2",
+            "field_path": "analysis.sections.counterfactual.body",
+            "source_ids": [
+              "source:bittrex:sec-settlement",
+              "source:bittrex:bermuda-ruling"
+            ],
+            "evidence_locator": "Settlement and later liquidation record.",
+            "assertion": "Whether stronger economics would have prevented closure remains unproven.",
+            "support_direction": "context_only",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:risks_and_unknowns:1",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "source_ids": [
+              "source:bittrex:customer",
+              "source:bittrex:bermuda-appeal"
+            ],
+            "evidence_locator": "Customer guidance and appellate judgment.",
+            "assertion": "Customer recovery depends on the specific Bittrex entity and proceeding.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:risks_and_unknowns:2",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "source_ids": [
+              "source:bittrex:bermuda-appeal",
+              "source:bittrex:bermuda-ruling"
+            ],
+            "evidence_locator": "Entity-specific liquidation litigation.",
+            "assertion": "No universal recovery percentage can be inferred from the Bermuda court record.",
+            "support_direction": "context_only",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:lifecycle:1",
+            "field_path": "analysis.sections.lifecycle.body",
+            "source_ids": [
+              "source:bittrex:sec-settlement",
+              "source:bittrex:customer"
+            ],
+            "evidence_locator": "Regulatory and customer closure records.",
+            "assertion": "The Bittrex brand’s trading operations ended through staged U.S. and international closures.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:lifecycle:2",
+            "field_path": "analysis.sections.lifecycle.body",
+            "source_ids": [
+              "source:bittrex:bermuda-appeal"
+            ],
+            "evidence_locator": "2026 Court of Appeal judgment.",
+            "assertion": "Bermuda appellate litigation continued in 2026 for the named Bermuda company.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:outlook_and_watch:1",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "source_ids": [
+              "source:bittrex:customer",
+              "source:bittrex:bermuda-appeal"
+            ],
+            "evidence_locator": "Customer notice and 2026 court process.",
+            "assertion": "Current evidence supports closed trading venues with continuing recovery administration.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:section:outlook_and_watch:2",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "source_ids": [
+              "source:bittrex:sec-settlement",
+              "source:bittrex:bermuda-ruling"
+            ],
+            "evidence_locator": "Existing entity and legal-process boundaries.",
+            "assertion": "A future use of the Bittrex name would require fresh entity and licence verification.",
+            "support_direction": "context_only",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:metric:ofac-settlement",
+            "field_path": "metrics[metric:bittrex:ofac-settlement:2022-10-11].value",
+            "source_ids": [
+              "source:bittrex:ofac"
+            ],
+            "evidence_locator": "OFAC settlement amount and entity.",
+            "assertion": "Bittrex Inc. agreed to pay $24,280,829.20 to settle OFAC sanctions-related liability.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:metric:sec-settlement",
+            "field_path": "metrics[metric:bittrex:sec-settlement:2023-08-10].value",
+            "source_ids": [
+              "source:bittrex:sec-settlement"
+            ],
+            "evidence_locator": "SEC settlement amount and entity scope.",
+            "assertion": "Bittrex Inc. and Bittrex Global GmbH agreed to a $24 million SEC settlement.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:event:ofac-settlement",
+            "field_path": "events[event:bittrex:ofac-settlement]",
+            "source_ids": [
+              "source:bittrex:ofac"
+            ],
+            "evidence_locator": "OFAC announcement.",
+            "assertion": "Bittrex Inc. entered the OFAC settlement in October 2022.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:event:us-closure",
+            "field_path": "events[event:bittrex:us-closure]",
+            "source_ids": [
+              "source:bittrex:sec-settlement"
+            ],
+            "evidence_locator": "SEC settlement chronology.",
+            "assertion": "Bittrex ended U.S. trading in April 2023.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:event:sec-settlement",
+            "field_path": "events[event:bittrex:sec-settlement]",
+            "source_ids": [
+              "source:bittrex:sec-settlement"
+            ],
+            "evidence_locator": "SEC settlement announcement.",
+            "assertion": "The two named Bittrex entities settled the SEC case in August 2023.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:event:global-closure",
+            "field_path": "events[event:bittrex:global-closure]",
+            "source_ids": [
+              "source:bittrex:customer"
+            ],
+            "evidence_locator": "Bittrex Global customer notice.",
+            "assertion": "Bittrex Global stopped trading in December 2023.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:bittrex:event:bermuda-appeal",
+            "field_path": "events[event:bittrex:bermuda-appeal]",
+            "source_ids": [
+              "source:bittrex:bermuda-appeal"
+            ],
+            "evidence_locator": "2026 appellate judgment.",
+            "assertion": "Bermuda appellate litigation remained active in 2026 for the named Bermuda entity.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          }
+        ],
+        "freshness": {
+          "state": "current",
+          "last_reviewed_at": "2026-08-03T19:00:00Z",
+          "next_review_at": "2026-08-10T19:00:00Z",
+          "field_reviews": []
+        },
+        "quality": {
+          "publication_state": "review",
+          "completeness_pct": 100,
+          "confidence": "high",
+          "unsourced_fields": [
+            "Universal customer recovery percentage",
+            "Consolidated audited group balance sheet",
+            "Final dissolution dates for every entity",
+            "Final Liechtenstein distributions"
+          ]
+        },
+        "extensions": {
+          "legacy_origin": "dead_exchanges",
+          "methodology_notes": [
+            "Freshness records evidence assembly and source verification, not human approval; every claim remains pending until an editor reviews it.",
+            "Corporate reports, proof-of-reserves exercises, court records and regulator orders answer different questions and are not treated as interchangeable.",
+            "Bittrex Inc., Bittrex Global GmbH and Bittrex Global (Bermuda) Ltd are modeled as separate legal and recovery boundaries.",
+            "OFAC and SEC settlement amounts are not summed into a fictional group-wide fine."
+          ]
+        }
+      },
+      "legacy": {
+        "lifecycle": "dead",
+        "verdict": "closed_recovery_processes",
+        "metric_label": "2023 SEC settlement",
+        "metric_type": "regulatory_fines",
+        "metric_unit": "USD",
+        "current_metric": 24000000,
+        "why": "Bittrex closed through a staged U.S. and international wind-down amid sanctions and securities enforcement, compliance cost and business pressure. The separate legal entities and recovery tracks must not be treated as one bankruptcy.",
+        "outlook": "Trading venues are closed. Track entity-specific court orders, withdrawals, distributions and dissolution in the United States, Liechtenstein and Bermuda."
+      }
+    }
+  ]
+}
