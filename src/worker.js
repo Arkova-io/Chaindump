@@ -35,6 +35,7 @@ import {
   ENTITY_TYPES,
   METRIC_DIMENSIONS,
 } from './lib/entity-profile.js';
+import { projectFieldCitedNftProfile } from './lib/nft-profile-projection.js';
 import { normalizeExchangeCase, summarizeExchangeCases } from './lib/exchange-analysis.js';
 import { buildNftLifecycleAnalysis } from './lib/nft-lifecycle-analysis.js';
 import {
@@ -3838,6 +3839,16 @@ async function nftEntityProfile(type, slug) {
     profile.evidence_policy?.last_verified_at,
     row.updated_at,
   );
+  const projection = projectFieldCitedNftProfile({
+    slug,
+    profile: rawProfile,
+    sources,
+    asOf,
+  });
+  const metricClaimFields = {
+    supply: 'profile.evidence.supply_or_mint',
+  };
+  const claimIdByPath = new Map(projection.claims.map((claim) => [claim.field_path, claim.id]));
   const metricSpecs = [
     ['secondary_volume_usd', 'secondary_volume', 'Secondary volume', 'usd'],
     ['mint_raise_usd', 'mint_raise', 'Mint raise', 'usd'],
@@ -3850,7 +3861,11 @@ async function nftEntityProfile(type, slug) {
     dimension, label, value: profile[field], unit,
     currency: unit === 'usd' ? 'USD' : null,
     as_of: asOf,
-  })).filter(Boolean);
+    claim_ids: metricClaimFields[dimension]
+      && claimIdByPath.has(metricClaimFields[dimension])
+      ? [claimIdByPath.get(metricClaimFields[dimension])]
+      : [],
+  })).filter((metric) => metric && metric.claim_ids.length > 0);
   const forensic = profile.forensic_analysis || {};
   return profileCandidate({
     identity: { id: `${type}:${slug}`, type, slug, name: row.name, aliases: [] },
@@ -3862,7 +3877,7 @@ async function nftEntityProfile(type, slug) {
       confidence: null,
       claim_ids: [],
     },
-    sections: {
+    sections: Object.keys(projection.sections).length ? projection.sections : {
       what_it_is: profileProse(profile.collection_description, profile.business),
       what_happened: profileProse(profile.community_history, profile.analysis),
       why_this_outcome: profileProse(forensic.why, profile.why, profile.risks),
@@ -3874,8 +3889,11 @@ async function nftEntityProfile(type, slug) {
       lifecycle: profileProse(profile.analysis),
       outlook_and_watch: profileProse(profile.outlook, forensic.watch, profile.watch),
     },
+    section_dates: projection.section_dates,
+    section_claim_ids: projection.section_claim_ids,
     as_of: asOf,
     metrics,
+    claims: projection.claims,
     source_values: [sources],
     freshness: {
       state: freshness?.state || 'unknown',

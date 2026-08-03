@@ -497,19 +497,28 @@ function legacySource(source, index) {
   const value = typeof source === 'string' ? { url: source } : (source || {});
   const rawTier = value.tier || value.source_tier || 'unknown';
   const rawRole = value.role || value.source_role || 'unknown';
+  const rawAccess = String(value.access_state || '').toLowerCase();
+  const accessState = (() => {
+    if (SOURCE_ACCESS_STATES.has(rawAccess)) return rawAccess;
+    if (['accessible', 'access_verified', 'resolving'].includes(rawAccess)) return 'reachable';
+    if (['archived', 'archive_verified'].includes(rawAccess)) return 'archived';
+    if (rawAccess || value.resolving === false || value.reachable === false) return 'unreachable';
+    if (value.resolving === true || value.reachable === true) return 'reachable';
+    return 'unchecked';
+  })();
   return {
     id: value.id || value.source_id || `legacy-source-${index + 1}`,
     title: value.title ?? null,
     url: value.url || value.canonical_url || null,
     publisher: value.publisher ?? null,
     published_at: value.published_at ?? null,
-    accessed_at: value.accessed_at || value.checked_at || null,
+    accessed_at: value.accessed_at || value.access_checked_at
+      || value.checked_at || value.last_verified_at || null,
     archive_url: value.archive_url ?? null,
     tier: SOURCE_TIERS.has(rawTier) ? rawTier : 'unknown',
     role: SOURCE_ROLES.has(rawRole) ? rawRole : 'unknown',
-    access_state: value.access_state
-      || (value.resolving === true || value.reachable === true ? 'reachable' : 'unchecked'),
-    checked_at: value.checked_at ?? null,
+    access_state: accessState,
+    checked_at: value.checked_at || value.access_checked_at || value.last_verified_at || null,
     content_hash: value.content_hash ?? null,
   };
 }
