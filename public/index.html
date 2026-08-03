@@ -1503,8 +1503,10 @@ function exchangeMetric(row) {
   if (row.metric == null) return '—';
   const unit = String(row.metricUnit || '').toLowerCase();
   if (unit === 'usd' || !unit) return fmtUsd(row.metric);
+  if (unit === 'usd_per_token') return `$${fmtTok(row.metric)} per token`;
+  if (unit === 'btc_equivalent') return `${fmtNum(row.metric)} BTC equivalent`;
   if (unit === 'percent') return `${Number(row.metric).toLocaleString()}%`;
-  return `${fmtNum(row.metric)} ${esc(row.metricUnit)}`;
+  return `${fmtNum(row.metric)} ${esc(exchangeLabel(row.metricUnit))}`;
 }
 function lifecycleLabel(value) {
   if (value === 'successful') return 'successful';
@@ -1633,7 +1635,7 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
   const deployments = Array.isArray(row.analysis?.chains) ? row.analysis.chains.filter(Boolean) : [];
   if (deployments.length) fields.push(`<div class="gfield"><span class="gfl">Where it ran</span> ${esc(deployments.join(' · '))}</div>`);
   if (row.token?.launch_date) fields.push(`<div class="gfield"><span class="gfl">Token launch</span> ${esc(row.token.launch_date)}</div>`);
-  const metricContract = [row.metricType, row.metricUnit, exchangeLabel(row.metricWindow)];
+  const metricContract = [exchangeLabel(row.metricType), exchangeLabel(row.metricUnit), exchangeLabel(row.metricWindow)];
   if (row.metricAsOf) metricContract.push(`as of ${row.metricAsOf}`);
   metricContract.push(row.metricObservedAt ? `observed ${row.metricObservedAt}` : 'observation time unknown');
   fields.push(`<div class="gfield"><span class="gfl">How we measured it</span> ${metricContract.map(esc).join(' · ')}</div>`);
