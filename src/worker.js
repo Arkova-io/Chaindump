@@ -36,6 +36,7 @@ import {
   METRIC_DIMENSIONS,
 } from './lib/entity-profile.js';
 import { projectFieldCitedNftProfile } from './lib/nft-profile-projection.js';
+import { projectCasinoProfile } from './lib/casino-profile-projection.js';
 import { normalizeExchangeCase, summarizeExchangeCases } from './lib/exchange-analysis.js';
 import { buildNftLifecycleAnalysis } from './lib/nft-lifecycle-analysis.js';
 import {
@@ -3973,6 +3974,11 @@ async function casinoEntityProfile(slug) {
   ]);
   const rawSynthesis = syntheses[0] || {};
   const outlook = profileJson(rawSynthesis.outlook, {});
+  const embeddedProfile = embeddedCanonicalEntityProfile(outlook, {
+    type: 'web3_casino',
+    slug,
+  });
+  if (embeddedProfile) return embeddedProfile;
   const sources = [...new Map(evidenceRows.map((evidence) => [evidence.source_id, {
     id: evidence.source_id,
     title: evidence.title,
@@ -4013,11 +4019,6 @@ async function casinoEntityProfile(slug) {
     forensicAnalysis: outlook.forensic_analysis,
   });
   const publicCase = publicCasinoCase(row, evidenceRows, depth);
-  const publicSynthesis = publicCasinoSynthesis({
-    ...rawSynthesis,
-    outlook,
-    forensic_analysis: outlook.forensic_analysis || null,
-  }, depth) || {};
   const asOf = latestProfileDate(publicCase.status_as_of, publicCase.outcome_as_of, publicCase.last_reviewed, rawSynthesis.reviewed_at);
   const metrics = observations.map((observation) => profileMetric('web3_casino', {
     id: observation.observation_id,
@@ -4045,7 +4046,16 @@ async function casinoEntityProfile(slug) {
     amount_usd: event.amount_usd,
     description: event.description,
     claim_ids: profileJson(event.source_claim_ids, []),
-  }));
+  })).filter((event) => /^\d{4}-\d{2}-\d{2}(?:T|$)/.test(event.date || ''));
+  const projection = projectCasinoProfile({
+    slug,
+    caseRow: publicCase,
+    synthesis: { ...rawSynthesis, outlook },
+    sources,
+    claims,
+    events,
+    asOf,
+  });
   return buildLegacyEntityProfile({
     identity: { id: `web3_casino:${slug}`, type: 'web3_casino', slug, name: publicCase.brand_name, aliases: [] },
     classification: {
@@ -4055,45 +4065,34 @@ async function casinoEntityProfile(slug) {
       jurisdictions: [],
     },
     status: {
-      operating_state: publicCase.status,
-      as_of: publicCase.status_as_of,
-      claim_ids: claims.filter((claim) => /(^|\.)status$/.test(claim.field_path)).map((claim) => claim.id),
+      operating_state: projection.status_claim_ids.length ? publicCase.status : null,
+      as_of: projection.status_claim_ids.length ? publicCase.status_as_of : null,
+      claim_ids: projection.status_claim_ids,
     },
     outcome: {
-      label: publicCase.outcome_label,
-      as_of: publicCase.outcome_as_of,
-      rule_id: publicCase.outcome_rule_id,
-      confidence: publicCase.confidence,
-      claim_ids: claims.filter((claim) => claim.field_path.includes('outcome')).map((claim) => claim.id),
+      label: projection.outcome_claim_ids.length ? publicCase.outcome_label : null,
+      as_of: projection.outcome_claim_ids.length ? publicCase.outcome_as_of : null,
+      rule_id: projection.outcome_claim_ids.length ? publicCase.outcome_rule_id : null,
+      confidence: projection.outcome_claim_ids.length ? publicCase.confidence : null,
+      claim_ids: projection.outcome_claim_ids,
     },
-    sections: {
-      what_it_is: profileProse(publicCase.product_scope_note),
-      what_happened: profileProse(publicSynthesis.present_situation),
-      why_this_outcome: profileProse(publicSynthesis.success_failure_hypotheses, publicSynthesis.forensic_analysis?.why),
-      strategic_choices: publicSynthesis.forensic_analysis?.strategic_choices,
-      operating_model: profileProse(publicSynthesis.business_mechanism, publicSynthesis.chain_dependence),
-      token_and_value_capture: profileProse(publicSynthesis.token_contribution),
-      counterfactual: profileProse(publicSynthesis.counterfactual, publicSynthesis.forensic_analysis?.counterfactual),
-      risks_and_unknowns: profileProse(publicSynthesis.risk_legal_posture),
-      lifecycle: profileProse(publicSynthesis.present_situation),
-      outlook_and_watch: publicSynthesis.outlook || publicSynthesis.forensic_analysis?.watch,
-    },
+    sections: projection.sections,
     as_of: asOf,
-    section_claim_ids: Object.fromEntries(
-      ['what_it_is', 'what_happened', 'why_this_outcome', 'operating_model', 'token_and_value_capture', 'counterfactual', 'risks_and_unknowns', 'lifecycle']
-        .map((key) => [key, profileJson(rawSynthesis.source_claim_ids, [])]),
-    ),
+    section_dates: projection.section_dates,
+    section_claim_ids: projection.section_claim_ids,
     metrics,
     events: canonicalEvents,
     sources,
-    claims,
+    claims: [...claims, ...projection.claims],
     freshness: profileFreshness(outlook, publicCase, { last_reviewed_at: rawSynthesis.reviewed_at }),
     confidence: publicCase.confidence || 'unknown',
     extensions: {
       legacy_origin: 'casino_cases',
       publication_depth: depth,
       licences: [],
-      structured_analysis: { outlook: publicSynthesis.outlook || null, strategic_choices: publicSynthesis.forensic_analysis?.strategic_choices || null },
+      rich_profile_projection: {
+        supported_section_count: projection.supported_section_count,
+      },
     },
   });
 }

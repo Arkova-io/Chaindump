@@ -7,7 +7,7 @@ const EXPECTED_COUNTS = {
   cex: [30, 0, 27, 1, 2, 28, 46],
   nft_collection: [39, 0, 20, 0, 19, 0, 0],
   ordinals_collection: [12, 0, 7, 0, 5, 0, 0],
-  web3_casino: [29, 0, 29, 0, 0, 10, 11],
+  web3_casino: [29, 0, 0, 0, 29, 0, 0],
   stablecoin: [42, 0, 0, 40, 2, 40, 645],
   rwa: [10, 0, 0, 8, 2, 8, 138],
   depin: [8, 0, 0, 8, 0, 8, 144],
@@ -23,7 +23,7 @@ const RICHEST_CONTROLS = {
   cex: ['binance', 10],
   nft_collection: ['azuki', 10],
   ordinals_collection: ['quantum-cats', 10],
-  web3_casino: ['azuro', 1],
+  web3_casino: ['polymarket-international', 10],
   stablecoin: ['usdt', 10],
   rwa: ['ondo-finance', 10],
   depin: ['geodnet', 5],
@@ -113,23 +113,10 @@ describe('full-corpus canonical profile adapter', () => {
     expect(classes).toEqual({
       source_metadata_debt: 2800,
       citation_debt: 1458,
-      structural_contract_error: 11,
     });
 
     const structural = census.rows.filter((row) => row.validation_error_classes.structural_contract_error);
-    expect(structural.every((row) => row.type === 'web3_casino')).toBe(true);
-    expect(structural.map((row) => row.slug)).toEqual([
-      'bc-game-curacao-small-house',
-      'cloudbet-dot-com',
-      'coinpoker-dot-com',
-      'duelbits-dot-com',
-      'funfair-b2b-platform',
-      'kingtiger-casino',
-      'rollbit-dot-com',
-      'stake-dot-com',
-      'wink-gaming-platform',
-      'winr-protocol-bankroll',
-    ]);
+    expect(structural).toEqual([]);
   });
 
   it('compares each adapter against its richest legacy control row', () => {
