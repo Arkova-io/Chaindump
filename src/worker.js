@@ -37,6 +37,11 @@ import {
 } from './lib/entity-profile.js';
 import { projectFieldCitedNftProfile } from './lib/nft-profile-projection.js';
 import { projectCasinoProfile } from './lib/casino-profile-projection.js';
+import {
+  buildLiveBlockchainProfile,
+  buildLiveStablecoinProfile,
+  canonicalEntitySlug,
+} from './lib/live-profile-adapter.js';
 import { normalizeExchangeCase, summarizeExchangeCases } from './lib/exchange-analysis.js';
 import { buildNftLifecycleAnalysis } from './lib/nft-lifecycle-analysis.js';
 import {
@@ -3659,7 +3664,16 @@ async function blockchainEntityProfile(slug) {
        ORDER BY priority`,
     [slug, slug],
   );
-  if (!rows[0]) return null;
+  if (!rows[0]) {
+    if (!cache.data) cache = await loadSnapshot();
+    const liveChain = (cache.data?.chains || []).find((chain) => (
+      canonicalEntitySlug(chain.key || chain.name) === slug
+      || canonicalEntitySlug(chain.name) === slug
+    ));
+    return liveChain
+      ? buildLiveBlockchainProfile(liveChain, cache.data?.updatedAt || cache.ts)
+      : null;
+  }
   const embeddedProfile = rows
     .map((candidate) => embeddedCanonicalEntityProfile(candidate.profile, {
       type: 'blockchain',
@@ -4133,6 +4147,15 @@ async function simpleEntityProfile(type, slug) {
       [slug],
     );
   }
+  if (!rows[0] && type === 'stablecoin') {
+    const liveStablecoin = (await loadStablecoinRankings()).find((stablecoin) => (
+      canonicalEntitySlug(stablecoin.symbol || stablecoin.name) === slug
+      || canonicalEntitySlug(stablecoin.name) === slug
+    ));
+    return liveStablecoin
+      ? buildLiveStablecoinProfile(liveStablecoin, stablesRankCache.ts)
+      : null;
+  }
   if (!rows[0]) return null;
   const row = rows[0];
   const isRwa = String(row.category || '').startsWith('rwa-');
@@ -4316,26 +4339,43 @@ app.get('/api/markets', wrap(async (req, res) => {
 // Stablecoin rankings — live circulating from DefiLlama + enrichment (issuer/type/backing/audits)
 let stablesRankCache = { ts: 0, data: null };
 const PEG_MECH = { fiatbacked: 'Fiat-backed', 'fiat-backed': 'Fiat-backed', crypto: 'Crypto-backed', 'crypto-backed': 'Crypto-backed', algorithmic: 'Algorithmic' };
+function stablecoinCirculatingValue(asset) {
+  const entry = Object.entries(asset?.circulating || {})
+    .find(([, value]) => Number.isFinite(Number(value)));
+  if (!entry) return { circulating: 0, circulatingNative: null, circulatingPeg: null };
+  const [circulatingPeg, rawValue] = entry;
+  const circulatingNative = Number(rawValue);
+  const rawPrice = asset?.price;
+  const price = rawPrice == null || rawPrice === '' ? null : Number(rawPrice);
+  const circulating = price != null && Number.isFinite(price)
+    ? circulatingNative * price
+    : circulatingPeg === 'peggedUSD' ? circulatingNative : 0;
+  return { circulating, circulatingNative, circulatingPeg };
+}
+async function loadStablecoinRankings() {
+  const now = Date.now();
+  if (!stablesRankCache.data || now - stablesRankCache.ts > 10 * 60 * 1000) {
+    const j = await fetchJson('https://stablecoins.llama.fi/stablecoins?includePrices=true', 20000);
+    const assets = (j && j.peggedAssets) || [];
+    const list = assets.map((a) => ({
+      name: a.name, symbol: a.symbol, gecko: a.gecko_id || null,
+      pegType: a.pegType || null, pegMechanism: PEG_MECH[(a.pegMechanism || '').toLowerCase()] || a.pegMechanism || null,
+      ...stablecoinCirculatingValue(a),
+      price: a.price ?? null, chains: (a.chains || []).slice(0, 6),
+      change7d: a.circulatingPrevWeek ? null : null,
+    })).filter((s) => s.circulating > 1e6).sort((x, y) => y.circulating - x.circulating).slice(0, 50);
+    stablesRankCache = { ts: now, data: list };
+  }
+  return stablesRankCache.data;
+}
 app.get('/api/stablecoins', wrap(async (req, res) => {
   try {
-    const now = Date.now();
-    if (!stablesRankCache.data || now - stablesRankCache.ts > 10 * 60 * 1000) {
-      const j = await fetchJson('https://stablecoins.llama.fi/stablecoins?includePrices=true', 20000);
-      const assets = (j && j.peggedAssets) || [];
-      const list = assets.map((a) => ({
-        name: a.name, symbol: a.symbol, gecko: a.gecko_id || null,
-        pegType: a.pegType || null, pegMechanism: PEG_MECH[(a.pegMechanism || '').toLowerCase()] || a.pegMechanism || null,
-        circulating: (a.circulating && (a.circulating.peggedUSD || Object.values(a.circulating)[0])) || 0,
-        price: a.price || null, chains: (a.chains || []).slice(0, 6),
-        change7d: a.circulatingPrevWeek ? null : null,
-      })).filter((s) => s.circulating > 1e6).sort((x, y) => y.circulating - x.circulating).slice(0, 50);
-      stablesRankCache = { ts: now, data: list };
-    }
+    const rankings = await loadStablecoinRankings();
     let metaMap = {};
     try { (await dbQuery(`SELECT slug, symbol, profile, sources FROM stablecoin_meta`)).forEach((r) => { let p = null; try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {} metaMap[(r.symbol || '').toUpperCase()] = { profile: p, sources: r.sources }; }); } catch (e) {}
     let analysis = null;
     try { const m = await dbQuery(`SELECT v, updated_at FROM graveyard_meta WHERE k='stablecoin_analysis' LIMIT 1`); if (m[0]) analysis = { text: m[0].v, updated_at: m[0].updated_at }; } catch (e) {}
-    const stablecoins = stablesRankCache.data.map((s, i) => ({ rank: i + 1, ...s, meta: metaMap[(s.symbol || '').toUpperCase()] || null }));
+    const stablecoins = rankings.map((s, i) => ({ rank: i + 1, ...s, meta: metaMap[(s.symbol || '').toUpperCase()] || null }));
     const totalMcap = stablecoins.reduce((a, s) => a + (s.circulating || 0), 0);
     res.json({ stablecoins, count: stablecoins.length, totalMcap, analysis });
   } catch (e) {

@@ -512,7 +512,7 @@
     tr.crow:hover{ background:var(--surface); }
     tr.crow td{ display:flex; justify-content:flex-start; align-items:baseline; gap:10px; text-align:left; border:none; padding:6px 14px; }
     tr.crow td::before{ content:attr(data-label); color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; text-align:left; min-width:92px; font-weight:600; }
-    td.rank{ position:absolute; opacity:.5; padding:6px 10px; }
+    td.rank{ position:absolute; opacity:.5; padding:6px 10px; width:36px !important; }
     td.chain{ justify-content:flex-start; padding-left:44px; }
     td.chain::before{ content:none; }
     tr.detailrow td{ display:block; padding:0; }
@@ -797,7 +797,7 @@ const safeUrl = (u) => { const s = String(u == null ? '' : u).trim(); return /^(
 // `sub` is trusted authored copy (it may carry &amp; / <b>); `title` is escaped.
 // ---------------------------------------------------------------------------
 function pageHead(title, sub){
-  return `<div class="pagehead"><div class="pagetitle">${esc(title)}</div><div class="gvintro">${sub}</div></div>`;
+  return `<div class="pagehead"><h2 class="pagetitle">${esc(title)}</h2><div class="gvintro">${sub}</div></div>`;
 }
 function renderMethodology() {
   const el = document.getElementById('methodologyview');
@@ -3132,6 +3132,12 @@ function canonicalProfileHtml(profile) {
     ...(Array.isArray(profile?.classification?.chains) ? profile.classification.chains.map(profilePublicLabel).filter(Boolean) : []),
   ].filter(Boolean);
   const asOf = profileDate(profile?.freshness?.last_reviewed_at || profile?.outcome?.as_of || profile?.status?.as_of);
+  const freshnessState = profile?.freshness?.state;
+  const freshnessSummary = asOf
+    ? (freshnessState === 'stale' || freshnessState === 'review_due'
+      ? `Evidence needs a fresh check · last observed ${asOf}`
+      : `Evidence current through ${asOf}`)
+    : 'The report shows only what the published evidence currently supports.';
   const sections = [];
   const gaps = [];
   PROFILE_SECTION_ORDER.forEach(([key, label]) => {
@@ -3142,7 +3148,10 @@ function canonicalProfileHtml(profile) {
   const sources = canonicalProfileSources(profile);
   if (!sources) gaps.push('evidence');
   const gapLabels = gaps.map((key) => ({
+    what_it_is:'what it is', what_happened:'what happened',
     why_this_outcome:'why this outcome', token_and_value_capture:'token/value capture',
+    strategic_choices:'strategic choices', operating_model:'operating model',
+    counterfactual:'what could have been different', lifecycle:'lifecycle',
     risks_and_unknowns:'risks and unknowns', outlook_and_watch:'outlook and watch signals',
     evidence:'evidence and sources',
   }[key] || normalizedLabel(key)));
@@ -3155,7 +3164,7 @@ function canonicalProfileHtml(profile) {
     <header class="profile-hero">
       <div class="profile-eyebrow">${esc(typeLabel)} research profile</div>
       <div class="profile-title-row"><h2 class="profile-title" id="profileTitle" tabindex="-1">${esc(name)}</h2>${outcome ? `<span class="gverdict ${verdictClass(rawOutcome)}">${esc(outcome)}</span>` : ''}</div>
-      <div class="profile-summary">${context.length ? `${esc(context.join(' · '))}${asOf ? ' · ' : ''}` : ''}${asOf ? `Evidence current through ${esc(asOf)}` : 'The report shows only what the published evidence currently supports.'}</div>
+      <div class="profile-summary">${context.length ? `${esc(context.join(' · '))} · ` : ''}${esc(freshnessSummary)}</div>
     </header>
     <div class="profile-report">${sections.join('')}${gapsHtml}${canonicalProfileMetrics(profile)}${sources}</div>
   </article>`;
@@ -3639,7 +3648,7 @@ document.getElementById('rows').addEventListener('click', (e) => {
 // bring a section back.
 // 'api' is the Agent API / x402 tab: hidden from the nav, not deleted — the
 // /api/* routes and the x402 gate keep working for agents that already use them.
-const DISABLED_VIEWS = new Set(['traces', 'infra', 'geo', 'uspolicy', 'power', 'news', 'api']);
+const DISABLED_VIEWS = new Set(['traces', 'geo', 'uspolicy', 'power', 'news', 'api']);
 const isEnabledView = (v) => !DISABLED_VIEWS.has(v);
 // Hide the nav entries, then any group heading left with nothing under it.
 function applyViewGating(){
@@ -4163,7 +4172,7 @@ function nftAggregateAnalysisHtml(data) {
   const limitations = (analysis.limitations || []).map((item) => `<li>${esc(item)}</li>`).join('');
   const falsifiers = (analysis.falsifiers || []).map((item) => `<li>${esc(item)}</li>`).join('');
   return `<div class="gsec">What the collection reports show</div>
-    <div class="gbody">This library contains <b>${total} in-depth reports</b>: ${Number(statuses.thriving || 0)} thriving, ${Number(statuses.middling || 0)} middling, ${Number(statuses.dead || 0)} dead, ${Number(statuses.declining || 0)} declining, and ${Number(statuses.unknown || 0)} still unclear. It is a selected research library, not a prediction of how likely any NFT is to succeed.</div>
+    <div class="gbody">This library contains <b>${total} published reports</b>: ${Number(statuses.thriving || 0)} thriving, ${Number(statuses.middling || 0)} middling, ${Number(statuses.dead || 0)} dead, ${Number(statuses.declining || 0)} declining, and ${Number(statuses.unknown || 0)} whose outcome is still under review. It is a selected research library, not a prediction of how likely any NFT is to succeed.</div>
     <div class="gsec">Where the reports are concentrated</div>
     <div class="gbody">The three most common chain groups account for ${topThree} of ${total} reports. Their current mix is ${esc(topChainRead || 'not enough repeated cases yet')}. That is a pattern to investigate—not proof that the chain caused the result.</div>
     ${analysisDistributionHtml('Exact chain labels', chainChart)}
@@ -4200,21 +4209,21 @@ function renderNft(data){
       ${gstat(m.medianMcapUsd!=null?fmtUsd(m.medianMcapUsd):'—', 'median market cap')}
       ${gstat(m.total24hUsd!=null?fmtUsd(m.total24hUsd):'—', 'total 24h volume')}
     </div>` : `<div class="gstats">
-      ${gstat(data.collections.length, 'in-depth case studies')}
+      ${gstat(data.collections.length, 'published project reports')}
       ${gstat(a.avgHolderRetentionPct!=null?a.avgHolderRetentionPct+'%':'—', 'holders retained on average')}
       ${gstat(a.avgLifespanDays!=null?Math.round(a.avgLifespanDays/30)+' mo':'—', 'average project life')}
       ${gstat(n||'…', 'live collections loading')}
     </div><div class="gnar muted" style="margin:0 0 14px">These figures cover the ${data.collections.length} published case studies, not the whole NFT market.</div>`;
   const cohortPanel = analysisCohortPanel(
-    'Where projects stand today',
-    distributionItems(data.collections, (item) => item.status || 'unknown'),
+    'Current report conclusions',
+    distributionItems(data.collections, (item) => item.status || 'unknown', { unknown: 'outcome still under review' }),
     'Report freshness',
     distributionItems(data.collections, nftReviewState, {
       review_due: 'review due',
       withheld: 'needs fresher evidence',
       legacy: 'review date unknown',
     }),
-    'The first chart shows the current call in each published report. The second shows which reports need another look.',
+    'The first chart shows which reports support a current outcome and which still need independent evidence. The second shows which reports need another look.',
   );
   const caseQ = state.nftCaseQuery || '';
   const chains = [...new Set(data.collections.map((c) => c.chain).filter(Boolean))].sort((a, b) => chainLabel(a).localeCompare(chainLabel(b)));
@@ -4257,7 +4266,7 @@ function renderNft(data){
     </div>`;
   }).join('');
   el.innerHTML = `${NFT_HEAD}${stats}
-  <div class="analysis-note">These case studies show what happened, why the project reached its current state, and what could change the outlook. When the sources are too thin for a firm conclusion, the report says so.</div>
+  <div class="analysis-note">These case studies show what happened, why the project reached its current state, and what could change the outlook. Every project uses the same report structure. Some are deep lifecycle studies; others remain partial. When the sources are too thin for a firm conclusion, the report says so.</div>
   ${cohortPanel}
   <div class="toolbar"><div class="analysis-controls">
     <input id="casesearch" class="search" placeholder="Search case studies by name, chain or status…" value="${esc(caseQ)}" />
@@ -4556,7 +4565,7 @@ document.getElementById('marketsview').addEventListener('click', (e) => {
 
 function fldS(l, v){ return v!=null&&v!=='' ? `<div class="gfield"><span class="gfl">${l}</span> ${esc(S(v))}</div>` : ''; }
 function secS(l, v){ return v!=null&&v!=='' ? `<div class="gsec">${l}</div>${proseBox(S(v))}` : ''; }
-const STABLES_HEAD = pageHead('Stablecoins', 'Stablecoin rankings by circulating supply — issuer, type, backing, audits &amp; regulatory status for each.');
+const STABLES_HEAD = pageHead('Stablecoins', 'Live rankings by value in circulation. Open any asset for its standardized report; when issuer, reserve or redemption research is incomplete, the report leaves those conclusions open.');
 function renderStables(data){
   const el = document.getElementById('stablesview');
   state.stablesData = data;
@@ -4565,7 +4574,7 @@ function renderStables(data){
   const cards = data.stablecoins.map(s => {
     return `<div class="gcard" data-slug="${esc(s.symbol)}">
       <div class="ghead"><div class="gname"><span class="muted">#${s.rank}</span> ${esc(s.name)} <span class="csym">${esc(s.symbol)}</span>${s.pegMechanism?` <span class="gverdict declining">${esc(s.pegMechanism)}</span>`:''}</div>
-      <div class="gdd" style="color:var(--accent2);font-size:14px">${fmtUsd(s.circulating)}<span class="gddl">circulating</span></div></div>
+      <div class="gdd" style="color:var(--accent2);font-size:14px">${fmtUsd(s.circulating)}<span class="gddl">value in circulation</span></div></div>
       <div class="gmeta">${esc(s.pegType||'')}${(s.chains||[]).length?` · ${esc(s.chains.slice(0,4).join(', '))}`:''}</div>
       <div class="gexpand"><a class="profile-open-link" href="${profileHref('stablecoin', s.symbol)}" data-profile-type="stablecoin" data-profile-slug="${esc(profileRouteSlug(s.symbol))}">Open report →</a></div>
     </div>`;
@@ -4579,11 +4588,11 @@ function renderStables(data){
   const top2Pct = data.totalMcap ? Math.round((top2 / data.totalMcap) * 100) : null;
   const stats = `<div class="gstats">
     ${gstat(data.count, 'stablecoins tracked')}
-    ${gstat(fmtUsd(data.totalMcap), 'total circulating')}
+    ${gstat(fmtUsd(data.totalMcap), 'total value in circulation')}
     ${gstat(top ? esc(top.symbol) : '—', top ? 'largest — ' + fmtUsd(top.circulating) : 'largest')}
-    ${gstat(top2Pct != null ? top2Pct + '%' : '—', 'top 2 share of supply')}
+    ${gstat(top2Pct != null ? top2Pct + '%' : '—', 'top 2 share of value')}
   </div>`;
-  el.innerHTML = `${STABLES_HEAD}${stats}<div class="dsec" style="margin:18px 0 10px">Ranked by circulating supply — ${data.count} stablecoins</div><div class="gwrap">${cards}</div>`;
+  el.innerHTML = `${STABLES_HEAD}${stats}<div class="dsec" style="margin:18px 0 10px">Ranked by value in circulation — ${data.count} stablecoins</div><div class="gwrap">${cards}</div>`;
 }
 async function loadStables(){
   stablesLoaded = true;
@@ -4626,7 +4635,7 @@ function renderRwa(data){
   const bc = data.byCat || {};
   const rwaLive = data.rwaLive || [], depinLive = data.depinLive || [];
   const stats = `<div class="gstats">
-    ${gstat(data.count || 0, 'in-depth case studies')}
+    ${gstat(data.count || 0, 'research reports')}
     ${gstat(data.rwaTvlTotal != null ? fmtUsd(data.rwaTvlTotal) : '—', 'real-world assets tokenized')}
     ${gstat(rwaLive.length || '—', 'RWA protocols tracked live')}
     ${gstat(data.depinMcapTotal != null ? fmtUsd(data.depinMcapTotal) : '—', 'DePIN market cap')}
