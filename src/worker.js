@@ -30,6 +30,7 @@ import { CHAIN_DOSSIER_DIMENSIONS } from './lib/chain-dossier.js';
 import { normalizeDossier } from './lib/normalized-dossier.js';
 import {
   buildLegacyEntityProfile,
+  embeddedCanonicalEntityProfile,
   entityProfileContract,
   ENTITY_TYPES,
   METRIC_DIMENSIONS,
@@ -3739,6 +3740,8 @@ async function exchangeEntityProfile(type, slug) {
     [type, slug],
   );
   if (!rows[0]) return null;
+  const embeddedProfile = embeddedCanonicalEntityProfile(rows[0].profile, { type, slug });
+  if (embeddedProfile) return embeddedProfile;
   const normalized = normalizeExchangeCase(rows[0]);
   const sources = publicationSourceRecords(profileSourceValues(rows[0].sources, normalized.profile?.sources));
   const depth = assessExchangePublicationDepth({

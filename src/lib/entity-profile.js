@@ -475,6 +475,24 @@ export function profileSummary(profile) {
   };
 }
 
+// Returns an already-normalized profile embedded in a legacy row only when its
+// canonical identity matches the route being resolved. Publication freshness is
+// intentionally not revalidated here: an overdue report must remain readable
+// with its dated freshness envelope instead of silently falling back to a thin
+// legacy adapter. Migration and editorial gates perform publication validation.
+export function embeddedCanonicalEntityProfile(legacyProfile, identity = {}) {
+  let parsed = legacyProfile;
+  if (typeof parsed === 'string') {
+    try { parsed = JSON.parse(parsed); } catch { return null; }
+  }
+  const candidate = parsed?.canonical_profile;
+  if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate)) return null;
+  if (candidate.schema !== ENTITY_PROFILE_SCHEMA || candidate.version !== ENTITY_PROFILE_VERSION) return null;
+  if (candidate.identity?.type !== identity.type || candidate.identity?.slug !== identity.slug) return null;
+  if (candidate.identity?.id !== `${identity.type}:${identity.slug}`) return null;
+  return candidate;
+}
+
 function legacySource(source, index) {
   const value = typeof source === 'string' ? { url: source } : (source || {});
   const rawTier = value.tier || value.source_tier || 'unknown';
