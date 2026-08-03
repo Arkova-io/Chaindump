@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { buildProfileAdapterCensus } from '../scripts/profile-adapter-census.mjs';
 
 const EXPECTED_COUNTS = {
-  blockchain: [90, 0, 0, 74, 16, 75, 2108],
+  blockchain: [91, 0, 0, 70, 21, 71, 1948],
   dex: [30, 0, 8, 0, 22, 8, 22],
   cex: [30, 0, 22, 1, 7, 23, 37],
   nft_collection: [39, 0, 16, 0, 23, 0, 0],
@@ -41,25 +41,26 @@ describe('full-corpus canonical profile adapter', () => {
   });
 
   it('replays every migration and resolves every stored entity across all 13 types', () => {
-    expect(census.total).toBe(330);
+    expect(census.total).toBe(331);
     expect(Object.keys(census.by_type)).toEqual(Object.keys(EXPECTED_COUNTS));
     expect(census.chain_facts).toEqual({ total: 55, not_found: 0, zero_section: 0 });
     expect(census.blockchain_union).toEqual({
-      total: 90,
+      total: 91,
       by_source: {
         chain_facts: 55,
         dead_chains: 26,
         mid_chains: 20,
-        chain_analysis: 32,
+        chain_analysis: 37,
       },
-      overlap_profiles: 38,
+      overlap_profiles: 41,
       chain_facts_backed: 55,
-      legacy_only: 35,
+      legacy_only: 36,
       membership_patterns: {
-        'chain_analysis+chain_facts+mid_chains': 5,
-        'chain_analysis+chain_facts': 27,
-        'chain_facts+mid_chains': 6,
-        chain_facts: 17,
+        'chain_analysis+chain_facts+mid_chains': 6,
+        'chain_analysis+chain_facts': 30,
+        chain_analysis: 1,
+        'chain_facts+mid_chains': 5,
+        chain_facts: 14,
         dead_chains: 26,
         mid_chains: 9,
       },
@@ -67,7 +68,7 @@ describe('full-corpus canonical profile adapter', () => {
       zero_section: 0,
       dishonest_gaps: 0,
     });
-    expect(census.rows).toHaveLength(330);
+    expect(census.rows).toHaveLength(331);
     expect(census.rows.every((row) => row.http_status === 200)).toBe(true);
     expect(census.rows.every((row) => row.section_count > 0)).toBe(true);
     expect(census.rows.every((row) => row.placeholder_copy === false)).toBe(true);
@@ -81,7 +82,7 @@ describe('full-corpus canonical profile adapter', () => {
 
   it('prefers forensic chain facts and identity-matched canonical profiles over thinner legacy rows', () => {
     expect(census.blockchain_precedence).toEqual({
-      forensic_fact_profiles: 40,
+      forensic_fact_profiles: 44,
       forensic_fact_mismatches: [],
       embedded_canonical_over_lower_depth_legacy: true,
     });
@@ -127,8 +128,8 @@ describe('full-corpus canonical profile adapter', () => {
       return totals;
     }, {});
     expect(classes).toEqual({
-      source_metadata_debt: 2282,
-      citation_debt: 1338,
+      source_metadata_debt: 2170,
+      citation_debt: 1290,
     });
 
     const structural = census.rows.filter((row) => row.validation_error_classes.structural_contract_error);
