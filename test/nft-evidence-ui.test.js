@@ -79,7 +79,7 @@ describe('NFT field-evidence UI', () => {
 
     expect(output).toContain('access accessible · access checked 2026-07-29');
     expect(output).toContain('retrieval note: HTTP 200; retrieval observed without claim re-review.');
-    expect(output).toContain('registered · reachable · editor review pending');
+    expect(output).toContain('link available · desk check pending');
     expect(output).toContain('Reviewed boundary source');
     expect(output).toContain('2024-01');
   });
@@ -114,7 +114,7 @@ describe('NFT field-evidence UI', () => {
     expect(output).not.toContain('UNSUPPORTED DEAD CLAIM');
     expect(output).toContain('withheld — independent support pending');
     expect(output).toContain('High-risk field conclusion withheld.');
-    expect(output).toContain('registered · reachable · editor review pending');
+    expect(output).toContain('link available · desk check pending');
     expect(output).toContain('Operator status');
   });
 
@@ -135,7 +135,7 @@ describe('NFT field-evidence UI', () => {
     expect(output).not.toContain('AZUKI UNSUPPORTED LEGAL DETAIL');
     expect(output).toContain('Risk-flag allegations withheld');
     expect(output).toContain('coindesk.com/business/2022/05/10/');
-    expect(output).toContain('registered · retrieval not recorded · editor review pending');
+    expect(output).toContain('link not checked · desk check pending');
   });
 
   it('withholds unsupported Azuki narrative fields and uncontracted Quantum Cats prose', () => {

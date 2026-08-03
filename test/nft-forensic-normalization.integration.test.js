@@ -397,7 +397,7 @@ describe('NFT forensic normalization wave', () => {
       'What could have been different',
       'What would change our mind',
       'Material unknowns',
-      'Research status',
+      'Evidence dates',
     ]) {
       expect(publicHtml).toContain(label);
     }

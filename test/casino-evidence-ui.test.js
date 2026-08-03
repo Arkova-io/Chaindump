@@ -41,6 +41,7 @@ function buildEvidenceRenderers() {
 function buildCasinoCardRenderer() {
   return new Function(`
     const esc = (value) => String(value ?? '');
+    const profileHref = (type, slug) => '/profile/' + type + '/' + slug;
     const casinoLabel = (value) => String(value || '').replaceAll('_', ' ');
     const analysisText = (value) => Array.isArray(value) ? value.map(String).join(' · ') : (value == null ? '' : String(value));
     const proseBox = (value) => '<div class="prose">' + esc(value) + '</div>';
@@ -112,7 +113,7 @@ describe('casino evidence-state UI', () => {
     });
 
     expect(output).toContain('Supported lifecycle summary.');
-    expect(output).toContain('registered · reachable · editor review pending · tier B · role primary');
+    expect(output).toContain('link available · desk check pending');
     expect(output).toContain('Why this outcome withheld — independent support pending.');
     expect(output).not.toContain('UNSUPPORTED CAUSAL TEXT');
   });

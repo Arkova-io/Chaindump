@@ -3630,8 +3630,9 @@ async function blockchainEntityProfile(slug) {
        SELECT chain, chain, 'chain_analysis', NULL, sentiment, take, NULL,
               profile, sources, updated_at, 3
          FROM chain_analysis
-     ) WHERE lower(chain) = ? ORDER BY priority LIMIT 1`,
-    [slug],
+     ) WHERE lower(chain) = ? OR lower(replace(chain, ' ', '-')) = ?
+       ORDER BY priority LIMIT 1`,
+    [slug, slug],
   );
   if (!rows[0]) return null;
   const row = rows[0];
@@ -4830,6 +4831,48 @@ async function sendPage(req, res, { title, desc, url, ld, apiUrl }) {
   }
   return sendHtml(res, ogHtml(await spaShell(ENV, req.raw), { title, desc, url, ld }));
 }
+
+// Canonical human-facing profile page. All vertical adapters terminate at the
+// same API contract, and the browser renders this route with the same section
+// anatomy. Legacy /chain, /collection, /casino and /exchange URLs remain valid;
+// the client maps them here after the shell loads.
+app.get('/profile/:entity_type/:slug', wrap(async (req, res) => {
+  const entityType = String(req.params.entity_type || '').trim().toLowerCase();
+  const slug = String(req.params.slug || '').trim().toLowerCase();
+  if (!PROFILE_ENTITY_TYPES.has(entityType) || !/^[a-z0-9._-]+$/.test(slug)) {
+    return res.status(404).html('Profile not found');
+  }
+  let profile = null;
+  try { profile = await resolveEntityProfile(entityType, slug); } catch (error) {
+    console.error('[entity-profile-page] lookup failed:', error?.message || error);
+  }
+  if (!profile) return res.status(404).html('Profile not found');
+  const name = profile.identity?.name || 'Research profile';
+  const typeLabel = entityType.replaceAll('_', ' ');
+  const summary = profile.analysis?.sections?.what_it_is?.body;
+  const desc = typeof summary === 'string' && summary.trim()
+    ? summary.trim().slice(0, 240)
+    : `Citation-backed ${typeLabel} research profile on Chaindump.`;
+  const url = `${ORIGIN}/profile/${encodeURIComponent(entityType)}/${encodeURIComponent(slug)}`;
+  const parent = ['dex', 'cex'].includes(entityType) ? 'exchange-analysis'
+    : ['nft_collection', 'ordinals_collection'].includes(entityType) ? 'nft-analysis'
+      : entityType === 'web3_casino' ? 'casino-analysis'
+        : entityType === 'blockchain' ? 'blockchain-analysis'
+          : ['crypto_treasury', 'miner', 'etf'].includes(entityType) ? 'markets'
+            : ['rwa', 'depin'].includes(entityType) ? 'rwa'
+              : entityType === 'stablecoin' ? 'stables' : 'infra';
+  const ld = [
+    {
+      '@type': 'Report', '@id': `${url}#report`, name: `${name} research profile`,
+      description: desc, url, inLanguage: 'en', publisher: { '@id': `${ORIGIN}/#org` },
+    },
+    breadcrumb('Research', `${ORIGIN}/${parent}`, name, url),
+  ];
+  return sendPage(req, res, {
+    title: `${name} — Chaindump`, desc, url, ld,
+    apiUrl: `${ORIGIN}/api/profile/${encodeURIComponent(entityType)}/${encodeURIComponent(slug)}`,
+  });
+}));
 
 // Views that are valid single-segment deep-links → their share copy.
 const VIEW_OG = {

@@ -158,7 +158,7 @@ describe('exchangeAssociationPanel', () => {
 
   it('renders the section header with the escaped label', () => {
     const out = F.exchangeAssociationPanel(summary(), 'DEX');
-    expect(out).toContain('DEX outcome associations · uncertainty shown');
+    expect(out).toContain('Patterns in the DEX reports');
   });
 
   it('excludes primary-chain and product-cohort singleton rows (sampleSize < 2) from their charts', () => {
@@ -210,32 +210,31 @@ describe('exchangeAssociationPanel', () => {
     expect(cohortMatches).toHaveLength(10);
   });
 
-  it('renders dataset-readiness counts and the method note', () => {
+  it('summarizes the comparison in plain language', () => {
     const out = F.exchangeAssociationPanel(summary(), 'DEX');
-    expect(out).toContain('1/4 reports with cited cause analysis');
-    expect(out).toContain('1 documented token records');
-    expect(out).toContain('2 current non-limited evidence records');
-    expect(out).toContain('1 comparable metric groups with at least two cases');
-    expect(out).toContain('Descriptive association only. Uses Wilson score intervals.');
+    expect(out).toContain('This comparison uses 4 reports.');
+    expect(out).toContain('1 currently explain why the outcome happened');
+    expect(out).toContain('1 document whether a token launched');
+    expect(out).toContain('Small groups should be treated as leads, not conclusions.');
   });
 
-  it('renders predeclared hypotheses with falsifiers, keyed by variable name with underscores replaced', () => {
+  it('renders testable patterns and what would challenge them', () => {
     const out = F.exchangeAssociationPanel(summary(), 'DEX');
-    expect(out).toContain('Predeclared hypotheses and what would falsify them');
+    expect(out).toContain('Patterns worth testing as more reports are added');
     expect(out).toContain('token launch');
     expect(out).toContain('Token launch may correlate with success.');
-    expect(out).toContain('Falsifier: The effect disappears in matched cohorts.');
+    expect(out).toContain('What would challenge this: The effect disappears in matched cohorts.');
   });
 
   it('omits the hypotheses section entirely when there are no hypotheses', () => {
     const out = F.exchangeAssociationPanel(summary({ hypotheses: [] }), 'DEX');
-    expect(out).not.toContain('Predeclared hypotheses');
+    expect(out).not.toContain('Patterns worth testing');
   });
 
   it('defaults trendReadiness fields to zero when trendReadiness is missing', () => {
     const out = F.exchangeAssociationPanel(summary({ trendReadiness: undefined }), 'DEX');
-    expect(out).toContain('0/0 reports with cited cause analysis');
-    expect(out).toContain('0 documented token records');
+    expect(out).toContain('This comparison uses 0 reports.');
+    expect(out).toContain('0 currently explain why the outcome happened');
   });
 
   it('escapes the panel label', () => {
