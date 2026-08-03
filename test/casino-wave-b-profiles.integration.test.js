@@ -223,7 +223,9 @@ describe('Web3 casino canonical profile wave B', () => {
     expect(profiles['augur-protocol-reboot'].extensions.identity_boundary)
       .toMatch(/protocol.*Foundation.*ChainSafe.*Zoltar.*frontends.*custodians/i);
     expect(profiles['augur-protocol-reboot'].analysis.sections.risks_and_unknowns.body)
-      .toMatch(/deadline passed.*ForkWatch.*usable completion number/i);
+      .toMatch(/August 1.*August 3.*August 2 and August 10.*ForkWatch.*neither closure nor continuation/i);
+    expect(profiles['augur-protocol-reboot'].events.find(({ type }) => type === 'timeline_conflict_observation'))
+      .toBeTruthy();
   });
 
   it('does not turn old, operator-reported or unavailable measurements into current facts', () => {
