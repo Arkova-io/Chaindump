@@ -28,6 +28,12 @@ import { DEX_CATEGORIES, aggregateBreakdown, feedIsDegenerate, selectCandidates,
 import { renderSsrRows } from './lib/ssr-rows.js';
 import { CHAIN_DOSSIER_DIMENSIONS } from './lib/chain-dossier.js';
 import { normalizeDossier } from './lib/normalized-dossier.js';
+import {
+  buildLegacyEntityProfile,
+  entityProfileContract,
+  ENTITY_TYPES,
+  METRIC_DIMENSIONS,
+} from './lib/entity-profile.js';
 import { normalizeExchangeCase, summarizeExchangeCases } from './lib/exchange-analysis.js';
 import { buildNftLifecycleAnalysis } from './lib/nft-lifecycle-analysis.js';
 import {
@@ -3499,6 +3505,692 @@ app.get('/api/trend-taxonomy', wrap((req, res) => {
 
 app.get('/api/slm/training-schema', wrap((req, res) => {
   res.json(slmTrainingSchemaPayload());
+}));
+
+// Canonical entity-profile boundary. Existing vertical endpoints remain
+// unchanged; this read-only adapter gives the SPA one versioned shape while the
+// legacy rows are migrated. It never recursively converts objects into prose:
+// structured values stay under extensions.legacy_unmapped and every missing
+// section/citation remains an explicit validation gap.
+const PROFILE_ENTITY_TYPES = new Set(ENTITY_TYPES);
+
+function profileJson(value, fallback = {}) {
+  if (value && typeof value === 'object') return value;
+  try { return value ? JSON.parse(value) : fallback; } catch { return fallback; }
+}
+
+function profileProse(...values) {
+  for (const value of values) {
+    if (typeof value === 'string' && value.trim()) return value.trim();
+    if (typeof value?.summary === 'string' && value.summary.trim()) return value.summary.trim();
+  }
+  return null;
+}
+
+function profileIso(value) {
+  if (typeof value !== 'string' || !value.trim()) return null;
+  const trimmed = value.trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(trimmed)) return trimmed;
+  const sqlTimestamp = /^(\d{4}-\d{2}-\d{2}) (\d{2}:\d{2}:\d{2})$/.exec(trimmed);
+  if (sqlTimestamp) return `${sqlTimestamp[1]}T${sqlTimestamp[2]}Z`;
+  return Number.isFinite(Date.parse(trimmed)) ? trimmed : null;
+}
+
+function latestProfileDate(...values) {
+  return values.map(profileIso).filter(Boolean).sort((a, b) => Date.parse(b) - Date.parse(a))[0] || null;
+}
+
+function profileSourceValues(...values) {
+  const seen = new Set();
+  const sources = [];
+  for (const value of values) {
+    const parsed = profileJson(value, []);
+    for (const source of Array.isArray(parsed) ? parsed : []) {
+      const url = typeof source === 'string' ? source : source?.url || source?.canonical_url;
+      const key = String(url || JSON.stringify(source));
+      if (!key || seen.has(key)) continue;
+      seen.add(key);
+      sources.push(source);
+    }
+  }
+  return sources;
+}
+
+function profileFreshness(profile, row = {}, extra = {}) {
+  const forensicReview = profileJson(profile?.forensic_analysis?.review, {});
+  const lastReviewed = latestProfileDate(
+    extra.last_reviewed_at,
+    profile?.evidence_policy?.last_verified_at,
+    profile?.evidence_policy?.status_as_of,
+    forensicReview.last_verified_at,
+    forensicReview.reviewed_at,
+    row.last_reviewed,
+    row.updated_at,
+  );
+  const nextReview = latestProfileDate(
+    extra.next_review_at,
+    profile?.evidence_policy?.next_review_at,
+    forensicReview.next_review_at,
+  );
+  let state = 'unknown';
+  if (nextReview) state = Date.parse(nextReview) < Date.now() ? 'review_due' : 'current';
+  return {
+    state,
+    last_reviewed_at: lastReviewed,
+    next_review_at: nextReview,
+    field_reviews: [],
+  };
+}
+
+function profileMetric(type, values) {
+  if (!METRIC_DIMENSIONS[type]?.includes(values.dimension)) return null;
+  const value = Number(values.value);
+  if (!Number.isFinite(value)) return null;
+  return {
+    id: values.id,
+    dimension: values.dimension,
+    label: values.label,
+    value,
+    unit: values.unit,
+    currency: values.currency ?? null,
+    window: {
+      start: values.window_start ?? null,
+      end: values.window_end ?? null,
+      definition: values.window_definition || 'point_in_time',
+    },
+    as_of: profileIso(values.as_of),
+    method: values.method || 'observed',
+    scope: values.scope || { product: null, chains: [] },
+    formula: values.formula ?? null,
+    raw_input_ids: Array.isArray(values.raw_input_ids) ? values.raw_input_ids : [],
+    claim_ids: Array.isArray(values.claim_ids) ? values.claim_ids : [],
+    quality_flags: Array.isArray(values.quality_flags) ? values.quality_flags : [],
+  };
+}
+
+function profileCandidate(input) {
+  return buildLegacyEntityProfile({
+    ...input,
+    sources: profileSourceValues(...(input.source_values || [])),
+  });
+}
+
+async function blockchainEntityProfile(slug) {
+  const rows = await dbQuery(
+    `SELECT * FROM (
+       SELECT chain, chain AS name, 'dead_chains' AS legacy_origin, launched,
+              verdict AS outcome_label, why AS narrative, outlook, profile,
+              sources, updated_at, 1 AS priority
+         FROM dead_chains
+       UNION ALL
+       SELECT chain, chain, 'mid_chains', launched, verdict, why_stuck, outlook,
+              profile, sources, updated_at, 2
+         FROM mid_chains
+       UNION ALL
+       SELECT chain, chain, 'chain_analysis', NULL, sentiment, take, NULL,
+              profile, sources, updated_at, 3
+         FROM chain_analysis
+     ) WHERE lower(chain) = ? ORDER BY priority LIMIT 1`,
+    [slug],
+  );
+  if (!rows[0]) return null;
+  const row = rows[0];
+  const legacy = profileJson(row.profile, {});
+  const facts = await chainFacts(row.chain) || {};
+  const metaRows = await dbQuery(
+    `SELECT data, sources, updated_at FROM chain_facts
+      WHERE lower(chain) = ? AND dimension = '_meta' LIMIT 1`,
+    [slug],
+  );
+  const meta = profileJson(metaRows[0]?.data, {});
+  const identity = facts.identity?.data || {};
+  const narrative = facts.narrative?.data || {};
+  const synthesis = facts.synthesis?.data || {};
+  const forensic = profileJson(synthesis.forensic_analysis, {});
+  const onchain = facts.onchain?.data || {};
+  const token = facts.token?.data || {};
+  const asOf = latestProfileDate(
+    synthesis.as_of, narrative.as_of, onchain.as_of, token.as_of,
+    meta.last_reviewed, metaRows[0]?.updated_at, row.updated_at,
+  );
+  const metrics = [
+    profileMetric('blockchain', { id: `blockchain:${slug}:tvl`, dimension: 'tvl', label: 'TVL', value: onchain.tvl_current_usd, unit: 'usd', currency: 'USD', as_of: onchain.as_of }),
+    profileMetric('blockchain', { id: `blockchain:${slug}:stablecoins`, dimension: 'stablecoin_supply', label: 'Stablecoin supply', value: onchain.stablecoin_tvl_usd, unit: 'usd', currency: 'USD', as_of: onchain.as_of }),
+    profileMetric('blockchain', { id: `blockchain:${slug}:dex-volume-24h`, dimension: 'dex_spot_volume', label: 'DEX spot volume (24h)', value: onchain.spot_dex_volume_24h_usd, unit: 'usd', currency: 'USD', as_of: onchain.as_of, window_definition: 'rolling_24h' }),
+    profileMetric('blockchain', { id: `blockchain:${slug}:fees-30d`, dimension: 'fees', label: 'Fees (30d)', value: onchain.fees_30d_usd, unit: 'usd', currency: 'USD', as_of: onchain.as_of, window_definition: 'rolling_30d' }),
+    profileMetric('blockchain', { id: `blockchain:${slug}:revenue-30d`, dimension: 'protocol_revenue', label: 'Protocol revenue (30d)', value: onchain.revenue_30d_usd, unit: 'usd', currency: 'USD', as_of: onchain.as_of, window_definition: 'rolling_30d' }),
+    profileMetric('blockchain', { id: `blockchain:${slug}:token-price`, dimension: 'token_price', label: 'Token price', value: token.token_current_usd, unit: 'usd', currency: 'USD', as_of: token.as_of }),
+    profileMetric('blockchain', { id: `blockchain:${slug}:token-market-cap`, dimension: 'token_market_cap', label: 'Token market cap', value: token.market_cap_usd, unit: 'usd', currency: 'USD', as_of: token.as_of }),
+  ].filter(Boolean);
+  return profileCandidate({
+    identity: {
+      id: `blockchain:${slug}`, type: 'blockchain', slug,
+      name: identity.chain || row.name,
+      aliases: Array.isArray(identity.aliases) ? identity.aliases : [],
+    },
+    classification: {
+      subtype: identity.category || null,
+      tags: Array.isArray(identity.tags) ? identity.tags : [],
+      chains: [], jurisdictions: [],
+    },
+    outcome: {
+      label: forensic.outcome?.label || row.outcome_label || null,
+      as_of: forensic.outcome?.as_of || asOf,
+      rule_id: forensic.outcome?.label ? 'forensic-analysis-v1' : 'legacy-lifecycle',
+      confidence: forensic.outcome?.confidence || meta.confidence || null,
+      claim_ids: [],
+    },
+    sections: {
+      what_it_is: profileProse(narrative.purpose, legacy.what_it_does, legacy.purpose),
+      what_happened: profileProse(synthesis.situation, legacy.situation, row.narrative),
+      why_this_outcome: profileProse(forensic.why, synthesis.success_mechanism, synthesis.postmortem, legacy.postmortem),
+      strategic_choices: forensic.strategic_choices,
+      operating_model: profileProse(legacy.operating_model, legacy.business_model),
+      token_and_value_capture: profileProse(token.value_capture, legacy.token_value_capture),
+      counterfactual: profileProse(forensic.counterfactual, synthesis.could_differ, legacy.could_differ),
+      risks_and_unknowns: profileProse(legacy.risks, legacy.unknowns),
+      lifecycle: profileProse(legacy.lifecycle),
+      outlook_and_watch: synthesis.outlook || legacy.outlook || row.outlook,
+    },
+    as_of: asOf,
+    metrics,
+    source_values: [
+      row.sources, legacy.sources, metaRows[0]?.sources,
+      ...Object.values(facts).map((fact) => fact?.sources),
+    ],
+    freshness: {
+      state: meta.next_review_at
+        ? (Date.parse(meta.next_review_at) < Date.now() ? 'review_due' : 'current')
+        : 'unknown',
+      last_reviewed_at: profileIso(meta.last_reviewed) || asOf,
+      next_review_at: profileIso(meta.next_review_at),
+      field_reviews: [],
+    },
+    confidence: meta.confidence || 'unknown',
+    extensions: {
+      legacy_origin: row.legacy_origin,
+      category_data: { identity, narrative, onchain, token },
+      structured_analysis: { outlook: synthesis.outlook || null, strategic_choices: forensic.strategic_choices || null },
+    },
+  });
+}
+
+async function exchangeEntityProfile(type, slug) {
+  const rows = await dbQuery(
+    `SELECT * FROM (
+       SELECT slug, kind, 'dead' AS lifecycle, venue_type, name, launched,
+              NULL AS primary_chain, verdict AS status, metric_label, metric_type,
+              metric_unit, current_metric AS metric, peak_metric, drawdown_pct,
+              collapse_date AS event_date, why AS summary, outlook, profile,
+              sources, updated_at
+         FROM dead_exchanges
+       UNION ALL
+       SELECT slug, kind, 'mid', venue_type, name, launched, NULL, verdict,
+              metric_label, metric_type, metric_unit, metric, NULL, NULL, NULL,
+              why_stuck, outlook, profile, sources, updated_at
+         FROM mid_exchanges
+       UNION ALL
+       SELECT slug, type, 'successful', venue_type, name, launched, primary_chain,
+              status, metric_label, metric_type, metric_unit, metric, NULL, NULL,
+              NULL, why_successful, outlook, profile, sources, updated_at
+         FROM successful_exchanges
+     ) WHERE kind = ? AND lower(slug) = ? LIMIT 1`,
+    [type, slug],
+  );
+  if (!rows[0]) return null;
+  const normalized = normalizeExchangeCase(rows[0]);
+  const sources = publicationSourceRecords(profileSourceValues(rows[0].sources, normalized.profile?.sources));
+  const depth = assessExchangePublicationDepth({
+    kind: normalized.kind,
+    lifecycle: normalized.lifecycle,
+    slug: normalized.slug,
+    name: normalized.name,
+    sources,
+    forensicAnalysis: normalized.analysis?.forensic_analysis || normalized.profile?.forensic_analysis,
+  });
+  const publicRow = publicExchangeCase({ ...normalized, sources, publication_depth: depth });
+  const profile = publicRow.profile || {};
+  const forensic = publicRow.analysis?.forensic_analysis || profile.forensic_analysis || {};
+  const asOf = latestProfileDate(
+    publicRow.analysis?.metric?.as_of,
+    forensic.review?.last_verified_at,
+    publicRow.updated_at,
+  );
+  const metric = profileMetric(type, {
+    id: `${type}:${slug}:${publicRow.metric_type || 'metric'}`,
+    dimension: publicRow.metric_type,
+    label: publicRow.metric_label,
+    value: publicRow.metric,
+    unit: publicRow.metric_unit,
+    currency: publicRow.metric_unit === 'usd' ? 'USD' : null,
+    as_of: publicRow.analysis?.metric?.as_of || asOf,
+    window_definition: publicRow.analysis?.metric?.window,
+  });
+  return profileCandidate({
+    identity: { id: `${type}:${slug}`, type, slug, name: publicRow.name, aliases: [] },
+    classification: {
+      subtype: publicRow.analysis?.product_cohort || publicRow.venue_type || null,
+      tags: [],
+      chains: publicRow.analysis?.chains || (publicRow.primary_chain ? [publicRow.primary_chain] : []),
+      jurisdictions: [],
+    },
+    outcome: {
+      label: publicRow.status == null ? null : publicRow.lifecycle,
+      as_of: publicRow.status == null ? null : asOf,
+      rule_id: publicRow.status == null ? null : 'legacy-lifecycle',
+      confidence: publicRow.analysis?.data_quality?.label === 'verified' ? 'high' : 'unknown',
+      claim_ids: [],
+    },
+    sections: {
+      what_it_is: profileProse(profile.purpose, profile.what_it_does),
+      what_happened: profileProse(publicRow.summary),
+      why_this_outcome: profileProse(forensic.why, profile.why, profile.success_factors),
+      strategic_choices: forensic.strategic_choices || profile.strategic_choices,
+      operating_model: profileProse(publicRow.analysis?.operating_model, profile.operating_model),
+      token_and_value_capture: profileProse(publicRow.analysis?.token?.strategy, profile.token_value_capture),
+      counterfactual: profileProse(forensic.counterfactual, profile.counterfactual, profile.could_differ),
+      risks_and_unknowns: profileProse(profile.risks, profile.risk_factors, forensic.unknowns),
+      lifecycle: profileProse(profile.synthesis),
+      outlook_and_watch: profileProse(publicRow.outlook, forensic.watch),
+    },
+    as_of: asOf,
+    metrics: metric ? [metric] : [],
+    source_values: [sources],
+    freshness: profileFreshness(profile, publicRow, publicRow.analysis?.freshness),
+    extensions: {
+      legacy_origin: `${publicRow.lifecycle}_exchanges`,
+      publication_depth: depth,
+      publication_support: publicRow.publication_support,
+      structured_analysis: {
+        strategic_choices: forensic.strategic_choices || null,
+        token: publicRow.analysis?.token || null,
+      },
+    },
+  });
+}
+
+async function nftEntityProfile(type, slug) {
+  const rows = await dbQuery(
+    `SELECT slug, name, chain, category, status, profile, sources, updated_at
+       FROM nft_collections WHERE lower(slug) = ? LIMIT 1`,
+    [slug],
+  );
+  if (!rows[0]) return null;
+  const row = rows[0];
+  const isOrdinals = String(row.chain || '').toLowerCase().includes('ordinals');
+  if ((type === 'ordinals_collection') !== isOrdinals) return null;
+  const rawProfile = profileJson(row.profile, {});
+  const sources = publicationSourceRecords(profileSourceValues(row.sources, rawProfile.sources));
+  const depth = assessNftPublicationDepth({
+    slug: row.slug, name: row.name, sources, profile: rawProfile,
+  });
+  const profile = publicNftProfile(rawProfile, depth);
+  const freshness = forensicFreshness(rawProfile);
+  const lifecyclePending = hasPublicationDepthGap(depth, ({ path, type: claimType }) => (
+    claimType === 'lifecycle' || path === 'forensic_analysis.outcome'
+  ));
+  const asOf = latestProfileDate(
+    profile.evidence_policy?.status_as_of,
+    profile.evidence_policy?.last_verified_at,
+    row.updated_at,
+  );
+  const metricSpecs = [
+    ['secondary_volume_usd', 'secondary_volume', 'Secondary volume', 'usd'],
+    ['mint_raise_usd', 'mint_raise', 'Mint raise', 'usd'],
+    ['royalties_earned_usd', 'royalties', 'Royalties earned', 'usd'],
+    ['holder_count', 'holders', 'Holders', 'count'],
+    ['supply', 'supply', 'Supply', 'count'],
+  ];
+  const metrics = metricSpecs.map(([field, dimension, label, unit]) => profileMetric(type, {
+    id: `${type}:${slug}:${dimension}`,
+    dimension, label, value: profile[field], unit,
+    currency: unit === 'usd' ? 'USD' : null,
+    as_of: asOf,
+  })).filter(Boolean);
+  const forensic = profile.forensic_analysis || {};
+  return profileCandidate({
+    identity: { id: `${type}:${slug}`, type, slug, name: row.name, aliases: [] },
+    classification: { subtype: row.category || null, tags: [], chains: row.chain ? [row.chain] : [], jurisdictions: [] },
+    outcome: {
+      label: lifecyclePending ? null : row.status,
+      as_of: lifecyclePending ? null : asOf,
+      rule_id: lifecyclePending ? null : 'nft-lifecycle-v1',
+      confidence: null,
+      claim_ids: [],
+    },
+    sections: {
+      what_it_is: profileProse(profile.collection_description, profile.business),
+      what_happened: profileProse(profile.community_history, profile.analysis),
+      why_this_outcome: profileProse(forensic.why, profile.why, profile.risks),
+      strategic_choices: forensic.strategic_choices || profile.strategic_choices,
+      operating_model: profileProse(profile.business, profile.benefits),
+      token_and_value_capture: profileProse(profile.token_model),
+      counterfactual: profileProse(forensic.counterfactual, profile.counterfactual),
+      risks_and_unknowns: profileProse(profile.risks, profile.unknowns),
+      lifecycle: profileProse(profile.analysis),
+      outlook_and_watch: profileProse(profile.outlook, forensic.watch, profile.watch),
+    },
+    as_of: asOf,
+    metrics,
+    source_values: [sources],
+    freshness: {
+      state: freshness?.state || 'unknown',
+      last_reviewed_at: profileIso(profile.evidence_policy?.last_verified_at) || asOf,
+      next_review_at: profileIso(profile.evidence_policy?.next_review_at),
+      field_reviews: [],
+    },
+    extensions: {
+      legacy_origin: 'nft_collections',
+      publication_depth: depth,
+      publication_support: profile.publication_support || {},
+      evidence: Array.isArray(profile.evidence) ? profile.evidence : [],
+      structured_analysis: { strategic_choices: forensic.strategic_choices || null },
+    },
+  });
+}
+
+async function casinoEntityProfile(slug) {
+  const cases = await dbQuery(
+    `SELECT * FROM casino_cases
+      WHERE lower(case_id) = ? AND quality_passed = 1 LIMIT 1`,
+    [slug],
+  );
+  if (!cases[0]) return null;
+  const row = cases[0];
+  const [syntheses, evidenceRows, observations, events] = await Promise.all([
+    dbQuery(`SELECT * FROM casino_syntheses WHERE case_id = ? LIMIT 1`, [row.case_id]),
+    dbQuery(
+      `SELECT cl.*, s.canonical_url AS url, s.archive_url, s.title, s.publisher,
+              s.published_at, s.accessed_at, s.source_tier, s.source_role,
+              s.resolving, s.evidence_reviewed, s.evidence_reviewed_at,
+              s.evidence_reviewer
+         FROM casino_claims cl JOIN casino_sources s ON s.source_id = cl.source_id
+        WHERE cl.case_id = ? ORDER BY cl.claim_id`,
+      [row.case_id],
+    ),
+    dbQuery(`SELECT * FROM casino_observations WHERE case_id = ? ORDER BY as_of DESC`, [row.case_id]),
+    dbQuery(`SELECT * FROM casino_events WHERE case_id = ? ORDER BY event_date DESC`, [row.case_id]),
+  ]);
+  const rawSynthesis = syntheses[0] || {};
+  const outlook = profileJson(rawSynthesis.outlook, {});
+  const sources = [...new Map(evidenceRows.map((evidence) => [evidence.source_id, {
+    id: evidence.source_id,
+    title: evidence.title,
+    url: evidence.url,
+    publisher: evidence.publisher,
+    published_at: evidence.published_at,
+    accessed_at: evidence.accessed_at,
+    archive_url: evidence.archive_url,
+    tier: evidence.source_tier,
+    role: evidence.source_role,
+    access_state: Number(evidence.resolving) === 1 ? 'reachable' : (evidence.archive_url ? 'archived' : 'unreachable'),
+    checked_at: evidence.checked_at || evidence.accessed_at,
+    content_hash: null,
+  }])).values()];
+  const claims = evidenceRows.map((evidence) => {
+    const reviewed = Number(evidence.evidence_reviewed) === 1
+      && isIsoReviewTimestamp(evidence.evidence_reviewed_at)
+      && String(evidence.evidence_reviewer || '').trim();
+    return {
+      id: evidence.claim_id,
+      field_path: evidence.field_path,
+      source_ids: [evidence.source_id],
+      evidence_locator: evidence.evidence_locator,
+      support_direction: evidence.support_direction,
+      note: evidence.analyst_note || null,
+      review: {
+        state: reviewed ? 'reviewed' : 'pending',
+        reviewer: reviewed ? evidence.evidence_reviewer : null,
+        reviewed_at: reviewed ? evidence.evidence_reviewed_at : null,
+      },
+    };
+  });
+  const depth = assessCasinoPublicationDepth({
+    caseId: row.case_id,
+    name: row.brand_name,
+    sources,
+    claims: evidenceRows,
+    forensicAnalysis: outlook.forensic_analysis,
+  });
+  const publicCase = publicCasinoCase(row, evidenceRows, depth);
+  const publicSynthesis = publicCasinoSynthesis({
+    ...rawSynthesis,
+    outlook,
+    forensic_analysis: outlook.forensic_analysis || null,
+  }, depth) || {};
+  const asOf = latestProfileDate(publicCase.status_as_of, publicCase.outcome_as_of, publicCase.last_reviewed, rawSynthesis.reviewed_at);
+  const metrics = observations.map((observation) => profileMetric('web3_casino', {
+    id: observation.observation_id,
+    dimension: observation.metric_dimension,
+    label: String(observation.metric_dimension || '').replaceAll('_', ' '),
+    value: observation.value,
+    unit: observation.unit,
+    currency: observation.currency,
+    window_start: observation.window_start,
+    window_end: observation.window_end,
+    window_definition: observation.window_definition,
+    as_of: observation.as_of,
+    method: observation.method,
+    scope: { product: observation.product_scope, chains: profileJson(observation.chain_scope, []) },
+    formula: observation.formula,
+    raw_input_ids: profileJson(observation.raw_input_ids, []),
+    claim_ids: profileJson(observation.source_claim_ids, []),
+    quality_flags: profileJson(observation.quality_flags, []),
+  })).filter(Boolean);
+  const canonicalEvents = events.map((event) => ({
+    id: event.event_id,
+    type: event.event_type,
+    date: event.event_date,
+    date_precision: event.date_precision,
+    amount_usd: event.amount_usd,
+    description: event.description,
+    claim_ids: profileJson(event.source_claim_ids, []),
+  }));
+  return buildLegacyEntityProfile({
+    identity: { id: `web3_casino:${slug}`, type: 'web3_casino', slug, name: publicCase.brand_name, aliases: [] },
+    classification: {
+      subtype: publicCase.product_subtype,
+      tags: [publicCase.entity_kind].filter(Boolean),
+      chains: profileJson(publicCase.chains, []),
+      jurisdictions: [],
+    },
+    status: {
+      operating_state: publicCase.status,
+      as_of: publicCase.status_as_of,
+      claim_ids: claims.filter((claim) => /(^|\.)status$/.test(claim.field_path)).map((claim) => claim.id),
+    },
+    outcome: {
+      label: publicCase.outcome_label,
+      as_of: publicCase.outcome_as_of,
+      rule_id: publicCase.outcome_rule_id,
+      confidence: publicCase.confidence,
+      claim_ids: claims.filter((claim) => claim.field_path.includes('outcome')).map((claim) => claim.id),
+    },
+    sections: {
+      what_it_is: profileProse(publicCase.product_scope_note),
+      what_happened: profileProse(publicSynthesis.present_situation),
+      why_this_outcome: profileProse(publicSynthesis.success_failure_hypotheses, publicSynthesis.forensic_analysis?.why),
+      strategic_choices: publicSynthesis.forensic_analysis?.strategic_choices,
+      operating_model: profileProse(publicSynthesis.business_mechanism, publicSynthesis.chain_dependence),
+      token_and_value_capture: profileProse(publicSynthesis.token_contribution),
+      counterfactual: profileProse(publicSynthesis.counterfactual, publicSynthesis.forensic_analysis?.counterfactual),
+      risks_and_unknowns: profileProse(publicSynthesis.risk_legal_posture),
+      lifecycle: profileProse(publicSynthesis.present_situation),
+      outlook_and_watch: publicSynthesis.outlook || publicSynthesis.forensic_analysis?.watch,
+    },
+    as_of: asOf,
+    section_claim_ids: Object.fromEntries(
+      ['what_it_is', 'what_happened', 'why_this_outcome', 'operating_model', 'token_and_value_capture', 'counterfactual', 'risks_and_unknowns', 'lifecycle']
+        .map((key) => [key, profileJson(rawSynthesis.source_claim_ids, [])]),
+    ),
+    metrics,
+    events: canonicalEvents,
+    sources,
+    claims,
+    freshness: profileFreshness(outlook, publicCase, { last_reviewed_at: rawSynthesis.reviewed_at }),
+    confidence: publicCase.confidence || 'unknown',
+    extensions: {
+      legacy_origin: 'casino_cases',
+      publication_depth: depth,
+      licences: [],
+      structured_analysis: { outlook: publicSynthesis.outlook || null, strategic_choices: publicSynthesis.forensic_analysis?.strategic_choices || null },
+    },
+  });
+}
+
+async function simpleEntityProfile(type, slug) {
+  let rows = [];
+  const marketType = {
+    crypto_treasury: 'treasury',
+    miner: 'miner',
+    etf: 'etf',
+  }[type];
+  if (marketType) {
+    rows = await dbQuery(
+      `SELECT slug, name, ticker AS symbol, type AS category, status, profile,
+              sources, updated_at, 'market_entities' AS legacy_origin
+         FROM market_entities WHERE type = ? AND lower(slug) = ? LIMIT 1`,
+      [marketType, slug],
+    );
+  } else if (type === 'stablecoin') {
+    rows = await dbQuery(
+      `SELECT slug, name, symbol, NULL AS category, NULL AS status, profile,
+              sources, updated_at, 'stablecoin_meta' AS legacy_origin
+         FROM stablecoin_meta WHERE lower(slug) = ? OR lower(symbol) = ? LIMIT 1`,
+      [slug, slug],
+    );
+  } else if (type === 'infrastructure_network') {
+    rows = await dbQuery(
+      `SELECT slug, name, NULL AS symbol, category, status, profile, sources,
+              updated_at, 'infra_chains' AS legacy_origin
+         FROM infra_chains WHERE lower(slug) = ? LIMIT 1`,
+      [slug],
+    );
+  } else {
+    rows = await dbQuery(
+      `SELECT slug, name, NULL AS symbol, category, status, profile, sources,
+              updated_at, 'rwa_depin' AS legacy_origin
+         FROM rwa_depin WHERE lower(slug) = ? LIMIT 1`,
+      [slug],
+    );
+  }
+  if (!rows[0]) return null;
+  const row = rows[0];
+  const isRwa = String(row.category || '').startsWith('rwa-');
+  const isDepin = String(row.category || '').startsWith('depin-');
+  if ((type === 'rwa' && !isRwa) || (type === 'depin' && !isDepin)) return null;
+  const profile = profileJson(row.profile, {});
+  const asOf = latestProfileDate(profile.evidence_policy?.last_verified_at, row.updated_at);
+  const sections = marketType ? {
+    what_it_is: profileProse(profile.background),
+    what_happened: profileProse(profile.recent_moves, profile.recent_flows),
+    why_this_outcome: profileProse(profile.analysis),
+    strategic_choices: null,
+    operating_model: profileProse(profile.strategy, profile.hodl_vs_sell),
+    token_and_value_capture: null,
+    counterfactual: null,
+    risks_and_unknowns: profileProse(profile.dilution_risk, profile.notes),
+    lifecycle: null,
+    outlook_and_watch: profileProse(profile.outlook),
+  } : type === 'stablecoin' ? {
+    what_it_is: profileProse(profile.notes),
+    what_happened: profileProse(profile.issuer_background),
+    why_this_outcome: null,
+    strategic_choices: null,
+    operating_model: profileProse(profile.backing),
+    token_and_value_capture: profileProse(profile.yield),
+    counterfactual: null,
+    risks_and_unknowns: profileProse(profile.risks),
+    lifecycle: null,
+    outlook_and_watch: profileProse(profile.future, profile.outlook),
+  } : type === 'infrastructure_network' ? {
+    what_it_is: profileProse(profile.what_it_does),
+    what_happened: profileProse(profile.adoption),
+    why_this_outcome: null,
+    strategic_choices: null,
+    operating_model: profileProse(profile.how_it_works),
+    token_and_value_capture: profileProse(profile.economics),
+    counterfactual: null,
+    risks_and_unknowns: profileProse(profile.non_economic),
+    lifecycle: null,
+    outlook_and_watch: profileProse(profile.outlook),
+  } : {
+    what_it_is: profileProse(profile.what_it_does),
+    what_happened: profileProse(profile.traction),
+    why_this_outcome: null,
+    strategic_choices: null,
+    operating_model: profileProse(profile.how_it_works, profile.business_model),
+    token_and_value_capture: profileProse(profile.business_model),
+    counterfactual: null,
+    risks_and_unknowns: null,
+    lifecycle: null,
+    outlook_and_watch: profileProse(profile.outlook),
+  };
+  return profileCandidate({
+    identity: {
+      id: `${type}:${row.slug}`,
+      type,
+      slug: row.slug,
+      name: row.name,
+      aliases: row.symbol ? [row.symbol] : [],
+    },
+    classification: { subtype: row.category || profile.type || null, tags: [], chains: [], jurisdictions: [] },
+    outcome: {
+      label: row.status || profile.status || null,
+      as_of: row.status || profile.status ? asOf : null,
+      rule_id: row.status || profile.status ? 'legacy-status' : null,
+      confidence: null,
+      claim_ids: [],
+    },
+    sections,
+    as_of: asOf,
+    source_values: [row.sources, profile.sources],
+    freshness: profileFreshness(profile, row),
+    extensions: {
+      legacy_origin: row.legacy_origin,
+      category_data: Object.fromEntries(Object.entries(profile).filter(([key]) => !['sources'].includes(key))),
+    },
+  });
+}
+
+async function resolveEntityProfile(entityType, slug) {
+  switch (entityType) {
+    case 'blockchain': return blockchainEntityProfile(slug);
+    case 'dex': return exchangeEntityProfile('dex', slug);
+    case 'cex': return exchangeEntityProfile('cex', slug);
+    case 'nft_collection': return nftEntityProfile('nft_collection', slug);
+    case 'ordinals_collection': return nftEntityProfile('ordinals_collection', slug);
+    case 'web3_casino': return casinoEntityProfile(slug);
+    case 'stablecoin': return simpleEntityProfile('stablecoin', slug);
+    case 'rwa': return simpleEntityProfile('rwa', slug);
+    case 'depin': return simpleEntityProfile('depin', slug);
+    case 'infrastructure_network': return simpleEntityProfile('infrastructure_network', slug);
+    case 'crypto_treasury': return simpleEntityProfile('crypto_treasury', slug);
+    case 'miner': return simpleEntityProfile('miner', slug);
+    case 'etf': return simpleEntityProfile('etf', slug);
+    default: return null;
+  }
+}
+
+app.get('/api/profile-contract', wrap((req, res) => {
+  res.json(entityProfileContract());
+}));
+
+app.get('/api/profile/:entity_type/:slug', wrap(async (req, res) => {
+  const entityType = String(req.params.entity_type || '').trim().toLowerCase();
+  const slug = String(req.params.slug || '').trim().toLowerCase();
+  if (!PROFILE_ENTITY_TYPES.has(entityType) || !/^[a-z0-9._-]+$/.test(slug)) {
+    return res.status(400).json({ error: 'invalid profile identifier' });
+  }
+  try {
+    const profile = await resolveEntityProfile(entityType, slug);
+    if (!profile) return res.status(404).json({ error: 'profile not found' });
+    res.setHeader('cache-control', 'public, max-age=300');
+    return res.json(profile);
+  } catch (error) {
+    console.error('[entity-profile] lookup failed:', error?.message || error);
+    return res.status(502).json({ error: 'profile unavailable' });
+  }
 }));
 
 // Decentralized storage / document-verification infrastructure
