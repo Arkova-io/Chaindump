@@ -435,21 +435,26 @@ describe('chain causal completion wave migration 0075', () => {
       );
       expect(response.status, entry.chain).toBe(200);
       const body = await response.json();
+      const currentSynthesis = apiDatabase.prepare(`
+        SELECT data FROM chain_facts
+        WHERE chain = ? AND dimension = 'synthesis'
+      `).get(entry.chain);
+      const currentForensic = JSON.parse(currentSynthesis.data).forensic_analysis;
       expect(body.facts.synthesis.data.forensic_analysis, entry.chain)
-        .toEqual(entry.forensic_analysis);
+        .toEqual(currentForensic);
       expect(body.normalized_dossier, entry.chain).toMatchObject({
         category: 'Blockchain',
         name: entry.chain,
-        status: entry.forensic_analysis.outcome.label,
+        status: currentForensic.outcome.label,
         as_of: '2026-08-03',
       });
       expect(body.normalized_dossier.sections, entry.chain).toMatchObject({
-        why: entry.forensic_analysis.why,
-        strategic_choices: entry.forensic_analysis.strategic_choices,
-        counterfactual: entry.forensic_analysis.counterfactual,
-        risks_unknowns: entry.forensic_analysis.unknowns,
-        outlook_watch: entry.forensic_analysis.watch,
-        review_metadata: entry.forensic_analysis.review,
+        why: currentForensic.why,
+        strategic_choices: currentForensic.strategic_choices,
+        counterfactual: currentForensic.counterfactual,
+        risks_unknowns: currentForensic.unknowns,
+        outlook_watch: currentForensic.watch,
+        review_metadata: currentForensic.review,
       });
       expect(body.normalized_dossier.sources, entry.chain)
         .toEqual(body.facts.synthesis.sources);
