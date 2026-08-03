@@ -19,6 +19,12 @@ describe("cross-vertical research contract", () => {
       casinos: "/api/casinos",
       casinoDetail: "/api/casino/{case_id}",
       nftOrdinals: "/api/nft",
+      stablecoins: "/api/stablecoins",
+      rwaDepin: "/api/rwa",
+      infrastructure: "/api/infra",
+      publicMarkets: "/api/markets",
+      profileContract: "/api/profile-contract",
+      entityProfile: "/api/profile/{entity_type}/{slug}",
     });
     expect(analysisEndpointUrls("https://chaindump.xyz/").dex).toBe(
       "https://chaindump.xyz/api/exchange-analysis?kind=dex",
@@ -41,10 +47,13 @@ describe("cross-vertical research contract", () => {
     expect(prompt).toContain("trend_ids");
     expect(prompt).toContain("forensic_analysis.watch");
     expect(prompt).toContain("A trend requires at least three comparable dated observations");
-    expect(DEFAULT_RESEARCH_TASK).toContain("DEX, CEX");
+    expect(DEFAULT_RESEARCH_TASK).toContain("DEX; CEX");
     expect(DEFAULT_RESEARCH_TASK).toContain("trend taxonomy");
     expect(DEFAULT_RESEARCH_TASK).toContain("outlook/watch/unknowns/licensing/status");
     expect(DEFAULT_RESEARCH_TASK).toContain("It is valid to queue nothing");
+    expect(DEFAULT_RESEARCH_TASK).toContain("stablecoin");
+    expect(DEFAULT_RESEARCH_TASK).toContain("ETF");
+    expect(DEFAULT_RESEARCH_TASK).toContain("queue only one field-level evidence candidate");
   });
 });
 

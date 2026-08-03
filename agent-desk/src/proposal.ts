@@ -31,6 +31,7 @@ export const RESEARCH_CANDIDATE_DATASETS = [
   "exchange_analysis_candidate",
   "casino_analysis_candidate",
   "nft_lifecycle_candidate",
+  "entity_analysis_candidate",
 ] as const;
 
 export const PROPOSAL_DATASETS = [

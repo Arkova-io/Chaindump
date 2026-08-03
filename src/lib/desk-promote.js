@@ -43,6 +43,17 @@ export const REVIEW_REQUIRED_PROPOSAL_DATASETS = Object.freeze([
   'exchange_analysis_candidate',
   'casino_analysis_candidate',
   'nft_lifecycle_candidate',
+  'entity_analysis_candidate',
+]);
+
+const GENERIC_ENTITY_CANDIDATE_TYPES = Object.freeze([
+  'stablecoin',
+  'rwa',
+  'depin',
+  'infrastructure_network',
+  'crypto_treasury',
+  'miner',
+  'etf',
 ]);
 
 function candidateSegment(value) {
@@ -152,6 +163,14 @@ export function validateResearchCandidateProposal(dataset, providedSlug, payload
   }
   for (const key of ['entity_id', 'field_path', 'claim']) {
     if (typeof payload[key] !== 'string' || !payload[key].trim()) errors.push(`${key} is required`);
+  }
+  if (dataset === 'entity_analysis_candidate') {
+    const canonicalEntity = new RegExp(
+      `^(?:${GENERIC_ENTITY_CANDIDATE_TYPES.join('|')}):[a-z0-9][a-z0-9._-]*$`,
+    );
+    if (typeof payload.entity_id !== 'string' || !canonicalEntity.test(payload.entity_id)) {
+      errors.push(`entity_id must use a canonical newer-vertical type: ${GENERIC_ENTITY_CANDIDATE_TYPES.join(', ')}`);
+    }
   }
   if (!validDateOnly(payload.as_of)) errors.push('as_of must be a real YYYY-MM-DD date');
 
