@@ -69,6 +69,7 @@
   .pagehead { margin:20px 0 14px; }
   .pagetitle { font-size:19px; font-weight:700; letter-spacing:-.02em; color:var(--text-hi); }
   .pagehead .gvintro { margin:5px 0 0; }
+  .methodology-cards .gcard { cursor:default; }
 
   .toolbar { display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
   .search { flex:1; min-width:180px; max-width:280px; background:var(--surface); border:1px solid var(--border2); border-radius:9px; padding:8px 12px; color:var(--text); font-size:13px; outline:none; }
@@ -596,6 +597,8 @@
     <button class="tab" data-view="rwa">RWA · DePIN</button>
     <button class="tab" data-view="infra">Storage / Verify</button>
     <button class="tab" data-view="markets">Treasuries · Miners · ETFs</button>
+    <div class="navgroup-h">About</div>
+    <button class="tab" data-view="methodology">Intelligence Methodology</button>
     <div class="navgroup-h">World</div>
     <button class="tab" data-view="geo">Global Adoption</button>
     <button class="tab" data-view="uspolicy">US Policy Map</button>
@@ -622,6 +625,7 @@
   <div id="powerview" style="display:none"></div>
   <div id="newsview" style="display:none"></div>
   <div id="tracesview" style="display:none"></div>
+  <div id="methodologyview" style="display:none"></div>
 
   <div class="pagehead liveonly">
     <div class="pagetitle">Live · Top 50</div>
@@ -687,11 +691,7 @@ let state = { chains: [], sortKey: 'rank', dir: 1, q: '', expanded: null, detail
   exchangeAnalysisDir: 1, exchangeAnalysisExpanded: null,
   casinoAnalysisData: null, casinoCoverage: null, casinoAnalysisError: '', casinoAnalysisQuery: '', casinoAnalysisSort: 'reviewed',
   casinoAnalysisStatus: 'all', casinoAnalysisKind: 'all', casinoAnalysisSubtype: 'all', casinoAnalysisToken: 'all', casinoAnalysisExpanded: null, casinoAnalysisDetails: {},
-  nftCaseSort: 'name', nftCaseStatus: 'all', nftCaseChain: 'all',
-  trendTaxonomy: null, trendTaxonomyStatus: 'loading',
-  forensicsRefresh: null, forensicsRefreshStatus: 'loading', forensicsRefreshFreshness: null,
-  forensicsProposalAgent: null, forensicsProposalAgentStatus: 'loading', forensicsProposalAgentFreshness: null,
-  forensicsProposalAgentLastCompleted: null };
+  nftCaseSort: 'name', nftCaseStatus: 'all', nftCaseChain: 'all' };
 
 // Background data refreshes should not feel like a navigation. Keep the
 // reader's place and the control they were using while a view is re-rendered.
@@ -742,174 +742,45 @@ const safeUrl = (u) => { const s = String(u == null ? '' : u).trim(); return /^(
 //   .gwrap > .gcard  |  .chainfolders > .chainfolder  |  .rllist > .rlrow
 // `sub` is trusted authored copy (it may carry &amp; / <b>); `title` is escaped.
 // ---------------------------------------------------------------------------
-function forensicsFreshnessLabel(freshness) {
-  if (freshness?.state === 'stale') return 'STALE';
-  if (freshness?.state === 'current') return 'current';
-  return freshness?.state || 'freshness unknown';
-}
-function forensicsScanText() {
-  const refresh = state.forensicsRefresh;
-  const refreshFreshness = state.forensicsRefreshFreshness;
-  if (state.forensicsRefreshStatus === 'loading') return 'Freshness check (every 6 hours): loading…';
-  if (state.forensicsRefreshStatus === 'unavailable') return 'Freshness check (every 6 hours): unavailable';
-  if (!refresh) return 'Freshness check (every 6 hours): no completed check recorded';
-  const due = Number(refresh.due_nft || 0) + Number(refresh.due_exchange || 0) + Number(refresh.due_casino || 0) + Number(refresh.due_chain || 0);
-  const freshness = forensicsFreshnessLabel(refreshFreshness);
-  const nextDue = refreshFreshness?.next_due_at ? ` · next due ${esc(refreshFreshness.next_due_at)}` : '';
-  return `Freshness check (every 6 hours): ${esc(freshness)} · last completed ${esc(refreshFreshness?.last_completed_at || refresh.completed_at || 'unknown')}${nextDue} · ${esc(due)} report(s) due`;
-}
-function forensicsPriorCompletionText() {
-  const completedAt = state.forensicsProposalAgentLastCompleted?.completed_at;
-  return completedAt ? ` · last successful completion ${esc(completedAt)}` : '';
-}
-function forensicsProposalAgentText() {
-  const run = state.forensicsProposalAgent;
-  const runFreshness = state.forensicsProposalAgentFreshness;
-  const priorCompletion = forensicsPriorCompletionText();
-  if (state.forensicsProposalAgentStatus === 'loading') return 'Research assistant: loading status…';
-  if (state.forensicsProposalAgentStatus === 'unavailable') return 'Research assistant: status unavailable';
-  if (run?.status === 'running') {
-    return runFreshness?.state === 'stale'
-      ? `Research assistant: interrupted or stale since ${esc(run.started_at || 'unknown')}${priorCompletion}`
-      : `Research assistant: running since ${esc(run.started_at || 'unknown')}${priorCompletion}`;
-  }
-  if (run?.status === 'completed') {
-    const freshness = forensicsFreshnessLabel(runFreshness);
-    const nextDue = runFreshness?.next_due_at ? ` · next due ${esc(runFreshness.next_due_at)}` : '';
-    return `Research assistant: ${esc(freshness)} · completed ${esc(runFreshness?.last_completed_at || run.completed_at || run.started_at || 'unknown')}${nextDue} · ${esc(run.proposals_queued || 0)} suggestion(s) queued`;
-  }
-  if (run?.status === 'failed') {
-    return `Research assistant: failed ${esc(run.completed_at || run.started_at || 'unknown')}${priorCompletion}`;
-  }
-  return 'Research assistant: no run recorded (optional workflow)';
-}
-function forensicsRefreshText() {
-  return `${forensicsScanText()}<br>${forensicsProposalAgentText()} · suggestions only; a person approves changes`;
-}
-function renderForensicsRefreshStatus() {
-  document.querySelectorAll('[data-forensics-refresh]').forEach((node) => {
-    node.innerHTML = `${forensicsRefreshText()} <a href="/api/forensics-refresh-status" target="_blank" rel="noopener noreferrer">See review status →</a>`;
-  });
-}
-async function loadForensicsRefreshStatus() {
-  try {
-    const response = await fetch('/api/forensics-refresh-status');
-    const payload = response.ok ? await response.json() : {};
-    state.forensicsRefresh = payload.refresh || null;
-    state.forensicsRefreshFreshness = payload.refresh_freshness || null;
-    state.forensicsProposalAgent = payload.proposal_agent || null;
-    state.forensicsProposalAgentFreshness = payload.proposal_agent_freshness || null;
-    state.forensicsProposalAgentLastCompleted = payload.proposal_agent_last_completed || null;
-    state.forensicsRefreshStatus = response.ok ? 'loaded' : 'unavailable';
-    state.forensicsProposalAgentStatus = response.ok && !payload.proposal_agent_error ? 'loaded' : 'unavailable';
-  } catch {
-    state.forensicsRefresh = null;
-    state.forensicsRefreshFreshness = null;
-    state.forensicsProposalAgent = null;
-    state.forensicsProposalAgentFreshness = null;
-    state.forensicsProposalAgentLastCompleted = null;
-    state.forensicsRefreshStatus = 'unavailable';
-    state.forensicsProposalAgentStatus = 'unavailable';
-  }
-  renderForensicsRefreshStatus();
-}
 function pageHead(title, sub){
-  return `<div class="pagehead"><div class="pagetitle">${esc(title)}</div><div class="gvintro">${sub}</div><div class="muted" data-forensics-refresh>${forensicsRefreshText()} <a href="/api/forensics-refresh-status" target="_blank" rel="noopener noreferrer">See review status →</a></div></div>`;
+  return `<div class="pagehead"><div class="pagetitle">${esc(title)}</div><div class="gvintro">${sub}</div></div>`;
 }
-function trendTaxonomySourceHtml(source) {
-  if (!source?.url) return '';
-  const title = source.title || source.publisher || source.url;
-  return `<a href="${esc(safeUrl(source.url))}" target="_blank" rel="noopener noreferrer">${esc(title)} ↗</a>`;
-}
-function trendTaxonomyDomains(value) {
-  return Array.isArray(value) ? value : [value].filter(Boolean);
-}
-function trendTaxonomyPanel(domains, title) {
-  const wanted = trendTaxonomyDomains(domains);
-  if (state.trendTaxonomyStatus === 'loading') {
-    return '<div class="gpanel"><div class="skel">Loading the shared guide for keeping outlooks fresh…</div></div>';
-  }
-  if (!state.trendTaxonomy || state.trendTaxonomyStatus === 'unavailable') {
-    return '<div class="analysis-note">The shared outlook guide is temporarily unavailable. The report’s citations and review dates remain the source of truth.</div>';
-  }
-  const data = state.trendTaxonomy;
-  const guide = data.human_intelligence_guide?.canonical_format || [];
-  const guideHtml = guide.map(([label, description]) => `<div class="gfield"><span class="gfl">${esc(label)}</span>${esc(description)}</div>`).join('');
-  const rawCategories = data.categories || data.driver_domains || [];
-  const categories = rawCategories.filter((category) => (
-    !category.domains
-    || (category.domains || []).includes('all')
-    || wanted.some((domain) => (category.domains || []).includes(domain))
-  ));
-  const visibleCategories = categories.slice(0, 6);
-  const categoryHtml = visibleCategories.map((category) => {
-    const features = category.slm_features || category.mechanism_tags || [];
-    return `<div class="gfield"><span class="gfl">${esc(category.label)}</span>${esc(category.question || category.description || '')}<br><span class="muted">Signals we track: ${esc(features.join(' · '))}</span></div>`;
-  }).join('');
-  const refreshGuide = data.refreshed_outlook_guide || {};
-  const refreshFields = refreshGuide.vertical_refresh_fields || {};
-  const scopedRefreshFields = wanted.flatMap((domain) => (refreshFields[domain] || []).map((field) => field.replaceAll('_', ' ')));
-  const refreshSections = refreshGuide.required_narrative_sections || [];
-  const refreshHtml = `<div class="plainread">
-    <div class="plainread-title">Refreshed outlook contract</div>
-    <div class="gfield"><span class="gfl">What changes</span>${esc(refreshGuide.summary || 'Outlooks must show dated evidence, change since last review, unknowns, and next review trigger.')}</div>
-    <div class="gfield"><span class="gfl">Sections required</span>${esc(refreshSections.join(' · ') || 'current call · change since last review · watch signals')}</div>
-    <div class="gfield"><span class="gfl">Vertical signals</span>${esc(scopedRefreshFields.slice(0, 10).join(' · ') || 'No vertical-specific fields published yet.')}</div>
-    <div class="gfield"><span class="gfl">Trend promotion</span>${esc(refreshGuide.trend_promotion_policy?.minimum_comparable_observations || 3)} comparable dated observations minimum; one screenshot or one stale source stays a review trigger.</div>
-  </div>`;
-  const trendIds = new Set(categories.map((category) => category.id));
-  const signals = (data.regulatory_signals || []).filter((signal) => (
-    (signal.trend_ids || []).some((id) => trendIds.has(id))
-    || trendIds.has(signal.driver_domain)
-    || (signal.affected_verticals || []).some((vertical) => wanted.includes(vertical))
-  )).slice(0, 4);
-  const signalHtml = signals.map((signal) => {
-    const source = signal.source || (signal.source_refs || [])[0];
-    return `<div class="gfield"><span class="gfl">${esc(signal.regulator || signal.driver_domain || 'regulatory signal')} · ${esc(signal.jurisdiction || 'global')}</span>${esc(signal.signal || signal.summary || signal.title || '')}<br><span class="muted">as of ${esc(signal.as_of)} · ${trendTaxonomySourceHtml(source)}</span></div>`;
-  }).join('');
-  const requiredFields = data.evidence_contract?.required_fields || data.outlook_contract?.required_fields || [];
-  const fieldCount = requiredFields.length;
-  return `<div class="gpanel">
-    <div class="gcols">
-      <div>
-        <div class="dsec">${esc(title || 'Outlook guide')}</div>
-        <div class="gnar muted">Every report follows the same plain-English questions below. The shared tags help the research desk compare patterns; they are labels to support with evidence, not conclusions on their own.</div>
-        ${guideHtml ? `<div class="plainread"><div class="plainread-title">The five questions in every report</div>${guideHtml}</div>` : ''}
-        ${refreshHtml}
-        ${categoryHtml || '<div class="muted">No matching trend categories published for this view.</div>'}
-      </div>
-      <div>
-        <div class="dsec">Rules and policy to watch</div>
-        ${signalHtml || '<div class="muted">No regulatory signals mapped to this view.</div>'}
-        <div class="analysis-actions"><a class="kindbtn" href="/api/trend-taxonomy" target="_blank" rel="noopener noreferrer">See the full guide →</a><a class="kindbtn" href="/api/slm/training-schema" target="_blank" rel="noopener noreferrer">See the training format →</a></div>
-        <div class="muted">Guide version ${esc(data.schema)} · ${esc(fieldCount)} evidence fields required · as of ${esc(data.as_of || 'unknown')}</div>
+function renderMethodology() {
+  const el = document.getElementById('methodologyview');
+  if (!el || el.dataset.ready) return;
+  el.dataset.ready = 'true';
+  el.innerHTML = `${pageHead('Intelligence Methodology', 'How Chaindump turns market data, project history and cited evidence into reports you can read and compare.')}
+    <div class="gpanel">
+      <div class="gcols">
+        <div>
+          <div class="dsec">How to read a report</div>
+          <div class="gfield"><span class="gfl">What it is</span>A plain description of the project, product and people it serves.</div>
+          <div class="gfield"><span class="gfl">What happened</span>The important events, in order, with dates when the evidence supports them.</div>
+          <div class="gfield"><span class="gfl">Why it happened</span>The choices, incentives and outside forces that best explain the outcome.</div>
+          <div class="gfield"><span class="gfl">What could change the call</span>Evidence that would weaken the current read or point to a different conclusion.</div>
+          <div class="gfield"><span class="gfl">What to watch next</span>A short list of measurable signals worth checking again.</div>
+        </div>
+        <div>
+          <div class="dsec">How evidence works</div>
+          <div class="gbody">Every published conclusion should lead back to a dated source. Links are collected in each report’s source ledger so readers can inspect the evidence directly. A source supports a claim; it does not automatically prove the whole report.</div>
+          <div class="gbody">When the available evidence is thin, old or contradictory, the report says so. Missing facts stay unknown instead of being filled with a confident-sounding guess.</div>
+          <div class="dsec">How comparisons work</div>
+          <div class="gbody">We compare like with like: the same kind of project, the same metric and a similar time window. A pattern across reports is an observation, not proof that one factor caused the outcome.</div>
+          <div class="dsec">Editorial policy</div>
+          <div class="gbody">Market monitoring can flag a report for another look. A material change to a published conclusion still requires human review and dated evidence.</div>
+        </div>
       </div>
     </div>
-  </div>`;
-}
-function rerenderActiveForensicsView() {
-  // Taxonomy arrives asynchronously. Preserve the control/scroll state that
-  // may have changed while it was loading instead of stealing focus from a
-  // reader who started searching a dossier.
-  const snapshot = captureUiSnapshot();
-  try {
-    if (state.activeView === 'blockchain-analysis') renderBlockchainAnalysis();
-    if (state.activeView === 'exchange-analysis') renderExchangeAnalysis();
-    if (state.activeView === 'casino-analysis') renderCasinoAnalysis();
-    if (state.activeView === 'nft-analysis' && state.nftData) renderNft(state.nftData);
-  } finally { restoreUiSnapshot(snapshot); }
-}
-async function loadTrendTaxonomy() {
-  if (state.trendTaxonomyStatus === 'loaded') return;
-  try {
-    const response = await fetch('/api/trend-taxonomy');
-    state.trendTaxonomy = response.ok ? await response.json() : null;
-    state.trendTaxonomyStatus = response.ok ? 'loaded' : 'unavailable';
-  } catch {
-    state.trendTaxonomy = null;
-    state.trendTaxonomyStatus = 'unavailable';
-  }
-  rerenderActiveForensicsView();
+    <div class="dsec" style="margin:20px 0 10px">What we look for by category</div>
+    <div class="gwrap methodology-cards">
+      <div class="gcard"><div class="gname">Blockchains</div><div class="gbody">Useful activity, developer demand, security, settlement depth, fees and whether the token captures value from the network.</div></div>
+      <div class="gcard"><div class="gname">DEXs and CEXs</div><div class="gbody">Real trader demand, liquidity, custody, compliance, product mix and whether revenue lasts after incentives fade.</div></div>
+      <div class="gcard"><div class="gname">Casinos</div><div class="gbody">Legal access, repeat demand, game or sportsbook economics, treasury risk and whether promotions create durable players.</div></div>
+      <div class="gcard"><div class="gname">NFTs and Ordinals</div><div class="gbody">Launch quality, holder retention, community health, founder execution, royalties and products that outlive the initial sale.</div></div>
+      <div class="gcard"><div class="gname">Stablecoins</div><div class="gbody">Reserves, redemption, issuer rights, liquidity, disclosures, regulation and the conditions required to hold the peg.</div></div>
+      <div class="gcard"><div class="gname">RWA and DePIN</div><div class="gbody">The real asset or service, customer demand, operating costs, token incentives and whether usage continues when rewards fall.</div></div>
+      <div class="gcard"><div class="gname">Treasuries, miners and ETFs</div><div class="gbody">Cash flow, fees, leverage, dilution, custody and how crypto exposure changes the underlying business or fund.</div></div>
+    </div>`;
 }
 // ---------------------------------------------------------------------------
 // The kind toggle shared by the Dead & Dying / Stuck-Mid views — Chains (the
@@ -1477,7 +1348,6 @@ function renderBlockchainAnalysis() {
   el.innerHTML = `${head}
     <div class="analysis-note"><b>Facts are not the same as an explanation.</b> A chain is counted as having a complete why-analysis only when its report explains the outcome, names the choices behind it, says what could have changed it, lists watch signals and unknowns, and gives a review date.</div>
     <div class="gstats">${gstat(rows.length, 'chains in the index')}${gstat(researched, 'full research reports')}${gstat(causal, 'why analyses complete')}${gstat(rows.length - causal, 'why analyses pending')}</div>
-    ${trendTaxonomyPanel('blockchain', 'What tends to drive blockchain outcomes')}
     ${cohortPanel}
     <div class="toolbar"><div class="analysis-controls">
       <input id="blockchainAnalysisSearch" class="search" placeholder="Search chains or lifecycle…" value="${esc(state.blockchainAnalysisQuery)}" />
@@ -1900,7 +1770,6 @@ function renderExchangeAnalysis() {
   );
   el.innerHTML = `${head}${errors}
     <div class="gstats">${gstat(rows.filter(r=>r.kind==='dex').length, 'DEX reports')}${gstat(rows.filter(r=>r.kind==='cex').length, 'CEX reports')}${gstat(rows.filter(r=>r.forensicStatus==='published').length, 'why analyses complete')}${gstat(claimSupport.unresolved_high_risk_claim_count || 0, 'claims still pending')}</div>
-    ${trendTaxonomyPanel(['dex', 'cex'], 'What tends to drive exchange outcomes')}
     <div class="analysis-note"><b>Evidence check: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} important claims have enough independent support; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending or withheld.</b> A report can be listed before every conclusion passes editorial review.</div>
     <div class="analysis-note">${cited} of ${rows.length} reports expose registered citations. Across them: ${esc(claimSupport.registered_source_count || 0)} registered · ${esc(claimSupport.reachable_source_count || 0)} reachable · ${esc(claimSupport.reviewed_source_count || 0)} editor reviewed. We compare only like with like: the same venue type, business model, metric, unit, and time window. Spot, routed, perpetual, TVL, loss, daily, and quarterly measures are never added together.</div>
     ${cohortPanel}
@@ -2279,7 +2148,6 @@ function renderCasinoAnalysis() {
   el.innerHTML = `${head}
     <div class="analysis-note"><b>${esc(coverage.present_count ?? cases.length)}/${esc(coverage.target_count || cases.length)} reports are listed in the index; that is not proof every conclusion is supported.</b> Across the visible reports, ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} important claims have enough independent support and ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending / withheld. No cross-case “largest casino” ranking is computed.</div>
     <div class="gstats">${gstat(cases.length, 'reports in the index')}${gstat(missing, 'reports still missing')}${gstat(claimSupport.unresolved_high_risk_claim_count || 0, 'claims still pending')}${gstat(cases.filter(item=>item.token_status==='documented').length, 'tokens documented')}</div>
-    ${trendTaxonomyPanel('casino', 'What tends to drive casino outcomes')}
     ${cohortPanel}
     <div class="analysis-note">A “registered” source is listed in the report; “reachable” means we could retrieve it; “editor reviewed” means a reviewer recorded that check. None alone proves a high-risk conclusion. Open a report to see which lifecycle, legal, loss, and what-if claims are supported or withheld.</div>
     <div class="toolbar"><div class="analysis-controls">
@@ -2299,7 +2167,6 @@ function renderCasinoAnalysis() {
       <label class="muted" for="casinoAnalysisSort">Sort</label>
       <select id="casinoAnalysisSort" class="analysis-select"><option value="reviewed"${state.casinoAnalysisSort==='reviewed'?' selected':''}>Last reviewed</option><option value="name"${state.casinoAnalysisSort==='name'?' selected':''}>Name</option><option value="sources"${state.casinoAnalysisSort==='sources'?' selected':''}>Reviewed source count</option></select>
     </div></div>
-    <div class="analysis-actions"><a class="kindbtn" href="/api/casino-coverage" target="_blank" rel="noopener noreferrer">Open coverage ledger →</a></div>
     <div class="dsec" style="margin:18px 0 10px">${filtered.length} report${filtered.length===1?'':'s'} shown · evidence strength varies · cohort as of ${esc(coverage.universe_as_of || state.casinoAnalysisData.as_of || '—')}</div>
     <div class="gwrap">${filtered.map(casinoAnalysisCard).join('') || '<div class="skel">No casino dossiers match these filters.</div>'}</div>`;
 }
@@ -3011,16 +2878,92 @@ const NORMALIZED_DOSSIER_SECTIONS = Object.freeze([
   ['outlook_watch', 'Outlook and what to watch'],
   ['review_metadata', 'Review metadata'],
 ]);
-function normalizedValue(value) {
+const NORMALIZED_HIDDEN_KEYS = new Set([
+  'id', 'ids', 'url', 'urls', 'href', 'source', 'sources', 'source_id', 'source_ids',
+  'source_ref', 'source_refs', 'evidence_ref', 'evidence_refs', 'reference_id',
+  'schema', 'version', 'citation_schema', 'publisher', 'source_tier', 'source_role',
+  'registered', 'resolving', 'reachable', 'evidence_reviewed', 'evidence_reviewer',
+  'checked_at', 'accessed_at', 'access_state', 'access_checked_at', 'access_http_status',
+  'verification_note', 'access_note', 'evidence_reviewed_at', 'source_date',
+  'evidence_scope', 'stale', 'stale_after', 'slug',
+]);
+const NORMALIZED_LABELS = Object.freeze({
+  base: 'Base case',
+  bull: 'Upside case',
+  bear: 'Downside case',
+  most_likely: 'Most likely',
+  confidence: 'Confidence',
+  classification: 'Current read',
+  status_basis: 'Evidence basis',
+  status_as_of: 'Status current through',
+  last_verified_at: 'Last checked',
+  next_review_at: 'Review again by',
+  review_due: 'Review due',
+  resolution_trigger: 'What would resolve it',
+  question: 'Open question',
+  summary: 'Summary',
+  mechanism: 'How it worked',
+  intervention: 'Alternative action',
+  limits: 'Limits',
+  signal: 'Signal',
+  implication: 'Why it matters',
+});
+function normalizedText(value) {
   if (value == null || value === '') return '';
-  if (Array.isArray(value)) return value.map((item) => normalizedValue(item)).filter(Boolean).join(' ');
-  if (typeof value === 'object') {
-    return Object.entries(value)
-      .filter(([key, item]) => !['source_ids', 'source_refs', 'evidence_refs'].includes(key) && item != null && item !== '')
-      .map(([key, item]) => `${key.replaceAll('_', ' ')}: ${normalizedValue(item)}`)
-      .filter(Boolean).join(' · ');
+  if (typeof value === 'boolean') return value ? 'Yes' : 'No';
+  const text = String(value).trim();
+  if (/^[\[{]/.test(text)) {
+    try { JSON.parse(text); return ''; } catch { /* authored prose can start with punctuation */ }
   }
-  return String(value);
+  return text
+    .replace(/https?:\/\/[^\s<]+/gi, '')
+    .replace(/\s+/g, ' ')
+    .replace(/\s+([,.;:])/g, '$1')
+    .trim();
+}
+function normalizedLabel(key) {
+  if (NORMALIZED_LABELS[key]) return NORMALIZED_LABELS[key];
+  return String(key).replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+function normalizedPublicEntries(value) {
+  return Object.entries(value || {}).filter(([key, item]) => (
+    !NORMALIZED_HIDDEN_KEYS.has(key)
+    && !/(^|_)(id|ids|url|urls|ref|refs|slug|schema|version)$/.test(key)
+    && !/(^|_)(source|sources|evidence)(_|$)/.test(key)
+    && item != null
+    && item !== ''
+  ));
+}
+function normalizedStructuredHtml(value, depth = 0) {
+  if (value == null || value === '' || depth > 3) return '';
+  if (typeof value === 'string' && /^[\[{]/.test(value.trim())) {
+    try { return normalizedStructuredHtml(JSON.parse(value), depth); } catch { /* render it as authored prose */ }
+  }
+  if (!Array.isArray(value) && typeof value !== 'object') {
+    const text = normalizedText(value);
+    return text ? proseBox(text) : '';
+  }
+  if (Array.isArray(value)) {
+    const rows = value.map((item) => {
+      if (item && typeof item === 'object') {
+        const body = normalizedStructuredHtml(item, depth + 1);
+        return body ? `<li>${body}</li>` : '';
+      }
+      const text = normalizedText(item);
+      return text ? `<li>${esc(text)}</li>` : '';
+    }).filter(Boolean);
+    return rows.length ? `<ul class="evlist normalized-list">${rows.join('')}</ul>` : '';
+  }
+  const rows = normalizedPublicEntries(value).map(([key, item]) => {
+    const label = normalizedLabel(key);
+    if (item && typeof item === 'object') {
+      const body = normalizedStructuredHtml(item, depth + 1);
+      return body ? `<div class="normalized-group"><div class="gsec">${esc(label)}</div>${body}</div>` : '';
+    }
+    const text = normalizedText(item);
+    return text ? `<div class="gfield"><span class="gfl">${esc(label)}</span>${esc(text)}</div>` : '';
+  }).filter(Boolean);
+  return rows.join('');
 }
 function normalizedUnknown(label) {
   return `<div class="gnar muted">Unknown / not published for this report. ${esc(label)} needs a dated, verifiable observation before we make a call.</div>`;
@@ -3028,17 +2971,25 @@ function normalizedUnknown(label) {
 function normalizedSourceLedger(sources) {
   const list = sourceArray(sources);
   if (!list.length) return normalizedUnknown('The source ledger');
-  return `${srcHtml(list, 'Cited sources: ')}<div class="gnar muted">Each link is a source used by this report; source coverage does not by itself prove every conclusion.</div>`;
+  const links = list.map((source) => {
+    const url = safeUrl(source.url);
+    if (url === '#') return '';
+    const domain = String(source.url).replace(/^https?:\/\//, '').replace(/^www\./, '').split('/')[0];
+    const title = source.title || source.publisher || domain;
+    return `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(title)} ↗</a>`;
+  }).filter(Boolean);
+  if (!links.length) return normalizedUnknown('The source ledger');
+  return `<div class="asrc">Cited sources: ${links.join(' · ')}</div><div class="gnar muted">Each link is a source used by this report; source coverage does not by itself prove every conclusion.</div>`;
 }
 function normalizedDossierHtml(input = {}) {
   const d = input || {};
-  const status = normalizedValue(d.status) || 'unknown / not published';
-  const metric = normalizedValue(d.metric) || '—';
-  const asOf = normalizedValue(d.asOf) || 'date unknown';
+  const status = normalizedText(d.status) || 'unknown / not published';
+  const metric = normalizedText(d.metric) || '—';
+  const asOf = normalizedText(d.asOf) || 'date unknown';
   const header = `<div class="normalized-dossier" data-normalized-dossier="v1">
     <div class="dsec">Normalized research report</div>
-    <div class="normalized-dossier-head"><b>${esc(normalizedValue(d.name) || 'Unnamed case')}</b><span class="gverdict ${verdictClass(status)}">${esc(status)}</span><span class="normalized-dossier-metric">${esc(metric)}</span></div>
-    <div class="gmeta">${esc(normalizedValue(d.category) || 'Forensics')} · as of ${esc(asOf)} · same report template across every research category</div>`;
+    <div class="normalized-dossier-head"><b>${esc(normalizedText(d.name) || 'Unnamed case')}</b><span class="gverdict ${verdictClass(status)}">${esc(status)}</span><span class="normalized-dossier-metric">${esc(metric)}</span></div>
+    <div class="gmeta">${esc(normalizedText(d.category) || 'Research report')} · updated ${esc(asOf)}</div>`;
   const values = {
     what_it_is: d.whatItIs,
     what_happened: d.whatHappened,
@@ -3054,9 +3005,9 @@ function normalizedDossierHtml(input = {}) {
     review_metadata: d.reviewMetadata,
   };
   const sections = NORMALIZED_DOSSIER_SECTIONS.map(([key, label]) => {
-    if (key === 'evidence') return `<section class="normalized-section" data-normalized-section="${key}"><div class="gsec">${label}</div>${normalizedSourceLedger(d.sources)}${normalizedValue(values[key]) ? proseBox(normalizedValue(values[key])) : ''}</section>`;
-    const value = normalizedValue(values[key]);
-    return `<section class="normalized-section" data-normalized-section="${key}"><div class="gsec">${label}</div>${value ? proseBox(value) : normalizedUnknown(label)}</section>`;
+    if (key === 'evidence') return `<section class="normalized-section" data-normalized-section="${key}"><div class="gsec">${label}</div>${normalizedSourceLedger(d.sources)}</section>`;
+    const content = normalizedStructuredHtml(values[key]);
+    return `<section class="normalized-section" data-normalized-section="${key}"><div class="gsec">${label}</div>${content || normalizedUnknown(label)}</section>`;
   }).join('');
   return `${header}${sections}<div class="stampline">Unknowns stay visible until a reviewer adds dated, verifiable evidence.</div></div>`;
 }
@@ -3518,9 +3469,8 @@ function switchView(view, push){
   document.getElementById('powerview').style.display = view === 'power' ? 'block' : 'none';
   document.getElementById('tracesview').style.display = view === 'traces' ? 'block' : 'none';
   document.getElementById('apiview').style.display = view === 'api' ? 'block' : 'none';
-  if (['blockchain-analysis', 'exchange-analysis', 'casino-analysis', 'nft-analysis'].includes(view)) {
-    loadTrendTaxonomy();
-  }
+  document.getElementById('methodologyview').style.display = view === 'methodology' ? 'block' : 'none';
+  if (view === 'methodology') renderMethodology();
   if (view === 'api' && !apiLoaded) loadApi();
   if (view === 'news' && !newsLoaded) loadNews();
   if (view === 'power' && !powerLoaded) loadPower();
@@ -4030,7 +3980,7 @@ function nftAggregateAnalysisHtml(data) {
     <div class="gsec">What would change the aggregate read</div><ul class="evlist">${falsifiers}</ul>
     <div class="gsec">Cited dossier anchors</div>
     <div class="gbody">These are examples for inspection, not a substitute for the full cohort: ${anchors.join(' · ') || 'no source anchors available'}.</div>
-    <div class="asrc">Aggregate evidence: <a href="/api/nft" target="_blank" rel="noopener noreferrer">open the live cohort JSON ↗</a> · every dossier below links to its field-level evidence and source ledger.</div>`;
+    <div class="asrc">Every dossier below includes its own field-level evidence and source ledger.</div>`;
 }
 function nftLifecycleReadHtml(profile, publicationDepth) {
   if (!profile?.analysis) return '';
@@ -4180,7 +4130,7 @@ function renderNft(data){
   el.innerHTML = `${NFT_HEAD}${stats}
   <div class="analysis-note"><b>NFT/Ordinals evidence check: ${esc(claimSupport.passing_high_risk_claim_count || 0)} of ${esc(claimSupport.high_risk_claim_count || 0)} important claims have enough independent support; ${esc(claimSupport.unresolved_high_risk_claim_count || 0)} remain pending or withheld.</b> The index preserves rich reports and registered sources, but unsupported lifecycle, legal, loss, and what-if conclusions are not presented as independently verified.</div>
   <div class="analysis-note">Evidence status across the corpus: ${esc(claimSupport.registered_source_count || 0)} registered · ${esc(claimSupport.reachable_source_count || 0)} reachable · ${esc(claimSupport.reviewed_source_count || 0)} editor reviewed. “Reachable” records retrieval; it is not editorial review.</div>
-  ${evidenceCoverage}${trendTaxonomyPanel('nft_ordinals', 'What tends to drive NFT and Ordinals outcomes')}${cohortPanel}${panel}
+  ${evidenceCoverage}${cohortPanel}${panel}
   <div class="toolbar"><div class="analysis-controls">
     <input id="casesearch" class="search" placeholder="Search case studies by name, chain or status…" value="${esc(caseQ)}" />
     <label class="muted" for="nftCaseStatus">Status</label>
@@ -5524,7 +5474,7 @@ document.addEventListener('click', (e) => {
 });
 
 // ---- deep-link routing (History API) ----
-const KNOWN_VIEWS = ['live','blockchain-analysis','exchange-analysis','casino-analysis','nft-analysis','mid','grave','nft','stables','rwa','infra','markets','geo','uspolicy','power','news','traces','api'];
+const KNOWN_VIEWS = ['live','blockchain-analysis','exchange-analysis','casino-analysis','nft-analysis','mid','grave','nft','stables','rwa','infra','markets','geo','uspolicy','power','news','traces','api','methodology'];
 function applyRoute(){
   const parts = location.pathname.split('/').filter(Boolean);
   if (!parts.length) { switchView('live', false); return; }
@@ -5557,9 +5507,7 @@ function pushEntity(kind, id){ const path = `/${kind}/${encodeURIComponent(id)}`
 
 load();
 applyRoute();
-loadForensicsRefreshStatus();
-setInterval(load, 30000);
-setInterval(loadForensicsRefreshStatus, 5 * 60 * 1000);
+setInterval(() => refreshWithUiPreservation(load), 30000);
 // real-time refresh of whichever live-data tab is open (research tabs are static, skip them)
 const LIVE_REFRESH = { stables: loadStables, 'nft-analysis': loadNft, news: loadNews, markets: loadMarkets, power: loadPower };
 setInterval(() => {

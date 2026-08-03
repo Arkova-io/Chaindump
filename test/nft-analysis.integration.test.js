@@ -81,7 +81,8 @@ describe('NFT / Ordinals citation-ready surface', () => {
     expect(html).toContain('How well the reports are sourced:');
     expect(html).toContain('earlier report');
     expect(html).toContain('function nftAggregateAnalysisHtml');
-    expect(html).toContain('Aggregate evidence:');
+    expect(html).toContain('Every dossier below includes its own field-level evidence and source ledger.');
+    expect(html).not.toContain('open the live cohort JSON');
     expect(html).toContain('sources explicitly accessible');
     expect(html).toContain('field claims access-anchored');
     expect(html).toContain('forensic sections access-anchored');

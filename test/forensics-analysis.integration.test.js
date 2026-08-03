@@ -174,7 +174,7 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain("} else if (seg === 'casino' && rest) {");
     expect(html).toContain('loadCasinoAnalysisDetail(state.casinoAnalysisExpanded);');
     expect(html).toContain('Open report →');
-    expect(html).toContain('Open coverage ledger →');
+    expect(html).not.toContain('Open coverage ledger →');
     expect(html).toContain('report${filtered.length===1');
   });
 
@@ -226,23 +226,16 @@ describe('Web3 Casino Analysis data surface', () => {
   });
 });
 
-describe('six-hour forensic review surface', () => {
-  it('shows the review cadence and links the visible status to the public API', () => {
-    expect(html).toContain('function loadForensicsRefreshStatus()');
-    expect(html).toContain("fetch('/api/forensics-refresh-status')");
-    expect(html).toContain('Freshness check (every 6 hours):');
-    expect(html).toContain('Research assistant:');
-    expect(html).toContain('no run recorded (optional workflow)');
-    expect(html).toContain('refresh_freshness');
-    expect(html).toContain('proposal_agent_freshness');
-    expect(html).toContain('proposal_agent_last_completed');
-    expect(html).toContain('last successful completion');
-    expect(html).toContain('STALE');
-    expect(html).toContain('next due');
-    expect(html).toContain('suggestions only; a person approves changes');
-    expect(html).toContain("forensicsRefreshStatus = response.ok ? 'loaded' : 'unavailable'");
-    expect(html).toContain('a person approves changes');
-    expect(html).toContain('See review status →');
+describe('customer-facing analysis headers', () => {
+  it('keeps internal review operations and raw status endpoints out of page copy', () => {
+    expect(html).not.toContain('function loadForensicsRefreshStatus()');
+    expect(html).not.toContain("fetch('/api/forensics-refresh-status')");
+    expect(html).not.toContain('Freshness check (every 6 hours):');
+    expect(html).not.toContain('Research assistant:');
+    expect(html).not.toContain('suggestions only; a person approves changes');
+    expect(html).not.toContain('See review status →');
+    expect(html).toContain('function pageHead(title, sub)');
+    expect(html).toContain('<div class="gvintro">${sub}</div></div>');
   });
 });
 

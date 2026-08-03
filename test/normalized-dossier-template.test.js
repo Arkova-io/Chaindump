@@ -40,4 +40,14 @@ describe('normalized cross-vertical dossier template', () => {
     expect(html).toContain('function normalizedSourceLedger(sources)');
     expect(html).toContain('source coverage does not by itself prove every conclusion');
   });
+
+  it('renders nested report data as human rows and never as recursive key-value prose', () => {
+    expect(html).toContain('function normalizedStructuredHtml(value');
+    expect(html).toContain('function normalizedText(value)');
+    expect(html).toContain('const NORMALIZED_HIDDEN_KEYS');
+    expect(html).not.toContain('`${key.replaceAll(\'_\', \' \')}: ${normalizedValue(item)}`');
+    expect(html).not.toContain('${normalizedValue(values[key]) ? proseBox(normalizedValue(values[key])) : \'\'}');
+    expect(html).toContain("if (key === 'evidence') return");
+    expect(html).toContain('normalizedSourceLedger(d.sources)');
+  });
 });

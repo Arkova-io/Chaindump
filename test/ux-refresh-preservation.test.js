@@ -26,8 +26,14 @@ describe('background refresh UX contract', () => {
     expect(timer).not.toContain('window.scrollTo(0, y)');
   });
 
-  it('preserves focus when asynchronous taxonomy and catalog renders replace controls', () => {
-    expect(html).toContain('function rerenderActiveForensicsView()');
+  it('routes the global thirty-second board refresh through the preservation wrapper', () => {
+    const startup = html.slice(html.lastIndexOf('\nload();'));
+    expect(startup).toContain('load();');
+    expect(startup).toContain('setInterval(() => refreshWithUiPreservation(load), 30000);');
+    expect(startup).not.toContain('setInterval(load, 30000);');
+  });
+
+  it('preserves focus when catalog and filter renders replace controls', () => {
     expect(html).toContain('function renderCatalogBody()');
     expect(html).toContain('function renderCatalog()');
     expect(html).toContain('document.addEventListener(\'change\', preserveControlAfterEvent, true);');
