@@ -3850,6 +3850,11 @@ async function nftEntityProfile(type, slug) {
     supply: 'profile.evidence.supply_or_mint',
   };
   const claimIdByPath = new Map(projection.claims.map((claim) => [claim.field_path, claim.id]));
+  const lifecycleEvidence = (Array.isArray(profile.evidence) ? profile.evidence : [])
+    .find((item) => item?.field === 'lifecycle_status'
+      && typeof item.value === 'string' && item.value.trim());
+  const lifecycleClaimId = claimIdByPath.get('profile.evidence.lifecycle_status');
+  const lifecycleSupported = !lifecyclePending && lifecycleEvidence && lifecycleClaimId;
   const metricSpecs = [
     ['secondary_volume_usd', 'secondary_volume', 'Secondary volume', 'usd'],
     ['mint_raise_usd', 'mint_raise', 'Mint raise', 'usd'],
@@ -3872,11 +3877,11 @@ async function nftEntityProfile(type, slug) {
     identity: { id: `${type}:${slug}`, type, slug, name: row.name, aliases: [] },
     classification: { subtype: row.category || null, tags: [], chains: row.chain ? [row.chain] : [], jurisdictions: [] },
     outcome: {
-      label: lifecyclePending ? null : row.status,
-      as_of: lifecyclePending ? null : asOf,
-      rule_id: lifecyclePending ? null : 'nft-lifecycle-v1',
+      label: lifecycleSupported ? row.status : null,
+      as_of: lifecycleSupported ? profileIso(lifecycleEvidence.as_of) : null,
+      rule_id: lifecycleSupported ? 'nft-lifecycle-v1' : null,
       confidence: null,
-      claim_ids: [],
+      claim_ids: lifecycleSupported ? [lifecycleClaimId] : [],
     },
     sections: Object.keys(projection.sections).length ? projection.sections : {
       what_it_is: profileProse(profile.collection_description, profile.business),
