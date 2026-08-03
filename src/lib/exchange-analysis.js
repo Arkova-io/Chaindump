@@ -132,7 +132,10 @@ function buildOutcomeAssociations(scoped) {
 function buildTrendReadiness(scoped, comparison, asOfDate) {
   return {
     totalCases: scoped.length,
-    causalDossiers: scoped.filter((row) => row.analysis?.forensic_analysis_status === 'published').length,
+    causalDossiers: scoped.filter((row) => (
+      row.analysis?.forensic_analysis_status === 'published'
+      || row.analysis?.canonical_evidence?.explanation_complete === true
+    )).length,
     documentedTokenCases: scoped.filter((row) => row.analysis?.token?.evidence_level === 'documented').length,
     currentEvidenceCases: scoped.filter((row) => isCurrentEvidence(row, asOfDate)).length,
     comparableMetricGroups: [...comparison.values()].filter((group) => group.count >= 2).length,

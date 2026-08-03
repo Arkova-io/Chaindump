@@ -109,10 +109,11 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('evidence-backed explanation is still being reviewed');
     expect(html).toContain('function forensicSourceArray(contract)');
     expect(html).toContain('forensicSourceArray(forensic)');
-    expect(html).toContain("forensicStatus: analysis.forensic_analysis_status || (forensic ? 'published' : 'pending')");
+    expect(html).toContain("forensicStatus: explanationPublished ? 'published' : 'pending'");
+    expect(html).toContain('canonicalEvidence.explanation_complete === true');
     expect(html).toContain("'outcome explained'");
-    expect(html).toContain('Independent support:');
-    expect(html).toContain('important claims have enough independent support');
+    expect(html).toContain('key claims have independent support');
+    expect(html).toContain('Unsupported conclusions are omitted');
     expect(html).toContain('publicationDepth: parsedObject(row.publication_depth)');
     expect(html).toContain('sections.push(exchangeFindingHtml(row))');
     expect(html).toContain('plainRead || exchangeFindingHtml(row)');
@@ -192,10 +193,10 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('cited source${Number(item.registered_source_count)');
     expect(html).toContain('Evidence by field and review status');
     expect(html).toContain('casinoEvidenceStatusHtml({ ...claim, registered: true');
-    expect(html).toContain('Independent support: ${esc(passing)} of ${esc(total)} important claims meet the bar');
-    expect(html).toContain("function publicationDepthBanner(depth, corpusLabel = 'Corpus inclusion')");
+    expect(html).toContain('${esc(passing)} of ${esc(total)} key claims have independent support');
+    expect(html).toContain('function publicationDepthBanner(depth)');
     expect(html).toContain('Conclusion not published yet.');
-    expect(html).toContain('Conclusions about lifecycle, cause, legal status, losses, and what-if scenarios are withheld below');
+    expect(html).toContain('Unsupported conclusions are omitted');
     expect(html).toContain('forensicAnalysisHtml(synthesis.forensic_analysis');
     expect(html).toContain("}, 'This casino report is listed, but the evidence-backed explanation is still being reviewed.', depth)");
     expect(html).toContain('return ` <a class="ecite"');
@@ -205,7 +206,7 @@ describe('Web3 Casino Analysis data surface', () => {
   it('keeps corpus coverage distinct from claim support', () => {
     expect(html).toContain("gstat(cases.length, 'casino reports')");
     expect(html).toContain("gstat(cases.filter(item=>item.status==='active').length, 'active businesses')");
-    expect(html).toContain('No licence observation is published. Do not infer global legality from this dossier.');
+    expect(html).toContain('No licence observation is published. Do not infer global legality from this report.');
     expect(html).toContain('Lifecycle timeline');
     expect(html).toContain('Where these businesses stand');
     expect(html).toContain('function casinoReviewState(item)');

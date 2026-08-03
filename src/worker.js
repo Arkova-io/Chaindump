@@ -32,6 +32,7 @@ import {
   buildLegacyEntityProfile,
   embeddedCanonicalEntityProfile,
   entityProfileContract,
+  ANALYSIS_SECTION_KEYS,
   ENTITY_TYPES,
   METRIC_DIMENSIONS,
 } from './lib/entity-profile.js';
@@ -2262,6 +2263,59 @@ async function getTiers() {
 // The response is always scoped to exactly one venue kind, and the summary only
 // reports membership/counts for fully matching comparison keys. It never pools
 // metric values.
+function canonicalExchangeIndexProjection(row, canonicalProfile) {
+  if (!canonicalProfile) return row;
+  const sections = canonicalProfile.analysis?.sections || {};
+  const placeholderSection = /^(?:unknown\b|not (?:available|published)\b|n\/?a\b|pending\b|research pending\b|to be researched\b)|needs a dated, verifiable observation before we make a call/i;
+  const completeSections = ANALYSIS_SECTION_KEYS.filter((key) => (
+    typeof sections[key]?.body === 'string'
+    && sections[key].body.trim().length >= 120
+    && sections[key].body.trim().split(/\s+/).length >= 20
+    && !placeholderSection.test(sections[key].body.trim())
+  ));
+  const qualityCompleteness = canonicalProfile.quality?.completeness_pct;
+  const explanationComplete = completeSections.length === ANALYSIS_SECTION_KEYS.length
+    && qualityCompleteness === 100;
+  const outcome = canonicalProfile.outcome?.label || null;
+  const canonicalSources = publicationSourceRecords(canonicalProfile.sources);
+  const projectedSources = [...new Map([
+    ...canonicalSources,
+    ...(Array.isArray(row.sources) ? row.sources : []),
+  ].map((source) => [source.url || source.id, source])).values()];
+  return {
+    ...row,
+    status: outcome || row.status,
+    summary: sections.why_this_outcome?.body || sections.what_happened?.body || row.summary,
+    outlook: sections.outlook_and_watch?.body || row.outlook,
+    sources: projectedSources.length ? projectedSources : row.sources,
+    profile: {
+      ...row.profile,
+      purpose: sections.what_it_is?.body || row.profile?.purpose,
+      why: sections.why_this_outcome?.body || row.profile?.why,
+      strategic_choices: sections.strategic_choices?.body || row.profile?.strategic_choices,
+      operating_model: sections.operating_model?.body || row.profile?.operating_model,
+      token_value_capture: sections.token_and_value_capture?.body
+        || row.profile?.token_value_capture,
+      counterfactual: sections.counterfactual?.body || row.profile?.counterfactual,
+      risks: sections.risks_and_unknowns?.body || row.profile?.risks,
+      synthesis: sections.lifecycle?.body || row.profile?.synthesis,
+    },
+    analysis: {
+      ...row.analysis,
+      canonical_evidence: {
+        outcome_available: Boolean(outcome),
+        explanation_complete: explanationComplete,
+        complete_sections: completeSections.length,
+        total_sections: ANALYSIS_SECTION_KEYS.length,
+        quality_completeness_pct: qualityCompleteness ?? null,
+        source_count: canonicalSources.length,
+        publication_state: canonicalProfile.quality?.publication_state || 'unknown',
+        freshness_state: canonicalProfile.freshness?.state || 'unknown',
+      },
+    },
+  };
+}
+
 app.get('/api/exchange-analysis', wrap(async (req, res) => {
   const kind = req.query.kind === 'cex' ? 'cex' : 'dex';
   const lifecycle = ['successful', 'mid', 'dead'].includes(req.query.lifecycle)
@@ -2328,6 +2382,13 @@ app.get('/api/exchange-analysis', wrap(async (req, res) => {
        WHERE c.kind = ?
        ORDER BY c.lifecycle ASC, c.name ASC`, [kind]);
     const allCases = rows.map(normalizeExchangeCase).map((row) => {
+      const canonicalProfile = embeddedCanonicalEntityProfile(row.profile, {
+        type: row.kind,
+        slug: row.slug,
+      });
+      // Keep the legacy publication-depth assessment stable: it measures the
+      // forensic contract and source registry attached to that contract. The
+      // canonical profile sources are projected onto the final card row below.
       const sources = publicationSourceRecords(row.sources);
       const caseWithDepth = {
         ...row,
@@ -2342,7 +2403,10 @@ app.get('/api/exchange-analysis', wrap(async (req, res) => {
             || row.profile.forensic_analysis,
         }),
       };
-      return publicExchangeCase(caseWithDepth);
+      return canonicalExchangeIndexProjection(
+        publicExchangeCase(caseWithDepth),
+        canonicalProfile,
+      );
     });
     const cases = allCases.filter((row) => (
       (!lifecycle || row.lifecycle === lifecycle)
@@ -5083,17 +5147,18 @@ app.get('/profile/:entity_type/:slug', wrap(async (req, res) => {
 // Views that are valid single-segment deep-links → their share copy.
 const VIEW_OG = {
   live: ['Live · Top 50 chains — Chaindump', 'The top 50 chains ranked by composite on-chain activity (volume, TVL, fees), with live capital-flow and anomaly signals.'],
-  'blockchain-analysis': ['Blockchain Analysis — Chaindump', 'Sortable, citation-backed lifecycle dossiers for the current top 50 plus stuck, dying and dead blockchains.'],
-  'exchange-analysis': ['DEX/CEX Analysis — Chaindump', 'Comparable, citation-backed forensic dossiers across successful, middling and failed decentralized and centralized exchanges.'],
+  'blockchain-analysis': ['Blockchain Analysis — Chaindump', 'Sortable, citation-backed lifecycle reports for the current top 50 plus stuck, dying and dead blockchains.'],
+  'exchange-analysis': ['DEX/CEX Analysis — Chaindump', 'Comparable, citation-backed lifecycle reports across successful, middling and failed decentralized and centralized exchanges.'],
   'casino-analysis': ['Web3 Casino Analysis — Chaindump', 'Publication-gated lifecycle research across onchain casinos, sportsbooks, betting exchanges, bankrolls and gaming infrastructure.'],
   'nft-analysis': ['NFT and Ordinals Analysis — Chaindump', 'Sortable, freshness-gated lifecycle research across NFT and Ordinals collections, with field-level citations and explicit unknowns.'],
   mid: ['Stuck / Mid chains — Chaindump', 'Alive-but-directionless chains: real product, weak token value capture, or a stalled thesis.'],
-  grave: ['Chain Graveyard — Chaindump', 'Why chains die: the forensic taxonomy of dead chains — mercenary TVL, points collapse, unlock dumps, rugs, and hacks.'],
+  grave: ['Chain Graveyard — Chaindump', 'Why chains die: recurring patterns across mercenary TVL, points collapse, unlock dumps, rugs, and hacks.'],
   nft: ['NFTs & Ordinals — Chaindump', 'The full NFT & Ordinals collection universe across chains, plus deep-dive lifecycle case studies.'],
   stables: ['Stablecoins — Chaindump', 'Live stablecoin rankings by circulating supply, peg mechanism, issuer and chain footprint.'],
   rwa: ['RWA · DePIN — Chaindump', 'Real-world assets on-chain ($25B+ tokenized) and decentralized physical infrastructure networks.'],
   infra: ['Storage / Verify — Chaindump', 'Decentralized storage and document-verification infrastructure.'],
   markets: ['Treasuries · Miners · ETFs — Chaindump', 'The TradFi bridge: crypto treasury companies, miners and ETFs.'],
+  methodology: ['Intelligence Methodology — Chaindump', 'How Chaindump turns market data, project history and cited evidence into readable, comparable research.'],
   geo: ['Global Adoption — Chaindump', 'How countries adopt, regulate and hold crypto — with each country\'s crypto power ranking.'],
   uspolicy: ['US Policy Map — Chaindump', 'US crypto policy state-by-state, plus federal legislation tracking.'],
   power: ['Crypto Power Rankings — Chaindump', 'Countries ranked by a composite of usage, policy, institutional adoption, innovation and government stance.'],
@@ -5242,14 +5307,14 @@ app.get('/exchange/:kind/:lifecycle/:slug', wrap(async (req, res) => {
   try { row = await exchangePageRow(kind, lifecycle, slug); } catch (error) {}
   const url = `${ORIGIN}/exchange/${encodeURIComponent(kind)}/${encodeURIComponent(lifecycle)}/${encodeURIComponent(slug)}`;
   const label = kind === 'cex' ? 'CEX' : 'DEX';
-  const title = row ? `${row.name} — ${label} forensic dossier | Chaindump` : `${label} forensic dossier — Chaindump`;
+  const title = row ? `${row.name} — ${label} lifecycle report | Chaindump` : `${label} lifecycle report — Chaindump`;
   const desc = row
-    ? `${row.name} ${label} indexed lifecycle dossier with per-claim support status and registered evidence on Chaindump.`
+    ? `${row.name} ${label} lifecycle report with source links, evidence gaps and review dates on Chaindump.`
     : OG_DESC_FALLBACK;
   const citations = publicSourceUrls(row?.sources);
   const ld = row ? [
     {
-      '@type': 'Article', '@id': `${url}#article`, headline: `${row.name} — ${label} forensic dossier`,
+      '@type': 'Article', '@id': `${url}#article`, headline: `${row.name} — ${label} lifecycle report`,
       description: desc, url, mainEntityOfPage: url, dateModified: row.updated_at || undefined,
       isPartOf: { '@id': `${ORIGIN}/#site` }, author: { '@id': `${ORIGIN}/#org` },
       publisher: { '@id': `${ORIGIN}/#org` }, citation: citations,
@@ -5276,13 +5341,13 @@ app.get('/casino/:case_id', wrap(async (req, res) => {
     ))[0] || null;
   } catch (error) {}
   const url = `${ORIGIN}/casino/${encodeURIComponent(caseId)}`;
-  const title = row ? `${row.brand_name} — Web3 casino forensic dossier | Chaindump` : 'Web3 casino forensic dossier — Chaindump';
+  const title = row ? `${row.brand_name} — Web3 casino lifecycle report | Chaindump` : 'Web3 casino lifecycle report — Chaindump';
   const desc = row
-    ? `${row.brand_name} indexed Web3 casino lifecycle dossier with per-claim support status and registered evidence on Chaindump.`
+    ? `${row.brand_name} Web3 casino lifecycle report with source links, evidence gaps and review dates on Chaindump.`
     : OG_DESC_FALLBACK;
   const ld = row ? [
     {
-      '@type': 'Article', '@id': `${url}#article`, headline: `${row.brand_name} — Web3 casino forensic dossier`,
+      '@type': 'Article', '@id': `${url}#article`, headline: `${row.brand_name} — Web3 casino lifecycle report`,
       description: desc, url, mainEntityOfPage: url, dateModified: row.last_reviewed || undefined,
       isPartOf: { '@id': `${ORIGIN}/#site` }, author: { '@id': `${ORIGIN}/#org` },
       publisher: { '@id': `${ORIGIN}/#org` }, citation: publicSourceUrls(row.sources),
@@ -5332,14 +5397,14 @@ async function collectionPageRows(id) {
 }
 
 function collectionPageTitle(row, lifecycle) {
-  if (lifecycle) return `${row.name} — NFT lifecycle dossier | Chaindump`;
+  if (lifecycle) return `${row.name} — NFT lifecycle report | Chaindump`;
   if (row) return `${row.name} — Chaindump`;
   return 'NFT Collection — Chaindump';
 }
 
 function collectionPageDescription(row, lifecycle) {
   if (lifecycle) {
-    return `${row.name} (${row.chain}) indexed NFT/Ordinals lifecycle dossier with per-claim support status and registered evidence on Chaindump.`;
+    return `${row.name} (${row.chain}) NFT/Ordinals lifecycle report with source links, evidence gaps and review dates on Chaindump.`;
   }
   if (row) return `${row.name} (${row.chain}) — live floor, market cap, 24h volume and holders on Chaindump.`;
   return OG_DESC_FALLBACK;
@@ -5490,10 +5555,10 @@ app.get('/llms.txt', (c) => {
     '',
     '## Entity deep-links',
     '- Chain profile: ' + ORIGIN + '/chain/{name} (e.g. ' + ORIGIN + '/chain/ethereum) — live TVL, volume, fundamentals and analyst take.',
-    '- Exchange dossier: ' + ORIGIN + '/exchange/{dex|cex}/{successful|mid|dead}/{slug} — cited lifecycle, causal map, strategy and unknowns.',
-    '- Casino dossier: ' + ORIGIN + '/casino/{case_id} — indexed lifecycle and operating analysis with per-claim support, evidence state and review date.',
+    '- Exchange report: ' + ORIGIN + '/exchange/{dex|cex}/{successful|mid|dead}/{slug} — cited lifecycle, outcome explanation, strategy and unknowns.',
+    '- Casino report: ' + ORIGIN + '/casino/{case_id} — lifecycle and operating analysis with source links, evidence gaps and review dates.',
     '- Scam case: ' + ORIGIN + '/scam/{slug} — traced wallets, fund-flow and sources.',
-    '- NFT collection: ' + ORIGIN + '/collection/{id} — curated lifecycle dossier when published, otherwise live collection metrics.',
+    '- NFT collection: ' + ORIGIN + '/collection/{id} — curated lifecycle report when published, otherwise live collection metrics.',
     '',
     '## Full context',
     '- [llms-full.txt](' + ORIGIN + '/llms-full.txt): current top-chains table (real data) plus every view\'s analysis, inlined as text.',

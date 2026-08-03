@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 
 const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
+const worker = readFileSync(new URL('../src/worker.js', import.meta.url), 'utf8');
 
 function block(start, end) {
   const from = html.indexOf(start);
@@ -65,5 +66,45 @@ describe('customer-facing analysis copy', () => {
     expect(categorySurface).not.toContain('State of stablecoins');
     expect(categorySurface).not.toContain('State of RWAs & DePIN');
     expect(categorySurface).not.toContain('Lifecycle analysis — what the');
+  });
+
+  it('translates research-desk vocabulary without changing the stored record', () => {
+    const analysisTextSource = block('function analysisText(value)', '// Research records retain');
+    const customerCopySource = block('function customerCopy(value)', '// A single, shared handoff');
+    const translate = new Function(`${analysisTextSource}\n${customerCopySource}\nreturn customerCopy;`)();
+
+    expect(translate('This dossier has a causal map and evidence contract.'))
+      .toBe('This report has a reasoned explanation and evidence record.');
+    expect(translate('Two dossiers use the source registry; human promotion is pending.'))
+      .toBe('Two reports use the source list; human review is pending.');
+    expect(translate('GPU model training demand')).toBe('GPU model training demand');
+  });
+
+  it('keeps public page metadata and share copy in reader language', () => {
+    expect(worker).not.toContain('forensic dossier | Chaindump');
+    expect(worker).not.toContain('indexed lifecycle dossier with per-claim support status');
+    expect(worker).not.toContain('- Exchange dossier:');
+    expect(worker).not.toContain('forensic taxonomy of dead chains');
+    expect(worker).toContain('lifecycle report with source links, evidence gaps and review dates');
+  });
+
+  it('uses a compact publication-support note', () => {
+    const source = block('function publicationDepthBanner(depth)', 'function publicationDepthEvidenceHtml');
+    const publicationDepthBanner = new Function(`
+      const esc = (value) => String(value);
+      ${source}
+      return publicationDepthBanner;
+    `)();
+    const output = publicationDepthBanner({
+      high_risk_claim_count: 5,
+      passing_high_risk_claim_count: 3,
+      unresolved_high_risk_claim_count: 2,
+    });
+
+    expect(output).toContain('3 of 5 key claims have independent support.');
+    expect(output).toContain('2 remain open.');
+    expect(output).toContain('Unsupported conclusions are omitted.');
+    expect(output).not.toContain('Corpus inclusion');
+    expect(output).not.toContain('withheld below');
   });
 });

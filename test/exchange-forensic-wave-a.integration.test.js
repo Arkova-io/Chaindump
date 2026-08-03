@@ -326,7 +326,7 @@ describe('exchange forensic wave A migration 0059', () => {
       );
       const markdown = await page.text();
       expect(page.status, entry.slug).toBe(200);
-      expect(markdown, entry.slug).toContain('forensic dossier | Chaindump');
+      expect(markdown, entry.slug).toContain('lifecycle report | Chaindump');
       expect(markdown, entry.slug).toContain(
         `/api/exchange-analysis?kind=${entry.kind}`
         + `&lifecycle=${entry.lifecycle}&slug=${entry.slug}`,
