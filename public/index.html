@@ -354,10 +354,11 @@
     .tab.active { box-shadow:none; background:var(--accent); color:#05070b; }
   }
   .gvintro { color:var(--muted2); font-size:13px; margin:16px 0 14px; max-width:760px; line-height:1.55; }
-  .gwrap { display:grid; grid-template-columns:repeat(2,1fr); gap:14px; }
-  .gcard { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; }
-  .ghead { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
-  .gname { font-size:16px; font-weight:700; }
+  .gwrap { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; min-width:0; }
+  .gcard { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; min-width:0; overflow-wrap:anywhere; }
+  .ghead { display:flex; justify-content:space-between; align-items:flex-start; gap:12px; min-width:0; }
+  .ghead > * { min-width:0; }
+  .gname { font-size:16px; font-weight:700; overflow-wrap:anywhere; }
   .gverdict { font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:2px 7px; border-radius:5px; margin-left:6px; vertical-align:middle; }
   .gverdict.dead { color:var(--red); background:rgba(224,106,106,.12); }
   .gverdict.declining { color:var(--yellow); background:rgba(217,164,65,.12); }
@@ -367,7 +368,7 @@
   .gddl { display:block; font-size:9.5px; color:var(--muted); font-weight:500; text-transform:uppercase; letter-spacing:.04em; }
   .gmeta { color:var(--muted); font-size:11.5px; margin:6px 0 12px; font-variant-numeric:tabular-nums; }
   .normalized-dossier { border:1px solid var(--border2); border-radius:10px; padding:14px 16px; margin:0 0 16px; background:rgba(10,14,22,.38); }
-  .normalized-dossier-head { display:flex; align-items:center; gap:8px; font-size:15px; }
+  .normalized-dossier-head { display:flex; align-items:center; gap:8px; font-size:15px; min-width:0; flex-wrap:wrap; }
   .normalized-dossier-metric { margin-left:auto; color:var(--muted2); font-weight:700; font-variant-numeric:tabular-nums; }
   .normalized-section + .normalized-section { border-top:1px solid var(--border); margin-top:12px; padding-top:2px; }
   .profile-page { max-width:1040px; margin:0 auto; min-width:0; }
@@ -407,11 +408,11 @@
   .gsec { font-size:10.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); font-weight:600; margin:10px 0 5px; }
   .gbody { font-size:12.5px; line-height:1.6; color:var(--text); }
   .gpanel { background:var(--surface); border:1px solid var(--border2); border-radius:14px; padding:18px 20px; margin-bottom:8px; }
-  .gstats { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:18px; }
+  .gstats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin-bottom:18px; }
   .gsx { background:var(--surface2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; }
   .gsv { font-size:18px; font-weight:700; font-variant-numeric:tabular-nums; }
   .gsl { color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; margin-top:4px; }
-  .gcols { display:grid; grid-template-columns:1fr 1.3fr; gap:22px; }
+  .gcols { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.3fr); gap:22px; }
   .taglist { display:flex; flex-direction:column; gap:7px; }
   .tagrow { display:flex; align-items:center; gap:8px; font-size:12px; }
   .tagn { width:110px; flex-shrink:0; color:var(--muted2); }
@@ -456,9 +457,9 @@
   .analysis-actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; }
   .analysis-src-preview .asrc { margin-top:8px; padding-top:7px; }
   .analysis-empty { background:var(--surface); border:1px dashed var(--border2); border-radius:12px; padding:28px; color:var(--muted2); line-height:1.65; }
-  .watchgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:8px; }
-  .watchrow { display:flex; align-items:baseline; gap:8px; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:9px 11px; }
-  .watchrow .wn { font-weight:600; font-size:13px; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .watchgrid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr)); gap:8px; }
+  .watchrow { display:flex; align-items:baseline; gap:8px; min-width:0; background:var(--surface2); border:1px solid var(--border); border-radius:8px; padding:9px 11px; }
+  .watchrow .wn { font-weight:600; font-size:13px; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .watchrow .w90 { color:var(--red); font-weight:700; font-size:13px; font-variant-numeric:tabular-nums; }
   .watchrow .w90.up { color:var(--green); }
   .watchrow .wdd { color:var(--muted2); font-size:11px; font-variant-numeric:tabular-nums; }
@@ -496,7 +497,14 @@
   .tdrop { color:var(--red); font-weight:600; }
   .ctags { display:flex; flex-wrap:wrap; gap:5px; margin-top:10px; }
   .ctag { font-size:10.5px; font-weight:600; color:var(--muted2); background:var(--surface3); border-radius:5px; padding:2px 7px; }
-  @media(max-width:760px){ .gwrap{grid-template-columns:1fr} .gstats{grid-template-columns:1fr 1fr} .gcols{grid-template-columns:1fr} }
+  @media(max-width:760px){
+    .gwrap{grid-template-columns:minmax(0,1fr)}
+    .gstats{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .gcols{grid-template-columns:minmax(0,1fr)}
+    .ghead{flex-direction:column}
+    .gdd{width:100%;text-align:left;white-space:normal}
+    .analysis-controls>*{max-width:100%}
+  }
   @media(max-width:820px){ .trendstats{grid-template-columns:repeat(2,1fr)} }
   @media(max-width:820px){ .statgrid{grid-template-columns:repeat(2,1fr)} .projgrid{grid-template-columns:repeat(2,1fr)} }
   footer { margin-top:18px; color:var(--muted); font-size:12px; text-align:center; line-height:1.7; }
@@ -546,17 +554,17 @@
   .foldername { flex:1; font-weight:700; color:var(--fg); font-size:14px; }
   .foldercount { color:var(--muted2); font-size:12.5px; background:var(--bg); border:1px solid var(--border); border-radius:20px; padding:2px 10px; }
   .folderbody { padding:4px 14px 16px; }
-  .folderbody .gwrap { grid-template-columns:repeat(2,1fr); gap:12px; }
-  @media(max-width:680px){ .folderbody .gwrap{grid-template-columns:1fr} }
+  .folderbody .gwrap { grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+  @media(max-width:680px){ .folderbody .gwrap{grid-template-columns:minmax(0,1fr)} }
   /* RWA / DePIN live rankings */
   .rllist { display:flex; flex-direction:column; border:1px solid var(--border); border-radius:12px; overflow:hidden; }
-  .rlrow { display:flex; align-items:center; gap:12px; padding:10px 14px; border-bottom:1px solid var(--border); font-size:13.5px; }
+  .rlrow { display:flex; align-items:center; gap:12px; min-width:0; padding:10px 14px; border-bottom:1px solid var(--border); font-size:13.5px; }
   .rlrow:last-child { border-bottom:none; }
   .rlrow:hover { background:var(--surface); }
   .rlrank { width:26px; color:var(--muted); font-size:12px; text-align:right; flex-shrink:0; }
   .rllogo { width:22px; height:22px; border-radius:50%; object-fit:cover; background:var(--bg); flex-shrink:0; }
   .rlname { flex:1; min-width:0; font-weight:600; color:var(--fg); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .rlname a { color:var(--fg); }
+  .rlname a { display:block; max-width:100%; color:var(--fg); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
   .rlchains { display:flex; gap:4px; flex-shrink:0; }
   .rlchain { font-size:10px; color:var(--muted2); background:var(--bg); border:1px solid var(--border); border-radius:5px; padding:1px 5px; }
   .rltvl { width:88px; text-align:right; font-weight:700; color:var(--fg); flex-shrink:0; }
@@ -1032,6 +1040,20 @@ function analysisText(value) {
   if (Array.isArray(value)) return value.map(String).join(' · ');
   return value == null ? '' : String(value);
 }
+// Research records retain their exact wording for provenance and API clients.
+// The public UI translates internal publishing vocabulary at render time so a
+// reader sees a report, an explanation and an evidence record—not desk jargon.
+function customerCopy(value) {
+  return analysisText(value)
+    .replace(/\bdossiers\b/gi, 'reports')
+    .replace(/\bdossier\b/gi, 'report')
+    .replace(/\bcausal maps\b/gi, 'reasoned explanations')
+    .replace(/\bcausal map\b/gi, 'reasoned explanation')
+    .replace(/\bevidence contracts?\b/gi, 'evidence record')
+    .replace(/\bsource registr(?:y|ies)\b/gi, 'source list')
+    .replace(/\bstructural coverage\b/gi, 'report coverage')
+    .replace(/\bhuman promotion\b/gi, 'human review');
+}
 // A single, shared handoff for readers who do not want to decode the research
 // schema first.  This only reuses a published field; it never invents a
 // conclusion or turns a missing field into a claim.
@@ -1046,7 +1068,8 @@ function plainEnglishRead(fields = {}) {
   const read = [fields.summary, fields.why, fields.present_situation, fields.analysis, outlookText, choices]
     .map(analysisText).map((value) => value.trim()).find(Boolean);
   if (!read) return '';
-  const clean = read.replace(/\s+/g, ' ').trim();
+  const publicRead = typeof customerCopy === 'function' ? customerCopy(read) : read;
+  const clean = publicRead.replace(/\s+/g, ' ').trim();
   const firstSentence = clean.match(/^.{80,320}?[.!?](?=\s|$)/)?.[0];
   const preview = firstSentence || (clean.length > 320 ? `${clean.slice(0, 317).trimEnd()}…` : clean);
   return `<div class="plainread"><div class="plainread-title">At a glance</div><div class="prose">${fmtProse(preview)}</div></div>`;
@@ -1416,6 +1439,9 @@ function normalizeExchangeResearchCase(row) {
   const forensic = analysis.forensic_analysis || profile.forensic_analysis;
   const metric = parsedObject(analysis.metric);
   const quality = parsedObject(analysis.data_quality);
+  const canonicalEvidence = parsedObject(analysis.canonical_evidence);
+  const explanationPublished = analysis.forensic_analysis_status === 'published'
+    || canonicalEvidence.explanation_complete === true;
   return {
     slug: row.slug || row.name, kind: row.kind, venueType: row.venue_type || profile.venue_type || row.kind,
     name: row.name || row.slug || 'Unnamed venue', lifecycle: row.lifecycle,
@@ -1432,7 +1458,7 @@ function normalizeExchangeResearchCase(row) {
     custodyModel: analysis.custody_model || '',
     token: parsedObject(analysis.token),
     freshness: parsedObject(analysis.freshness),
-    forensicStatus: analysis.forensic_analysis_status || (forensic ? 'published' : 'pending'),
+    forensicStatus: explanationPublished ? 'published' : 'pending',
     qualityLabel: quality.label || 'limited',
     qualityIssues: Array.isArray(quality.issues) ? quality.issues : [],
     evidence: parsedObject(analysis.evidence),
@@ -1477,7 +1503,7 @@ function exchangeFindingHtml(row) {
 }
 function exchangeTokenLine(token) {
   const tokenSymbol = analysisText(token.symbol || '');
-  let line = 'No venue token identified in the cited dossier';
+  let line = 'No venue token identified in the cited report';
   if (tokenSymbol) {
     line = `${esc(tokenSymbol)} · ${esc(exchangeLabel(token.strategy || 'strategy unresolved'))}`;
     if (token.launch_timing) line += ` · ${esc(exchangeLabel(token.launch_timing))}`;
@@ -1537,14 +1563,14 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
   const review = parsedObject(forensic.review || row.freshness);
   const tokenSummary = row.token?.symbol
     ? `${row.token.symbol} · ${exchangeLabel(row.token.strategy || 'value-capture strategy unresolved')} · ${exchangeLabel(row.token.launch_timing || 'launch timing unresolved')}`
-    : 'No venue token identified in the cited dossier';
+    : 'No venue token identified in the cited report';
   const normalized = normalizedDossierHtml({
     category: `${String(row.kind || 'exchange').toUpperCase()} · ${exchangeLabel(row.venueType)}`,
     name: row.name,
     status: lifecycleLabel(row.lifecycle || row.status),
     metric: exchangeMetric(row),
     asOf: row.metricAsOf || row.updatedAt,
-    whatItIs: profile.purpose || profile.what_it_does || `${exchangeLabel(row.productCohort)} ${exchangeLabel(row.venueType)} dossier`,
+    whatItIs: profile.purpose || profile.what_it_does || `${exchangeLabel(row.productCohort)} ${exchangeLabel(row.venueType)} report`,
     whatHappened: row.summary || profile.situation || profile.postmortem,
     why: forensic.why || profile.why || profile.success_factors || profile.success_failure_hypotheses,
     strategicChoices: forensic.strategic_choices || profile.strategic_choices,
@@ -1619,7 +1645,7 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
   const forensicReview = parsedObject(parsedObject(row.analysis.forensic_analysis || profile.forensic_analysis).review);
   const freshnessState = exchangeReviewState(row);
   const nextReviewAt = forensicReview.next_review_at || freshness.next_review_at || 'unknown';
-  return `<div class="gexp">${publicationDepthBanner(depth, 'Exchange dossier inclusion')}${normalized}${fields.join('')}${sections.join('')}
+  return `<div class="gexp">${publicationDepthBanner(depth)}${normalized}${fields.join('')}${sections.join('')}
     <div class="gsec">Evidence by field</div>
     ${exchangeEvidenceLinks(row, 'operating_model_source_indexes', 'Operating model')}
     ${exchangeEvidenceLinks(row, 'custody_model_source_indexes', 'Custody')}
@@ -1635,14 +1661,15 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
 }
 function exchangeAnalysisCard(row) {
   const p = row.profile || {};
-  const outcomeGap = publicationDepthGap(
+  const canonicalOutcome = Boolean(row.analysis?.canonical_evidence?.outcome_available);
+  const outcomeGap = canonicalOutcome ? null : publicationDepthGap(
     row.publicationDepth,
     'forensic_analysis.outcome',
   );
   const verdictLabel = outcomeGap ? 'outcome unclear' : lifecycleLabel(row.lifecycle);
   const verdictClass = outcomeGap ? 'declining' : lifecycleClass(row.lifecycle);
-  const plainRead = !publicationDepthGap(row.publicationDepth, 'forensic_analysis.why')
-    && !publicationDepthGap(row.publicationDepth, 'forensic_analysis.outcome')
+  const plainRead = (canonicalOutcome || !publicationDepthGap(row.publicationDepth, 'forensic_analysis.why'))
+    && (canonicalOutcome || !publicationDepthGap(row.publicationDepth, 'forensic_analysis.outcome'))
     ? plainEnglishRead({ summary: row.summary, why: p.why, analysis: p.synthesis, outlook: row.outlook })
     : '';
   const metricContext = row.peakMetric != null ? `Peak ${fmtUsd(row.peakMetric)} → ${exchangeMetric(row)}` : exchangeMetric(row);
@@ -1751,7 +1778,7 @@ function renderExchangeAnalysis() {
   filtered = [...filtered].sort((a,b) => cmp(a,b) * state.exchangeAnalysisDir);
   const filterButton = (attr, value, label, active) => `<button type="button" class="kindbtn${active?' active':''}" ${attr}="${value}">${label}</button>`;
   const errors = state.exchangeAnalysisErrors.length
-    ? `<div class="analysis-note">Some cohorts could not be loaded: ${esc(state.exchangeAnalysisErrors.join(', '))}. Available cited dossiers are shown below.</div>` : '';
+    ? `<div class="analysis-note">Some cohorts could not be loaded: ${esc(state.exchangeAnalysisErrors.join(', '))}. Available cited reports are shown below.</div>` : '';
   const claimSupport = state.exchangeAnalysisClaimSupport || {};
   const cited = rows.filter((row) => row.sources.length).length;
   const cohorts = [...new Set(rows.map((row) => row.productCohort))]
@@ -1930,17 +1957,15 @@ function casinoEvidenceStatusHtml(source) {
     ? `<div class="muted" style="margin:3px 0 0 68px">${parts.join(' · ')}</div>`
     : '';
 }
-function publicationDepthBanner(depth, corpusLabel = 'Corpus inclusion') {
+function publicationDepthBanner(depth) {
   if (!depth) {
-    return '<div class="analysis-note"><b>Independent-support check unavailable.</b> A report being listed is not proof that its important claims have enough independent support.</div>';
+    return '<div class="analysis-note"><b>Evidence check unavailable.</b> Treat the conclusions as open until the report shows independent support.</div>';
   }
   const total = Number(depth.high_risk_claim_count) || 0;
   const passing = Number(depth.passing_high_risk_claim_count) || 0;
   const unresolved = Number(depth.unresolved_high_risk_claim_count) || 0;
-  const status = unresolved
-    ? `${unresolved} pending / withheld`
-    : 'support threshold met';
-  return `<div class="analysis-note"><b>Independent support: ${esc(passing)} of ${esc(total)} important claims meet the bar · ${esc(status)}.</b> ${esc(corpusLabel)} counts listed reports, not proof that every conclusion is supported. Conclusions about lifecycle, cause, legal status, losses, and what-if scenarios are withheld below when the evidence is not strong enough.</div>`;
+  const open = unresolved ? ` ${unresolved} remain open.` : '';
+  return `<div class="analysis-note"><b>${esc(passing)} of ${esc(total)} key claims have independent support.</b>${esc(open)} Unsupported conclusions are omitted.</div>`;
 }
 function publicationDepthEvidenceHtml(depth) {
   if (!depth) return '<div class="analysis-src-preview"><div class="asrc">Source links are not available for this summary yet.</div></div>';
@@ -1967,7 +1992,7 @@ function casinoDepthSectionHtml(label, text, depth, isUnsupported) {
 }
 function casinoDetailBody(item, detail) {
   if (detail === 'loading') return '<div class="gexp"><div class="skel">Loading cited report…</div></div>';
-  if (detail?.error) return `<div class="gexp"><div class="muted">Couldn't load this dossier: ${esc(detail.error)}</div></div>`;
+  if (detail?.error) return `<div class="gexp"><div class="muted">Couldn't load this report: ${esc(detail.error)}</div></div>`;
   if (!detail) return '';
   // The summary endpoint intentionally omits operator and launch identity
   // fields; use the cited detail record when a card is expanded.
@@ -2034,10 +2059,10 @@ function casinoDetailBody(item, detail) {
   ].map(([label, text, isUnsupported]) => (
     casinoDepthSectionHtml(label, text, depth, isUnsupported)
   )).join('');
-  const observations = (detail.observations || []).map(casinoObservationHtml).join('') || '<div class="muted">No comparable operating metric is published in this dossier.</div>';
-  const events = (detail.events || []).map(casinoEventHtml).join('') || '<div class="muted">No independently scoped lifecycle event is published in this dossier.</div>';
+  const observations = (detail.observations || []).map(casinoObservationHtml).join('') || '<div class="muted">No comparable operating metric is published in this report.</div>';
+  const events = (detail.events || []).map(casinoEventHtml).join('') || '<div class="muted">No independently scoped lifecycle event is published in this report.</div>';
   const licenceRows = (detail.licences || []).map(casinoLicenceHtml).join('');
-  const licences = licenceRows || '<div class="muted">No licence observation is published. Do not infer global legality from this dossier.</div>';
+  const licences = licenceRows || '<div class="muted">No licence observation is published. Do not infer global legality from this report.</div>';
   const claimRows = (detail.claims || []).map((claim) => {
     const pending = claim.publication_support === 'pending_independent_support';
     const evidence = pending
@@ -3085,7 +3110,7 @@ function profileSectionBody(profile, key) {
   // a report section reads like broken customer copy. Keep it in the single,
   // honest research-gaps callout instead.
   if (/^(unknown|unresolved|not (?:yet )?(?:known|published|available)|pending|n\/?a|—)$/i.test(body)) return '';
-  return body;
+  return typeof customerCopy === 'function' ? customerCopy(body) : body;
 }
 function profileMetricValue(metric) {
   const value = Number(metric?.value);
@@ -3275,7 +3300,7 @@ function synthesisHtml(f){
     const value = typeof ref === 'string' ? ref : ref?.value;
     if (!value) return null;
     return (Array.isArray(f.sources) ? f.sources : []).find((source) => source?.url === value || source?.id === value) || (String(value).startsWith('https://') ? { url: value, title: 'source' } : null);
-  }, 'This chain has a cited dossier, but its cross-category causal contract is pending review.');
+  }, 'This chain has cited sources, but its outcome explanation is still under review.');
   return `<div class="dsec">Desk view ${stamp}</div><div class="anbox">${rows.join('')}${srcHtml(f.sources)}</div>${structured}`;
 }
 
@@ -3827,7 +3852,7 @@ function midLiveWatch(data) {
     </div>`;
   }).join('');
 
-  return `<div class="gpanel"><div class="dsec">Live mid watch — profiled chains on the live board (${rows.length})</div><div class="watchgrid">${chips}</div><div class="gnar muted" style="margin-top:8px">Live from the board — this shows whether stuck chains are drifting, recovering, or rolling over before they move categories. Click a profiled chain to open its dossier. Refreshes automatically.</div></div>`;
+  return `<div class="gpanel"><div class="dsec">Live mid watch — profiled chains on the live board (${rows.length})</div><div class="watchgrid">${chips}</div><div class="gnar muted" style="margin-top:8px">Live from the board — this shows whether stuck chains are drifting, recovering, or rolling over before they move categories. Open a chain for its report. Refreshes automatically.</div></div>`;
 }
 function renderMid(data){
   const el = document.getElementById('midview');
@@ -4140,7 +4165,7 @@ function analysisCountMap(items) {
 function nftAggregateAnalysisHtml(data) {
   const analysis = data.analysis || {};
   if (analysis.schema !== 'nft-lifecycle-cohort-v1') {
-    return '<div class="gnar muted">Aggregate analysis compiling from published dossiers…</div>';
+    return '<div class="gnar muted">The cross-project comparison is still being compiled from published reports.</div>';
   }
   const cohort = analysis.cohort || {};
   const coverage = analysis.coverage || {};
@@ -4260,7 +4285,7 @@ function renderNft(data){
         <div class="gname">${icon} ${esc(c.name)} <span class="gverdict ${outcomeGap ? 'declining' : verdictClass(c.status)}">${esc(outcomeGap ? 'outcome unclear' : (c.status||''))}</span></div>
         <div class="gdd" style="color:var(--muted2);font-size:13px">${nftLifecycleMetric(p)}<span class="gddl">${nftLifecycleMetricLabel(p)}</span></div>
       </div>
-      <div class="gmeta">${esc(chainLabel(c.chain))}${p.launched?` · launched ${esc(p.launched)}`:''}${p.holder_retention_pct!=null?` · ${p.holder_retention_pct}% holders retained`:''} · ${sourceCount} cited source${sourceCount===1?'':'s'}${checkedAt ? ` · checked ${esc(checkedAt)}` : ''}</div>
+      <div class="gmeta">${esc(chainLabel(c.chain))}${p.launched?` · launched ${esc(customerCopy(p.launched))}`:''}${p.holder_retention_pct!=null?` · ${p.holder_retention_pct}% holders retained`:''} · ${sourceCount} cited source${sourceCount===1?'':'s'}${checkedAt ? ` · checked ${esc(checkedAt)}` : ''}</div>
       ${plainRead || '<div class="gbody muted">Open the report for the project history, outcome, outlook and cited evidence.</div>'}
       <div class="gexpand"><a class="profile-open-link" href="${profileHref(String(c.chain || '').toLowerCase().includes('ordinals') ? 'ordinals_collection' : 'nft_collection', c.slug)}" data-profile-type="${String(c.chain || '').toLowerCase().includes('ordinals') ? 'ordinals_collection' : 'nft_collection'}" data-profile-slug="${esc(c.slug)}">Open report →</a></div>
     </div>`;

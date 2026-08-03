@@ -8,6 +8,18 @@ describe('public UI/UX audit guards', () => {
     expect(html).toContain('td.rank{ position:absolute; opacity:.5; padding:6px 10px; width:36px !important; }');
   });
 
+  it('forces report grids and card headers to fit a 390px viewport', () => {
+    expect(html).toContain('.gwrap { display:grid; grid-template-columns:repeat(2,minmax(0,1fr));');
+    expect(html).toContain('.gcard { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:16px 18px; min-width:0; overflow-wrap:anywhere; }');
+    expect(html).toContain('.ghead > * { min-width:0; }');
+    expect(html).toContain('.gwrap{grid-template-columns:minmax(0,1fr)}');
+    expect(html).toContain('.ghead{flex-direction:column}');
+    expect(html).toContain('.gdd{width:100%;text-align:left;white-space:normal}');
+    expect(html).toContain('grid-template-columns:repeat(auto-fill,minmax(min(100%,270px),1fr))');
+    expect(html).toContain('.watchrow { display:flex; align-items:baseline; gap:8px; min-width:0;');
+    expect(html).toContain('.rlname a { display:block; max-width:100%;');
+  });
+
   it('does not send Infrastructure profile back-links into a disabled route', () => {
     const disabledViews = html.match(/const DISABLED_VIEWS = new Set\(\[([^\]]*)\]\)/)?.[1] || '';
     expect(disabledViews).not.toContain("'infra'");

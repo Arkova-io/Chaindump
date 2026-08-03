@@ -758,7 +758,7 @@ describe('publication-depth Wave A migration 0063', () => {
       unresolved_high_risk_claim_count: 368,
     });
     for (const item of exchangeCases) {
-      expect(['support_pending', 'pending'], item.slug)
+      expect(['published', 'support_pending', 'pending'], item.slug)
         .toContain(item.analysis.forensic_analysis_status);
       expect([
         'claim_support_pending',

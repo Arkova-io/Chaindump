@@ -268,7 +268,7 @@ describe('exchange CEX causal Wave B migration 0060', () => {
       );
       const markdown = await page.text();
       expect(page.status, entry.slug).toBe(200);
-      expect(markdown, entry.slug).toContain('forensic dossier | Chaindump');
+      expect(markdown, entry.slug).toContain('lifecycle report | Chaindump');
       expect(markdown, entry.slug).toContain(
         `/api/exchange-analysis?kind=cex&lifecycle=${lifecycle}&slug=${entry.slug}`,
       );
@@ -343,7 +343,7 @@ describe('exchange CEX causal Wave B migration 0060', () => {
       env,
       ctx(),
     );
-    expect(await hiddenPage.text()).not.toContain('Hidden DEX Lender — DEX forensic dossier');
+    expect(await hiddenPage.text()).not.toContain('Hidden DEX Lender — DEX lifecycle report');
 
     const sitemap = await worker.fetch(
       new Request('http://localhost/sitemap.xml'),

@@ -25,6 +25,9 @@ function profileRenderer() {
       .replaceAll('"', '&quot;').replaceAll("'", '&#39;'),
     safeUrl: (value) => /^https:\/\//.test(String(value || '')) ? String(value) : '#',
     normalizedText: (value) => typeof value === 'string' ? value.trim() : '',
+    customerCopy: (value) => String(value ?? '')
+      .replace(/\bdossiers\b/gi, 'reports')
+      .replace(/\bdossier\b/gi, 'report'),
     normalizedLabel: (key) => String(key).replaceAll('_', ' '),
     verdictClass: () => 'declining',
   };

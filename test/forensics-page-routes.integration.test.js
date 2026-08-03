@@ -95,19 +95,19 @@ describe('forensic page and entity route metadata', () => {
     const exchange = await worker.fetch(markdownRequest('/exchange/dex/successful/uniswap'), env, ctx());
     const exchangeBody = await exchange.text();
     expect(exchange.status).toBe(200);
-    expect(exchangeBody).toContain('# Uniswap — DEX forensic dossier | Chaindump');
+    expect(exchangeBody).toContain('# Uniswap — DEX lifecycle report | Chaindump');
     expect(exchangeBody).toContain('https://docs.uniswap.org/');
     expect(exchangeBody).toContain('/api/exchange-analysis?kind=dex&lifecycle=successful&slug=uniswap');
-    expect(exchangeBody).toContain('indexed lifecycle dossier with per-claim support status');
+    expect(exchangeBody).toContain('lifecycle report with source links, evidence gaps and review dates');
     expect(exchangeBody).not.toContain('UNSUPPORTED EXCHANGE SEO CONCLUSION');
 
     const casino = await worker.fetch(markdownRequest('/casino/stake-dot-com'), env, ctx());
     const casinoBody = await casino.text();
     expect(casino.status).toBe(200);
-    expect(casinoBody).toContain('# Stake.com — Web3 casino forensic dossier | Chaindump');
+    expect(casinoBody).toContain('# Stake.com — Web3 casino lifecycle report | Chaindump');
     expect(casinoBody).toContain('https://stake.com/policies/terms');
     expect(casinoBody).toContain('/api/casino/stake-dot-com');
-    expect(casinoBody).toContain('indexed Web3 casino lifecycle dossier with per-claim support status');
+    expect(casinoBody).toContain('lifecycle report with source links, evidence gaps and review dates');
     expect(casinoBody).not.toContain('UNSUPPORTED CASINO SEO CONCLUSION');
     expect(casinoBody).not.toContain('failed');
     expect(casinoBody).not.toContain('insolvent');
@@ -115,10 +115,10 @@ describe('forensic page and entity route metadata', () => {
     const nft = await worker.fetch(markdownRequest('/collection/azuki'), env, ctx());
     const nftBody = await nft.text();
     expect(nft.status).toBe(200);
-    expect(nftBody).toContain('# Azuki — NFT lifecycle dossier | Chaindump');
+    expect(nftBody).toContain('# Azuki — NFT lifecycle report | Chaindump');
     expect(nftBody).toContain('https://www.coindesk.com/tag/azuki/');
     expect(nftBody).toContain('Structured JSON: https://chaindump.xyz/api/nft?slug=azuki');
-    expect(nftBody).toContain('indexed NFT/Ordinals lifecycle dossier with per-claim support status');
+    expect(nftBody).toContain('lifecycle report with source links, evidence gaps and review dates');
     expect(nftBody).not.toContain('UNSUPPORTED NFT SEO CONCLUSION');
     expect(nftBody).not.toContain('fading');
   });
