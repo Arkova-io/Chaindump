@@ -188,12 +188,37 @@ export function normalizeExchangeCase(row) {
       )),
     })
     : null;
-  const qualityIssues = parse(row.feature_quality_issues, ['normalized_feature_record_missing']);
-  const metricType = row.feature_metric_type || row.metric_type || 'unknown';
-  const metricUnit = String(row.feature_metric_unit || row.metric_unit || 'unknown').toLowerCase();
-  const metricWindow = row.feature_metric_window || 'unknown';
+  const baseMetricType = String(row.metric_type || 'unknown').toLowerCase();
+  const featureMetricType = String(row.feature_metric_type || '').toLowerCase();
+  const baseMetricUnit = String(row.metric_unit || 'unknown').toLowerCase();
+  const featureMetricUnit = String(row.feature_metric_unit || '').toLowerCase();
+  // The feature overlay describes how an observation should be compared, but it
+  // does not carry a replacement numeric value. Never pair the stored value with
+  // a different type or unit from the overlay (for example, USD trading volume
+  // rendered as a percentage, or USD reserves relabeled as USD loss exposure).
+  // Until a replacement value is published, retain the base metric identity and
+  // mark the conflict for review.
+  const metricIdentityConflict = row.metric != null
+    && (
+      (featureMetricType && baseMetricType !== 'unknown' && featureMetricType !== baseMetricType)
+      || (featureMetricUnit && baseMetricUnit !== 'unknown' && featureMetricUnit !== baseMetricUnit)
+    );
+  const metricType = metricIdentityConflict
+    ? baseMetricType
+    : (featureMetricType || baseMetricType);
+  const metricUnit = metricIdentityConflict
+    ? baseMetricUnit
+    : (featureMetricUnit || baseMetricUnit);
+  const metricWindow = metricIdentityConflict ? 'unknown' : (row.feature_metric_window || 'unknown');
+  const parsedQualityIssues = parse(row.feature_quality_issues, ['normalized_feature_record_missing']);
+  const qualityIssues = metricIdentityConflict
+    ? [...new Set([
+      ...(Array.isArray(parsedQualityIssues) ? parsedQualityIssues : ['invalid_quality_issues']),
+      'feature_metric_identity_conflicts_with_published_value',
+    ])]
+    : parsedQualityIssues;
   const productCohort = row.feature_product_cohort || 'unclassified';
-  const comparisonKey = row.feature_comparability_key
+  const comparisonKey = (!metricIdentityConflict && row.feature_comparability_key)
     || `${row.kind}|${productCohort}|${metricType}|${metricUnit}|${metricWindow}`;
   const primaryChain = row.feature_primary_chain || row.primary_chain || chains[0] || null;
 
@@ -237,8 +262,8 @@ export function normalizeExchangeCase(row) {
         type: metricType,
         unit: metricUnit,
         window: metricWindow,
-        as_of: row.feature_metric_as_of || null,
-        observed_at: row.feature_metric_observed_at || null,
+        as_of: metricIdentityConflict ? null : (row.feature_metric_as_of || null),
+        observed_at: metricIdentityConflict ? null : (row.feature_metric_observed_at || null),
         comparability_key: comparisonKey,
       },
       evidence,

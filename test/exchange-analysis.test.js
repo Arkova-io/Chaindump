@@ -99,6 +99,73 @@ describe('normalizeExchangeCase', () => {
     expect(normalized.sources).toEqual([{ title: 'Case source', url: newUrl }]);
     expect(normalized.analysis.evidence.source_replacements).toEqual({ [oldUrl]: newUrl });
   });
+
+  it('never attaches a feature-overlay unit to an unconverted stored metric value', () => {
+    const normalized = normalizeExchangeCase(row({
+      slug: 'bithumb',
+      kind: 'cex',
+      lifecycle: 'mid',
+      name: 'Bithumb',
+      metric_label: 'daily trading volume',
+      metric_type: 'trading_volume',
+      metric_unit: 'USD',
+      metric: 599_770_000,
+      feature_metric_type: 'market_share',
+      feature_metric_unit: 'percent',
+      feature_metric_window: 'post_incident_observation',
+      feature_metric_as_of: '2026-02-22',
+      feature_metric_observed_at: '2026-08-03T21:15:00Z',
+      feature_comparability_key: 'cex|centralized_spot_exchange|market_share|percent|domestic_observation',
+    }));
+
+    expect(normalized).toMatchObject({
+      metric: 599_770_000,
+      metric_type: 'trading_volume',
+      metric_unit: 'usd',
+      analysis: {
+        metric: {
+          type: 'trading_volume',
+          unit: 'usd',
+          window: 'unknown',
+          as_of: null,
+          observed_at: null,
+          comparability_key: 'cex|spot_amm|trading_volume|usd|unknown',
+        },
+      },
+    });
+    expect(normalized.analysis.data_quality.issues).toContain(
+      'feature_metric_identity_conflicts_with_published_value',
+    );
+  });
+
+  it('never relabels a stored metric as a different feature type even when units match', () => {
+    const normalized = normalizeExchangeCase(row({
+      slug: 'reserves-example',
+      kind: 'cex',
+      metric_label: 'reported reserves',
+      metric_type: 'reserves',
+      metric_unit: 'USD',
+      metric: 84_000_000_000,
+      feature_metric_type: 'loss_exposure',
+      feature_metric_unit: 'usd',
+      feature_metric_window: 'event_exposure',
+      feature_metric_as_of: '2026-07-31',
+      feature_metric_observed_at: '2026-08-03T21:15:00Z',
+      feature_comparability_key: 'cex|centralized_multi_product_exchange|loss_exposure|usd|event_exposure',
+    }));
+
+    expect(normalized.analysis.metric).toEqual({
+      type: 'reserves',
+      unit: 'usd',
+      window: 'unknown',
+      as_of: null,
+      observed_at: null,
+      comparability_key: 'cex|spot_amm|reserves|usd|unknown',
+    });
+    expect(normalized.analysis.data_quality.issues).toContain(
+      'feature_metric_identity_conflicts_with_published_value',
+    );
+  });
 });
 
 describe('summarizeExchangeCases', () => {

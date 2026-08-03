@@ -105,6 +105,10 @@ describe('customer-facing analysis copy', () => {
   });
 
   it('renders exchange metric units as reader language', () => {
+    const taxonomySource = block(
+      'const PUBLIC_TAXONOMY_ACRONYMS',
+      '// ---------------------------------------------------------------------------\n// Canonical page layout.',
+    );
     const exchangeMetricSource = block('function exchangeMetric(row)', 'function lifecycleLabel(value)');
     const exchangeLabelSource = block('function exchangeLabel(value)', 'function exchangeFindingLabel(lifecycle)');
     const exchangeMetric = new Function(`
@@ -112,6 +116,7 @@ describe('customer-facing analysis copy', () => {
       const fmtTok = (value) => String(value);
       const fmtNum = (value) => String(value);
       const esc = (value) => String(value);
+      ${taxonomySource}
       ${exchangeLabelSource}
       ${exchangeMetricSource}
       return exchangeMetric;

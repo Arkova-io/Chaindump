@@ -7,10 +7,14 @@ const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf
 const worker = readFileSync(new URL('../src/worker.js', import.meta.url), 'utf8');
 
 function profileRenderer() {
+  const taxonomyStart = html.indexOf('const PUBLIC_TAXONOMY_ACRONYMS');
+  const taxonomyEnd = html.indexOf('\n// ---------------------------------------------------------------------------\n// Canonical page layout.', taxonomyStart);
   const start = html.indexOf('const PROFILE_SECTION_ORDER');
   const end = html.indexOf('\nfunction synthesisHtml', start);
-  if (start < 0 || end < 0) throw new Error('canonical profile renderer not found');
-  const source = html.slice(start, end);
+  if (taxonomyStart < 0 || taxonomyEnd < 0 || start < 0 || end < 0) {
+    throw new Error('canonical profile renderer not found');
+  }
+  const source = `${html.slice(taxonomyStart, taxonomyEnd)}\n${html.slice(start, end)}`;
   const context = {
     Date, Intl, URL,
     state: { profileCache: {}, profileRequest: 0 },
@@ -67,7 +71,7 @@ describe('shared human-facing entity profile UI', () => {
       const visibleText = output.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ');
 
       expect(visibleText).toContain('Middling declining');
-      expect(visibleText).toContain('Centralized multi product exchange · BNB Smart Chain · dYdX');
+      expect(visibleText).toContain('Centralized multi-product exchange · BNB Smart Chain · dYdX');
       expect(visibleText).not.toMatch(/\b(?:middling_declining|centralized_multi_product_exchange|BNB_Smart_Chain)\b/);
     }
   });
