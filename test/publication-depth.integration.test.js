@@ -506,6 +506,7 @@ describe('publication-depth Wave A migration 0063', () => {
         '0064_nft_source_access_remediation.sql',
         '0065_high_risk_evidence_remediation.sql',
         '0077_dex_gold_profiles.sql',
+        '0081_dex_wave_e_profiles.sql',
       ],
     });
     const before = buildPublicationDepthInventory(database, { asOf: '2026-07-29' });
