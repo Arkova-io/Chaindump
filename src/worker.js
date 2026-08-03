@@ -5161,13 +5161,18 @@ const VIEW_OG = {
   infra: ['Storage / Verify — Chaindump', 'Decentralized storage and document-verification infrastructure.'],
   markets: ['Treasuries · Miners · ETFs — Chaindump', 'The TradFi bridge: crypto treasury companies, miners and ETFs.'],
   methodology: ['Intelligence Methodology — Chaindump', 'How Chaindump turns market data, project history and cited evidence into readable, comparable research.'],
-  geo: ['Global Adoption — Chaindump', 'How countries adopt, regulate and hold crypto — with each country\'s crypto power ranking.'],
-  uspolicy: ['US Policy Map — Chaindump', 'US crypto policy state-by-state, plus federal legislation tracking.'],
-  power: ['Crypto Power Rankings — Chaindump', 'Countries ranked by a composite of usage, policy, institutional adoption, innovation and government stance.'],
-  news: ['Crypto News — Chaindump', 'Aggregated crypto news across the major outlets.'],
-  traces: ['Scam Tracker — Chaindump', 'Traced scam fund-flows plus live OFAC wallet screening against 900+ sanctioned addresses across 14 chains.'],
   api: ['Agent API · x402 — Chaindump', 'A versioned, provenance-tagged JSON API for AI agents, payable per-call via x402.'],
 };
+// These views still have dormant client renderers, but are deliberately not a
+// public product surface. Returning a branded 200 page whose title promises one
+// product while the client silently shows Live Top 50 is misleading to readers,
+// crawlers and agents. Redirect the old entry points until the sections are
+// publication-ready again, and keep them out of the sitemap/LLM index by not
+// including them in VIEW_OG.
+const RETIRED_PUBLIC_VIEWS = ['geo', 'uspolicy', 'power', 'news', 'traces'];
+for (const view of RETIRED_PUBLIC_VIEWS) {
+  app.get(`/${view}`, (c) => c.redirect(`${ORIGIN}/`, 302));
+}
 // Views whose primary content is a ranking → emit an ItemList so AI engines can
 // answer "top X" questions directly. Only `live` has its items in the snapshot
 // cache at request time; the rest stay description-only until wired to their data.

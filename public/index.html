@@ -3723,9 +3723,9 @@ document.getElementById('rows').addEventListener('click', (e) => {
 // the Top 50, Dead & Dying, Stuck/Mid, and the analysis. Nothing is deleted —
 // the routes, renderers and data all still exist. Remove a slug from this set to
 // bring a section back.
-// 'api' is the Agent API / x402 tab: hidden from the nav, not deleted — the
-// /api/* routes and the x402 gate keep working for agents that already use them.
-const DISABLED_VIEWS = new Set(['traces', 'geo', 'uspolicy', 'power', 'news', 'api']);
+// Agent API documentation is a real, working product surface and stays visible.
+// The remaining dormant views are hidden until their research and UX are ready.
+const DISABLED_VIEWS = new Set(['traces', 'geo', 'uspolicy', 'power', 'news']);
 const isEnabledView = (v) => !DISABLED_VIEWS.has(v);
 // Hide the nav entries, then any group heading left with nothing under it.
 function applyViewGating(){
