@@ -4327,9 +4327,10 @@ async function simpleEntityProfile(type, slug) {
     const liveStablecoin = (await loadStablecoinRankings()).find((stablecoin) => (
       canonicalEntitySlug(stablecoin.symbol || stablecoin.name) === slug
       || canonicalEntitySlug(stablecoin.name) === slug
+      || canonicalEntitySlug(stablecoin.gecko) === slug
     ));
     return liveStablecoin
-      ? buildLiveStablecoinProfile(liveStablecoin, stablesRankCache.ts)
+      ? buildLiveStablecoinProfile({ ...liveStablecoin, profileSlug: slug }, stablesRankCache.ts)
       : null;
   }
   if (!rows[0]) return null;
@@ -4547,11 +4548,47 @@ async function loadStablecoinRankings() {
 app.get('/api/stablecoins', wrap(async (req, res) => {
   try {
     const rankings = await loadStablecoinRankings();
-    let metaMap = {};
-    try { (await dbQuery(`SELECT slug, symbol, profile, sources FROM stablecoin_meta`)).forEach((r) => { let p = null; try { p = r.profile ? JSON.parse(r.profile) : null; } catch (e) {} metaMap[(r.symbol || '').toUpperCase()] = { profile: p, sources: r.sources }; }); } catch (e) {}
+    let metaRows = [];
+    try {
+      metaRows = (await dbQuery(`SELECT slug, name, symbol, profile, sources FROM stablecoin_meta`))
+        .map((row) => {
+          let profile = null;
+          try { profile = row.profile ? JSON.parse(row.profile) : null; } catch (e) {}
+          return { ...row, profile };
+        });
+    } catch (e) {}
+    const rowsBySymbol = new Map();
+    for (const row of metaRows) {
+      const key = String(row.symbol || '').toUpperCase();
+      if (!rowsBySymbol.has(key)) rowsBySymbol.set(key, []);
+      rowsBySymbol.get(key).push(row);
+    }
+    const liveSymbolCounts = rankings.reduce((counts, stablecoin) => {
+      const key = String(stablecoin.symbol || '').toUpperCase();
+      counts.set(key, (counts.get(key) || 0) + 1);
+      return counts;
+    }, new Map());
     let analysis = null;
     try { const m = await dbQuery(`SELECT v, updated_at FROM graveyard_meta WHERE k='stablecoin_analysis' LIMIT 1`); if (m[0]) analysis = { text: m[0].v, updated_at: m[0].updated_at }; } catch (e) {}
-    const stablecoins = rankings.map((s, i) => ({ rank: i + 1, ...s, meta: metaMap[(s.symbol || '').toUpperCase()] || null }));
+    const stablecoins = rankings.map((stablecoin, index) => {
+      const symbolKey = String(stablecoin.symbol || '').toUpperCase();
+      const candidates = rowsBySymbol.get(symbolKey) || [];
+      const symbolCollides = (liveSymbolCounts.get(symbolKey) || 0) > 1;
+      const exactName = candidates.find((row) => (
+        canonicalEntitySlug(row.name) === canonicalEntitySlug(stablecoin.name)
+      ));
+      const metaRow = symbolCollides ? exactName : candidates[0];
+      const profileSlug = canonicalEntitySlug(
+        metaRow?.slug
+        || (symbolCollides ? stablecoin.gecko || stablecoin.name : stablecoin.symbol || stablecoin.name),
+      );
+      return {
+        rank: index + 1,
+        ...stablecoin,
+        profileSlug,
+        meta: metaRow ? { profile: metaRow.profile, sources: metaRow.sources } : null,
+      };
+    });
     const totalMcap = stablecoins.reduce((a, s) => a + (s.circulating || 0), 0);
     res.json({ stablecoins, count: stablecoins.length, totalMcap, analysis });
   } catch (e) {

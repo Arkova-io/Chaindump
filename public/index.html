@@ -4650,11 +4650,12 @@ function renderStables(data){
   if (data.error && !data.stablecoins.length) { el.innerHTML = `${STABLES_HEAD}<div class="skel">Couldn't load: ${esc(data.error)}</div>`; return; }
   if (!data.stablecoins.length) { el.innerHTML = `${STABLES_HEAD}<div class="skel">Loading stablecoins…</div>`; return; }
   const cards = data.stablecoins.map(s => {
+    const profileSlug = s.profileSlug || s.symbol;
     return `<div class="gcard" data-slug="${esc(s.symbol)}">
       <div class="ghead"><div class="gname"><span class="muted">#${s.rank}</span> ${esc(s.name)} <span class="csym">${esc(s.symbol)}</span>${s.pegMechanism?` <span class="gverdict declining">${esc(s.pegMechanism)}</span>`:''}</div>
       <div class="gdd" style="color:var(--accent2);font-size:14px">${fmtUsd(s.circulating)}<span class="gddl">value in circulation</span></div></div>
       <div class="gmeta">${esc(s.pegType||'')}${(s.chains||[]).length?` · ${esc(s.chains.slice(0,4).join(', '))}`:''}</div>
-      <div class="gexpand"><a class="profile-open-link" href="${profileHref('stablecoin', s.symbol)}" data-profile-type="stablecoin" data-profile-slug="${esc(profileRouteSlug(s.symbol))}">Open report →</a></div>
+      <div class="gexpand"><a class="profile-open-link" href="${profileHref('stablecoin', profileSlug)}" data-profile-type="stablecoin" data-profile-slug="${esc(profileRouteSlug(profileSlug))}">Open report →</a></div>
     </div>`;
   }).join('');
   // Stat row from the payload already on screen — count, total, the largest

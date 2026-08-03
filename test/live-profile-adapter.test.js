@@ -64,6 +64,23 @@ describe('live ranking profile fallbacks', () => {
     expect(validateEntityProfile(profile)).toEqual([]);
   });
 
+  it('honors a collision-safe stablecoin profile slug supplied by the ranking adapter', () => {
+    const profile = buildLiveStablecoinProfile({
+      name: 'Astherus',
+      symbol: 'USDF',
+      profileSlug: 'astherus-usdf',
+      circulating: 111_931_790,
+      price: 1,
+    }, '2026-08-03T17:26:30.823Z');
+
+    expect(profile.identity).toMatchObject({
+      id: 'stablecoin:astherus-usdf',
+      slug: 'astherus-usdf',
+      name: 'Astherus',
+    });
+    expect(validateEntityProfile(profile)).toEqual([]);
+  });
+
   it('uses the same URL slug rules as the browser', () => {
     expect(canonicalEntitySlug('RWA USDi')).toBe('rwa-usdi');
     expect(canonicalEntitySlug('  DAI  ')).toBe('dai');
@@ -71,7 +88,7 @@ describe('live ranking profile fallbacks', () => {
 
   it('wires both visible live datasets into the profile resolver', () => {
     expect(workerSource).toContain('buildLiveBlockchainProfile(liveChain');
-    expect(workerSource).toContain('buildLiveStablecoinProfile(liveStablecoin');
+    expect(workerSource).toContain('buildLiveStablecoinProfile({ ...liveStablecoin, profileSlug: slug }');
     expect(workerSource).toContain('async function loadStablecoinRankings()');
   });
 
@@ -193,6 +210,74 @@ describe('live stablecoin profile route', () => {
       { symbol: 'NPD', circulating: 12_000_000 },
       { symbol: 'EURE', circulating: 11_700_000 },
     ]);
+  });
+
+  it('keeps case-colliding symbols on distinct report routes and metadata', async () => {
+    vi.resetModules();
+    vi.stubGlobal('fetch', async (request) => {
+      const url = String(request);
+      if (url.startsWith('https://stablecoins.llama.fi/stablecoins')) {
+        return new Response(JSON.stringify({
+          peggedAssets: [
+            {
+              name: 'Falcon USD', symbol: 'USDf', gecko_id: 'falcon-finance',
+              pegType: 'peggedUSD', circulating: { peggedUSD: 1_250_000_000 }, price: 1,
+            },
+            {
+              name: 'Astherus', symbol: 'USDF', gecko_id: 'astherus-usdf',
+              pegType: 'peggedUSD', circulating: { peggedUSD: 111_000_000 }, price: 1,
+            },
+          ],
+        }), { status: 200, headers: { 'content-type': 'application/json' } });
+      }
+      throw new Error(`unexpected network request: ${url}`);
+    });
+    const worker = (await import('../src/worker.js')).default;
+    const env = {
+      DB: {
+        prepare(sql) {
+          return {
+            bind() { return this; },
+            async all() {
+              if (sql.includes('FROM stablecoin_meta') && !sql.includes('WHERE lower(slug)')) {
+                return { results: [{
+                  slug: 'usdf', name: 'Falcon USD', symbol: 'USDF',
+                  profile: JSON.stringify({ issuer: 'Falcon' }), sources: '[]',
+                }] };
+              }
+              return { results: [] };
+            },
+            async first() { return null; },
+          };
+        },
+      },
+    };
+    const context = { waitUntil() {}, passThroughOnException() {} };
+    const listResponse = await worker.fetch(
+      new Request('http://localhost/api/stablecoins'),
+      env,
+      context,
+    );
+    const body = await listResponse.json();
+    expect(body.stablecoins.map(({ name, profileSlug, meta }) => ({
+      name,
+      profileSlug,
+      hasMeta: meta != null,
+    }))).toEqual([
+      { name: 'Falcon USD', profileSlug: 'usdf', hasMeta: true },
+      { name: 'Astherus', profileSlug: 'astherus-usdf', hasMeta: false },
+    ]);
+
+    const profileResponse = await worker.fetch(
+      new Request('http://localhost/api/profile/stablecoin/astherus-usdf'),
+      env,
+      context,
+    );
+    expect(profileResponse.status).toBe(200);
+    expect((await profileResponse.json()).identity).toMatchObject({
+      slug: 'astherus-usdf',
+      name: 'Astherus',
+    });
   });
 
   it('preserves a stale snapshot state through the public blockchain profile route', async () => {

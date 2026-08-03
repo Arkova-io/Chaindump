@@ -67,6 +67,11 @@ describe('public UI/UX audit guards', () => {
     expect(html).toContain("freshnessState === 'stale' || freshnessState === 'review_due'");
   });
 
+  it('uses the server-provided stablecoin identity instead of assuming symbols are unique', () => {
+    expect(html).toContain('const profileSlug = s.profileSlug || s.symbol;');
+    expect(html).toContain("profileHref('stablecoin', profileSlug)");
+  });
+
   it('writes incomplete report sections as a readable sentence', () => {
     expect(html).toContain('strategic_choices: "The choices behind this outcome have not been verified yet."');
     expect(html).toContain('operating_model: "The operating model has not been verified yet."');
