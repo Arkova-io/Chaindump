@@ -205,7 +205,7 @@ describe('chain causal and canonical wave 0091', () => {
     expect(gala.metrics.find(({ dimension }) => dimension === 'dex_spot_volume').quality_flags)
       .toContain('app_volume_not_company_revenue');
     const internetComputer = document.cases.find(({ slug }) => slug === 'internet-computer');
-    expect(internetComputer.forensic_analysis.observation_snapshot.compute.running_canisters)
+    expect(internetComputer.forensic_analysis.observation_snapshot.compute_snapshot.running_canisters)
       .toBe(1_158_254);
     expect(internetComputer.canonical_profile.metrics.find(({ dimension }) => dimension === 'tvl').quality_flags)
       .toContain('does_not_measure_compute_usage');
@@ -333,6 +333,20 @@ describe('chain causal and canonical wave 0091', () => {
       expect(body).toEqual(entry.canonical_profile);
       expect(Object.keys(body.analysis.sections)).toEqual(ANALYSIS_SECTION_KEYS);
     }
+
+    const canonicalResponse = await apiWorker.fetch(
+      new Request('http://localhost/api/profile/blockchain/internet-computer'),
+      { DB: d1(apiDatabase) },
+      ctx(),
+    );
+    const tickerResponse = await apiWorker.fetch(
+      new Request('http://localhost/api/profile/blockchain/icp'),
+      { DB: d1(apiDatabase) },
+      ctx(),
+    );
+    expect(canonicalResponse.status).toBe(200);
+    expect(tickerResponse.status).toBe(200);
+    expect(await tickerResponse.json()).toEqual(await canonicalResponse.json());
   }, 30_000);
 
   it('cannot be marked published while human review is pending', () => {
