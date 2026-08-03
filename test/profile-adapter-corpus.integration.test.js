@@ -4,7 +4,7 @@ import { buildProfileAdapterCensus } from '../scripts/profile-adapter-census.mjs
 const EXPECTED_COUNTS = {
   blockchain: [93, 0, 0, 67, 26, 68, 1834],
   dex: [30, 0, 5, 0, 25, 5, 15],
-  cex: [30, 0, 22, 1, 7, 23, 37],
+  cex: [30, 0, 17, 1, 12, 18, 28],
   nft_collection: [39, 0, 16, 0, 23, 0, 0],
   ordinals_collection: [12, 0, 6, 0, 6, 0, 0],
   web3_casino: [29, 0, 0, 0, 29, 0, 0],
@@ -20,7 +20,7 @@ const EXPECTED_COUNTS = {
 const RICHEST_CONTROLS = {
   blockchain: ['ethereum', 10],
   dex: ['mango-markets', 10],
-  cex: ['binance', 10],
+  cex: ['mt-gox', 10],
   nft_collection: ['bored-ape-yacht-club', 10],
   ordinals_collection: ['runestone', 10],
   web3_casino: ['azuro', 10],
@@ -128,8 +128,8 @@ describe('full-corpus canonical profile adapter', () => {
       return totals;
     }, {});
     expect(classes).toEqual({
-      source_metadata_debt: 2090,
-      citation_debt: 1249,
+      source_metadata_debt: 2086,
+      citation_debt: 1244,
     });
 
     const structural = census.rows.filter((row) => row.validation_error_classes.structural_contract_error);
