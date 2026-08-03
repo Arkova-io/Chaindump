@@ -75,6 +75,32 @@ function publicationState(record) {
   };
 }
 
+function trainingEligibility({ outcome, text, freshness, publication, sources }) {
+  const reasons = [];
+  const freshnessState = freshness.state || freshness.status || null;
+
+  if (!sources.length) reasons.push('no_registered_sources');
+  if (publication.registered_source_count < 1) reasons.push('no_publication_source_inventory');
+  if (publication.reviewed_source_count < 1) reasons.push('no_reviewed_sources');
+  if (publication.high_risk_claim_count < 1) reasons.push('no_high_risk_claim_inventory');
+  if (
+    publication.unresolved_high_risk_claim_count > 0
+    || publication.passing_high_risk_claim_count < publication.high_risk_claim_count
+  ) reasons.push('unresolved_high_risk_claims');
+  if (!outcome?.label || !outcome?.summary || !outcome?.as_of) reasons.push('outcome_incomplete');
+  if (!text.why) reasons.push('causal_why_missing');
+  if (!text.counterfactual) reasons.push('counterfactual_missing');
+  if (!text.outlook) reasons.push('outlook_missing');
+  if (!text.watch.length) reasons.push('watch_signals_missing');
+  if (!text.strategic_choices.length) reasons.push('strategic_choices_missing');
+  if (freshnessState !== 'current') reasons.push('freshness_not_current');
+
+  return {
+    eligible: reasons.length === 0,
+    reasons,
+  };
+}
+
 export function normalizeTrainingRecord(record, context = {}) {
   const vertical = context.vertical || record.vertical || record.kind || 'unknown';
   const id = [
@@ -114,7 +140,7 @@ export function normalizeTrainingRecord(record, context = {}) {
       : [],
     strategic_choices: supportedChoices(forensic?.strategic_choices),
   };
-  const unsupported = publication.unresolved_high_risk_claim_count > 0;
+  const training = trainingEligibility({ outcome, text, freshness, publication, sources });
   return {
     schema: FORENSIC_CORPUS_SCHEMA,
     id,
@@ -141,8 +167,9 @@ export function normalizeTrainingRecord(record, context = {}) {
     freshness,
     publication,
     sources,
-    training_eligible: sources.length > 0 && !unsupported,
-    withheld: unsupported,
+    training_eligible: training.eligible,
+    withheld: !training.eligible,
+    withheld_reasons: training.reasons,
   };
 }
 
@@ -154,12 +181,16 @@ export function buildCorpusManifest(records, context = {}) {
     record_count: records.length,
     training_eligible_count: records.filter((record) => record.training_eligible).length,
     withheld_count: records.filter((record) => record.withheld).length,
+    unclassified_count: records.filter(
+      (record) => !record.training_eligible && !record.withheld,
+    ).length,
     vertical_counts: records.reduce((counts, record) => {
       counts[record.vertical] = (counts[record.vertical] || 0) + 1;
       return counts;
     }, {}),
     sha256: createHash('sha256').update(jsonl).digest('hex'),
     split_policy: 'entity-stable; time-stable evaluation split should be cut before the forecast timestamp',
+    training_gate: 'fail-closed: complete causal fields, current freshness, reviewed sources, and all inventoried high-risk claims passing',
   };
 }
 
