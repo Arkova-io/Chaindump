@@ -3823,8 +3823,12 @@ async function blockchainEntityProfile(slug) {
          FROM chain_facts
         GROUP BY chain
      ) WHERE lower(chain) = ? OR lower(replace(chain, ' ', '-')) = ?
+          OR lower(CASE
+            WHEN json_valid(profile)
+            THEN json_extract(profile, '$.canonical_profile.identity.slug')
+          END) = ?
        ORDER BY priority`,
-    [slug, slug],
+    [slug, slug, slug],
   );
   if (!rows[0]) {
     if (!cache.data) cache = await loadSnapshot();
@@ -3837,10 +3841,14 @@ async function blockchainEntityProfile(slug) {
       : null;
   }
   const embeddedProfile = rows
-    .map((candidate) => embeddedCanonicalEntityProfile(candidate.profile, {
-      type: 'blockchain',
-      slug,
-    }))
+    .map((candidate) => {
+      const envelope = profileJson(candidate.profile, {});
+      const embeddedSlug = envelope?.canonical_profile?.identity?.slug;
+      return embeddedCanonicalEntityProfile(candidate.profile, {
+        type: 'blockchain',
+        slug: typeof embeddedSlug === 'string' ? embeddedSlug : slug,
+      });
+    })
     .find(Boolean);
   if (embeddedProfile) return embeddedProfile;
   const row = rows[0];
