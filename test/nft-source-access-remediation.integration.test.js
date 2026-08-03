@@ -29,6 +29,16 @@ function databaseThroughCurrentMigrations({ includeRemediation = true } = {}) {
   return database;
 }
 
+function databaseBeforeRemediation() {
+  const database = new DatabaseSync(':memory:');
+  for (const file of readdirSync(new URL('../migrations', import.meta.url))
+    .filter((name) => /^\d{4}_.+\.sql$/.test(name) && name < remediationMigrationName)
+    .sort()) {
+    database.exec(readFileSync(new URL(`../migrations/${file}`, import.meta.url), 'utf8'));
+  }
+  return database;
+}
+
 function rows(database) {
   return database.prepare(`
     SELECT slug, name, chain, status, profile, sources
@@ -71,7 +81,9 @@ let committedSql;
 
 beforeAll(() => {
   before = databaseThroughCurrentMigrations({ includeRemediation: false });
-  baselineRows = rows(before);
+  const remediationBaseline = databaseBeforeRemediation();
+  baselineRows = rows(remediationBaseline);
+  remediationBaseline.close();
   builtRows = buildRemediationRows(document, baselineRows);
   after = databaseThroughCurrentMigrations();
   renderedSql = renderNftSourceAccessRemediationMigration(document, baselineRows, '0064');
