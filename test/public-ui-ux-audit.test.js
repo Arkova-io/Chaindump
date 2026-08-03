@@ -42,6 +42,9 @@ describe('public UI/UX audit guards', () => {
     const disabledViews = html.match(/const DISABLED_VIEWS = new Set\(\[([^\]]*)\]\)/)?.[1] || '';
     expect(disabledViews).not.toContain("'api'");
     expect(html).toContain('<button class="tab" data-view="api">Agent API · x402</button>');
+    expect(html).toContain('demo only · no payment collected');
+    expect(html).toContain('Do not send a payment while the page is marked demo');
+    expect(html).not.toContain('your agent pays per call');
     for (const view of ['traces', 'geo', 'uspolicy', 'power', 'news']) {
       expect(disabledViews).toContain(`'${view}'`);
       expect(worker).toContain(`const RETIRED_PUBLIC_VIEWS = ['geo', 'uspolicy', 'power', 'news', 'traces'];`);
@@ -65,6 +68,11 @@ describe('public UI/UX audit guards', () => {
   it('tells readers when a live profile needs a fresh observation', () => {
     expect(html).toContain('Evidence needs a fresh check · last observed');
     expect(html).toContain("freshnessState === 'stale' || freshnessState === 'review_due'");
+  });
+
+  it('uses the server-provided stablecoin identity instead of assuming symbols are unique', () => {
+    expect(html).toContain('const profileSlug = s.profileSlug || s.symbol;');
+    expect(html).toContain("profileHref('stablecoin', profileSlug)");
   });
 
   it('writes incomplete report sections as a readable sentence', () => {

@@ -4650,11 +4650,12 @@ function renderStables(data){
   if (data.error && !data.stablecoins.length) { el.innerHTML = `${STABLES_HEAD}<div class="skel">Couldn't load: ${esc(data.error)}</div>`; return; }
   if (!data.stablecoins.length) { el.innerHTML = `${STABLES_HEAD}<div class="skel">Loading stablecoins…</div>`; return; }
   const cards = data.stablecoins.map(s => {
+    const profileSlug = s.profileSlug || s.symbol;
     return `<div class="gcard" data-slug="${esc(s.symbol)}">
       <div class="ghead"><div class="gname"><span class="muted">#${s.rank}</span> ${esc(s.name)} <span class="csym">${esc(s.symbol)}</span>${s.pegMechanism?` <span class="gverdict declining">${esc(s.pegMechanism)}</span>`:''}</div>
       <div class="gdd" style="color:var(--accent2);font-size:14px">${fmtUsd(s.circulating)}<span class="gddl">value in circulation</span></div></div>
       <div class="gmeta">${esc(s.pegType||'')}${(s.chains||[]).length?` · ${esc(s.chains.slice(0,4).join(', '))}`:''}</div>
-      <div class="gexpand"><a class="profile-open-link" href="${profileHref('stablecoin', s.symbol)}" data-profile-type="stablecoin" data-profile-slug="${esc(profileRouteSlug(s.symbol))}">Open report →</a></div>
+      <div class="gexpand"><a class="profile-open-link" href="${profileHref('stablecoin', profileSlug)}" data-profile-type="stablecoin" data-profile-slug="${esc(profileRouteSlug(profileSlug))}">Open report →</a></div>
     </div>`;
   }).join('');
   // Stat row from the payload already on screen — count, total, the largest
@@ -4831,7 +4832,7 @@ function renderPower(data){
 async function loadPower(){ powerLoaded=true; if (!state.powerData) document.getElementById('powerview').innerHTML=`<div class="skel">Loading…</div>`; try{ renderPower(await fetch('api/power').then(r=>r.json())); }catch(e){ if (!state.powerData) { powerLoaded=false; document.getElementById('powerview').innerHTML=`<div class="skel">Couldn't load: ${esc(e.message)}</div>`; } } }
 
 let apiLoaded=false;
-const API_HEAD = pageHead('Agent API · x402', 'Chaindump is built for autonomous agents as much as humans. Every dataset here is reachable as a machine-readable JSON API — <b>discovery is free, deep &amp; compliance calls are pay-per-use over x402</b>. No account, no API key, no signup: your agent pays per call in USDC on Base and gets the data in the same round-trip.');
+const API_HEAD = pageHead('Agent API · x402', 'Chaindump is built for autonomous agents as much as humans. Public discovery is free, and the machine-readable API returns sourced research as JSON. Metered x402 calls are documented below; the status tile shows whether payment settlement is actually enabled.');
 function renderApiDocs(m){
   const el = document.getElementById('apiview');
   const DOMAIN = 'https://chaindump.xyz';
@@ -4841,7 +4842,7 @@ function renderApiDocs(m){
   // payments settle.
   const isLive = pay.mode === 'live';
   const mode = isLive ? '<span class="gverdict recover">● live</span>' : '<span class="gverdict declining">● demo</span>';
-  const modeLabel = isLive ? 'settlement · Coinbase CDP' : 'settlement stubbed until CDP keys set';
+  const modeLabel = isLive ? 'payments live · Coinbase CDP' : 'demo only · no payment collected';
   const free = (m&&m.freeCallsPerMonth!=null)?m.freeCallsPerMonth:1;
   const eps = (m&&m.entrypoints)||[];
   // .dsec / .gbody / .codebox / .rlrow are the same components the rest of the
@@ -4864,7 +4865,9 @@ function renderApiDocs(m){
     <div class="codebox">curl ${DOMAIN}/api/agent/manifest</div>
 
     ${h('2 · Call an endpoint')}
-    ${p(`Your first call each month is free (watch the <code>X-Free-Calls-Remaining</code> response header). After that, the endpoint answers with <b>HTTP 402 Payment Required</b> and the exact payment terms.`)}
+    ${p(isLive
+      ? `Your first call each month is free (watch the <code>X-Free-Calls-Remaining</code> response header). After that, the endpoint answers with <b>HTTP 402 Payment Required</b> and the exact payment terms.`
+      : `This is currently a payment demo. The endpoint can show the planned <b>HTTP 402 Payment Required</b> contract, but Chaindump does not collect a payment until the status above changes to <b>live</b>.`)}
     <div class="codebox">curl -i ${DOMAIN}/api/agent/risk/lazarus
 
 HTTP/1.1 402 Payment Required
@@ -4882,8 +4885,10 @@ HTTP/1.1 402 Payment Required
   }]
 }</div>
 
-    ${h('3 · Pay + retry (automatic with any x402 client)')}
-    ${p('An x402-aware HTTP client reads the 402, signs a USDC transfer authorization (EIP-3009, gasless), attaches it as an <code>X-PAYMENT</code> header, and retries — you just get the JSON back.')}
+    ${h(isLive ? '3 · Pay + retry (automatic with any x402 client)' : '3 · Payment example (not active)')}
+    ${p(isLive
+      ? 'An x402-aware HTTP client reads the 402, signs a USDC transfer authorization (EIP-3009, gasless), attaches it as an <code>X-PAYMENT</code> header, and retries — you just get the JSON back.'
+      : 'The examples below show the intended x402 flow for developers. Do not send a payment while the page is marked demo; settlement is not enabled.')}
     <div class="codebox">// JavaScript — x402-fetch
 import { wrapFetchWithPayment } from "x402-fetch";
 import { createWalletClient, http } from "viem";
@@ -4902,13 +4907,15 @@ client = x402HttpxClient(account=Account.from_key(PRIVATE_KEY))
 r = client.get("${DOMAIN}/api/agent/chain/base")
 print(r.json())</div>
 
-    ${h('Payable endpoints')}
+    ${h(isLive ? 'Payable endpoints' : 'Planned metered endpoints')}
     <div class="rllist">${epRows||'<div class="rlrow"><span class="muted">Loading endpoints…</span></div>'}</div>
     ${p('Every paid response is JSON with <code>schema_version</code>, <code>data_as_of</code>, and inline <b>provenance/sources</b> — built to survive an agent\'s (or an auditor\'s) verification step.')}
 
-    ${h('Payment rail')}
-    ${p(`Settled on <b>Base mainnet</b> in <b>USDC</b> via the <b>Coinbase CDP</b> facilitator (gasless EIP-3009, built-in OFAC/KYT screening). Payments go to <code class="ent-addr">${esc(pay.payTo||'—')}</code>. USDC contract <code class="ent-addr">${esc(pay.asset||'—')}</code>.`)}
-    <div class="stampline">x402 is an open standard — any compliant client works (x402-fetch, x402-axios, the Python SDK, or a raw <code>X-PAYMENT</code> header). Start free with the manifest above.</div>
+    ${h(isLive ? 'Payment rail' : 'Planned payment rail')}
+    ${p(isLive
+      ? `Payments settle on <b>Base mainnet</b> in <b>USDC</b> through the <b>Coinbase CDP</b> facilitator (gasless EIP-3009, with screening). Payments go to <code class="ent-addr">${esc(pay.payTo||'—')}</code>. USDC contract <code class="ent-addr">${esc(pay.asset||'—')}</code>.`
+      : 'The planned rail uses <b>USDC on Base</b> through Coinbase CDP. It is shown for integration planning only; no payment is collected in demo mode.')}
+    <div class="stampline">x402 is an open standard. Start with the free manifest above, and check this page for live payment status before integrating a wallet.</div>
   </div>`;
 }
 async function loadApi(){

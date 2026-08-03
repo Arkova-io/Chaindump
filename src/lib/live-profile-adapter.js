@@ -101,7 +101,10 @@ function liveFreshness(observedAt, now = Date.now()) {
 
 export function buildLiveStablecoinProfile(record, observedAt, now = Date.now()) {
   const asOf = iso(observedAt);
-  const slug = canonicalEntitySlug(record?.symbol || record?.name);
+  // A symbol is not a unique identity key: live rankings can contain distinct
+  // products whose symbols differ only by case (for example USDf and USDF).
+  // The ranking adapter assigns profileSlug when it detects that collision.
+  const slug = canonicalEntitySlug(record?.profileSlug || record?.symbol || record?.name);
   if (!asOf || !slug || !record?.name) return null;
   const sourceId = 'defillama-stablecoin-rankings';
   const identityClaim = `stablecoin:${slug}:live-identity`;
