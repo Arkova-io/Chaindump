@@ -1902,25 +1902,40 @@ function resolveTags(row, facts, onBoard) {
 function normalizedChainDossier(row, description, analysis, facts, risk) {
   const profile = analysis?.profile || {};
   const synthesis = facts?.synthesis?.data || {};
+  const forensic = synthesis.forensic_analysis || {};
+  const synthesisSources = Array.isArray(facts?.synthesis?.sources)
+    ? facts.synthesis.sources
+    : [];
   return normalizeDossier({
     category: 'Blockchain',
     name: row?.name,
-    status: row?.verdict || row?.lifecycle || analysis?.sentiment,
+    status: forensic.outcome?.label || row?.verdict || row?.lifecycle || analysis?.sentiment,
     metric: row?.tvl ?? null,
-    as_of: row?.updated_at || analysis?.updated_at || synthesis.as_of,
+    as_of: forensic.outcome?.as_of || row?.updated_at || analysis?.updated_at || synthesis.as_of,
     what_it_is: profile.what_it_does || profile.purpose || description,
     what_happened: synthesis.situation || synthesis.postmortem || analysis?.take,
-    why: synthesis.why || synthesis.success_mechanism || profile.why || row?.why_stuck,
-    strategic_choices: synthesis.strategic_choices || profile.strategic_choices,
+    why: forensic.why || synthesis.why || synthesis.success_mechanism || profile.why || row?.why_stuck,
+    strategic_choices: forensic.strategic_choices
+      || synthesis.strategic_choices
+      || profile.strategic_choices,
     operating_model: profile.operating_model || profile.business_model || profile.purpose,
     token_value_capture: profile.token || row?.token,
-    evidence: synthesis.evidence || analysis?.sources,
-    counterfactual: synthesis.could_differ || synthesis.counterfactual || profile.could_differ,
-    risks_unknowns: synthesis.unknowns || profile.risks || profile.unknowns || risk,
+    evidence: synthesis.evidence || synthesisSources || analysis?.sources,
+    counterfactual: forensic.counterfactual
+      || synthesis.could_differ
+      || synthesis.counterfactual
+      || profile.could_differ,
+    risks_unknowns: forensic.unknowns
+      || synthesis.unknowns
+      || profile.risks
+      || profile.unknowns
+      || risk,
     lifecycle: synthesis.lifecycle || profile.lifecycle || row?.lifecycle,
-    outlook_watch: synthesis.outlook || profile.outlook || analysis?.outlook,
-    review_metadata: synthesis.review || analysis?.updated_at,
-    sources: parsedPublicJson(analysis?.sources, []),
+    outlook_watch: forensic.watch || synthesis.outlook || profile.outlook || analysis?.outlook,
+    review_metadata: forensic.review || synthesis.review || analysis?.updated_at,
+    sources: synthesisSources.length
+      ? synthesisSources
+      : parsedPublicJson(analysis?.sources, []),
   });
 }
 

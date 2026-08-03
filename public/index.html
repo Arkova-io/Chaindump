@@ -3413,25 +3413,27 @@ function analystHtml(d){
   const a = d.analysis;
   const p = a?.profile || {};
   const synthesis = d.facts?.synthesis?.data || {};
+  const forensic = synthesis.forensic_analysis || {};
+  const synthesisSources = d.facts?.synthesis?.sources;
   const normalized = normalizedDossierHtml({
     category: 'Blockchain',
     name: d.chain?.name || d.name || d.chain || 'Chain',
-    status: d.chain?.verdict || d.chain?.lifecycle || a?.sentiment,
+    status: forensic.outcome?.label || d.chain?.verdict || d.chain?.lifecycle || a?.sentiment,
     metric: d.chain?.tvl != null ? fmtUsd(d.chain.tvl) : d.tvl != null ? fmtUsd(d.tvl) : 'metric not published',
-    asOf: d.updated_at || a?.updated_at || synthesis.as_of,
+    asOf: forensic.outcome?.as_of || d.updated_at || a?.updated_at || synthesis.as_of,
     whatItIs: p.what_it_does || p.purpose || d.description,
     whatHappened: synthesis.situation || synthesis.postmortem || p.situation || a?.take,
-    why: synthesis.why || synthesis.success_mechanism || p.why || d.chain?.why_stuck,
-    strategicChoices: synthesis.strategic_choices || p.strategic_choices,
+    why: forensic.why || synthesis.why || synthesis.success_mechanism || p.why || d.chain?.why_stuck,
+    strategicChoices: forensic.strategic_choices || synthesis.strategic_choices || p.strategic_choices,
     operatingModel: p.operating_model || p.business_model || p.purpose,
     tokenValueCapture: d.chain?.token || p.token || d.token,
-    evidence: synthesis.evidence || d.facts?.synthesis?.sources || a?.sources,
-    counterfactual: synthesis.could_differ || synthesis.counterfactual || p.could_differ,
-    risksUnknowns: synthesis.unknowns || p.risks || p.unknowns || d.risk,
+    evidence: synthesis.evidence || synthesisSources || a?.sources,
+    counterfactual: forensic.counterfactual || synthesis.could_differ || synthesis.counterfactual || p.could_differ,
+    risksUnknowns: forensic.unknowns || synthesis.unknowns || p.risks || p.unknowns || d.risk,
     lifecycle: synthesis.lifecycle || p.lifecycle || p.outlook,
-    outlookWatch: synthesis.outlook || p.outlook,
-    reviewMetadata: synthesis.review || a?.updated_at,
-    sources: a?.sources || d.facts?.synthesis?.sources,
+    outlookWatch: forensic.watch || synthesis.outlook || p.outlook,
+    reviewMetadata: forensic.review || synthesis.review || a?.updated_at,
+    sources: synthesisSources || a?.sources,
   });
   if (!a || !a.take) return `${normalized}${factsHtml(d) || `<div class="dsec">Analyst take</div><div class="anbox muted">No analyst report is published yet.</div>`}`;
   const sent = (a.sentiment || '').toLowerCase().replace(/[^a-z]/g, '');
