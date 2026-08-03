@@ -4335,6 +4335,11 @@ async function simpleEntityProfile(type, slug) {
   }
   if (!rows[0]) return null;
   const row = rows[0];
+  const embeddedProfile = embeddedCanonicalEntityProfile(row.profile, {
+    type,
+    slug: row.slug,
+  });
+  if (embeddedProfile) return embeddedProfile;
   const isRwa = String(row.category || '').startsWith('rwa-');
   const isDepin = String(row.category || '').startsWith('depin-');
   if ((type === 'rwa' && !isRwa) || (type === 'depin' && !isDepin)) return null;
