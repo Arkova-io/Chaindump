@@ -1,5 +1,11 @@
 # Chaindump workflow summary — 2026-07-30
 
+> Historical record. For current production, evidence-completion, standardized
+> profile, CI/CD, and UX state, read `handoff.md` and
+> `docs/product-corpus-audit-2026-08-03.md`. Several operational statements in
+> this document were later disproved by current GitHub and production checks;
+> do not use it as release instructions.
+
 ## Purpose
 
 This note records the latest production and documentation pass so a future

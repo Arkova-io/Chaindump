@@ -13,7 +13,7 @@
 Its value everywhere is **analysis + aggregation with provenance**, not raw data.
 
 - **Live:** https://chaindump.xyz
-- **Repo:** https://github.com/carson-see/Chaindump (branch `main`)
+- **Repo:** https://github.com/Arkova-io/Chaindump (branch `main`)
 - **Roadmap:** [`docs/roadmap-phase2.md`](docs/roadmap-phase2.md) — the current program of work.
 - **Companion docs:** `docs/` (agent-readiness, nft-v2-followup) + the Google
   Drive "Chaindump" folder (Platform Overview, MCP, SDK, Sections, ICP).
@@ -26,13 +26,10 @@ Its value everywhere is **analysis + aggregation with provenance**, not raw data
 Red → Green → Refactor. Write a failing test before production code; watch it
 fail; make it pass; refactor. No `test.skip`, no "add tests later."
 
-> **Current gap (be honest):** the repo has **no test harness yet** (no test
-> script in `package.json`, no CI). Adopting this standard starts with
-> establishing one — Vitest for the Worker logic (pure functions like
-> `norm`, `aggregateBreakdown`, `computeSignals`, `latestByOrigin`, the OG
-> injection, the delta computation), plus lightweight integration tests hitting
-> the routes via `wrangler dev`. Until that exists, every new pure function
-> ships with its test, and the harness is built out incrementally.
+The repository has a Vitest test suite and required GitHub Actions checks. Run
+focused tests while iterating, then `npm test`, `npm run lint`, Worker syntax,
+and `npm run check:migrations` before review. A passing local subset is not a
+substitute for the required GitHub checks.
 
 ### 1.2 Code review before every change lands
 Manually review each changed file before deploy for: correctness, injection
@@ -101,12 +98,13 @@ export CLOUDFLARE_API_TOKEN="$(gcloud secrets versions access latest --secret=Ch
   wired via `routes` + `custom_domain` in `wrangler.jsonc`, `workers_dev: true`.
 
 ### 3.2 Deploy
-```bash
-node --input-type=module --check < src/worker.js   # syntax-check first
-npx wrangler deploy
-```
-Solo project — **direct deploys to prod are fine.** Commit + push to `main`
-around each deploy. Branch only if you want isolation; there is no CI gating.
+
+Production deploys are GitHub Actions only. Merge a reviewed PR to protected
+`main`; the Deploy workflow reruns the tests and migration guard, waits for the
+`production` environment approval, applies D1 migrations, rechecks that the run
+still targets exact current `main`, deploys with `BUILD_SHA`, and runs the
+exact-revision production smoke test. Do not run `wrangler deploy` locally for
+normal releases and do not approve a superseded deployment.
 
 > **Edge propagation lag:** after a deploy, the new asset/worker takes ~5–15s to
 > propagate. A 404/500/stale response right after deploy is almost always
@@ -180,9 +178,11 @@ Before calling a change done:
    chaindump.xyz (drive the flow, check console/network/DOM).
 2. **Reviewed** — diff read end-to-end for correctness, injection, XSS, secrets.
 3. **Sources** — any published claim is cited + verified; no fabrication.
-4. **Deployed + verified** — `wrangler deploy`, then confirm live (allowing for
-   propagation lag).
-5. **Committed + pushed** to `main` with a clear message.
+4. **Merged + deployed + verified** — required GitHub checks pass, reviewed PR
+   merges to `main`, the exact-current-main Deploy run is approved, and its
+   production smoke succeeds.
+5. **Committed + pushed** on a reviewable branch with a clear message; merge
+   through the protected PR path.
 6. **Docs** — update the roadmap / relevant `docs/*.md` if state changed.
 
 Announce status honestly at the end: if something failed, say so with the output.
