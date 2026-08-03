@@ -73,7 +73,7 @@ describe('customer-facing analysis copy', () => {
       const template = source.slice(source.lastIndexOf('el.innerHTML ='));
       expect(template.indexOf('<div class="gwrap">')).toBeGreaterThan(-1);
       expect(template.indexOf('${cohortPanel}')).toBeLessThan(template.indexOf('<div class="gwrap">'));
-      expect(template).toContain(`href="#${anchor}-reports"`);
+      expect(template).toContain(`href="/${anchor}#${anchor}-reports"`);
       expect(template).toContain(`id="${anchor}-reports"`);
     }
 

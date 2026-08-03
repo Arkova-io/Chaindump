@@ -1411,7 +1411,7 @@ function renderBlockchainAnalysis() {
   el.innerHTML = `${head}
     <div class="analysis-note">Use the filters to compare thriving, stalled and failed chains. Each full report covers what happened, why it happened, what could change the outlook and the sources behind the call.</div>
     <div class="gstats">${gstat(rows.length, 'chains covered')}${gstat(researched, 'full research reports')}${gstat(causal, 'reports that explain the outcome')}${gstat(rows.length - causal, 'explanations still open')}</div>
-    <div class="analysis-actions"><a class="kindbtn" href="#blockchain-analysis-reports">Browse reports ↓</a></div>
+    <div class="analysis-actions"><a class="kindbtn" href="/blockchain-analysis#blockchain-analysis-reports">Browse reports ↓</a></div>
     ${cohortPanel}
     <div class="toolbar"><div class="analysis-controls">
       <input id="blockchainAnalysisSearch" class="search" placeholder="Search chains or lifecycle…" value="${esc(state.blockchainAnalysisQuery)}" />
@@ -1826,7 +1826,7 @@ function renderExchangeAnalysis() {
   el.innerHTML = `${head}${errors}
     <div class="gstats">${gstat(rows.filter(r=>r.kind==='dex').length, 'DEX reports')}${gstat(rows.filter(r=>r.kind==='cex').length, 'CEX reports')}${gstat(rows.filter(r=>r.lifecycle==='successful').length, 'successful venues')}${gstat(rows.filter(r=>r.lifecycle==='dead').length, 'closed or winding down')}</div>
     <div class="analysis-note">${cited} of ${rows.length} reports include source links. When the evidence is too thin to support a conclusion, the report leaves that conclusion open. Comparisons use the same venue type, metric and time window.</div>
-    <div class="analysis-actions"><a class="kindbtn" href="#exchange-analysis-reports">Browse reports ↓</a><a class="kindbtn" href="#exchange-analysis-patterns">Deeper patterns ↓</a></div>
+    <div class="analysis-actions"><a class="kindbtn" href="/exchange-analysis#exchange-analysis-reports">Browse reports ↓</a><a class="kindbtn" href="/exchange-analysis#exchange-analysis-patterns">Deeper patterns ↓</a></div>
     ${cohortPanel}
     <div class="toolbar"><div class="analysis-controls">
       <input id="exchangeAnalysisSearch" class="search" placeholder="Search exchanges, chains or findings…" value="${esc(state.exchangeAnalysisQuery)}" />
@@ -2200,7 +2200,7 @@ function renderCasinoAnalysis() {
   );
   el.innerHTML = `${head}
     <div class="gstats">${gstat(cases.length, 'casino reports')}${gstat(cases.filter(item=>item.status==='active').length, 'active businesses')}${gstat(cases.filter(item=>item.status!=='active').length, 'closed, paused or unclear')}${gstat(cases.filter(item=>item.token_status==='documented').length, 'venues with a documented token')}</div>
-    <div class="analysis-actions"><a class="kindbtn" href="#casino-analysis-reports">Browse reports ↓</a></div>
+    <div class="analysis-actions"><a class="kindbtn" href="/casino-analysis#casino-analysis-reports">Browse reports ↓</a></div>
     ${cohortPanel}
     <div class="analysis-note">Open any report for the operating model, lifecycle, risks, outlook and source links. Missing evidence stays labeled as a research gap.</div>
     <div class="toolbar"><div class="analysis-controls">
@@ -4329,7 +4329,7 @@ function renderNft(data){
   }).join('');
   el.innerHTML = `${NFT_HEAD}${stats}
   <div class="analysis-note">These case studies show what happened, why the project reached its current state, and what could change the outlook. Every project uses the same report structure. Some are deep lifecycle studies; others remain partial. When the sources are too thin for a firm conclusion, the report says so.</div>
-  <div class="analysis-actions"><a class="kindbtn" href="#nft-analysis-reports">Browse reports ↓</a></div>
+  <div class="analysis-actions"><a class="kindbtn" href="/nft-analysis#nft-analysis-reports">Browse reports ↓</a></div>
   ${cohortPanel}
   <div class="toolbar"><div class="analysis-controls">
     <input id="casesearch" class="search" placeholder="Search case studies by name, chain or status…" value="${esc(caseQ)}" />
@@ -4347,7 +4347,7 @@ function renderNft(data){
       <option value="launched"${state.nftCaseSort==='launched'?' selected':''}>Launch date</option>
     </select>
   </div></div>
-  <div class="analysis-actions"><a class="kindbtn" href="#nftcatalog">Browse live catalog ↓</a></div>
+  <div class="analysis-actions"><a class="kindbtn" href="/nft-analysis#nftcatalog">Browse live catalog ↓</a></div>
   <div class="dsec" id="nft-analysis-reports" style="margin:20px 0 10px">${caseList.length} lifecycle report${caseList.length===1?'':'s'} shown · ${data.collections.length} total</div>
   <div class="gwrap">${cards || '<div class="skel">No case studies match.</div>'}</div>
   <div class="dsec" style="margin:28px 0 4px">Browse the full catalog by chain</div>
