@@ -348,10 +348,11 @@
   .tab:hover { color:var(--text); background:var(--surface2); }
   .tab.active { color:var(--text); background:var(--surface3); font-weight:600; box-shadow:inset 2px 0 0 var(--accent); }
   @media(max-width:900px){
-    .tabs { position:static; width:auto; flex-direction:row; flex-wrap:wrap; gap:4px; border-right:none; border-bottom:1px solid var(--border); padding:12px 0; margin:0 0 10px; background:none; }
+    .tabs { position:sticky; top:0; width:auto; flex-direction:row; flex-wrap:nowrap; gap:4px; border-right:none; border-bottom:1px solid var(--border); padding:8px 0; margin:0 0 10px; background:var(--bg); overflow-x:auto; overflow-y:hidden; overscroll-behavior-x:contain; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    .tabs::-webkit-scrollbar { display:none; }
     .navbrand, .navtag { display:none; }
     .navgroup-h { display:none; }
-    .tab { border:1px solid var(--border); border-radius:8px; padding:6px 11px; font-size:12px; }
+    .tab { flex:0 0 auto; border:1px solid var(--border); border-radius:8px; padding:6px 11px; font-size:12px; }
     .tab.active { box-shadow:none; background:var(--accent); color:#05070b; }
   }
   .gvintro { color:var(--muted2); font-size:13px; margin:16px 0 14px; max-width:760px; line-height:1.55; }
@@ -3773,6 +3774,17 @@ document.getElementById('rows').addEventListener('click', (e) => {
 // The remaining dormant views are hidden until their research and UX are ready.
 const DISABLED_VIEWS = new Set(['traces', 'geo', 'uspolicy', 'power', 'news']);
 const isEnabledView = (v) => !DISABLED_VIEWS.has(v);
+function keepActiveNavVisible(activeTab) {
+  if (!activeTab || !window.matchMedia('(max-width:900px)').matches) return;
+  const nav = document.getElementById('sidebar');
+  if (!nav) return;
+  const left = activeTab.offsetLeft;
+  const right = left + activeTab.offsetWidth;
+  const visibleLeft = nav.scrollLeft;
+  const visibleRight = visibleLeft + nav.clientWidth;
+  if (left >= visibleLeft && right <= visibleRight) return;
+  nav.scrollLeft = Math.max(0, left - Math.round((nav.clientWidth - activeTab.offsetWidth) / 2));
+}
 // Hide the nav entries, then any group heading left with nothing under it.
 function applyViewGating(){
   document.querySelectorAll('.tab[data-view]').forEach((t) => { if (DISABLED_VIEWS.has(t.dataset.view)) t.hidden = true; });
@@ -3794,6 +3806,7 @@ function switchView(view, push){
   if (push !== false) { const path = view === 'live' ? '/' : '/' + view; if (location.pathname !== path) history.pushState({ view }, '', path); }
   const navView = view === 'profile' ? profileParentView(state.profileType) : view;
   document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.view === navView));
+  keepActiveNavVisible(document.querySelector('.tab.active'));
   document.querySelectorAll('.liveonly').forEach(el => { el.style.display = view === 'live' ? '' : 'none'; });
   document.getElementById('midview').style.display = view === 'mid' ? 'block' : 'none';
   document.getElementById('graveview').style.display = view === 'grave' ? 'block' : 'none';
