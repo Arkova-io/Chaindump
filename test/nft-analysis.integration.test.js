@@ -62,25 +62,21 @@ describe('NFT / Ordinals citation-ready surface', () => {
     });
   });
 
-  it('has a visible field-level evidence renderer and an honest legacy coverage caveat', () => {
+  it('keeps dated evidence while removing retrieval and editorial plumbing from public copy', () => {
     const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
     expect(html).toContain('function nftEvidenceHtml');
     expect(html).toContain('function nftFreshnessHtml');
     expect(html).toContain('Report freshness');
-    expect(html).toContain('source ${esc(sourceDate)} · inspected ${esc(inspected)}');
-    expect(html).toContain('source.verification_note');
-    expect(html).toContain('access ${esc(access)}');
-    expect(html).toContain('access checked ${esc(source.access_checked_at)}');
-    expect(html).toContain('retrieval note: ${esc(source.access_note)}');
-    expect(html).toContain("source.access_state || 'not recorded'");
-    expect(html).not.toContain("source.access_state || (verified ? 'verified' : 'not recorded')");
+    expect(html).toContain('source ${esc(sourceDate)}${checkedAt ? ` · checked ${esc(checkedAt)}`');
+    expect(html).not.toContain('access ${esc(access)}');
+    expect(html).not.toContain('access checked ${esc(source.access_checked_at)}');
+    expect(html).not.toContain('retrieval note: ${esc(source.access_note)}');
     expect(html).toContain('evidence_scope: source.evidence_scope');
     expect(html).toContain('stale_after: source.stale_after');
     expect(html).toContain("stale: typeof source.stale === 'boolean' ? source.stale : null");
-    expect(html).toContain('Field-level evidence');
-    expect(html).toContain('reports link evidence to individual facts');
-    expect(html).toContain('earlier reports still provide one source list');
-    expect(html).toContain('earlier report');
+    expect(html).toContain('Evidence and sources');
+    expect(html).not.toContain('reports link evidence to individual facts');
+    expect(html).not.toContain('earlier reports still provide one source list');
     expect(html).toContain('function nftAggregateAnalysisHtml');
     expect(html).not.toContain('open the live cohort JSON');
     expect(html).toContain('directly open ${accessibleSources} cited sources');

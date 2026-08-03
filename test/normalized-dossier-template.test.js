@@ -43,7 +43,7 @@ describe('normalized cross-vertical dossier template', () => {
     expect(dossier.sections.why).toBeNull();
   });
 
-  it('renders the same normalized template for every core forensic vertical', () => {
+  it('renders every core forensic vertical through the same dedicated profile template', () => {
     expect(html).toContain('data-normalized-dossier="v1"');
     expect(html).toContain("['what_it_is', 'What it is']");
     expect(html).toContain("['review_metadata', 'Review metadata']");
@@ -53,7 +53,10 @@ describe('normalized cross-vertical dossier template', () => {
     expect(html).toContain("category: 'Blockchain'");
     expect(html).toContain('category: `${String(row.kind || \'exchange\').toUpperCase()}');
     expect(html).toContain('category: `Web3 casino · ${casinoLabel(item.product_subtype)}`');
-    expect(html).toContain('category: `NFT / Ordinals · ${chainLabel(c.chain)}`');
+    expect(html).toContain("nft_collection: ['NFT collection', 'nft-analysis']");
+    expect(html).toContain("ordinals_collection: ['Ordinals collection', 'nft-analysis']");
+    expect(html).toContain("web3_casino: ['Web3 casino', 'casino-analysis']");
+    expect(html).toContain('function canonicalProfileHtml(profile)');
   });
 
   it('keeps evidence and research gaps visible without repeating empty-section boilerplate', () => {

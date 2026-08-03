@@ -45,6 +45,7 @@ function buildCasinoCardRenderer() {
     const casinoLabel = (value) => String(value || '').replaceAll('_', ' ');
     const analysisText = (value) => Array.isArray(value) ? value.map(String).join(' · ') : (value == null ? '' : String(value));
     const proseBox = (value) => '<div class="prose">' + esc(value) + '</div>';
+    const fmtProse = (value) => '<p>' + esc(value) + '</p>';
     const casinoDetailBody = () => '';
     const state = {
       casinoAnalysisExpanded: null,
@@ -113,8 +114,8 @@ describe('casino evidence-state UI', () => {
     });
 
     expect(output).toContain('Supported lifecycle summary.');
-    expect(output).toContain('link available · desk check pending');
-    expect(output).toContain('Why this outcome withheld — independent support pending.');
+    expect(output).not.toContain('desk check pending');
+    expect(output).toContain('Why this outcome is still open.');
     expect(output).not.toContain('UNSUPPORTED CAUSAL TEXT');
   });
 
@@ -140,7 +141,7 @@ describe('casino evidence-state UI', () => {
 
     expect(banner).toContain('2 of 9 important claims meet the bar · 7 pending / withheld');
     expect(banner).toContain('Corpus inclusion counts listed reports, not proof that every conclusion is supported.');
-    expect(section).toContain('Counterfactual withheld — independent support pending.');
+    expect(section).toContain('Counterfactual is still open.');
     expect(section).not.toContain('SHOULD NOT RENDER');
   });
 
@@ -174,8 +175,8 @@ describe('casino evidence-state UI', () => {
       },
     });
 
-    expect(output).toContain('support pending');
-    expect(output).toContain('outcome withheld — independent support pending');
+    expect(output).toContain('outcome unclear');
+    expect(output).toContain('stronger evidence needed');
     expect(output).not.toContain('>insolvent<');
     expect(output).not.toContain('· failed ·');
   });
@@ -212,9 +213,9 @@ describe('casino evidence-state UI', () => {
     expect(output).not.toContain('UNSUPPORTED METRIC METHOD');
     expect(output).not.toContain('UNSUPPORTED INSOLVENCY EVENT');
     expect(output).not.toContain('UNSUPPORTED REGULATOR');
-    expect(output).toContain('Metric observation withheld');
-    expect(output).toContain('Lifecycle event withheld');
-    expect(output).toContain('Licence observation withheld');
+    expect(output).toContain('Metric observation is still open');
+    expect(output).toContain('Lifecycle event is still open');
+    expect(output).toContain('Licence observation is still open');
   });
 
   it('withholds casino outlook and lessons when their causal support is pending', () => {

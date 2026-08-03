@@ -213,17 +213,16 @@ describe('exchangeAssociationPanel', () => {
   it('summarizes the comparison in plain language', () => {
     const out = F.exchangeAssociationPanel(summary(), 'DEX');
     expect(out).toContain('This comparison uses 4 reports.');
-    expect(out).toContain('1 currently explain why the outcome happened');
+    expect(out).toContain('1 explain the outcome');
     expect(out).toContain('1 document whether a token launched');
-    expect(out).toContain('Small groups should be treated as leads, not conclusions.');
+    expect(out).toContain('Small groups are clues, not conclusions.');
   });
 
-  it('renders testable patterns and what would challenge them', () => {
+  it('does not leak generated research prompts into customer copy', () => {
     const out = F.exchangeAssociationPanel(summary(), 'DEX');
-    expect(out).toContain('Patterns worth testing as more reports are added');
-    expect(out).toContain('token launch');
-    expect(out).toContain('Token launch may correlate with success.');
-    expect(out).toContain('What would challenge this: The effect disappears in matched cohorts.');
+    expect(out).not.toContain('Patterns worth testing as more reports are added');
+    expect(out).not.toContain('Token launch may correlate with success.');
+    expect(out).not.toContain('What would challenge this:');
   });
 
   it('omits the hypotheses section entirely when there are no hypotheses', () => {
@@ -234,7 +233,7 @@ describe('exchangeAssociationPanel', () => {
   it('defaults trendReadiness fields to zero when trendReadiness is missing', () => {
     const out = F.exchangeAssociationPanel(summary({ trendReadiness: undefined }), 'DEX');
     expect(out).toContain('This comparison uses 0 reports.');
-    expect(out).toContain('0 currently explain why the outcome happened');
+    expect(out).toContain('0 explain the outcome');
   });
 
   it('escapes the panel label', () => {
