@@ -44,7 +44,7 @@ describe('Forensics analysis navigation', () => {
     expect(html).toContain('id="blockchainAnalysisStatus"');
     expect(html).toContain('row.dossierStatus');
     expect(html).toContain('Where chains stand');
-    expect(html).toContain('Open full report →');
+    expect(html).toContain('Open report →');
     expect(html).toContain("coverage: 'Legacy postmortem'");
     expect(html).toContain('full research reports');
     expect(html).toContain('id="blockchainAnalysisCausal"');
