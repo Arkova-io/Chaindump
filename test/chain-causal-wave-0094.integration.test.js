@@ -237,10 +237,25 @@ describe('chain causal and canonical wave 0094', () => {
         const synthesis = afterFacts.find(({ dimension }) => dimension === 'synthesis');
         const priorSynthesisData = JSON.parse(priorFacts.synthesis.data);
         const currentSynthesisData = JSON.parse(synthesis.data);
+        const targetedSynthesisKeys = new Set(['forensic_analysis', 'canonical_profile_ref']);
         for (const [key, value] of Object.entries(priorSynthesisData)) {
-          expect(currentSynthesisData[key], `${entry.chain}:synthesis.${key}`).toEqual(value);
+          if (targetedSynthesisKeys.has(key)) continue;
+          expect(
+            JSON.stringify(currentSynthesisData[key]),
+            `${entry.chain}:synthesis.${key} byte-identical`,
+          ).toBe(JSON.stringify(value));
         }
+        const changedSynthesisKeys = Object.keys({ ...priorSynthesisData, ...currentSynthesisData })
+          .filter((key) => (
+            JSON.stringify(priorSynthesisData[key]) !== JSON.stringify(currentSynthesisData[key])
+          ));
+        expect(
+          changedSynthesisKeys.every((key) => targetedSynthesisKeys.has(key)),
+          `${entry.chain}: only intended synthesis keys may change`,
+        ).toBe(true);
         expect(currentSynthesisData.forensic_analysis).toEqual(entry.forensic_analysis);
+        expect(currentSynthesisData.canonical_profile_ref)
+          .toBe('chain_analysis.profile.canonical_profile');
         expect(JSON.parse(afterFacts.find(({ dimension }) => dimension === '_meta').data))
           .toMatchObject({
             forensic_analysis_version: 'forensic-analysis-v1',
@@ -284,8 +299,13 @@ describe('chain causal and canonical wave 0094', () => {
         const priorProfile = JSON.parse(before[entry.chain].analysis.profile || '{}');
         const currentProfile = JSON.parse(afterAnalysis.profile);
         for (const [key, value] of Object.entries(priorProfile)) {
-          expect(currentProfile[key], `${entry.chain}:profile.${key}`).toEqual(value);
+          if (key === 'canonical_profile') continue;
+          expect(
+            JSON.stringify(currentProfile[key]),
+            `${entry.chain}:profile.${key} byte-identical`,
+          ).toBe(JSON.stringify(value));
         }
+        expect(currentProfile.canonical_profile).toEqual(entry.canonical_profile);
       }
     }
 
