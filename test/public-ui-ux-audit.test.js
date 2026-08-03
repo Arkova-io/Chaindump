@@ -50,4 +50,17 @@ describe('public UI/UX audit guards', () => {
     expect(html).toContain('counterfactual: "There is not enough evidence yet to say what might have changed the outcome."');
     expect(html).toContain('data-profile-section-missing="true"');
   });
+
+  it('keeps in-page report shortcuts on their current SPA route', () => {
+    // The document has <base href="/">, so bare #fragment links resolve to the
+    // home route and strand readers on Live Top 50. Route-qualified fragments
+    // preserve the current analysis page and scroll to its results.
+    expect(html).toContain('href="/blockchain-analysis#blockchain-analysis-reports"');
+    expect(html).toContain('href="/exchange-analysis#exchange-analysis-reports"');
+    expect(html).toContain('href="/exchange-analysis#exchange-analysis-patterns"');
+    expect(html).toContain('href="/casino-analysis#casino-analysis-reports"');
+    expect(html).toContain('href="/nft-analysis#nft-analysis-reports"');
+    expect(html).toContain('href="/nft-analysis#nftcatalog"');
+    expect(html).not.toMatch(/href="#(?:blockchain|exchange|casino|nft)/);
+  });
 });
