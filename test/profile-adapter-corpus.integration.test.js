@@ -8,7 +8,7 @@ const EXPECTED_COUNTS = {
   nft_collection: [39, 0, 8, 0, 31, 0, 0],
   ordinals_collection: [12, 0, 4, 0, 8, 0, 0],
   web3_casino: [29, 0, 0, 0, 29, 0, 0],
-  stablecoin: [42, 0, 0, 34, 8, 34, 540],
+  stablecoin: [42, 0, 0, 29, 13, 29, 453],
   rwa: [10, 0, 0, 8, 2, 8, 138],
   depin: [8, 0, 0, 7, 1, 7, 126],
   infrastructure_network: [15, 0, 0, 15, 0, 15, 191],
@@ -24,7 +24,7 @@ const RICHEST_CONTROLS = {
   nft_collection: ['bored-ape-yacht-club', 10],
   ordinals_collection: ['runestone', 10],
   web3_casino: ['azuro', 10],
-  stablecoin: ['usdd', 10],
+  stablecoin: ['buidl', 10],
   rwa: ['ondo-finance', 10],
   depin: ['helium', 10],
   infrastructure_network: ['factom', 6],
@@ -128,8 +128,8 @@ describe('full-corpus canonical profile adapter', () => {
       return totals;
     }, {});
     expect(classes).toEqual({
-      source_metadata_debt: 1735,
-      citation_debt: 1052,
+      source_metadata_debt: 1678,
+      citation_debt: 1022,
     });
 
     const structural = census.rows.filter((row) => row.validation_error_classes.structural_contract_error);
