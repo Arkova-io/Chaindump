@@ -4080,8 +4080,13 @@ async function simpleEntityProfile(type, slug) {
   const isDepin = String(row.category || '').startsWith('depin-');
   if ((type === 'rwa' && !isRwa) || (type === 'depin' && !isDepin)) return null;
   const profile = profileJson(row.profile, {});
+  const canonicalSource = type === 'stablecoin'
+    ? profileJson(profile.canonical_profile, {})
+    : {};
+  const hasCanonicalSource = canonicalSource.schema === 'chaindump-entity-profile-source'
+    && Number(canonicalSource.version) === 1;
   const asOf = latestProfileDate(profile.evidence_policy?.last_verified_at, row.updated_at);
-  const sections = marketType ? {
+  const sections = hasCanonicalSource ? canonicalSource.sections : marketType ? {
     what_it_is: profileProse(profile.background),
     what_happened: profileProse(profile.recent_moves, profile.recent_flows),
     why_this_outcome: profileProse(profile.analysis),
@@ -4134,8 +4139,14 @@ async function simpleEntityProfile(type, slug) {
       name: row.name,
       aliases: row.symbol ? [row.symbol] : [],
     },
-    classification: { subtype: row.category || profile.type || null, tags: [], chains: [], jurisdictions: [] },
-    outcome: {
+    classification: hasCanonicalSource ? canonicalSource.classification : {
+      subtype: row.category || profile.type || null,
+      tags: [],
+      chains: [],
+      jurisdictions: [],
+    },
+    status: hasCanonicalSource ? canonicalSource.status : undefined,
+    outcome: hasCanonicalSource ? canonicalSource.outcome : {
       label: row.status || profile.status || null,
       as_of: row.status || profile.status ? asOf : null,
       rule_id: row.status || profile.status ? 'legacy-status' : null,
@@ -4143,12 +4154,34 @@ async function simpleEntityProfile(type, slug) {
       claim_ids: [],
     },
     sections,
-    as_of: asOf,
+    as_of: hasCanonicalSource
+      ? latestProfileDate(...Object.values(canonicalSource.section_dates || {}), asOf)
+      : asOf,
+    section_dates: hasCanonicalSource ? canonicalSource.section_dates : undefined,
+    section_claim_ids: hasCanonicalSource ? canonicalSource.section_claim_ids : undefined,
+    metrics: hasCanonicalSource && Array.isArray(canonicalSource.metrics)
+      ? canonicalSource.metrics
+      : [],
+    events: hasCanonicalSource && Array.isArray(canonicalSource.events)
+      ? canonicalSource.events
+      : [],
+    claims: hasCanonicalSource && Array.isArray(canonicalSource.claims)
+      ? canonicalSource.claims
+      : [],
     source_values: [row.sources, profile.sources],
-    freshness: profileFreshness(profile, row),
+    freshness: hasCanonicalSource
+      ? canonicalSource.freshness
+      : profileFreshness(profile, row),
+    confidence: hasCanonicalSource ? canonicalSource.confidence : undefined,
     extensions: {
+      ...(hasCanonicalSource && canonicalSource.extensions
+        && typeof canonicalSource.extensions === 'object'
+        ? canonicalSource.extensions
+        : {}),
       legacy_origin: row.legacy_origin,
-      category_data: Object.fromEntries(Object.entries(profile).filter(([key]) => !['sources'].includes(key))),
+      category_data: Object.fromEntries(Object.entries(profile).filter(
+        ([key]) => !['sources', 'canonical_profile'].includes(key),
+      )),
     },
   });
 }
