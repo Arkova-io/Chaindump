@@ -8,9 +8,9 @@ const EXPECTED_COUNTS = {
   nft_collection: [39, 0, 20, 0, 19, 0, 0],
   ordinals_collection: [12, 0, 7, 0, 5, 0, 0],
   web3_casino: [29, 0, 0, 0, 29, 0, 0],
-  stablecoin: [42, 0, 0, 40, 2, 40, 645],
+  stablecoin: [42, 0, 0, 39, 3, 39, 627],
   rwa: [10, 0, 0, 8, 2, 8, 138],
-  depin: [8, 0, 0, 8, 0, 8, 144],
+  depin: [8, 0, 0, 7, 1, 7, 126],
   infrastructure_network: [15, 0, 0, 15, 0, 15, 191],
   crypto_treasury: [10, 0, 0, 10, 0, 10, 176],
   miner: [8, 0, 0, 8, 0, 8, 104],
@@ -26,7 +26,7 @@ const RICHEST_CONTROLS = {
   web3_casino: ['polymarket-international', 10],
   stablecoin: ['usdt', 10],
   rwa: ['ondo-finance', 10],
-  depin: ['geodnet', 5],
+  depin: ['helium', 10],
   infrastructure_network: ['factom', 6],
   crypto_treasury: ['twenty-one-capital', 5],
   miner: ['terawulf', 3],
@@ -111,8 +111,8 @@ describe('full-corpus canonical profile adapter', () => {
       return totals;
     }, {});
     expect(classes).toEqual({
-      source_metadata_debt: 2800,
-      citation_debt: 1464,
+      source_metadata_debt: 2776,
+      citation_debt: 1452,
     });
 
     const structural = census.rows.filter((row) => row.validation_error_classes.structural_contract_error);
