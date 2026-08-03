@@ -1,4 +1,118 @@
-# Chaindump session handoff - 2026-07-29
+# Chaindump product and engineering handoff
+
+## Authoritative current snapshot — 2026-08-03
+
+Use this section first. The older entries below are a chronological work log,
+not current truth. When they conflict, production, current `main`, the test
+suite, and this snapshot win.
+
+### Production and delivery
+
+- Repository: `https://github.com/Arkova-io/Chaindump` (the former
+  `carson-see/Chaindump` location redirects).
+- Production: `https://chaindump.xyz`.
+- Current verified production revision at this snapshot:
+  `eed6d6c17fb6fddaee0ca1aa7ebaa9b8223b6dcb`.
+- PR #117 fixed two calendar-dependent tests, passed required CI, merged, was
+  approved through the protected `production` environment, deployed, and
+  passed the exact-revision production smoke test.
+- Production delivery is `main` only: GitHub Actions reruns tests and migration
+  checks, waits for production approval, applies D1 migrations, deploys the
+  Worker with `BUILD_SHA`, and runs the production smoke test. Do not bypass
+  this with an ad-hoc local deploy.
+
+### What the product actually has
+
+- Live Top 50 is the current interaction and visual benchmark: compact header,
+  live stats, sortable table, and progressive detail.
+- Indexed corpus: 50 live blockchain records, 29 DEX cases, 30 CEX cases, 29
+  Web3 casino cases, 51 NFT/Ordinals cases, 50 ranked stablecoins, 18 curated
+  RWA/DePIN cases, and 15 infrastructure cases.
+- `normalized-dossier-v1` is present for 50/50 blockchains, 29/29 DEX, 30/30
+  CEX, 29/29 casinos, and 51/51 NFT/Ordinals. It is absent for stablecoins,
+  RWA/DePIN, and infrastructure.
+- Those structural counts are **not analytical completion**. Complete
+  12-section reports are currently 0/50 blockchain, 1/29 DEX, 2/30 CEX, 0/29
+  casino, and 0/51 NFT/Ordinals. Stablecoin, RWA/DePIN, and infrastructure have
+  no normalized report contract yet.
+- High-risk evidence remains unresolved for 1,056 of 1,169 tracked claims
+  (90.3%): DEX 188/195, CEX 180/188, casino 143/236, NFT/Ordinals 545/550.
+  Withheld claims must remain withheld; indexed rows must never be labeled
+  complete merely because the schema exists.
+
+### Current product correction program
+
+1. Replace browser-side recursive object flattening with a typed, server-owned
+   entity profile. Raw source registry metadata, IDs, schema fields, and URLs
+   must never become customer prose.
+2. Give every supported entity a dedicated profile endpoint and route. A deep
+   link must render the entity, not the whole category page with one card
+   expanded thousands of pixels below the header.
+3. Use the same human report anatomy everywhere: what it is; what happened;
+   why; strategic choices; operating model; token/value capture; evidence;
+   counterfactual; risks/unknowns; lifecycle; outlook/watch; review date.
+   Category-specific facts are extensions, not alternate templates.
+4. Keep review-run state, SLM fields, promotion rules, source-registry
+   internals, and raw JSON endpoints off customer report pages. Explain the
+   public method once in a dedicated Intelligence Methodology section.
+5. Treat the six-hour job as a review-debt scanner and proposal workflow, not a
+   content freshness guarantee. Live market metrics can refresh automatically;
+   causal, lifecycle, legal, loss, adverse, and outlook conclusions require
+   source-backed human promotion.
+6. Refresh the corpus in evidence-priority order. The first corrective wave is
+   Ethereum, USDC, USDT, BUIDL, Ondo, Binance, Bybit, Decentral Games Poker
+   Arcade, Reddit Collectible Avatars, and SushiSwap.
+
+### Known UX and data-quality failures
+
+- Customer pages currently expose six-hour job state, optional research-agent
+  state, taxonomy contracts, SLM/training links, and regulatory methodology.
+  This is internal process copy and must move out of category pages.
+- `normalizedValue()` in `public/index.html` recursively stringifies arbitrary
+  objects. It caused evidence metadata such as `title:`, `url:`, source tiers,
+  access state, and registry fields to appear as robot-like prose.
+- Mobile category pages bury the first entity below large methodology blocks:
+  approximately 4,144px on Blockchain, 7,486px on DEX/CEX, 4,075px on Casino,
+  and 7,561px on NFT/Ordinals in the 2026-08-03 production audit.
+- A global 30-second refresh calls `load()` directly. Background refresh must
+  preserve scroll, focus, and input selection; it must never act like a new
+  navigation.
+- The six-hour status can be current while underlying analysis is stale. Most
+  dated chain narratives are from July 8 or July 17; stablecoin and RWA/DePIN
+  narrative snapshots are July 8. Show content-level `as_of` and review dates,
+  not a misleading global freshness implication.
+- The current SLM export reports structurally eligible rows, but the eligible
+  blockchain records have empty narrative/outcome fields because the export
+  reads summary rows rather than entity detail. Effective usable training rows
+  are zero until that path is corrected and evaluated.
+
+### Documentation reconciliation
+
+- `docs/session-summary-2026-07-30.md` and older Drive handoffs include stale
+  operational claims. In particular, PR #116 was not merge-ready on the current
+  branch: required tests failed and its copy-only approach did not correct the
+  information architecture. It was closed on 2026-08-03.
+- Older notes that say the corpus is complete refer to structural/index counts,
+  not evidence-complete reports.
+- Older instructions that say there is no test/CI harness or that direct deploys
+  are acceptable are superseded by the protected GitHub Actions release path.
+
+### Next-session boot sequence
+
+1. Read this section, `CLAUDE.md`, `DESIGN.md`, and the newest dated session
+   summary.
+2. Check `https://chaindump.xyz/api/health` with a cache-busting query and
+   compare the returned revision to current `main`.
+3. List open PRs and pending Deploy runs. Review code and evidence before merge;
+   approve only the exact current-main production deployment.
+4. Query the public APIs for corpus counts and per-field support. Never inherit
+   a completion number from an old handoff.
+5. Work in small independent PRs: presentation cleanup, entity-profile API,
+   entity-profile UI, then source-backed content waves.
+6. Run focused tests, full tests, lint, Worker syntax, migration guard, browser
+   verification, deployment smoke, and desktop/mobile production verification.
+
+# Historical session handoff - 2026-07-29
 
 ## Current execution snapshot — 2026-07-30
 

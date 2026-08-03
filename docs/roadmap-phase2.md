@@ -1,5 +1,18 @@
 # Chaindump — Phase 2 program
 
+> **2026-08-03 status correction:** this roadmap is historical below this note.
+> The active program is the standardized entity-profile and evidence-completion
+> work documented in `handoff.md` and
+> `docs/product-corpus-audit-2026-08-03.md`. Live Top 50 is the UX benchmark.
+> Structural/index coverage is not analytical completion: current complete
+> 12-section reports are 0/50 blockchain, 1/29 DEX, 2/30 CEX, 0/29 casino, and
+> 0/51 NFT/Ordinals; stablecoin, RWA/DePIN, and infrastructure do not yet expose
+> the normalized contract. Customer pages must lose internal job/taxonomy/SLM
+> copy, every deep link must become a dedicated profile, and the evidence backlog
+> must be refreshed in reviewed waves. Production releases now use protected
+> PRs and the gated GitHub Actions Deploy workflow; older direct-deploy guidance
+> is superseded.
+
 Set by Carson 2026-07-13, after the data-workflow + NFT-v2 restructure shipped.
 Execute in order; each phase is its own set of verified deploys. UAT is the very
 last thing.
