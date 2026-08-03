@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 
 const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
+const worker = readFileSync(new URL('../src/worker.js', import.meta.url), 'utf8');
 
 describe('public UI/UX audit guards', () => {
   it('keeps the mobile Top 50 rank marker inside the viewport', () => {
@@ -35,6 +36,17 @@ describe('public UI/UX audit guards', () => {
     const disabledViews = html.match(/const DISABLED_VIEWS = new Set\(\[([^\]]*)\]\)/)?.[1] || '';
     expect(disabledViews).not.toContain("'infra'");
     expect(html).toContain('<button class="tab" data-view="infra">Storage / Verify</button>');
+  });
+
+  it('keeps working API documentation public without advertising dormant views', () => {
+    const disabledViews = html.match(/const DISABLED_VIEWS = new Set\(\[([^\]]*)\]\)/)?.[1] || '';
+    expect(disabledViews).not.toContain("'api'");
+    expect(html).toContain('<button class="tab" data-view="api">Agent API · x402</button>');
+    for (const view of ['traces', 'geo', 'uspolicy', 'power', 'news']) {
+      expect(disabledViews).toContain(`'${view}'`);
+      expect(worker).toContain(`const RETIRED_PUBLIC_VIEWS = ['geo', 'uspolicy', 'power', 'news', 'traces'];`);
+      expect(worker).not.toContain(`  ${view}: [`);
+    }
   });
 
   it('uses semantic headings and honest depth labels on public category pages', () => {
