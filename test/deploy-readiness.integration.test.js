@@ -16,8 +16,16 @@ const ctx = () => ({ waitUntil() {}, passThroughOnException() {} });
 
 describe('production deployment readiness', () => {
   it('skips a stale approval-gated run without reporting a deploy failure', () => {
+    expect(deployWorkflow).toMatch(/group:[^\n]*deploy-production-v2/);
+    expect(deployWorkflow).toMatch(/group:[^\n]*github\.run_attempt == 1/);
     expect(deployWorkflow).toMatch(
-      /group:\s*deploy-production[\s\S]*cancel-in-progress:\s*true/,
+      /cancel-in-progress:[^\n]*github\.run_attempt == 1/,
+    );
+    expect(deployWorkflow).toMatch(
+      /id:\s*current-main[\s\S]*proceed=false[\s\S]*production approval was not requested/,
+    );
+    expect(deployWorkflow).toMatch(
+      /deploy:[\s\S]*needs:\s*verify[\s\S]*needs\.verify\.outputs\.current_main == 'true'/,
     );
     expect(deployWorkflow).not.toContain(
       'test "$GITHUB_SHA" = "$current_main_sha"',
