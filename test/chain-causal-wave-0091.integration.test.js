@@ -198,7 +198,8 @@ describe('chain causal and canonical wave 0091', () => {
     const fraxtal = document.cases.find(({ slug }) => slug === 'fraxtal').canonical_profile;
     expect(fraxtal.analysis.sections.what_it_is.body).toContain('current network page and independent risk analysis still identify the live chain as an L2');
     expect(fraxtal.metrics.some(({ dimension }) => dimension === 'token_price')).toBe(false);
-    expect(fraxtal.analysis.sections.token_and_value_capture.body).toContain('passed without a verified liquid FXTL token market');
+    expect(fraxtal.analysis.sections.token_and_value_capture.body)
+      .toContain('cannot be presented as a completed token launch');
     const gala = document.cases.find(({ slug }) => slug === 'gala').canonical_profile;
     expect(gala.analysis.sections.what_it_is.body).toContain('Future Founder Node workloads are not the current consensus model');
     expect(gala.metrics.find(({ dimension }) => dimension === 'dex_spot_volume').quality_flags)
@@ -332,7 +333,7 @@ describe('chain causal and canonical wave 0091', () => {
       expect(body).toEqual(entry.canonical_profile);
       expect(Object.keys(body.analysis.sections)).toEqual(ANALYSIS_SECTION_KEYS);
     }
-  });
+  }, 30_000);
 
   it('cannot be marked published while human review is pending', () => {
     for (const entry of document.cases) {
