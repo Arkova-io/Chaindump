@@ -23,11 +23,13 @@ permissions:
   contents: read
 
 concurrency:
-  # A production approval is revision-specific. If a newer main arrives while
-  # an older run is waiting for approval, cancel the stale run so it cannot hold
-  # this concurrency slot forever or be approved after it has been superseded.
-  group: deploy-production
-  cancel-in-progress: true
+  # First attempts share one release slot, so a newer main cancels an older
+  # first attempt. A GitHub "Re-run jobs" action keeps the historical workflow
+  # SHA; isolate those retries so replaying an old run cannot cancel today's
+  # exact-main release. The v2 name also isolates this fixed workflow from
+  # retries of historical workflow files that used the old static group.
+  group: ${{ github.run_attempt == 1 && 'deploy-production-v2' || format('deploy-production-v2-retry-{0}', github.sha) }}
+  cancel-in-progress: ${{ github.run_attempt == 1 }}
 
 jobs:
   verify:
@@ -35,6 +37,8 @@ jobs:
     # guard so a manual (workflow_dispatch) run can never target a non-main ref.
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    outputs:
+      current_main: ${{ steps.current-main.outputs.proceed }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with: { persist-credentials: false }
@@ -43,10 +47,22 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: node scripts/check-migrations.mjs
+      - name: Check the main revision before requesting production approval
+        id: current-main
+        run: |
+          git fetch --no-tags origin \
+            +refs/heads/main:refs/remotes/origin/main
+          current_main_sha="$(git rev-parse refs/remotes/origin/main)"
+          if [ "$GITHUB_SHA" = "$current_main_sha" ]; then
+            echo "proceed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Historical retry skipped::Run $GITHUB_SHA is older than current main $current_main_sha; production approval was not requested. Use workflow_dispatch to redeploy current main."
+          fi
 
   deploy:
     needs: verify
-    if: github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && needs.verify.outputs.current_main == 'true'
     runs-on: ubuntu-latest
     # The required-reviewer gate. GitHub pauses here until a reviewer approves.
     environment:
