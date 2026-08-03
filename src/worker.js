@@ -3557,6 +3557,86 @@ function profileProse(...values) {
   return null;
 }
 
+function profileChoiceProse(...values) {
+  for (const value of values) {
+    if (!Array.isArray(value)) continue;
+    const choices = value.map((choice) => {
+      const decision = profileProse(choice?.decision, choice?.choice);
+      const consequence = profileProse(choice?.consequence, choice?.result);
+      if (!decision) return null;
+      if (!consequence) return decision;
+      return `${decision} The trade-off: ${consequence}`;
+    }).filter(Boolean);
+    if (choices.length) return choices.join(' ');
+  }
+  return null;
+}
+
+function profileTokenValueProse(...values) {
+  for (const value of values) {
+    const direct = profileProse(value);
+    if (direct) return direct;
+    if (!value || typeof value !== 'object' || Array.isArray(value)) continue;
+    const parts = [
+      profileProse(value.value_capture),
+      profileProse(value.supply_policy),
+    ].filter(Boolean);
+    if (parts.length) return parts.join(' ');
+  }
+  return null;
+}
+
+function profileRiskProse(...values) {
+  const parts = [];
+  for (const value of values) {
+    if (typeof value === 'string' && value.trim()) parts.push(value.trim());
+    if (!Array.isArray(value)) continue;
+    for (const item of value) {
+      const risk = profileProse(item?.risk);
+      const question = profileProse(item?.question);
+      if (risk) {
+        const detail = profileProse(item?.detail);
+        parts.push(detail ? `${risk}: ${detail}` : risk);
+      } else if (question) {
+        const trigger = profileProse(item?.resolution_trigger);
+        parts.push(trigger
+          ? `Open question: ${question} What would answer it: ${trigger}`
+          : `Open question: ${question}`);
+      }
+    }
+  }
+  return parts.length ? [...new Set(parts)].join(' ') : null;
+}
+
+function profileOutlookProse(...values) {
+  for (const value of values) {
+    const direct = profileProse(value);
+    if (direct) return direct;
+    if (Array.isArray(value)) {
+      const signals = value.map((item) => {
+        if (typeof item === 'string') return item.trim();
+        const signal = profileProse(item?.signal);
+        const implication = profileProse(item?.implication);
+        return signal ? (implication ? `${signal} ${implication}` : signal) : null;
+      }).filter(Boolean);
+      if (signals.length) return signals.join(' ');
+      continue;
+    }
+    if (!value || typeof value !== 'object') continue;
+    const parts = [
+      profileProse(value.base) ? `Base case: ${profileProse(value.base)}` : null,
+      profileProse(value.bull) ? `Upside: ${profileProse(value.bull)}` : null,
+      profileProse(value.bear) ? `Downside: ${profileProse(value.bear)}` : null,
+    ].filter(Boolean);
+    const watch = Array.isArray(value.watch)
+      ? value.watch.map((item) => profileProse(item)).filter(Boolean)
+      : [];
+    if (watch.length) parts.push(`What to watch: ${watch.join('; ')}.`);
+    if (parts.length) return parts.join(' ');
+  }
+  return null;
+}
+
 function profileIdentityProse(type, name, chains = []) {
   const entityName = String(name || '').trim();
   if (!entityName) return null;
@@ -3753,17 +3833,17 @@ async function blockchainEntityProfile(slug) {
       claim_ids: [],
     },
     sections: {
-      what_it_is: profileProse(narrative.purpose, legacy.what_it_does, legacy.purpose)
+      what_it_is: profileProse(legacy.what_it_does, legacy.purpose, narrative.purpose)
         || profileIdentityProse('blockchain', chainName),
       what_happened: profileProse(synthesis.situation, legacy.situation, row.narrative),
       why_this_outcome: profileProse(forensic.why, synthesis.success_mechanism, synthesis.postmortem, legacy.postmortem),
-      strategic_choices: forensic.strategic_choices,
+      strategic_choices: profileChoiceProse(forensic.strategic_choices, legacy.strategic_choices),
       operating_model: profileProse(legacy.operating_model, legacy.business_model),
-      token_and_value_capture: profileProse(token.value_capture, legacy.token_value_capture),
+      token_and_value_capture: profileTokenValueProse(legacy.token, token.value_capture, legacy.token_value_capture),
       counterfactual: profileProse(forensic.counterfactual, synthesis.could_differ, legacy.could_differ),
-      risks_and_unknowns: profileProse(legacy.risks, legacy.unknowns),
+      risks_and_unknowns: profileRiskProse(legacy.risks, forensic.unknowns),
       lifecycle: profileProse(legacy.lifecycle),
-      outlook_and_watch: synthesis.outlook || legacy.outlook || row.outlook,
+      outlook_and_watch: profileOutlookProse(legacy.outlook, synthesis.outlook, forensic.watch, row.outlook),
     },
     as_of: asOf,
     metrics,
