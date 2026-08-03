@@ -42,6 +42,9 @@ describe('public UI/UX audit guards', () => {
     const disabledViews = html.match(/const DISABLED_VIEWS = new Set\(\[([^\]]*)\]\)/)?.[1] || '';
     expect(disabledViews).not.toContain("'api'");
     expect(html).toContain('<button class="tab" data-view="api">Agent API · x402</button>');
+    expect(html).toContain('demo only · no payment collected');
+    expect(html).toContain('Do not send a payment while the page is marked demo');
+    expect(html).not.toContain('your agent pays per call');
     for (const view of ['traces', 'geo', 'uspolicy', 'power', 'news']) {
       expect(disabledViews).toContain(`'${view}'`);
       expect(worker).toContain(`const RETIRED_PUBLIC_VIEWS = ['geo', 'uspolicy', 'power', 'news', 'traces'];`);
