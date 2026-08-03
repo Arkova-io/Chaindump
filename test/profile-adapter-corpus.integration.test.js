@@ -3,7 +3,7 @@ import { buildProfileAdapterCensus } from '../scripts/profile-adapter-census.mjs
 
 const EXPECTED_COUNTS = {
   blockchain: [90, 0, 0, 89, 1, 90, 2743],
-  dex: [29, 0, 27, 0, 2, 27, 92],
+  dex: [30, 0, 23, 0, 7, 23, 75],
   cex: [30, 0, 27, 1, 2, 28, 46],
   nft_collection: [39, 0, 20, 0, 19, 0, 0],
   ordinals_collection: [12, 0, 7, 0, 5, 0, 0],
@@ -41,7 +41,7 @@ describe('full-corpus canonical profile adapter', () => {
   });
 
   it('replays every migration and resolves every stored entity across all 13 types', () => {
-    expect(census.total).toBe(329);
+    expect(census.total).toBe(330);
     expect(Object.keys(census.by_type)).toEqual(Object.keys(EXPECTED_COUNTS));
     expect(census.chain_facts).toEqual({ total: 55, not_found: 0, zero_section: 0 });
     expect(census.blockchain_union).toEqual({
@@ -67,7 +67,7 @@ describe('full-corpus canonical profile adapter', () => {
       zero_section: 0,
       dishonest_gaps: 0,
     });
-    expect(census.rows).toHaveLength(329);
+    expect(census.rows).toHaveLength(330);
     expect(census.rows.every((row) => row.http_status === 200)).toBe(true);
     expect(census.rows.every((row) => row.section_count > 0)).toBe(true);
     expect(census.rows.every((row) => row.placeholder_copy === false)).toBe(true);
@@ -127,8 +127,8 @@ describe('full-corpus canonical profile adapter', () => {
       return totals;
     }, {});
     expect(classes).toEqual({
-      source_metadata_debt: 2776,
-      citation_debt: 1558,
+      source_metadata_debt: 2763,
+      citation_debt: 1554,
     });
 
     const structural = census.rows.filter((row) => row.validation_error_classes.structural_contract_error);
