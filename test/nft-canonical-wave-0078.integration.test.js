@@ -43,10 +43,6 @@ function applyMigrationsBefore0078(database) {
   }
 }
 
-function row(database, slug) {
-  return database.prepare('SELECT * FROM nft_collections WHERE slug = ?').get(slug);
-}
-
 function d1Adapter(database) {
   return {
     prepare(sql) {
