@@ -1,0 +1,4224 @@
+{
+  "schema": "chaindump-dex-wave-h-v1",
+  "research_as_of": "2026-08-03",
+  "generated_migration": "0089_dex_wave_h_profiles.sql",
+  "cases": [
+    {
+      "table": "mid_exchanges",
+      "slug": "spookyswap",
+      "name": "SpookySwap",
+      "canonical_profile": {
+        "schema": "chaindump-entity-profile",
+        "version": 1,
+        "identity": {
+          "id": "dex:spookyswap",
+          "type": "dex",
+          "slug": "spookyswap",
+          "name": "SpookySwap",
+          "aliases": [
+            "Spooky",
+            "SpookySwap V2",
+            "SpookySwap V3"
+          ]
+        },
+        "classification": {
+          "subtype": "Fantom-origin multichain spot AMM with V2 and V3 pools",
+          "tags": [
+            "spot_amm",
+            "concentrated_liquidity",
+            "multichain",
+            "fantom_origin",
+            "token_fee_share"
+          ],
+          "chains": [
+            "Fantom Opera",
+            "Sonic",
+            "BitTorrent Chain",
+            "Horizen EON"
+          ],
+          "jurisdictions": []
+        },
+        "status": {
+          "operating_state": "operating",
+          "as_of": "2026-08-03",
+          "claim_ids": [
+            "claim:spookyswap:status"
+          ]
+        },
+        "outcome": {
+          "label": "operating_middling",
+          "as_of": "2026-08-03",
+          "rule_id": "exchange-lifecycle-v1",
+          "confidence": "high",
+          "claim_ids": [
+            "claim:spookyswap:outcome"
+          ]
+        },
+        "analysis": {
+          "sections": {
+            "what_it_is": {
+              "body": "SpookySwap is a non-custodial exchange that began as a Fantom-native constant-product AMM and later added concentrated-liquidity V3 pools. Traders swap from their wallets, LPs supply assets, and BOO holders can stake into xBOO for governance and a documented share of swap fees. The current interface also advertises farms, a launchpad and perpetuals, but this profile measures only SpookySwap-branded spot pools. It operates on Fantom and smaller deployments including Sonic, BitTorrent Chain and Horizen EON.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spookyswap:section:what_it_is:1",
+                "claim:spookyswap:section:what_it_is:2",
+                "claim:spookyswap:section:what_it_is:3"
+              ]
+            },
+            "what_happened": {
+              "body": "SpookySwap launched in April 2021 to fill Fantom’s missing native exchange layer. It quickly paired BOO farming with limit orders, a built-in bridge and xBOO fee sharing, and its combined TVL later peaked near $1.66 billion on Jan. 17, 2022. Fantom activity and token incentives then contracted. A November 2023 frontend compromise forced a replacement interface; the operator said pool funds were safe. SpookySwap launched V3 concentrated liquidity in February 2024 and later appeared on Sonic, but current combined activity is only about $509,000 of TVL and $856,000 of 30-day spot volume.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spookyswap:section:what_happened:1",
+                "claim:spookyswap:section:what_happened:2",
+                "claim:spookyswap:section:what_happened:3"
+              ]
+            },
+            "why_this_outcome": {
+              "body": "SpookySwap won early because it was one of Fantom’s first native exchanges and bundled the things local users needed: swaps, farms, a bridge and trader tools. That same distribution advantage concentrated the business in Fantom’s liquidity cycle. BOO emissions and xBOO rewards helped build liquidity, but they could not guarantee repeat trading after incentives and Fantom activity weakened. V3 and Sonic preserved the product rather than restoring its old scale. Public evidence supports chain concentration, incentive dependence and continuing competition as pressures, but it does not assign a precise share of the decline to any one cause.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spookyswap:section:why_this_outcome:1",
+                "claim:spookyswap:section:why_this_outcome:2",
+                "claim:spookyswap:section:why_this_outcome:3"
+              ]
+            },
+            "strategic_choices": {
+              "body": "The team chose Fantom focus instead of broad multichain distribution at launch, then built a bridge, native limit orders and a recognizable interface to own that local user journey. It used BOO farms for liquidity and xBOO fee sharing for longer-term alignment. After activity fell, it kept V2 available, rebuilt the compromised frontend, shipped non-upgradeable V3 pools on several chains and followed Fantom’s successor ecosystem to Sonic. Those choices preserved continuity and optionality, but also split liquidity across versions, chains and fee tiers.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spookyswap:section:strategic_choices:1",
+                "claim:spookyswap:section:strategic_choices:2",
+                "claim:spookyswap:section:strategic_choices:3"
+              ]
+            },
+            "operating_model": {
+              "body": "V2 pools use a constant-product AMM and historically charged 0.20% per swap, with 0.17% going to LPs and 0.03% used for the xBOO buyback path. V3 pools let LPs concentrate liquidity inside chosen price ranges and select fee tiers from 0.01% to 1.00%. The current adapter reports about $699 of 30-day fees and $23 of protocol or holder revenue. Those are tiny but real operating flows. TVL is inventory held in contracts, not a guarantee of tradeable depth, and neither fees nor revenue equals profit.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spookyswap:section:operating_model:1",
+                "claim:spookyswap:section:operating_model:2",
+                "claim:spookyswap:section:operating_model:3"
+              ]
+            },
+            "token_and_value_capture": {
+              "body": "BOO is the venue’s governance and incentive token. Farms distributed BOO to LPs, while staking BOO into xBOO historically gave holders governance participation and exposure to the 0.03% V2 buyback allocation. That is a real link to exchange usage, but current fee generation is small and the reviewed sources do not prove how much xBOO currently distributes after incentives, contract changes and multiple versions. BOO is not equity, and Sonic’s chain token or unrelated Sonic DEX tokens do not accrue to BOO holders.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spookyswap:section:token_and_value_capture:1",
+                "claim:spookyswap:section:token_and_value_capture:2",
+                "claim:spookyswap:section:token_and_value_capture:3"
+              ]
+            },
+            "counterfactual": {
+              "body": "Earlier expansion beyond Fantom could have reduced dependence on one chain, but it might also have diluted the local advantage that made SpookySwap successful. Tying BOO emissions to fee-supported demand could have made organic retention easier to see. A single forced migration from V2 to V3 might concentrate liquidity, but would strand users and remove a familiar fallback. The realistic alternative was staged expansion with hard usage thresholds, explicit version sunsets and fee-backed incentives; public evidence cannot prove that plan would have restored peak scale.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spookyswap:section:counterfactual:1",
+                "claim:spookyswap:section:counterfactual:2",
+                "claim:spookyswap:section:counterfactual:3"
+              ]
+            },
+            "risks_and_unknowns": {
+              "body": "The main risks are fragmented liquidity, low fee generation, BOO incentive dependence, frontend compromise and uncertain control across old and new contracts. The 2023 incident shows that audited pool contracts do not protect users from a compromised website. The 2021 audits were version-specific and do not cover every later deployment or frontend. Current unknowns include active traders by chain, direct versus aggregator flow, xBOO net distributions, contract-control boundaries and whether low-volume deployments can support maintenance.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spookyswap:section:risks_and_unknowns:1",
+                "claim:spookyswap:section:risks_and_unknowns:2",
+                "claim:spookyswap:section:risks_and_unknowns:3"
+              ]
+            },
+            "lifecycle": {
+              "body": "SpookySwap launched on Fantom in April 2021, grew with the chain and BOO incentives, and reached a combined TVL peak near $1.66 billion in January 2022. As Fantom’s DeFi cycle faded, balances, trading and fees declined. The team rebuilt the frontend after a November 2023 compromise, launched V3 on Fantom, Horizen EON and BitTorrent Chain in February 2024, and later carried the brand to Sonic. It remains a working exchange with legacy and newer deployments, but its current scale is a small fraction of the peak.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spookyswap:section:lifecycle:1",
+                "claim:spookyswap:section:lifecycle:2",
+                "claim:spookyswap:section:lifecycle:3"
+              ]
+            },
+            "outlook_and_watch": {
+              "body": "SpookySwap’s outlook is continued operation at modest scale unless Sonic or another deployment creates sustained demand. Watch 30- and 90-day spot volume by chain, fee-backed BOO distributions, active traders, liquidity concentration and frontend-security notices. Growth should count only when trades, fees and recurring users rise together without relying mainly on BOO emissions. A rising Sonic chain does not change this call unless SpookySwap captures that activity, and perpetuals or launchpad usage must remain separate from spot results.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spookyswap:section:outlook_and_watch:1",
+                "claim:spookyswap:section:outlook_and_watch:2",
+                "claim:spookyswap:section:outlook_and_watch:3"
+              ]
+            }
+          }
+        },
+        "metrics": [
+          {
+            "id": "metric:spookyswap:spot-volume-24h:2026-08-03",
+            "dimension": "spot_volume",
+            "label": "Combined spot volume, 24h",
+            "value": 9609,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2026-08-03",
+              "definition": "provider-reported latest point"
+            },
+            "as_of": "2026-08-03",
+            "method": "DefiLlama combined total24h.",
+            "scope": {
+              "product": "SpookySwap-branded spot pools across supported chains",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:spookyswap:metric:spot-volume-24h"
+            ],
+            "quality_flags": []
+          },
+          {
+            "id": "metric:spookyswap:spot-volume-30d:2026-08-03",
+            "dimension": "spot_volume",
+            "label": "Combined spot volume, 30d",
+            "value": 856059,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2026-08-03",
+              "definition": "rolling 30 days"
+            },
+            "as_of": "2026-08-03",
+            "method": "DefiLlama combined total30d.",
+            "scope": {
+              "product": "SpookySwap-branded spot pools across supported chains",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:spookyswap:metric:spot-volume-30d"
+            ],
+            "quality_flags": []
+          },
+          {
+            "id": "metric:spookyswap:tvl-latest:2026-08-03",
+            "dimension": "tvl",
+            "label": "Combined TVL",
+            "value": 509309,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2026-08-03",
+              "definition": "provider-reported latest point"
+            },
+            "as_of": "2026-08-03",
+            "method": "Sum of currentChainTvls without double-counted borrowed or staking buckets.",
+            "scope": {
+              "product": "Fantom, Sonic, BitTorrent Chain and Horizen EON pools",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:spookyswap:metric:tvl-latest"
+            ],
+            "quality_flags": [
+              "tvl_not_market_depth"
+            ]
+          },
+          {
+            "id": "metric:spookyswap:tvl-peak:2022-01-17",
+            "dimension": "tvl",
+            "label": "Historical peak TVL",
+            "value": 1664547468,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2022-01-17",
+              "definition": "historical maximum"
+            },
+            "as_of": "2022-01-17",
+            "method": "Maximum combined historical totalLiquidityUSD, dated 2022-01-17.",
+            "scope": {
+              "product": "exchange venue",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:spookyswap:metric:tvl-peak"
+            ],
+            "quality_flags": [
+              "historical_not_current"
+            ]
+          },
+          {
+            "id": "metric:spookyswap:fees-30d:2026-08-03",
+            "dimension": "fees",
+            "label": "Trading fees, 30d",
+            "value": 699.32,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2026-08-03",
+              "definition": "rolling 30 days"
+            },
+            "as_of": "2026-08-03",
+            "method": "DefiLlama total30d fee adapter.",
+            "scope": {
+              "product": "exchange venue",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:spookyswap:metric:fees-30d"
+            ],
+            "quality_flags": [
+              "fees_not_profit"
+            ]
+          },
+          {
+            "id": "metric:spookyswap:revenue-30d:2026-08-03",
+            "dimension": "protocol_revenue",
+            "label": "Protocol and holder revenue, 30d",
+            "value": 22.97,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2026-08-03",
+              "definition": "rolling 30 days"
+            },
+            "as_of": "2026-08-03",
+            "method": "DefiLlama dailyRevenue total30d.",
+            "scope": {
+              "product": "exchange venue",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:spookyswap:metric:revenue-30d"
+            ],
+            "quality_flags": [
+              "adapter_defined_revenue"
+            ]
+          }
+        ],
+        "events": [
+          {
+            "id": "event:spookyswap:launch",
+            "type": "launch",
+            "date": "2021-04-14",
+            "description": "SpookySwap publicly introduced its Fantom-native AMM.",
+            "claim_ids": [
+              "claim:spookyswap:event:launch"
+            ]
+          },
+          {
+            "id": "event:spookyswap:v3-launch",
+            "type": "product_change",
+            "date": "2024-02-28",
+            "description": "SpookySwap launched V3 concentrated-liquidity pools on Fantom, Horizen EON and BitTorrent Chain.",
+            "claim_ids": [
+              "claim:spookyswap:event:v3-launch"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "id": "source:spookyswap:app",
+            "title": "SpookySwap application",
+            "url": "https://spooky.fi/",
+            "publisher": "SpookySwap",
+            "published_at": null,
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "primary",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Current product surface for swaps, V3 liquidity, BOO staking, farms, launchpad and Sonic-facing operation.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spookyswap:introduction",
+            "title": "Introducing SpookySwap",
+            "url": "https://spookyswap.medium.com/introducing-spookyswap-less-gas-more-trades-faster-transactions-extra-spooky-da8d6ed8514a",
+            "publisher": "SpookySwap",
+            "published_at": "2021-04-14",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "primary",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Dated operator launch rationale, Fantom focus and governance intent.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spookyswap:development",
+            "title": "SpookySwap Development Update #3",
+            "url": "https://spookyswap.medium.com/spookyswap-development-update-3-2555213db3a4",
+            "publisher": "SpookySwap",
+            "published_at": "2021-06-23",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "primary",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Early Fantom traction, xBOO fee split, product priorities and audit claim.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spookyswap:v3-launch",
+            "title": "SpookySwap V3 Launch Announcement",
+            "url": "https://spookyswap.medium.com/spookyswap-v3-launch-announcement-c1a3c86f9100",
+            "publisher": "SpookySwap",
+            "published_at": "2024-02-26",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "primary",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Dated V3 concentrated-liquidity launch, chains, fee tiers and BOO governance description.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spookyswap:frontend-incident",
+            "title": "Spooky Frontend Exploit Update",
+            "url": "https://spookyswap.medium.com/spooky-frontend-exploit-update-funds-are-safe-ba5f7e8fa300",
+            "publisher": "SpookySwap",
+            "published_at": "2023-11-19",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "primary",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Operator account of the frontend compromise, response and statement that pool contracts and funds were not drained.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spookyswap:docs",
+            "title": "SpookySwap V3 documentation",
+            "url": "https://docs.spooky.fi/",
+            "publisher": "SpookySwap",
+            "published_at": null,
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "primary",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Current V3 scope, non-upgradeable contract framing, supported networks and BOO role.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spookyswap:sonic-routing",
+            "title": "1inch Integrates Sonic",
+            "url": "https://blog.soniclabs.com/1inch-integrates-sonic-swaps-speed-and-seamless-defi/",
+            "publisher": "Sonic Labs",
+            "published_at": "2025-02-14",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Sonic ecosystem routing context that includes SpookySwap among available liquidity sources.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spookyswap:audit",
+            "title": "SpookySwap security profile",
+            "url": "https://skynet.certik.com/projects/spookyswap",
+            "publisher": "CertiK",
+            "published_at": null,
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Version-scoped 2021 audit history and current coverage limitations.",
+            "direct_http_status": 403,
+            "access_method": "browser_rendered_page"
+          },
+          {
+            "id": "source:spookyswap:tvl",
+            "title": "SpookySwap protocol TVL API",
+            "url": "https://api.llama.fi/protocol/spookyswap",
+            "publisher": "DefiLlama",
+            "published_at": null,
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Combined Fantom, Sonic, BitTorrent and Horizen balances plus historical TVL series.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spookyswap:volume",
+            "title": "SpookySwap DEX volume API",
+            "url": "https://api.llama.fi/summary/dexs/spookyswap?dataType=dailyVolume",
+            "publisher": "DefiLlama",
+            "published_at": null,
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Combined spot-volume series across supported SpookySwap deployments.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spookyswap:fees",
+            "title": "SpookySwap fees API",
+            "url": "https://api.llama.fi/summary/fees/spookyswap?dataType=dailyFees",
+            "publisher": "DefiLlama",
+            "published_at": null,
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Combined swap-fee observations; fees are not profit.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spookyswap:revenue",
+            "title": "SpookySwap revenue API",
+            "url": "https://api.llama.fi/summary/fees/spookyswap?dataType=dailyRevenue",
+            "publisher": "DefiLlama",
+            "published_at": null,
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Adapter-defined protocol and holder revenue observations.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          }
+        ],
+        "claims": [
+          {
+            "id": "claim:spookyswap:status",
+            "field_path": "status.operating_state",
+            "assertion": "SpookySwap was operating at the review date.",
+            "value": "operating",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:app",
+              "source:spookyswap:tvl",
+              "source:spookyswap:volume"
+            ],
+            "evidence_locator": "Current interface plus nonzero multichain balances and trades establish continued operation.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:outcome",
+            "field_path": "outcome.label",
+            "assertion": "SpookySwap is classified operating middling as of 2026-08-03.",
+            "value": "operating_middling",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spookyswap:introduction",
+              "source:spookyswap:v3-launch",
+              "source:spookyswap:tvl",
+              "source:spookyswap:volume",
+              "source:spookyswap:fees"
+            ],
+            "evidence_locator": "Durable product continuity but activity far below the historical peak supports a middling outcome.",
+            "support_direction": "supports",
+            "note": "Analyst lifecycle classification; observed activity and events do not prove one exclusive cause.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:what_it_is:1",
+            "field_path": "analysis.sections.what_it_is.body",
+            "assertion": "SpookySwap operates non-custodial V2 and V3 spot pools.",
+            "value": "SpookySwap operates non-custodial V2 and V3 spot pools.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:app",
+              "source:spookyswap:docs",
+              "source:spookyswap:v3-launch"
+            ],
+            "evidence_locator": "Current product and dated V3 descriptions.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:what_it_is:2",
+            "field_path": "analysis.sections.what_it_is.body",
+            "assertion": "BOO and xBOO connect governance and a documented portion of swap fees.",
+            "value": "BOO and xBOO connect governance and a documented portion of swap fees.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:app",
+              "source:spookyswap:development"
+            ],
+            "evidence_locator": "Current staking surface and original fee-split announcement.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:what_it_is:3",
+            "field_path": "analysis.sections.what_it_is.body",
+            "assertion": "Spot metrics exclude the launchpad, bridge and perpetuals products.",
+            "value": "Spot metrics exclude the launchpad, bridge and perpetuals products.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spookyswap:app",
+              "source:spookyswap:volume"
+            ],
+            "evidence_locator": "Product inventory and adapter scope.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:what_happened:1",
+            "field_path": "analysis.sections.what_happened.body",
+            "assertion": "SpookySwap launched as a Fantom-focused DEX in April 2021.",
+            "value": "SpookySwap launched as a Fantom-focused DEX in April 2021.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:introduction"
+            ],
+            "evidence_locator": "Dated operator introduction.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:what_happened:2",
+            "field_path": "analysis.sections.what_happened.body",
+            "assertion": "Combined SpookySwap TVL peaked near $1.66 billion on 2022-01-17.",
+            "value": "Combined SpookySwap TVL peaked near $1.66 billion on 2022-01-17.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:tvl"
+            ],
+            "evidence_locator": "Historical provider series.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:what_happened:3",
+            "field_path": "analysis.sections.what_happened.body",
+            "assertion": "The venue restored its frontend, launched V3 and continued across additional chains.",
+            "value": "The venue restored its frontend, launched V3 and continued across additional chains.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:frontend-incident",
+              "source:spookyswap:v3-launch",
+              "source:spookyswap:app"
+            ],
+            "evidence_locator": "Dated incident, V3 launch and current interface.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:why_this_outcome:1",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "assertion": "Early Fantom-native distribution helped SpookySwap acquire liquidity and users.",
+            "value": "Early Fantom-native distribution helped SpookySwap acquire liquidity and users.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spookyswap:introduction",
+              "source:spookyswap:development"
+            ],
+            "evidence_locator": "Launch rationale and early traction.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:why_this_outcome:2",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "assertion": "BOO rewards and xBOO fee sharing tied liquidity to token and fee economics.",
+            "value": "BOO rewards and xBOO fee sharing tied liquidity to token and fee economics.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:development",
+              "source:spookyswap:app"
+            ],
+            "evidence_locator": "Documented incentive and fee model.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:why_this_outcome:3",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "assertion": "The evidence does not quantify how much chain conditions, emissions, competition or product execution caused the decline.",
+            "value": "The evidence does not quantify how much chain conditions, emissions, competition or product execution caused the decline.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:spookyswap:tvl",
+              "source:spookyswap:volume",
+              "source:spookyswap:v3-launch"
+            ],
+            "evidence_locator": "Outcome series without causal decomposition.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:strategic_choices:1",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "assertion": "SpookySwap deliberately launched as a Fantom-focused exchange and distribution hub.",
+            "value": "SpookySwap deliberately launched as a Fantom-focused exchange and distribution hub.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:introduction",
+              "source:spookyswap:development"
+            ],
+            "evidence_locator": "Operator launch and development record.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:strategic_choices:2",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "assertion": "The team chose BOO farming and xBOO fee sharing to attract and retain liquidity.",
+            "value": "The team chose BOO farming and xBOO fee sharing to attract and retain liquidity.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:development",
+              "source:spookyswap:app"
+            ],
+            "evidence_locator": "Documented token model.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:strategic_choices:3",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "assertion": "The team retained V2 while adding multichain V3 and Sonic support.",
+            "value": "The team retained V2 while adding multichain V3 and Sonic support.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:v3-launch",
+              "source:spookyswap:docs",
+              "source:spookyswap:app"
+            ],
+            "evidence_locator": "Version and chain inventory.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:operating_model:1",
+            "field_path": "analysis.sections.operating_model.body",
+            "assertion": "The documented V2 split sent 0.17% to LPs and 0.03% to the xBOO buyback path.",
+            "value": "The documented V2 split sent 0.17% to LPs and 0.03% to the xBOO buyback path.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:development"
+            ],
+            "evidence_locator": "Operator fee-model announcement.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:operating_model:2",
+            "field_path": "analysis.sections.operating_model.body",
+            "assertion": "V3 pools use concentrated liquidity with several fee tiers.",
+            "value": "V3 pools use concentrated liquidity with several fee tiers.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:v3-launch",
+              "source:spookyswap:docs"
+            ],
+            "evidence_locator": "Operator V3 design record.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:operating_model:3",
+            "field_path": "analysis.sections.operating_model.body",
+            "assertion": "The adapter recorded about $699 of 30-day fees and $23 of 30-day revenue at review time.",
+            "value": "The adapter recorded about $699 of 30-day fees and $23 of 30-day revenue at review time.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:fees",
+              "source:spookyswap:revenue"
+            ],
+            "evidence_locator": "Current provider observations.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:token_and_value_capture:1",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "assertion": "BOO funded farms and governance in the original operating model.",
+            "value": "BOO funded farms and governance in the original operating model.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:development",
+              "source:spookyswap:v3-launch"
+            ],
+            "evidence_locator": "Operator token and governance descriptions.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:token_and_value_capture:2",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "assertion": "xBOO historically received value through the documented V2 buyback fee allocation.",
+            "value": "xBOO historically received value through the documented V2 buyback fee allocation.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:development"
+            ],
+            "evidence_locator": "Dated fee-split announcement.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:token_and_value_capture:3",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "assertion": "Current net distributions to xBOO holders are not established by the reviewed sources.",
+            "value": "Current net distributions to xBOO holders are not established by the reviewed sources.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:spookyswap:app",
+              "source:spookyswap:revenue"
+            ],
+            "evidence_locator": "Current interface and adapter do not provide a complete holder ledger.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:counterfactual:1",
+            "field_path": "analysis.sections.counterfactual.body",
+            "assertion": "Earlier multichain expansion could reduce single-chain concentration while weakening local focus.",
+            "value": "Earlier multichain expansion could reduce single-chain concentration while weakening local focus.",
+            "as_of": "2026-08-03",
+            "confidence": "medium",
+            "kind": "inference",
+            "source_ids": [
+              "source:spookyswap:introduction",
+              "source:spookyswap:v3-launch"
+            ],
+            "evidence_locator": "Observed launch and later expansion support the trade-off.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:counterfactual:2",
+            "field_path": "analysis.sections.counterfactual.body",
+            "assertion": "Fee-triggered emissions could make retained demand easier to distinguish from subsidized liquidity.",
+            "value": "Fee-triggered emissions could make retained demand easier to distinguish from subsidized liquidity.",
+            "as_of": "2026-08-03",
+            "confidence": "medium",
+            "kind": "inference",
+            "source_ids": [
+              "source:spookyswap:development",
+              "source:spookyswap:fees"
+            ],
+            "evidence_locator": "Incentive design and current fee observations.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:counterfactual:3",
+            "field_path": "analysis.sections.counterfactual.body",
+            "assertion": "No reviewed source proves a different migration or emission plan would restore historical scale.",
+            "value": "No reviewed source proves a different migration or emission plan would restore historical scale.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:spookyswap:tvl",
+              "source:spookyswap:volume"
+            ],
+            "evidence_locator": "Counterfactual is not observed.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:risks_and_unknowns:1",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "assertion": "A frontend compromise can endanger users even when pool contracts are not drained.",
+            "value": "A frontend compromise can endanger users even when pool contracts are not drained.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spookyswap:frontend-incident"
+            ],
+            "evidence_locator": "Operator incident account.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:risks_and_unknowns:2",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "assertion": "The reviewed audit history does not cover every current contract and interface.",
+            "value": "The reviewed audit history does not cover every current contract and interface.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:audit",
+              "source:spookyswap:v3-launch"
+            ],
+            "evidence_locator": "Audit dates and later deployment scope.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:risks_and_unknowns:3",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "assertion": "Trader retention, routed-flow share and current control boundaries remain unknown.",
+            "value": "Trader retention, routed-flow share and current control boundaries remain unknown.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:spookyswap:app",
+              "source:spookyswap:volume",
+              "source:spookyswap:sonic-routing"
+            ],
+            "evidence_locator": "No complete current disclosure.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:lifecycle:1",
+            "field_path": "analysis.sections.lifecycle.body",
+            "assertion": "SpookySwap moved from Fantom-native launch to a multichain V2 and V3 product.",
+            "value": "SpookySwap moved from Fantom-native launch to a multichain V2 and V3 product.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:introduction",
+              "source:spookyswap:v3-launch",
+              "source:spookyswap:app"
+            ],
+            "evidence_locator": "Dated launch, V3 release and current surface.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:lifecycle:2",
+            "field_path": "analysis.sections.lifecycle.body",
+            "assertion": "The November 2023 frontend incident did not end the venue.",
+            "value": "The November 2023 frontend incident did not end the venue.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:frontend-incident",
+              "source:spookyswap:app"
+            ],
+            "evidence_locator": "Incident response and current operation.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:lifecycle:3",
+            "field_path": "analysis.sections.lifecycle.body",
+            "assertion": "Current TVL and volume remain far below their historical levels.",
+            "value": "Current TVL and volume remain far below their historical levels.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:tvl",
+              "source:spookyswap:volume"
+            ],
+            "evidence_locator": "Current and historical provider series.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:outlook_and_watch:1",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "assertion": "Sustained chain-level spot volume and fees are the clearest recovery signals.",
+            "value": "Sustained chain-level spot volume and fees are the clearest recovery signals.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spookyswap:volume",
+              "source:spookyswap:fees",
+              "source:spookyswap:tvl"
+            ],
+            "evidence_locator": "Current comparable series.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:outlook_and_watch:2",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "assertion": "Sonic growth only supports recovery if SpookySwap captures measurable usage.",
+            "value": "Sonic growth only supports recovery if SpookySwap captures measurable usage.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spookyswap:sonic-routing",
+              "source:spookyswap:volume"
+            ],
+            "evidence_locator": "Chain and venue scopes are separate.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:section:outlook_and_watch:3",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "assertion": "No reviewed evidence currently supports a return to historical scale.",
+            "value": "No reviewed evidence currently supports a return to historical scale.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:spookyswap:tvl",
+              "source:spookyswap:volume"
+            ],
+            "evidence_locator": "Current metrics remain far below peak.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:metric:spot-volume-24h",
+            "field_path": "metrics[metric:spookyswap:spot-volume-24h:2026-08-03].value",
+            "assertion": "Combined spot volume, 24h was 9609 USD for the stated scope and window.",
+            "value": 9609,
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:volume"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:metric:spot-volume-30d",
+            "field_path": "metrics[metric:spookyswap:spot-volume-30d:2026-08-03].value",
+            "assertion": "Combined spot volume, 30d was 856059 USD for the stated scope and window.",
+            "value": 856059,
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:volume"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:metric:tvl-latest",
+            "field_path": "metrics[metric:spookyswap:tvl-latest:2026-08-03].value",
+            "assertion": "Combined TVL was 509309 USD for the stated scope and window.",
+            "value": 509309,
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:tvl"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:metric:tvl-peak",
+            "field_path": "metrics[metric:spookyswap:tvl-peak:2022-01-17].value",
+            "assertion": "Historical peak TVL was 1664547468 USD for the stated scope and window.",
+            "value": 1664547468,
+            "as_of": "2022-01-17",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:tvl"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:metric:fees-30d",
+            "field_path": "metrics[metric:spookyswap:fees-30d:2026-08-03].value",
+            "assertion": "Trading fees, 30d was 699.32 USD for the stated scope and window.",
+            "value": 699.32,
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:fees"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:metric:revenue-30d",
+            "field_path": "metrics[metric:spookyswap:revenue-30d:2026-08-03].value",
+            "assertion": "Protocol and holder revenue, 30d was 22.97 USD for the stated scope and window.",
+            "value": 22.97,
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:revenue"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:event:launch",
+            "field_path": "events[event:spookyswap:launch]",
+            "assertion": "SpookySwap publicly introduced its Fantom-native AMM.",
+            "value": "2021-04-14",
+            "as_of": "2021-04-14",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:introduction"
+            ],
+            "evidence_locator": "Dated operator launch announcement.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spookyswap:event:v3-launch",
+            "field_path": "events[event:spookyswap:v3-launch]",
+            "assertion": "SpookySwap launched V3 concentrated-liquidity pools on Fantom, Horizen EON and BitTorrent Chain.",
+            "value": "2024-02-28",
+            "as_of": "2024-02-28",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spookyswap:v3-launch"
+            ],
+            "evidence_locator": "Dated operator launch announcement.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          }
+        ],
+        "freshness": {
+          "state": "current",
+          "last_reviewed_at": "2026-08-03T20:05:00Z",
+          "next_review_at": "2026-08-10T20:05:00Z",
+          "field_reviews": []
+        },
+        "quality": {
+          "publication_state": "review",
+          "completeness_pct": 100,
+          "confidence": "high",
+          "unsourced_fields": [
+            "Active traders by chain",
+            "Fee-funded BOO yield share",
+            "Direct versus routed Sonic flow",
+            "Current operational control map"
+          ]
+        },
+        "extensions": {
+          "legacy_origin": "mid_exchanges",
+          "observation_window": {
+            "started_at": "2026-08-03T19:59:00Z",
+            "completed_at": "2026-08-03T20:05:00Z"
+          },
+          "explicit_unknowns": [
+            "How many recurring traders use SpookySwap on each supported chain?",
+            "What share of current BOO staking distributions comes from fees rather than incentives?",
+            "How much Sonic volume is routed by aggregators versus acquired directly?",
+            "Which current contracts, frontends and governance actions are controlled by identifiable maintainers?"
+          ],
+          "identity_boundary": "This profile covers SpookySwap-branded spot V2 and V3 pools across Fantom, Sonic, BitTorrent Chain and Horizen EON. The launchpad, bridge integrations and linked perpetuals interface are separate products; their activity is not added to spot volume. Fantom or Sonic chain growth is not automatically SpookySwap growth.",
+          "methodology_notes": [
+            "Every material field is attached to atomic pending claims; a person must review those claims before the report can be published.",
+            "Routed volume is not additive to underlying DEX volume, TVL is not market depth, fees are not profit, residual balances are not an operating venue, and observed co-movement is not causation.",
+            "Documented decisions, observed outcomes, analyst inferences and unresolved unknowns are kept separate.",
+            "Combined adapter metrics are used only where the provider explicitly aggregates SpookySwap deployments; V2-only numbers are not added again.",
+            "The November 2023 event is treated as a frontend compromise based on the operator account, not a smart-contract pool loss."
+          ]
+        }
+      },
+      "feature": {
+        "kind": "dex",
+        "slug": "spookyswap",
+        "lifecycle": "mid",
+        "operating_model": "Operating multichain V2 and V3 spot AMM with BOO/xBOO governance and fee linkage.",
+        "product_cohort": "multichain_spot_amm",
+        "custody_model": "non_custodial",
+        "primary_chain": "Fantom Opera",
+        "chains": [
+          "Fantom Opera",
+          "Sonic",
+          "BitTorrent Chain",
+          "Horizen EON"
+        ],
+        "token_status": "launched",
+        "token_symbol": "BOO",
+        "token_launch_date": null,
+        "token_launch_timing": "at_or_near_launch",
+        "token_strategy": "liquidity_emissions_governance_and_xboo_fee_buyback",
+        "token_source_url": "https://spooky.fi/",
+        "metric_type": "spot_volume",
+        "metric_unit": "usd",
+        "metric_window": "rolling_30_days",
+        "metric_as_of": "2026-08-03",
+        "metric_observed_at": "2026-08-03T19:59:00Z",
+        "comparability_key": "dex|multichain_spot_amm|spot_volume|usd|rolling_30_days",
+        "evidence": {
+          "canonical_profile": true,
+          "claims_pending_human_review": true,
+          "identity_boundary": "This profile covers SpookySwap-branded spot V2 and V3 pools across Fantom, Sonic, BitTorrent Chain and Horizen EON. The launchpad, bridge integrations and linked perpetuals interface are separate products; their activity is not added to spot volume. Fantom or Sonic chain growth is not automatically SpookySwap growth.",
+          "metric_replayed_at": "2026-08-03T19:59:00Z",
+          "source_count": 12
+        },
+        "quality_label": "verified",
+        "quality_issues": [],
+        "lifecycle_evidence_date": "2026-08-03",
+        "last_verified_at": "2026-08-03",
+        "next_review_at": "2026-08-10",
+        "freshness_status": "current",
+        "updated_at": "2026-08-03"
+      }
+    },
+    {
+      "table": "mid_exchanges",
+      "slug": "spiritswap",
+      "name": "SpiritSwap",
+      "canonical_profile": {
+        "schema": "chaindump-entity-profile",
+        "version": 1,
+        "identity": {
+          "id": "dex:spiritswap",
+          "type": "dex",
+          "slug": "spiritswap",
+          "name": "SpiritSwap",
+          "aliases": [
+            "Spirit Swap"
+          ]
+        },
+        "classification": {
+          "subtype": "Fantom-native constant-product and stable-swap DEX after rescue handoff",
+          "tags": [
+            "spot_amm",
+            "stableswap",
+            "fantom_native",
+            "vote_escrow",
+            "rescued",
+            "declining"
+          ],
+          "chains": [
+            "Fantom Opera"
+          ],
+          "jurisdictions": []
+        },
+        "status": {
+          "operating_state": "operating",
+          "as_of": "2026-08-03",
+          "claim_ids": [
+            "claim:spiritswap:status"
+          ]
+        },
+        "outcome": {
+          "label": "rescued_declining",
+          "as_of": "2026-08-03",
+          "rule_id": "exchange-lifecycle-v1",
+          "confidence": "high",
+          "claim_ids": [
+            "claim:spiritswap:outcome"
+          ]
+        },
+        "analysis": {
+          "sections": {
+            "what_it_is": {
+              "body": "SpiritSwap is a non-custodial Fantom exchange built around constant-product and stable-swap pools. Traders swap from their wallets, LPs deposit paired assets, and farms historically paid SPIRIT rewards. Locking SPIRIT created inSPIRIT for boosted farms, governance and a documented share of exchange revenue. SpiritSwap also presented a bridge interface, but the underlying Multichain infrastructure was a separate protocol. The current site and adapters show that the venue still exists, though at very small scale.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spiritswap:section:what_it_is:1",
+                "claim:spiritswap:section:what_it_is:2",
+                "claim:spiritswap:section:what_it_is:3"
+              ]
+            },
+            "what_happened": {
+              "body": "SpiritSwap launched on Fantom in April 2021, grew through SPIRIT farms and inSPIRIT locks, and reached about $373.03 million of TVL on Jan. 17, 2022. In 2023, Multichain’s failure trapped or drained the treasury assets SpiritSwap needed for salaries, development and marketing. The team announced a Sept. 1 shutdown, then users approved a transfer to the Power team with a reported $200,000 USDC treasury commitment. The rescue kept the venue alive. Current adapters show roughly $229,706 of TVL and only $31,309 of 30-day volume, so survival did not restore former scale.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spiritswap:section:what_happened:1",
+                "claim:spiritswap:section:what_happened:2",
+                "claim:spiritswap:section:what_happened:3"
+              ]
+            },
+            "why_this_outcome": {
+              "body": "SpiritSwap’s Fantom focus built a clear local product and community, but also concentrated demand, treasury assets and bridge exposure in one ecosystem. SPIRIT emissions and inSPIRIT voting helped attract liquidity while fees were strong. They could not protect operating runway when Multichain failed and Fantom liquidity shrank. The rescue worked because the code, brand and community could be transferred to another team. The evidence strongly supports treasury concentration and the Multichain shock as the immediate closure trigger; it does not quantify how much chain decline, competition, emissions or later execution explains today’s low scale.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spiritswap:section:why_this_outcome:1",
+                "claim:spiritswap:section:why_this_outcome:2",
+                "claim:spiritswap:section:why_this_outcome:3"
+              ]
+            },
+            "strategic_choices": {
+              "body": "SpiritSwap chose deep Fantom specialization, a branded bridge interface, SPIRIT liquidity emissions and vote-locked inSPIRIT. That package made the venue useful inside Fantom, but placed treasury and distribution risk around the same ecosystem and bridge stack. After Multichain broke the operating budget, the community chose a team transfer and recapitalization rather than shut the contracts and interface. That preserved continuity but left users dependent on a new stewardship group whose current control and financial disclosures are incomplete.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spiritswap:section:strategic_choices:1",
+                "claim:spiritswap:section:strategic_choices:2",
+                "claim:spiritswap:section:strategic_choices:3"
+              ]
+            },
+            "operating_model": {
+              "body": "SpiritSwap earned swap fees from AMM trades and historically allocated value among LPs, the protocol and inSPIRIT holders. LPs also received SPIRIT emissions, while inSPIRIT locks boosted farms and directed governance. At review time, the data adapter recorded about $95 of 30-day fees, $13.85 of protocol revenue and zero holder revenue. That does not prove every inSPIRIT contract has stopped paying, but it shows the current tracked business is tiny. The roughly $229,706 of TVL is contract inventory, not proof of deep execution or a funded operating team.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spiritswap:section:operating_model:1",
+                "claim:spiritswap:section:operating_model:2",
+                "claim:spiritswap:section:operating_model:3"
+              ]
+            },
+            "token_and_value_capture": {
+              "body": "SPIRIT launched with the product’s farming economy, and locking it created inSPIRIT. The advertised rights included boosted farm emissions, governance over incentives and community proposals, and a share of swap revenue. That linked the token to exchange use when volume and fees were meaningful. Current fee and holder-revenue observations are very small, and the site does not publish a complete post-rescue distribution ledger. SPIRIT is not ownership of Fantom, Multichain or Power, and success elsewhere in those ecosystems does not accrue automatically to holders.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spiritswap:section:token_and_value_capture:1",
+                "claim:spiritswap:section:token_and_value_capture:2",
+                "claim:spiritswap:section:token_and_value_capture:3"
+              ]
+            },
+            "counterfactual": {
+              "body": "A treasury split across native stable assets, qualified custodial arrangements and bridge-risk caps could have prevented one infrastructure failure from ending the operating budget. Multichain exposure could also have been separated from payroll and runway. Earlier expansion beyond Fantom might diversify demand, but would add deployment cost and dilute local focus. After the loss, closure would have been cleaner than an opaque rescue, while the transfer preserved upside. The strongest counterfactual is a documented treasury policy plus public handoff controls, not simply a different AMM curve.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spiritswap:section:counterfactual:1",
+                "claim:spiritswap:section:counterfactual:2",
+                "claim:spiritswap:section:counterfactual:3"
+              ]
+            },
+            "risks_and_unknowns": {
+              "body": "The main risks are unclear post-rescue control, thin liquidity, low fees, dormant token rights, bridge liabilities and old contract or frontend permissions. A 2021 core audit covered specific contracts; it did not cover Multichain treasury exposure, the 2023 handoff or every current interface. The public site’s zero and NaN headline figures also weaken operational transparency. Users still need verified contracts, successful trade simulation and withdrawal paths rather than assuming a branded page is enough.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spiritswap:section:risks_and_unknowns:1",
+                "claim:spiritswap:section:risks_and_unknowns:2",
+                "claim:spiritswap:section:risks_and_unknowns:3"
+              ]
+            },
+            "lifecycle": {
+              "body": "SpiritSwap launched in April 2021, grew into a major Fantom venue and peaked in early 2022. The Fantom cycle then weakened. Multichain’s 2023 failure impaired SpiritSwap’s treasury so severely that the team announced a shutdown. A community vote transferred the project to Power days later and prevented immediate closure. The current interface remains online and adapters still record trades, fees and balances, but all are far below the peak. SpiritSwap is best described as rescued and operating at declining, marginal scale—not dead and not recovered.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spiritswap:section:lifecycle:1",
+                "claim:spiritswap:section:lifecycle:2",
+                "claim:spiritswap:section:lifecycle:3"
+              ]
+            },
+            "outlook_and_watch": {
+              "body": "SpiritSwap can remain online without becoming a healthy business. Watch 30- and 90-day volume, fee and TVL trends; verified control of treasury and contracts; successful swaps and withdrawals; inSPIRIT distributions; and dated releases from the rescue team. Recovery requires recurring users, deeper liquidity and fee-funded operations without another treasury subsidy. Fantom or Sonic ecosystem growth should not change the call unless SpiritSwap itself captures measurable activity.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:spiritswap:section:outlook_and_watch:1",
+                "claim:spiritswap:section:outlook_and_watch:2",
+                "claim:spiritswap:section:outlook_and_watch:3"
+              ]
+            }
+          }
+        },
+        "metrics": [
+          {
+            "id": "metric:spiritswap:spot-volume-24h:2026-08-03",
+            "dimension": "spot_volume",
+            "label": "Spot volume, 24h",
+            "value": 511,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2026-08-03",
+              "definition": "provider-reported latest point"
+            },
+            "as_of": "2026-08-03",
+            "method": "DefiLlama total24h.",
+            "scope": {
+              "product": "SpiritSwap Fantom spot pools",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:spiritswap:metric:spot-volume-24h"
+            ],
+            "quality_flags": []
+          },
+          {
+            "id": "metric:spiritswap:spot-volume-30d:2026-08-03",
+            "dimension": "spot_volume",
+            "label": "Spot volume, 30d",
+            "value": 31309,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2026-08-03",
+              "definition": "rolling 30 days"
+            },
+            "as_of": "2026-08-03",
+            "method": "DefiLlama total30d.",
+            "scope": {
+              "product": "SpiritSwap Fantom spot pools",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:spiritswap:metric:spot-volume-30d"
+            ],
+            "quality_flags": []
+          },
+          {
+            "id": "metric:spiritswap:tvl-latest:2026-08-03",
+            "dimension": "tvl",
+            "label": "Current TVL",
+            "value": 229706,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2026-08-03",
+              "definition": "provider-reported latest point"
+            },
+            "as_of": "2026-08-03",
+            "method": "Current Fantom TVL without double-counted staking or borrowed buckets.",
+            "scope": {
+              "product": "exchange venue",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:spiritswap:metric:tvl-latest"
+            ],
+            "quality_flags": [
+              "tvl_not_market_depth"
+            ]
+          },
+          {
+            "id": "metric:spiritswap:tvl-peak:2022-01-17",
+            "dimension": "tvl",
+            "label": "Historical peak TVL",
+            "value": 373029262,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2022-01-17",
+              "definition": "historical maximum"
+            },
+            "as_of": "2022-01-17",
+            "method": "Maximum historical totalLiquidityUSD, dated 2022-01-17.",
+            "scope": {
+              "product": "exchange venue",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:spiritswap:metric:tvl-peak"
+            ],
+            "quality_flags": [
+              "historical_not_current"
+            ]
+          },
+          {
+            "id": "metric:spiritswap:fees-30d:2026-08-03",
+            "dimension": "fees",
+            "label": "Trading fees, 30d",
+            "value": 95,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2026-08-03",
+              "definition": "rolling 30 days"
+            },
+            "as_of": "2026-08-03",
+            "method": "DefiLlama total30d fee adapter.",
+            "scope": {
+              "product": "exchange venue",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:spiritswap:metric:fees-30d"
+            ],
+            "quality_flags": [
+              "fees_not_profit"
+            ]
+          },
+          {
+            "id": "metric:spiritswap:revenue-30d:2026-08-03",
+            "dimension": "protocol_revenue",
+            "label": "Protocol revenue, 30d",
+            "value": 13.85,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2026-08-03",
+              "definition": "rolling 30 days"
+            },
+            "as_of": "2026-08-03",
+            "method": "DefiLlama dailyRevenue total30d.",
+            "scope": {
+              "product": "exchange venue",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:spiritswap:metric:revenue-30d"
+            ],
+            "quality_flags": [
+              "adapter_defined_revenue"
+            ]
+          }
+        ],
+        "events": [
+          {
+            "id": "event:spiritswap:shutdown-announced",
+            "type": "closure_plan",
+            "date": "2023-08-09",
+            "description": "SpiritSwap announced a September shutdown after Multichain-linked treasury losses removed its operating budget.",
+            "claim_ids": [
+              "claim:spiritswap:event:shutdown-announced"
+            ]
+          },
+          {
+            "id": "event:spiritswap:rescue-approved",
+            "type": "rescue",
+            "date": "2023-08-16",
+            "description": "Users approved transfer to Power with a reported $200,000 USDC treasury commitment.",
+            "claim_ids": [
+              "claim:spiritswap:event:rescue-approved"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "id": "source:spiritswap:app",
+            "title": "SpiritSwap application",
+            "url": "https://www.spiritswap.finance/",
+            "publisher": "SpiritSwap",
+            "published_at": null,
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "primary",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Current Fantom product surface, AMM, farms, bridge description and inSPIRIT benefits; displayed zero and NaN figures are not used as market measurements.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spiritswap:swap",
+            "title": "SpiritSwap swap surface",
+            "url": "https://www.spiritswap.finance/chain/ftm/swap",
+            "publisher": "SpiritSwap",
+            "published_at": null,
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "primary",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Current Fantom swap route; route availability does not prove successful execution or material liquidity.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spiritswap:inspirit",
+            "title": "SpiritSwap inSPIRIT surface",
+            "url": "https://www.spiritswap.finance/chain/ftm/inspirit",
+            "publisher": "SpiritSwap",
+            "published_at": null,
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "primary",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Current branded locking and governance route; economics are cross-checked against adapter observations.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spiritswap:audit",
+            "title": "SpiritSwap core smart contract audit",
+            "url": "https://files.safe.de.fi/safe/files/audit/pdf/SpiritSwap_Core_Security_Audit_Report.pdf",
+            "publisher": "Solidified",
+            "published_at": "2021-06-08",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Version-scoped review of original constant-product core contracts; explicitly not a business-model guarantee.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spiritswap:shutdown",
+            "title": "SpiritSwap winds down citing Multichain exposure",
+            "url": "https://cointelegraph.com/news/spiritswap-fantom-project-winds-down-citing-multichain-exposure",
+            "publisher": "Cointelegraph",
+            "published_at": "2023-08-09",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Contemporary account of the drained treasury, September closure plan and stated operating-cost shortfall.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spiritswap:rescue",
+            "title": "Fantom DEX rescued after planned shutdown",
+            "url": "https://cointelegraph.com/news/fantom-dex-rescued-at-eleventh-hour-following-planned-shutdown",
+            "publisher": "Cointelegraph",
+            "published_at": "2023-08-16",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Community-approved transfer to Power and reported $200,000 USDC treasury commitment.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spiritswap:treasury-context",
+            "title": "Multichain bridge woes spell end for Fantom-based DEX",
+            "url": "https://blockworks.com/news/multichain-bridge-fantom-dex",
+            "publisher": "Blockworks",
+            "published_at": "2023-08-10",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Launch timing, treasury and Multichain dependence, and historical fee-to-inSPIRIT description.",
+            "direct_http_status": 403,
+            "access_method": "browser_rendered_page"
+          },
+          {
+            "id": "source:spiritswap:tvl",
+            "title": "SpiritSwap protocol TVL API",
+            "url": "https://api.llama.fi/protocol/spiritswap",
+            "publisher": "DefiLlama",
+            "published_at": null,
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Current Fantom balances and historical TVL series.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spiritswap:volume",
+            "title": "SpiritSwap DEX volume API",
+            "url": "https://api.llama.fi/summary/dexs/spiritswap?dataType=dailyVolume",
+            "publisher": "DefiLlama",
+            "published_at": null,
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Current and historical spot-volume adapter series.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spiritswap:fees",
+            "title": "SpiritSwap fees API",
+            "url": "https://api.llama.fi/summary/fees/spiritswap?dataType=dailyFees",
+            "publisher": "DefiLlama",
+            "published_at": null,
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Current adapter-defined trading-fee observations.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:spiritswap:revenue",
+            "title": "SpiritSwap revenue API",
+            "url": "https://api.llama.fi/summary/fees/spiritswap?dataType=dailyRevenue",
+            "publisher": "DefiLlama",
+            "published_at": null,
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Current adapter-defined protocol revenue and holder-revenue observations.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          }
+        ],
+        "claims": [
+          {
+            "id": "claim:spiritswap:status",
+            "field_path": "status.operating_state",
+            "assertion": "SpiritSwap was operating at the review date.",
+            "value": "operating",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:app",
+              "source:spiritswap:swap",
+              "source:spiritswap:tvl",
+              "source:spiritswap:volume"
+            ],
+            "evidence_locator": "Current surface and nonzero adapter activity support operation, while scale and stewardship remain limited.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:outcome",
+            "field_path": "outcome.label",
+            "assertion": "SpiritSwap is classified rescued declining as of 2026-08-03.",
+            "value": "rescued_declining",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spiritswap:shutdown",
+              "source:spiritswap:rescue",
+              "source:spiritswap:tvl",
+              "source:spiritswap:volume",
+              "source:spiritswap:revenue"
+            ],
+            "evidence_locator": "Averted closure plus durable but very small activity supports rescued and declining status.",
+            "support_direction": "supports",
+            "note": "Analyst lifecycle classification; observed activity and events do not prove one exclusive cause.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:what_it_is:1",
+            "field_path": "analysis.sections.what_it_is.body",
+            "assertion": "SpiritSwap operates Fantom AMM and stable-swap products.",
+            "value": "SpiritSwap operates Fantom AMM and stable-swap products.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:app",
+              "source:spiritswap:audit"
+            ],
+            "evidence_locator": "Current product and original core design.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:what_it_is:2",
+            "field_path": "analysis.sections.what_it_is.body",
+            "assertion": "SPIRIT and inSPIRIT historically linked farming, governance and fee participation.",
+            "value": "SPIRIT and inSPIRIT historically linked farming, governance and fee participation.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:app",
+              "source:spiritswap:inspirit",
+              "source:spiritswap:treasury-context"
+            ],
+            "evidence_locator": "Current branded surface and historical independent description.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:what_it_is:3",
+            "field_path": "analysis.sections.what_it_is.body",
+            "assertion": "Multichain bridge infrastructure was an external dependency, not the SpiritSwap exchange.",
+            "value": "Multichain bridge infrastructure was an external dependency, not the SpiritSwap exchange.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spiritswap:shutdown",
+              "source:spiritswap:treasury-context"
+            ],
+            "evidence_locator": "Independent incident accounts.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:what_happened:1",
+            "field_path": "analysis.sections.what_happened.body",
+            "assertion": "SpiritSwap launched in April 2021 and later peaked near $373.03 million of TVL.",
+            "value": "SpiritSwap launched in April 2021 and later peaked near $373.03 million of TVL.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:treasury-context",
+              "source:spiritswap:tvl"
+            ],
+            "evidence_locator": "Launch report and historical provider series.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:what_happened:2",
+            "field_path": "analysis.sections.what_happened.body",
+            "assertion": "Multichain-linked treasury losses triggered the announced September 2023 closure plan.",
+            "value": "Multichain-linked treasury losses triggered the announced September 2023 closure plan.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:shutdown",
+              "source:spiritswap:treasury-context"
+            ],
+            "evidence_locator": "Contemporary reports.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:what_happened:3",
+            "field_path": "analysis.sections.what_happened.body",
+            "assertion": "A community-approved transfer to Power and treasury commitment averted immediate closure.",
+            "value": "A community-approved transfer to Power and treasury commitment averted immediate closure.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:rescue"
+            ],
+            "evidence_locator": "Contemporary rescue report.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:why_this_outcome:1",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "assertion": "Treasury dependence on Multichain turned an external infrastructure failure into an operating crisis.",
+            "value": "Treasury dependence on Multichain turned an external infrastructure failure into an operating crisis.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spiritswap:shutdown",
+              "source:spiritswap:treasury-context"
+            ],
+            "evidence_locator": "Reported treasury loss and cost shortfall.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:why_this_outcome:2",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "assertion": "Transferable code, governance and community created a rescue option instead of unavoidable closure.",
+            "value": "Transferable code, governance and community created a rescue option instead of unavoidable closure.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spiritswap:rescue",
+              "source:spiritswap:app"
+            ],
+            "evidence_locator": "Handoff and continued surface.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:why_this_outcome:3",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "assertion": "The public record does not decompose current weakness among Fantom decline, incentives, competition and post-rescue execution.",
+            "value": "The public record does not decompose current weakness among Fantom decline, incentives, competition and post-rescue execution.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:spiritswap:tvl",
+              "source:spiritswap:volume",
+              "source:spiritswap:rescue"
+            ],
+            "evidence_locator": "Outcome series without causal allocation.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:strategic_choices:1",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "assertion": "SpiritSwap chose Fantom specialization and bridge-assisted distribution.",
+            "value": "SpiritSwap chose Fantom specialization and bridge-assisted distribution.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:app",
+              "source:spiritswap:treasury-context"
+            ],
+            "evidence_locator": "Product and bridge descriptions.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:strategic_choices:2",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "assertion": "The venue chose SPIRIT emissions and inSPIRIT locking for liquidity and governance.",
+            "value": "The venue chose SPIRIT emissions and inSPIRIT locking for liquidity and governance.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:app",
+              "source:spiritswap:inspirit"
+            ],
+            "evidence_locator": "Token-system surfaces.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:strategic_choices:3",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "assertion": "The community chose transfer and recapitalization instead of closure.",
+            "value": "The community chose transfer and recapitalization instead of closure.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:rescue"
+            ],
+            "evidence_locator": "Reported rescue vote and funding commitment.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:operating_model:1",
+            "field_path": "analysis.sections.operating_model.body",
+            "assertion": "SpiritSwap combined swap fees with SPIRIT farming and inSPIRIT governance.",
+            "value": "SpiritSwap combined swap fees with SPIRIT farming and inSPIRIT governance.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:app",
+              "source:spiritswap:inspirit",
+              "source:spiritswap:treasury-context"
+            ],
+            "evidence_locator": "Product and historical economics.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:operating_model:2",
+            "field_path": "analysis.sections.operating_model.body",
+            "assertion": "The adapter recorded about $95 of 30-day fees and $13.85 of revenue at review time.",
+            "value": "The adapter recorded about $95 of 30-day fees and $13.85 of revenue at review time.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:fees",
+              "source:spiritswap:revenue"
+            ],
+            "evidence_locator": "Current provider observations.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:operating_model:3",
+            "field_path": "analysis.sections.operating_model.body",
+            "assertion": "Current TVL and fees do not prove operator solvency or reliable user execution.",
+            "value": "Current TVL and fees do not prove operator solvency or reliable user execution.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spiritswap:tvl",
+              "source:spiritswap:swap"
+            ],
+            "evidence_locator": "Metric and route limitations.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:token_and_value_capture:1",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "assertion": "SPIRIT funded liquidity incentives and inSPIRIT locks carried governance and advertised fee rights.",
+            "value": "SPIRIT funded liquidity incentives and inSPIRIT locks carried governance and advertised fee rights.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:app",
+              "source:spiritswap:inspirit"
+            ],
+            "evidence_locator": "Current branded token description.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:token_and_value_capture:2",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "assertion": "Current tracked holder revenue was zero at review time.",
+            "value": "Current tracked holder revenue was zero at review time.",
+            "as_of": "2026-08-03",
+            "confidence": "medium",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:revenue"
+            ],
+            "evidence_locator": "Adapter observation.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:token_and_value_capture:3",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "assertion": "Post-rescue net token distributions and liabilities remain unknown.",
+            "value": "Post-rescue net token distributions and liabilities remain unknown.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:spiritswap:rescue",
+              "source:spiritswap:revenue"
+            ],
+            "evidence_locator": "No complete current distribution ledger.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:counterfactual:1",
+            "field_path": "analysis.sections.counterfactual.body",
+            "assertion": "Diversified treasury custody and bridge-risk caps could reduce a single external failure’s impact on runway.",
+            "value": "Diversified treasury custody and bridge-risk caps could reduce a single external failure’s impact on runway.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spiritswap:shutdown",
+              "source:spiritswap:treasury-context"
+            ],
+            "evidence_locator": "Observed concentration supports the alternative.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:counterfactual:2",
+            "field_path": "analysis.sections.counterfactual.body",
+            "assertion": "A public control and liability ledger could make the rescue easier to evaluate.",
+            "value": "A public control and liability ledger could make the rescue easier to evaluate.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spiritswap:rescue",
+              "source:spiritswap:app"
+            ],
+            "evidence_locator": "Handoff without complete current disclosure.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:counterfactual:3",
+            "field_path": "analysis.sections.counterfactual.body",
+            "assertion": "No source proves multichain expansion or closure would have produced a better user outcome.",
+            "value": "No source proves multichain expansion or closure would have produced a better user outcome.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:spiritswap:shutdown",
+              "source:spiritswap:rescue"
+            ],
+            "evidence_locator": "Alternatives were not observed.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:risks_and_unknowns:1",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "assertion": "The original audit did not cover later treasury, bridge and governance failures.",
+            "value": "The original audit did not cover later treasury, bridge and governance failures.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spiritswap:audit",
+              "source:spiritswap:shutdown"
+            ],
+            "evidence_locator": "Audit scope and later incident.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:risks_and_unknowns:2",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "assertion": "The public interface currently exposes broken zero or NaN headline fields.",
+            "value": "The public interface currently exposes broken zero or NaN headline fields.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:app"
+            ],
+            "evidence_locator": "Current rendered surface.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:risks_and_unknowns:3",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "assertion": "Current control, liabilities, recurring users and inSPIRIT distributions remain unknown.",
+            "value": "Current control, liabilities, recurring users and inSPIRIT distributions remain unknown.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:spiritswap:rescue",
+              "source:spiritswap:app",
+              "source:spiritswap:revenue"
+            ],
+            "evidence_locator": "No complete current disclosure.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:lifecycle:1",
+            "field_path": "analysis.sections.lifecycle.body",
+            "assertion": "SpiritSwap grew from April 2021 launch to a January 2022 TVL peak.",
+            "value": "SpiritSwap grew from April 2021 launch to a January 2022 TVL peak.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:treasury-context",
+              "source:spiritswap:tvl"
+            ],
+            "evidence_locator": "Launch and provider history.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:lifecycle:2",
+            "field_path": "analysis.sections.lifecycle.body",
+            "assertion": "The 2023 closure plan was reversed by a community-approved rescue.",
+            "value": "The 2023 closure plan was reversed by a community-approved rescue.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:shutdown",
+              "source:spiritswap:rescue"
+            ],
+            "evidence_locator": "Dated reports.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:lifecycle:3",
+            "field_path": "analysis.sections.lifecycle.body",
+            "assertion": "Current nonzero activity remains far below historical scale.",
+            "value": "Current nonzero activity remains far below historical scale.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:tvl",
+              "source:spiritswap:volume",
+              "source:spiritswap:fees"
+            ],
+            "evidence_locator": "Current and historical provider series.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:outlook_and_watch:1",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "assertion": "Volume, fees, liquidity and successful execution are the primary operating watch items.",
+            "value": "Volume, fees, liquidity and successful execution are the primary operating watch items.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spiritswap:volume",
+              "source:spiritswap:fees",
+              "source:spiritswap:tvl",
+              "source:spiritswap:swap"
+            ],
+            "evidence_locator": "Current measurable surfaces.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:outlook_and_watch:2",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "assertion": "Control and token-distribution disclosures are necessary to evaluate the rescue.",
+            "value": "Control and token-distribution disclosures are necessary to evaluate the rescue.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:spiritswap:rescue",
+              "source:spiritswap:inspirit"
+            ],
+            "evidence_locator": "Handoff and token-system scope.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:section:outlook_and_watch:3",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "assertion": "No reviewed evidence supports a return to SpiritSwap’s historical scale.",
+            "value": "No reviewed evidence supports a return to SpiritSwap’s historical scale.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:spiritswap:tvl",
+              "source:spiritswap:volume"
+            ],
+            "evidence_locator": "Current metrics remain far below peak.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:metric:spot-volume-24h",
+            "field_path": "metrics[metric:spiritswap:spot-volume-24h:2026-08-03].value",
+            "assertion": "Spot volume, 24h was 511 USD for the stated scope and window.",
+            "value": 511,
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:volume"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:metric:spot-volume-30d",
+            "field_path": "metrics[metric:spiritswap:spot-volume-30d:2026-08-03].value",
+            "assertion": "Spot volume, 30d was 31309 USD for the stated scope and window.",
+            "value": 31309,
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:volume"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:metric:tvl-latest",
+            "field_path": "metrics[metric:spiritswap:tvl-latest:2026-08-03].value",
+            "assertion": "Current TVL was 229706 USD for the stated scope and window.",
+            "value": 229706,
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:tvl"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:metric:tvl-peak",
+            "field_path": "metrics[metric:spiritswap:tvl-peak:2022-01-17].value",
+            "assertion": "Historical peak TVL was 373029262 USD for the stated scope and window.",
+            "value": 373029262,
+            "as_of": "2022-01-17",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:tvl"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:metric:fees-30d",
+            "field_path": "metrics[metric:spiritswap:fees-30d:2026-08-03].value",
+            "assertion": "Trading fees, 30d was 95 USD for the stated scope and window.",
+            "value": 95,
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:fees"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:metric:revenue-30d",
+            "field_path": "metrics[metric:spiritswap:revenue-30d:2026-08-03].value",
+            "assertion": "Protocol revenue, 30d was 13.85 USD for the stated scope and window.",
+            "value": 13.85,
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:revenue"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:event:shutdown-announced",
+            "field_path": "events[event:spiritswap:shutdown-announced]",
+            "assertion": "SpiritSwap announced a September shutdown after Multichain-linked treasury losses removed its operating budget.",
+            "value": "2023-08-09",
+            "as_of": "2023-08-09",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:shutdown",
+              "source:spiritswap:treasury-context"
+            ],
+            "evidence_locator": "Contemporary independent reports.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:spiritswap:event:rescue-approved",
+            "field_path": "events[event:spiritswap:rescue-approved]",
+            "assertion": "Users approved transfer to Power with a reported $200,000 USDC treasury commitment.",
+            "value": "2023-08-16",
+            "as_of": "2023-08-16",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:spiritswap:rescue"
+            ],
+            "evidence_locator": "Contemporary rescue report.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          }
+        ],
+        "freshness": {
+          "state": "current",
+          "last_reviewed_at": "2026-08-03T20:05:00Z",
+          "next_review_at": "2026-08-10T20:05:00Z",
+          "field_reviews": []
+        },
+        "quality": {
+          "publication_state": "review",
+          "completeness_pct": 100,
+          "confidence": "high",
+          "unsourced_fields": [
+            "Current control map",
+            "Post-handoff liabilities",
+            "Recurring users",
+            "Current inSPIRIT distributions"
+          ]
+        },
+        "extensions": {
+          "legacy_origin": "mid_exchanges",
+          "observation_window": {
+            "started_at": "2026-08-03T19:59:00Z",
+            "completed_at": "2026-08-03T20:05:00Z"
+          },
+          "explicit_unknowns": [
+            "Who currently controls SpiritSwap contracts, treasury, frontend and governance?",
+            "What liabilities and Multichain-linked losses remained after the 2023 handoff?",
+            "How many recurring users generate current volume?",
+            "Whether current inSPIRIT fee distributions function and are economically material?"
+          ],
+          "identity_boundary": "This profile covers SpiritSwap’s Fantom AMM, farms and SPIRIT/inSPIRIT system. Multichain was external bridge and treasury infrastructure, not SpiritSwap itself. The Power rescue preserved the venue but did not merge all Power products into SpiritSwap. A live website, residual contracts or Fantom chain activity does not by itself prove healthy SpiritSwap operation.",
+          "methodology_notes": [
+            "Every material field is attached to atomic pending claims; a person must review those claims before the report can be published.",
+            "Routed volume is not additive to underlying DEX volume, TVL is not market depth, fees are not profit, residual balances are not an operating venue, and observed co-movement is not causation.",
+            "Documented decisions, observed outcomes, analyst inferences and unresolved unknowns are kept separate.",
+            "The current interface displays zero and NaN headline figures; those broken fields are not treated as market data.",
+            "Nonzero adapter activity supports operating continuity but not verified team solvency, successful user execution or healthy token distributions."
+          ]
+        }
+      },
+      "feature": {
+        "kind": "dex",
+        "slug": "spiritswap",
+        "lifecycle": "mid",
+        "operating_model": "Rescued Fantom spot AMM with SPIRIT farming and inSPIRIT governance.",
+        "product_cohort": "single_chain_spot_amm",
+        "custody_model": "non_custodial",
+        "primary_chain": "Fantom Opera",
+        "chains": [
+          "Fantom Opera"
+        ],
+        "token_status": "launched",
+        "token_symbol": "SPIRIT",
+        "token_launch_date": null,
+        "token_launch_timing": "at_or_near_launch",
+        "token_strategy": "liquidity_emissions_vote_lock_governance_and_fee_share",
+        "token_source_url": "https://www.spiritswap.finance/",
+        "metric_type": "spot_volume",
+        "metric_unit": "usd",
+        "metric_window": "rolling_30_days",
+        "metric_as_of": "2026-08-03",
+        "metric_observed_at": "2026-08-03T19:59:00Z",
+        "comparability_key": "dex|single_chain_spot_amm|spot_volume|usd|rolling_30_days",
+        "evidence": {
+          "canonical_profile": true,
+          "claims_pending_human_review": true,
+          "identity_boundary": "This profile covers SpiritSwap’s Fantom AMM, farms and SPIRIT/inSPIRIT system. Multichain was external bridge and treasury infrastructure, not SpiritSwap itself. The Power rescue preserved the venue but did not merge all Power products into SpiritSwap. A live website, residual contracts or Fantom chain activity does not by itself prove healthy SpiritSwap operation.",
+          "metric_replayed_at": "2026-08-03T19:59:00Z",
+          "source_count": 11
+        },
+        "quality_label": "verified",
+        "quality_issues": [],
+        "lifecycle_evidence_date": "2026-08-03",
+        "last_verified_at": "2026-08-03",
+        "next_review_at": "2026-08-10",
+        "freshness_status": "current",
+        "updated_at": "2026-08-03"
+      }
+    },
+    {
+      "table": "dead_exchanges",
+      "slug": "uranium-finance",
+      "name": "Uranium Finance",
+      "canonical_profile": {
+        "schema": "chaindump-entity-profile",
+        "version": 1,
+        "identity": {
+          "id": "dex:uranium-finance",
+          "type": "dex",
+          "slug": "uranium-finance",
+          "name": "Uranium Finance",
+          "aliases": [
+            "Uranium",
+            "Uranium AMM"
+          ]
+        },
+        "classification": {
+          "subtype": "closed BNB Chain constant-product AMM and yield farm",
+          "tags": [
+            "spot_amm",
+            "yield_farm",
+            "bnb_chain",
+            "repeat_exploit",
+            "closed"
+          ],
+          "chains": [
+            "BNB Chain"
+          ],
+          "jurisdictions": []
+        },
+        "status": {
+          "operating_state": "closed",
+          "as_of": "2026-08-03",
+          "claim_ids": [
+            "claim:uranium-finance:status"
+          ]
+        },
+        "outcome": {
+          "label": "failed_after_repeat_exploits",
+          "as_of": "2026-08-03",
+          "rule_id": "exchange-lifecycle-v1",
+          "confidence": "high",
+          "claim_ids": [
+            "claim:uranium-finance:outcome"
+          ]
+        },
+        "analysis": {
+          "sections": {
+            "what_it_is": {
+              "body": "Uranium Finance was a non-custodial AMM and yield farm on BNB Chain. It forked the familiar constant-product exchange model, let LPs deposit token pairs, and used a native U92 token in its farming system. It launched and failed in April 2021. This record is only about that crypto protocol; it is unrelated to physical uranium or later uranium-branded assets.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:uranium-finance:section:what_it_is:1",
+                "claim:uranium-finance:section:what_it_is:2",
+                "claim:uranium-finance:section:what_it_is:3"
+              ]
+            },
+            "what_happened": {
+              "body": "Uranium suffered two attacks in April 2021. A March 2026 indictment alleges that the April 8 attack manipulated reward logic and extracted about $1.4 million. On April 28, a separate attacker transaction exploited a V2 pair-contract arithmetic error across 26 pools. Contemporary reports estimated roughly $50 million lost; the indictment alleges about $53.3 million. The venue shut down. U.S. authorities seized cryptocurrency worth about $31 million in February 2025, but seizure is not the same as victim repayment and the criminal allegations have not been proven.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:uranium-finance:section:what_happened:1",
+                "claim:uranium-finance:section:what_happened:2",
+                "claim:uranium-finance:section:what_happened:3"
+              ]
+            },
+            "why_this_outcome": {
+              "body": "The fatal second exploit came from Uranium’s own code change, not from BNB Chain. Developers changed the fee calculation to use 10,000-scale arithmetic but left the invariant check on a 1,000-scale assumption. That mismatch let a caller provide a small input while withdrawing nearly all pool reserves. The venue had already survived a separate reward attack earlier in the month and was preparing another migration. Repeated control failures plus a loss larger than any credible reserve ended the exchange. Actor attribution remains an allegation; the code defect and closure have independent support.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:uranium-finance:section:why_this_outcome:1",
+                "claim:uranium-finance:section:why_this_outcome:2",
+                "claim:uranium-finance:section:why_this_outcome:3"
+              ]
+            },
+            "strategic_choices": {
+              "body": "Uranium chose to fork a proven AMM design and modify fee arithmetic for its own economics. That accelerated launch but made a tiny deviation in asset-conservation logic catastrophic. After the first April attack, the project continued operating and migrated to V2 while another V2.1 update was planned. The team did not pause all liquidity until the changed invariant had been independently verified. Those were product and release choices; BNB Chain provided execution but did not choose the faulty constants.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:uranium-finance:section:strategic_choices:1",
+                "claim:uranium-finance:section:strategic_choices:2",
+                "claim:uranium-finance:section:strategic_choices:3"
+              ]
+            },
+            "operating_model": {
+              "body": "Uranium matched traders inside constant-product pools funded by LPs and added farming rewards through U92. In a healthy AMM, every swap must leave the adjusted reserve product at or above the invariant after fees. Uranium’s V2 check failed that basic conservation rule, so the second attacker could drain reserves across many pairs. The model had no disclosed insurance or recapitalization capacity able to absorb the loss. Once pool assets disappeared, token emissions could not recreate user claims or market trust.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:uranium-finance:section:operating_model:1",
+                "claim:uranium-finance:section:operating_model:2",
+                "claim:uranium-finance:section:operating_model:3"
+              ]
+            },
+            "token_and_value_capture": {
+              "body": "U92 was Uranium’s native token and part of its farming economy; contemporary reporting counted about 112,000 U92 among assets drained in the second exploit. The surviving public record does not establish a durable fee claim, governance right, fixed emission schedule or recovery entitlement for holders. Whatever incentive role U92 had disappeared with the venue’s liquidity and operations. Legal seizures concern allegedly stolen assets and do not revive U92 or create a successor token.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:uranium-finance:section:token_and_value_capture:1",
+                "claim:uranium-finance:section:token_and_value_capture:2",
+                "claim:uranium-finance:section:token_and_value_capture:3"
+              ]
+            },
+            "counterfactual": {
+              "body": "The direct prevention path was technical: differential testing against the upstream pair contract, invariant-based property tests for every fee setting, and an independent review of each changed arithmetic constant. After the first incident, a full pause until V2 and V2.1 passed those tests would have traded availability for safety. A capped migration with per-pool limits could also have reduced blast radius. These controls would address the documented defect, but they cannot prove every attack or alleged actor would have been stopped.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:uranium-finance:section:counterfactual:1",
+                "claim:uranium-finance:section:counterfactual:2",
+                "claim:uranium-finance:section:counterfactual:3"
+              ]
+            },
+            "risks_and_unknowns": {
+              "body": "The exchange is closed, so remaining risks are claimant recovery, misleading old interfaces or tokens, forgotten approvals and uncertainty around residual contracts. The legal case may clarify attribution and forfeiture, but the indictment is only an accusation. Authorities reported a $31 million seizure, not a completed distribution. Unknowns include final case disposition, recoverable value after legal process, every pre-deployment audit, remaining contract permissions and how losses divide among LPs and other users.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:uranium-finance:section:risks_and_unknowns:1",
+                "claim:uranium-finance:section:risks_and_unknowns:2",
+                "claim:uranium-finance:section:risks_and_unknowns:3"
+              ]
+            },
+            "lifecycle": {
+              "body": "Uranium launched on BNB Chain in early 2021 and combined an AMM with aggressive farming. An April 8 reward exploit removed about $1.4 million according to later federal allegations. The project continued, moved into V2 and prepared another migration. On April 28, the faulty invariant check was exploited across 26 pools, removing roughly $50 million to $53.3 million and forcing closure. A 2025 seizure and 2026 indictment reopened the recovery and attribution story, not the exchange. Uranium Finance remains dead.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:uranium-finance:section:lifecycle:1",
+                "claim:uranium-finance:section:lifecycle:2",
+                "claim:uranium-finance:section:lifecycle:3"
+              ]
+            },
+            "outlook_and_watch": {
+              "body": "There is no operating outlook for Uranium Finance. Watch the criminal docket, forfeiture orders, victim-claim instructions, asset-distribution records and any verified warning about residual contracts. A legal recovery can improve creditor outcomes without changing the failure classification. Any separately funded exchange using similar code, branding or tokens must receive its own identity, contracts and evidence. Until victims receive distributions, Chaindump should report seized value separately from recovered value.",
+              "as_of": "2026-08-03",
+              "claim_ids": [
+                "claim:uranium-finance:section:outlook_and_watch:1",
+                "claim:uranium-finance:section:outlook_and_watch:2",
+                "claim:uranium-finance:section:outlook_and_watch:3"
+              ]
+            }
+          }
+        },
+        "metrics": [
+          {
+            "id": "metric:uranium-finance:first-exploit-loss:2021-04-08",
+            "dimension": "exploit_loss",
+            "label": "First exploit amount alleged",
+            "value": 1400000,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2021-04-08",
+              "definition": "incident estimate"
+            },
+            "as_of": "2021-04-08",
+            "method": "Indictment allegation for the April 8 incident.",
+            "scope": {
+              "product": "exchange venue",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:uranium-finance:metric:first-exploit-loss"
+            ],
+            "quality_flags": [
+              "indictment_allegation",
+              "not_final_finding"
+            ]
+          },
+          {
+            "id": "metric:uranium-finance:second-exploit-loss-authority:2021-04-28",
+            "dimension": "exploit_loss",
+            "label": "Second exploit amount alleged",
+            "value": 53300000,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2021-04-28",
+              "definition": "incident estimate"
+            },
+            "as_of": "2021-04-28",
+            "method": "Indictment allegation across 26 pools.",
+            "scope": {
+              "product": "exchange venue",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:uranium-finance:metric:second-exploit-loss-authority"
+            ],
+            "quality_flags": [
+              "indictment_allegation",
+              "not_final_finding"
+            ]
+          },
+          {
+            "id": "metric:uranium-finance:second-exploit-loss-contemporary:2021-04-28",
+            "dimension": "exploit_loss",
+            "label": "Second exploit contemporary estimate",
+            "value": 50000000,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2021-04-28",
+              "definition": "incident estimate"
+            },
+            "as_of": "2021-04-28",
+            "method": "Rounded contemporary independent estimate; not additive to the authority estimate.",
+            "scope": {
+              "product": "exchange venue",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:uranium-finance:metric:second-exploit-loss-contemporary"
+            ],
+            "quality_flags": [
+              "rounded_estimate",
+              "same_incident_as_authority_measure"
+            ]
+          },
+          {
+            "id": "metric:uranium-finance:assets-seized:2025-02-24",
+            "dimension": "exploit_recovery",
+            "label": "Assets seized, not distributed",
+            "value": 31000000,
+            "unit": "usd",
+            "currency": "USD",
+            "window": {
+              "start": null,
+              "end": "2025-02-24",
+              "definition": "seizure-date value"
+            },
+            "as_of": "2025-02-24",
+            "method": "Value at February 24, 2025 seizure; not treated as victim payment.",
+            "scope": {
+              "product": "exchange venue",
+              "chains": []
+            },
+            "formula": null,
+            "raw_input_ids": [],
+            "claim_ids": [
+              "claim:uranium-finance:metric:assets-seized"
+            ],
+            "quality_flags": [
+              "seized_not_distributed",
+              "not_final_recovery"
+            ]
+          }
+        ],
+        "events": [
+          {
+            "id": "event:uranium-finance:first-exploit",
+            "type": "exploit",
+            "date": "2021-04-08",
+            "description": "A reward-logic exploit allegedly extracted about $1.4 million; criminal attribution remains unproven.",
+            "claim_ids": [
+              "claim:uranium-finance:event:first-exploit"
+            ]
+          },
+          {
+            "id": "event:uranium-finance:fatal-exploit",
+            "type": "exploit_and_closure",
+            "date": "2021-04-28",
+            "description": "The V2 invariant error was exploited across 26 pools and Uranium Finance shut down.",
+            "claim_ids": [
+              "claim:uranium-finance:event:fatal-exploit"
+            ]
+          }
+        ],
+        "sources": [
+          {
+            "id": "source:uranium-finance:doj",
+            "title": "Maryland man charged over Uranium Finance hacks",
+            "url": "https://www.justice.gov/usao-sdny/pr/maryland-man-charged-defrauding-crypto-exchange-over-50-million-hacks",
+            "publisher": "U.S. Department of Justice",
+            "published_at": "2026-03-30",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Indictment allegations, two incident amounts, closure, seizure, victim contact and presumption-of-innocence notice.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:uranium-finance:indictment",
+            "title": "United States v. Spalletta indictment",
+            "url": "https://www.justice.gov/usao-sdny/media/1433301/dl",
+            "publisher": "U.S. District Court for the Southern District of New York",
+            "published_at": "2026-03-30",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Charging document; allegations are not findings of guilt.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:uranium-finance:coindesk",
+            "title": "Uranium Finance loses $50M in exploit",
+            "url": "https://www.coindesk.com/markets/2021/04/28/binance-chain-defi-exchange-uranium-finance-loses-50m-in-exploit",
+            "publisher": "CoinDesk",
+            "published_at": "2021-04-28",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Contemporary loss estimate, migration timing and reports of the constant mismatch.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:uranium-finance:halborn",
+            "title": "Explained: The Uranium Finance Hack",
+            "url": "https://www.halborn.com/blog/post/explained-the-uranium-finance-hack-april-2021",
+            "publisher": "Halborn",
+            "published_at": "2021-05-04",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Independent explanation of the 10,000-versus-1,000 invariant mismatch.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:uranium-finance:immunefi",
+            "title": "Hack Analysis: Uranium Finance",
+            "url": "https://medium.com/immunefi/building-a-poc-for-the-uranium-heist-ec83fbd83e9f",
+            "publisher": "Immunefi",
+            "published_at": "2022-09-19",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Reproduction of the second exploit across 26 market pairs.",
+            "direct_http_status": 403,
+            "access_method": "browser_rendered_page"
+          },
+          {
+            "id": "source:uranium-finance:dni",
+            "title": "Uranium Finance incident analysis",
+            "url": "https://dn.institute/research/cyberattacks/incidents/2021-04-28-uranium-finance/",
+            "publisher": "Distributed Networks Institute",
+            "published_at": "2021-04-29",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Technical chronology, postmortem excerpts and audit-process context.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          },
+          {
+            "id": "source:uranium-finance:theblock",
+            "title": "Uranium Finance exploited for $50 million",
+            "url": "https://www.theblock.co/amp/post/103076/binance-smart-chain-defi-uranium-finance-exploited-lost-50-million",
+            "publisher": "The Block",
+            "published_at": "2021-04-28",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Contemporary asset inventory, U92 amount and allegation caveats.",
+            "direct_http_status": 403,
+            "access_method": "browser_or_paywalled_page"
+          },
+          {
+            "id": "source:uranium-finance:knownsec",
+            "title": "Analysis of Uranium protocol hacking attack",
+            "url": "https://medium.com/@Knownsec_Blockchain_Lab/knownsec-blockchain-lab-its-the-fault-of-handling-fees-again-b5eacbdf6ccd",
+            "publisher": "Knownsec Blockchain Lab",
+            "published_at": "2021-04-28",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Contemporary attack-contract and transaction reconstruction.",
+            "direct_http_status": 403,
+            "access_method": "browser_rendered_page"
+          },
+          {
+            "id": "source:uranium-finance:attack-tx",
+            "title": "Uranium Finance second exploit transaction",
+            "url": "https://bscscan.com/tx/0x5a504fe72ef7fc76dfeb4d979e533af4e23fe37e90b5516186d5787893c37991",
+            "publisher": "BscScan",
+            "published_at": "2021-04-28",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "A",
+            "role": "primary",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Immutable BNB Chain transaction record for the second exploit.",
+            "direct_http_status": 403,
+            "access_method": "browser_rendered_page"
+          },
+          {
+            "id": "source:uranium-finance:seizure-report",
+            "title": "U.S. seized $31 million linked to Uranium Finance hack",
+            "url": "https://www.bleepingcomputer.com/news/cryptocurrency/us-seized-31-million-stolen-in-2021-uranium-finance-hack/",
+            "publisher": "BleepingComputer",
+            "published_at": "2025-02-25",
+            "accessed_at": "2026-08-03T20:05:00Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "independent",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T20:05:00Z",
+            "content_hash": null,
+            "evidence_locator": "Contemporary report of the seizure; seizure is not distribution to victims.",
+            "direct_http_status": 200,
+            "access_method": "direct_http"
+          }
+        ],
+        "claims": [
+          {
+            "id": "claim:uranium-finance:status",
+            "field_path": "status.operating_state",
+            "assertion": "Uranium Finance was closed at the review date.",
+            "value": "closed",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:coindesk",
+              "source:uranium-finance:dni"
+            ],
+            "evidence_locator": "Authority allegation and independent incident sources agree the second exploit ended the venue; guilt attribution remains unresolved.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:outcome",
+            "field_path": "outcome.label",
+            "assertion": "Uranium Finance is classified failed after repeat exploits as of 2026-08-03.",
+            "value": "failed_after_repeat_exploits",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:halborn",
+              "source:uranium-finance:immunefi",
+              "source:uranium-finance:coindesk"
+            ],
+            "evidence_locator": "Two attacks, a fatal invariant error and closure support failure independently of disputed actor attribution.",
+            "support_direction": "supports",
+            "note": "Analyst lifecycle classification; observed activity and events do not prove one exclusive cause.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:what_it_is:1",
+            "field_path": "analysis.sections.what_it_is.body",
+            "assertion": "Uranium Finance was a BNB Chain AMM using liquidity pools.",
+            "value": "Uranium Finance was a BNB Chain AMM using liquidity pools.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:halborn"
+            ],
+            "evidence_locator": "Authority description and independent technical analysis.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:what_it_is:2",
+            "field_path": "analysis.sections.what_it_is.body",
+            "assertion": "The venue used U92 as a native token inside the protocol.",
+            "value": "The venue used U92 as a native token inside the protocol.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:theblock"
+            ],
+            "evidence_locator": "Contemporary stolen-asset inventory.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:what_it_is:3",
+            "field_path": "analysis.sections.what_it_is.body",
+            "assertion": "Later physical-uranium or uranium-branded projects are outside this profile.",
+            "value": "Later physical-uranium or uranium-branded projects are outside this profile.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:uranium-finance:doj"
+            ],
+            "evidence_locator": "Case-specific identity scope.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:what_happened:1",
+            "field_path": "analysis.sections.what_happened.body",
+            "assertion": "The April 8 incident allegedly extracted about $1.4 million through reward logic.",
+            "value": "The April 8 incident allegedly extracted about $1.4 million through reward logic.",
+            "as_of": "2026-08-03",
+            "confidence": "medium",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:indictment"
+            ],
+            "evidence_locator": "Charging documents; allegation only.",
+            "support_direction": "supports",
+            "note": "The named defendant is presumed innocent unless proven guilty.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:what_happened:2",
+            "field_path": "analysis.sections.what_happened.body",
+            "assertion": "The April 28 invariant exploit drained roughly $50 million to $53.3 million across 26 pools.",
+            "value": "The April 28 invariant exploit drained roughly $50 million to $53.3 million across 26 pools.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:coindesk",
+              "source:uranium-finance:immunefi"
+            ],
+            "evidence_locator": "Authority allegation and contemporary independent estimates.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:what_happened:3",
+            "field_path": "analysis.sections.what_happened.body",
+            "assertion": "About $31 million was seized in February 2025 but is not established as distributed victim recovery.",
+            "value": "About $31 million was seized in February 2025 but is not established as distributed victim recovery.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:seizure-report"
+            ],
+            "evidence_locator": "Authority and independent seizure reports.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:why_this_outcome:1",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "assertion": "A 10,000-versus-1,000 arithmetic mismatch broke the V2 invariant check.",
+            "value": "A 10,000-versus-1,000 arithmetic mismatch broke the V2 invariant check.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:halborn",
+              "source:uranium-finance:immunefi",
+              "source:uranium-finance:dni"
+            ],
+            "evidence_locator": "Independent technical reconstructions.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:why_this_outcome:2",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "assertion": "The defect was application code introduced during migration, not a BNB Chain consensus failure.",
+            "value": "The defect was application code introduced during migration, not a BNB Chain consensus failure.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:uranium-finance:coindesk",
+              "source:uranium-finance:halborn",
+              "source:uranium-finance:attack-tx"
+            ],
+            "evidence_locator": "Migration reporting, code analysis and chain record.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:why_this_outcome:3",
+            "field_path": "analysis.sections.why_this_outcome.body",
+            "assertion": "The evidence supports repeat control failure but does not establish criminal guilt.",
+            "value": "The evidence supports repeat control failure but does not establish criminal guilt.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:dni"
+            ],
+            "evidence_locator": "Incident record and explicit authority caveat.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:strategic_choices:1",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "assertion": "Uranium modified the upstream constant-product fee and invariant arithmetic.",
+            "value": "Uranium modified the upstream constant-product fee and invariant arithmetic.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:halborn",
+              "source:uranium-finance:immunefi"
+            ],
+            "evidence_locator": "Independent code comparisons.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:strategic_choices:2",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "assertion": "The venue continued through migration after an earlier April attack.",
+            "value": "The venue continued through migration after an earlier April attack.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:coindesk",
+              "source:uranium-finance:dni"
+            ],
+            "evidence_locator": "Two-incident chronology and migration timing.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:strategic_choices:3",
+            "field_path": "analysis.sections.strategic_choices.body",
+            "assertion": "The reviewed record does not show a successful independent verification of the fatal V2 change before deployment.",
+            "value": "The reviewed record does not show a successful independent verification of the fatal V2 change before deployment.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:uranium-finance:dni",
+              "source:uranium-finance:coindesk"
+            ],
+            "evidence_locator": "Contemporaneous review record.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:operating_model:1",
+            "field_path": "analysis.sections.operating_model.body",
+            "assertion": "Uranium used constant-product pools and farming rewards.",
+            "value": "Uranium used constant-product pools and farming rewards.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:halborn",
+              "source:uranium-finance:theblock"
+            ],
+            "evidence_locator": "Technical design and asset inventory.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:operating_model:2",
+            "field_path": "analysis.sections.operating_model.body",
+            "assertion": "The V2 invariant error allowed withdrawals vastly larger than the supplied value.",
+            "value": "The V2 invariant error allowed withdrawals vastly larger than the supplied value.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:halborn",
+              "source:uranium-finance:immunefi",
+              "source:uranium-finance:knownsec"
+            ],
+            "evidence_locator": "Independent exploit reconstructions.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:operating_model:3",
+            "field_path": "analysis.sections.operating_model.body",
+            "assertion": "No reviewed reserve or insurance could recapitalize the venue after the second loss.",
+            "value": "No reviewed reserve or insurance could recapitalize the venue after the second loss.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:coindesk"
+            ],
+            "evidence_locator": "Closure following the loss and absence of a disclosed recovery facility.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:token_and_value_capture:1",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "assertion": "U92 was Uranium’s native token and was held inside affected protocol balances.",
+            "value": "U92 was Uranium’s native token and was held inside affected protocol balances.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:theblock"
+            ],
+            "evidence_locator": "Contemporary stolen-asset inventory.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:token_and_value_capture:2",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "assertion": "Reviewed sources do not establish durable U92 fee, governance or recovery rights.",
+            "value": "Reviewed sources do not establish durable U92 fee, governance or recovery rights.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:coindesk"
+            ],
+            "evidence_locator": "Incident sources do not document those rights.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:token_and_value_capture:3",
+            "field_path": "analysis.sections.token_and_value_capture.body",
+            "assertion": "Asset seizure does not revive U92 or the exchange.",
+            "value": "Asset seizure does not revive U92 or the exchange.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:seizure-report"
+            ],
+            "evidence_locator": "Legal recovery and product continuity are separate.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:counterfactual:1",
+            "field_path": "analysis.sections.counterfactual.body",
+            "assertion": "Differential and invariant testing could detect the documented constant mismatch.",
+            "value": "Differential and invariant testing could detect the documented constant mismatch.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:uranium-finance:halborn",
+              "source:uranium-finance:immunefi",
+              "source:uranium-finance:dni"
+            ],
+            "evidence_locator": "Reproducible technical defect supports the control.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:counterfactual:2",
+            "field_path": "analysis.sections.counterfactual.body",
+            "assertion": "Pausing after the first attack could reduce exposure during the later migration.",
+            "value": "Pausing after the first attack could reduce exposure during the later migration.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:coindesk"
+            ],
+            "evidence_locator": "Observed two-incident chronology.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:counterfactual:3",
+            "field_path": "analysis.sections.counterfactual.body",
+            "assertion": "No counterfactual proves all losses or alleged conduct would have been prevented.",
+            "value": "No counterfactual proves all losses or alleged conduct would have been prevented.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:dni"
+            ],
+            "evidence_locator": "Unobserved alternative and pending criminal case.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:risks_and_unknowns:1",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "assertion": "The criminal charges are accusations and the defendant is presumed innocent.",
+            "value": "The criminal charges are accusations and the defendant is presumed innocent.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:indictment"
+            ],
+            "evidence_locator": "Explicit authority notice.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:risks_and_unknowns:2",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "assertion": "Seized assets are not the same as funds distributed to victims.",
+            "value": "Seized assets are not the same as funds distributed to victims.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:seizure-report"
+            ],
+            "evidence_locator": "Seizure and victim-contact record.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:risks_and_unknowns:3",
+            "field_path": "analysis.sections.risks_and_unknowns.body",
+            "assertion": "Final recovery, permissions, audit history and claimant allocations remain unknown.",
+            "value": "Final recovery, permissions, audit history and claimant allocations remain unknown.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:dni"
+            ],
+            "evidence_locator": "No final ledger or case disposition.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:lifecycle:1",
+            "field_path": "analysis.sections.lifecycle.body",
+            "assertion": "Uranium suffered two separate April 2021 attacks.",
+            "value": "Uranium suffered two separate April 2021 attacks.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:dni"
+            ],
+            "evidence_locator": "Authority allegation and independent chronology.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:lifecycle:2",
+            "field_path": "analysis.sections.lifecycle.body",
+            "assertion": "The second exploit forced the exchange to shut down.",
+            "value": "The second exploit forced the exchange to shut down.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:coindesk"
+            ],
+            "evidence_locator": "Authority and contemporary closure record.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:lifecycle:3",
+            "field_path": "analysis.sections.lifecycle.body",
+            "assertion": "Later seizure and criminal proceedings concern recovery and attribution, not venue revival.",
+            "value": "Later seizure and criminal proceedings concern recovery and attribution, not venue revival.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:seizure-report"
+            ],
+            "evidence_locator": "Legal and product outcomes are separate.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:outlook_and_watch:1",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "assertion": "The criminal docket and forfeiture process are the material watch items.",
+            "value": "The criminal docket and forfeiture process are the material watch items.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:indictment"
+            ],
+            "evidence_locator": "Current authority process.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:outlook_and_watch:2",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "assertion": "Victim recovery should count only when value is actually distributed or legally credited.",
+            "value": "Victim recovery should count only when value is actually distributed or legally credited.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "inference",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:seizure-report"
+            ],
+            "evidence_locator": "Seizure and victim-contact distinction.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:section:outlook_and_watch:3",
+            "field_path": "analysis.sections.outlook_and_watch.body",
+            "assertion": "No reviewed evidence supports a Uranium Finance revival.",
+            "value": "No reviewed evidence supports a Uranium Finance revival.",
+            "as_of": "2026-08-03",
+            "confidence": "high",
+            "kind": "unknown",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:coindesk"
+            ],
+            "evidence_locator": "Closure with no successor record.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:metric:first-exploit-loss",
+            "field_path": "metrics[metric:uranium-finance:first-exploit-loss:2021-04-08].value",
+            "assertion": "First exploit amount alleged was 1400000 USD for the stated scope and window.",
+            "value": 1400000,
+            "as_of": "2021-04-08",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:indictment"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:metric:second-exploit-loss-authority",
+            "field_path": "metrics[metric:uranium-finance:second-exploit-loss-authority:2021-04-28].value",
+            "assertion": "Second exploit amount alleged was 53300000 USD for the stated scope and window.",
+            "value": 53300000,
+            "as_of": "2021-04-28",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:indictment"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:metric:second-exploit-loss-contemporary",
+            "field_path": "metrics[metric:uranium-finance:second-exploit-loss-contemporary:2021-04-28].value",
+            "assertion": "Second exploit contemporary estimate was 50000000 USD for the stated scope and window.",
+            "value": 50000000,
+            "as_of": "2021-04-28",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:coindesk",
+              "source:uranium-finance:halborn",
+              "source:uranium-finance:theblock"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:metric:assets-seized",
+            "field_path": "metrics[metric:uranium-finance:assets-seized:2025-02-24].value",
+            "assertion": "Assets seized, not distributed was 31000000 USD for the stated scope and window.",
+            "value": 31000000,
+            "as_of": "2025-02-24",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:seizure-report"
+            ],
+            "evidence_locator": "Provider response replayed between 2026-08-03T19:59:00Z and 2026-08-03T20:05:00Z; exact value retained in the research artifact.",
+            "support_direction": "supports",
+            "note": "Point-in-time provider observation; adapters may revise same-day values and must not be combined across unlike scopes.",
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:event:first-exploit",
+            "field_path": "events[event:uranium-finance:first-exploit]",
+            "assertion": "A reward-logic exploit allegedly extracted about $1.4 million; criminal attribution remains unproven.",
+            "value": "2021-04-08",
+            "as_of": "2021-04-08",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:indictment"
+            ],
+            "evidence_locator": "Authority allegations with presumption-of-innocence caveat.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          },
+          {
+            "id": "claim:uranium-finance:event:fatal-exploit",
+            "field_path": "events[event:uranium-finance:fatal-exploit]",
+            "assertion": "The V2 invariant error was exploited across 26 pools and Uranium Finance shut down.",
+            "value": "2021-04-28",
+            "as_of": "2021-04-28",
+            "confidence": "high",
+            "kind": "fact",
+            "source_ids": [
+              "source:uranium-finance:doj",
+              "source:uranium-finance:coindesk",
+              "source:uranium-finance:halborn",
+              "source:uranium-finance:attack-tx"
+            ],
+            "evidence_locator": "Authority, independent and onchain records.",
+            "support_direction": "supports",
+            "note": null,
+            "review": {
+              "state": "pending",
+              "reviewer": null,
+              "reviewed_at": null
+            }
+          }
+        ],
+        "freshness": {
+          "state": "current",
+          "last_reviewed_at": "2026-08-03T20:05:00Z",
+          "next_review_at": "2026-08-10T20:05:00Z",
+          "field_reviews": []
+        },
+        "quality": {
+          "publication_state": "review",
+          "completeness_pct": 100,
+          "confidence": "high",
+          "unsourced_fields": [
+            "Criminal disposition",
+            "Final victim recovery",
+            "Complete pre-deployment review record",
+            "Final claimant allocation"
+          ]
+        },
+        "extensions": {
+          "legacy_origin": "dead_exchanges",
+          "observation_window": {
+            "started_at": "2026-08-03T19:59:00Z",
+            "completed_at": "2026-08-03T20:05:00Z"
+          },
+          "explicit_unknowns": [
+            "What final criminal-case disposition will occur?",
+            "How much seized value will ultimately reach victims?",
+            "What independent audit work covered the vulnerable V2 pair contracts before deployment?",
+            "How were final losses allocated across LPs, treasury and token holders?"
+          ],
+          "identity_boundary": "This profile covers the 2021 Uranium Finance AMM and farming protocol on BNB Chain. It has no relationship to physical uranium, uranium-backed tokens or later projects using the word Uranium. The exchange’s code defect was application-specific; it was not a BNB Chain consensus failure. Old tokens, contracts, domains or legal recovery do not constitute a successor exchange.",
+          "methodology_notes": [
+            "Every material field is attached to atomic pending claims; a person must review those claims before the report can be published.",
+            "Routed volume is not additive to underlying DEX volume, TVL is not market depth, fees are not profit, residual balances are not an operating venue, and observed co-movement is not causation.",
+            "Documented decisions, observed outcomes, analyst inferences and unresolved unknowns are kept separate.",
+            "The DOJ’s March 2026 account and indictment are allegations. The named defendant is presumed innocent unless proven guilty.",
+            "The $31 million seizure is tracked separately from victim recovery; seized assets are not assumed distributed."
+          ]
+        }
+      },
+      "feature": {
+        "kind": "dex",
+        "slug": "uranium-finance",
+        "lifecycle": "dead",
+        "operating_model": "Closed BNB Chain constant-product AMM and yield farm.",
+        "product_cohort": "single_chain_spot_amm_and_yield_farm",
+        "custody_model": "non_custodial",
+        "primary_chain": "BNB Chain",
+        "chains": [
+          "BNB Chain"
+        ],
+        "token_status": "launched",
+        "token_symbol": "U92",
+        "token_launch_date": null,
+        "token_launch_timing": "post_product",
+        "token_strategy": "farming_incentive_token_with_unverified_current_rights",
+        "token_source_url": "https://www.theblock.co/amp/post/103076/binance-smart-chain-defi-uranium-finance-exploited-lost-50-million",
+        "metric_type": "exploit_loss",
+        "metric_unit": "usd",
+        "metric_window": "incident_estimate",
+        "metric_as_of": "2021-04-28",
+        "metric_observed_at": "2026-08-03T19:59:00Z",
+        "comparability_key": "dex|single_chain_spot_amm|exploit_loss|usd|incident_estimate",
+        "evidence": {
+          "canonical_profile": true,
+          "claims_pending_human_review": true,
+          "identity_boundary": "This profile covers the 2021 Uranium Finance AMM and farming protocol on BNB Chain. It has no relationship to physical uranium, uranium-backed tokens or later projects using the word Uranium. The exchange’s code defect was application-specific; it was not a BNB Chain consensus failure. Old tokens, contracts, domains or legal recovery do not constitute a successor exchange.",
+          "metric_replayed_at": "2026-08-03T19:59:00Z",
+          "source_count": 10
+        },
+        "quality_label": "verified",
+        "quality_issues": [],
+        "lifecycle_evidence_date": "2026-08-03",
+        "last_verified_at": "2026-08-03",
+        "next_review_at": "2026-08-10",
+        "freshness_status": "current",
+        "updated_at": "2026-08-03"
+      }
+    }
+  ]
+}
