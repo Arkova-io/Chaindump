@@ -39,7 +39,7 @@ describe('Forensics analysis navigation', () => {
     expect(html).toContain('dataCompletenessPct');
     expect(html).toContain('citationCount');
     expect(html).toContain('value="dossier"');
-    expect(html).toContain('Research coverage');
+    expect(html).toContain('Report depth');
     expect(html).toContain('id="blockchainAnalysisStatus"');
     expect(html).toContain('row.dossierStatus');
     expect(html).toContain('Where chains stand');
@@ -47,11 +47,11 @@ describe('Forensics analysis navigation', () => {
     expect(html).toContain("coverage: 'Legacy postmortem'");
     expect(html).toContain('full research reports');
     expect(html).toContain('id="blockchainAnalysisCausal"');
-    expect(html).toContain("'why analysis complete'");
-    expect(html).toContain("'why analysis pending'");
+    expect(html).toContain("published: 'outcome explained'");
+    expect(html).toContain("pending: 'explanation still open'");
     expect(html).toContain('Facts are not the same as an explanation.');
-    expect(html).toContain('Why-analysis coverage');
-    expect(html).toContain('Why-analysis freshness');
+    expect(html).toContain('How many reports explain the outcome');
+    expect(html).toContain('reports that explain the outcome');
     expect(html).toContain("row.causalStatus === state.blockchainAnalysisCausal");
     expect(html).toContain('function normalizeLegacyBlockchainAnalysis(row, lifecycle)');
   expect(html).toContain('function factObjectText(value)');
@@ -90,8 +90,8 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('custody_model_source_indexes');
     expect(html).toContain('product_cohort_source_indexes');
     expect(html).toContain('observation time unknown');
-    expect(html).toContain('lifecycle evidence');
-    expect(html).toContain('next review');
+    expect(html).toContain('Evidence dates');
+    expect(html).toContain('check again by');
     expect(html).toContain('function reviewDateIsDue(nextReviewAt)');
     expect(html).toContain('function forensicReviewState(review');
     expect(html).toContain('Observed status');
@@ -110,8 +110,8 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('function forensicSourceArray(contract)');
     expect(html).toContain('forensicSourceArray(forensic)');
     expect(html).toContain("forensicStatus: analysis.forensic_analysis_status || (forensic ? 'published' : 'pending')");
-    expect(html).toContain("'why analyses complete'");
-    expect(html).toContain('Evidence check:');
+    expect(html).toContain("'outcome explained'");
+    expect(html).toContain('Independent support:');
     expect(html).toContain('important claims have enough independent support');
     expect(html).toContain('publicationDepth: parsedObject(row.publication_depth)');
     expect(html).toContain('sections.push(exchangeFindingHtml(row))');
@@ -125,16 +125,17 @@ describe('DEX/CEX Analysis data surface', () => {
     expect(html).toContain('Primary-chain context');
     expect(html).toContain('95% CI');
     expect(html).toContain('small sample');
-    expect(html).toContain('Predeclared hypotheses and what would falsify them');
+    expect(html).toContain('Patterns worth testing as more reports are added');
     expect(html).toContain('single cases are withheld from the chart');
     expect(html).toContain("exchangeAssociationPanel(state.exchangeAnalysisSummaries.dex, 'DEX')");
     expect(html).toContain("exchangeAssociationPanel(state.exchangeAnalysisSummaries.cex, 'CEX')");
   });
 
   it('opens exchange dossiers through a public UI route instead of requiring API inspection', () => {
-    expect(html).toContain('const dossierLink = `/exchange/${encodeURIComponent(row.kind)}/${encodeURIComponent(row.lifecycle)}/${encodeURIComponent(row.slug)}`;');
+    expect(html).toContain('const dossierLink = profileHref(row.kind, row.slug);');
+    expect(html).toContain("if (seg === 'profile' && rest && third) {");
     expect(html).toContain("} else if (seg === 'exchange' && rest && third && fourth) {");
-    expect(html).toContain('state.exchangeAnalysisExpanded = `${decodeURIComponent(rest)}:${decodeURIComponent(third)}:${decodeURIComponent(fourth)}`;');
+    expect(html).toContain("openProfile(decodeURIComponent(rest), decodeURIComponent(fourth), { replace:true, focus:false });");
   });
 });
 
@@ -169,8 +170,8 @@ describe('Web3 Casino Analysis data surface', () => {
     expect(html).toContain('id="casinoAnalysisKind"');
     expect(html).toContain('id="casinoAnalysisSubtype"');
     expect(html).toContain('id="casinoAnalysisToken"');
-    expect(html).toContain('Evidence: ${esc(item.registered_source_count)} registered');
-    expect(html).toContain('const dossierLink = `/casino/${encodeURIComponent(item.case_id)}`;');
+    expect(html).toContain('${esc(item.registered_source_count)} cited source');
+    expect(html).toContain("const dossierLink = profileHref('web3_casino', item.case_id);");
     expect(html).toContain("} else if (seg === 'casino' && rest) {");
     expect(html).toContain('loadCasinoAnalysisDetail(state.casinoAnalysisExpanded);');
     expect(html).toContain('Open report →');
@@ -186,10 +187,9 @@ describe('Web3 Casino Analysis data surface', () => {
 
   it('visibly separates registered, reachable, and editor-reviewed casino evidence', () => {
     expect(html).toContain('function evidenceStatusParts(source)');
-    expect(html).toContain("'editor review pending'");
-    expect(html).toContain('identity.registered_source_count');
-    expect(html).toContain('identity.reachable_source_count');
-    expect(html).toContain('identity.reviewed_source_count');
+    expect(html).toContain("'desk check pending'");
+    expect(html).toContain("item.registered_source_count");
+    expect(html).toContain('cited source${Number(item.registered_source_count)');
     expect(html).toContain('Evidence by field and review status');
     expect(html).toContain('casinoEvidenceStatusHtml({ ...claim, registered: true');
     expect(html).toContain('Independent support: ${esc(passing)} of ${esc(total)} important claims meet the bar');
@@ -203,16 +203,15 @@ describe('Web3 Casino Analysis data surface', () => {
   });
 
   it('keeps corpus coverage distinct from claim support', () => {
-    expect(html).toContain('reports still missing');
-    expect(html).toContain('expected dossier IDs remain absent from the indexed corpus');
-    expect(html).toContain('No cross-case “largest casino” ranking is computed.');
+    expect(html).toContain("gstat(cases.length, 'casino reports')");
+    expect(html).toContain("gstat(cases.filter(item=>item.status==='active').length, 'active businesses')");
     expect(html).toContain('No licence observation is published. Do not infer global legality from this dossier.');
     expect(html).toContain('Lifecycle timeline');
     expect(html).toContain('Where these businesses stand');
     expect(html).toContain('function casinoReviewState(item)');
     expect(html).toContain('detail.synthesis?.forensic_analysis?.review');
     expect(html).toContain('Bars use each report’s next-review date where one exists.');
-    expect(html).toContain('which lifecycle, legal, loss, and what-if claims are supported or withheld');
+    expect(html).toContain('Missing evidence stays labeled as a research gap.');
   });
 
   it('renders supported casino causal fields and withholds unsupported fields', () => {
@@ -241,7 +240,7 @@ describe('customer-facing analysis headers', () => {
 
 describe('NFT and Ordinals Analysis data surface', () => {
   it('uses the same sortable research-index pattern as Blockchain Analysis', () => {
-    expect(html).toContain('NFT/Ordinals evidence check:');
+    expect(html).toContain('These case studies show what happened');
     expect(html).toContain('id="nftCaseStatus"');
     expect(html).toContain('id="nftCaseChain"');
     expect(html).toContain('id="nftCaseSort"');
@@ -266,8 +265,7 @@ describe('NFT and Ordinals Analysis data surface', () => {
   });
 
   it('opens a curated NFT dossier when a collection deep link is visited', () => {
-    expect(html).toContain("state.nftExpanded = decodeURIComponent(rest);");
-    expect(html).toContain("switchView('nft-analysis', false);");
+    expect(html).toContain("openProfile('nft_collection', decodeURIComponent(rest), { replace:true, fallbackType:'ordinals_collection', focus:false });");
   });
 
   it('renders structured NFT causal, token, and chain fields instead of leaving Wave7 JSON hidden', () => {

@@ -53,6 +53,7 @@ function exchangeCardRenderer() {
     const exchangeAnalysisDetails = () => '';
     const exchangeTokenLine = () => '';
     const exchangeMetric = () => '—';
+    const profileHref = (type, slug) => '/profile/' + type + '/' + slug;
     const fmtUsd = (value) => String(value);
     const exchangeLabel = (value) => String(value || '').replaceAll('_', ' ');
     const exchangeFindingHtml = () => '';
@@ -112,9 +113,9 @@ describe('cross-vertical publication-depth UI', () => {
 
     expect(output).not.toContain('UNSUPPORTED EXCHANGE WHY');
     expect(output).toContain('What happened withheld — independent support pending.');
-    expect(output).toContain('Independent support: 0/1 meet the bar');
+    expect(output).toContain('available sources do not support a firm call yet');
     expect(output).toContain('Registered source');
-    expect(output).toContain('registered · reachable · editor review pending');
+    expect(output).toContain('link available · desk check pending');
   });
 
   it('withholds NFT card/detail lifecycle prose and preserves source access', () => {
@@ -135,7 +136,7 @@ describe('cross-vertical publication-depth UI', () => {
     expect(output).not.toContain('UNSUPPORTED NFT LIFECYCLE');
     expect(output).toContain('Lifecycle read withheld — independent support pending.');
     expect(output).toContain('Registered source');
-    expect(output).toContain('registered · reachable · editor review pending');
+    expect(output).toContain('link available · desk check pending');
   });
 
   it('renders non-high-risk sections when no predicate is supplied', () => {
