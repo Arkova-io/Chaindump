@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { buildProfileAdapterCensus } from '../scripts/profile-adapter-census.mjs';
 
 const EXPECTED_COUNTS = {
-  blockchain: [93, 0, 0, 67, 26, 68, 1834],
+  blockchain: [93, 0, 0, 63, 30, 63, 1618],
   dex: [30, 0, 5, 0, 25, 5, 15],
   cex: [30, 0, 17, 1, 12, 18, 28],
   nft_collection: [39, 0, 12, 0, 27, 0, 0],
@@ -128,8 +128,8 @@ describe('full-corpus canonical profile adapter', () => {
       return totals;
     }, {});
     expect(classes).toEqual({
-      source_metadata_debt: 2086,
-      citation_debt: 1244,
+      source_metadata_debt: 1948,
+      citation_debt: 1166,
     });
 
     const structural = census.rows.filter((row) => row.validation_error_classes.structural_contract_error);
