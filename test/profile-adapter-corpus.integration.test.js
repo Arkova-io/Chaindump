@@ -3,7 +3,7 @@ import { buildProfileAdapterCensus } from '../scripts/profile-adapter-census.mjs
 
 const EXPECTED_COUNTS = {
   blockchain: [90, 0, 0, 74, 16, 75, 2108],
-  dex: [30, 0, 13, 0, 17, 13, 39],
+  dex: [30, 0, 8, 0, 22, 8, 22],
   cex: [30, 0, 22, 1, 7, 23, 37],
   nft_collection: [39, 0, 16, 0, 23, 0, 0],
   ordinals_collection: [12, 0, 6, 0, 6, 0, 0],
@@ -127,8 +127,8 @@ describe('full-corpus canonical profile adapter', () => {
       return totals;
     }, {});
     expect(classes).toEqual({
-      source_metadata_debt: 2290,
-      citation_debt: 1347,
+      source_metadata_debt: 2282,
+      citation_debt: 1338,
     });
 
     const structural = census.rows.filter((row) => row.validation_error_classes.structural_contract_error);
