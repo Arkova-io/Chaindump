@@ -3091,6 +3091,18 @@ const PROFILE_SECTION_ORDER = Object.freeze([
   ['lifecycle', 'Lifecycle'],
   ['outlook_and_watch', 'Outlook and what to watch'],
 ]);
+const PROFILE_SECTION_EMPTY_COPY = Object.freeze({
+  what_it_is: "We do not have enough verified information to describe this clearly yet.",
+  what_happened: "We do not have a dated, source-backed history for this yet.",
+  why_this_outcome: "We do not have enough evidence to explain this outcome yet.",
+  strategic_choices: "The choices behind this outcome have not been verified yet.",
+  operating_model: "The operating model has not been verified yet.",
+  token_and_value_capture: "The token and value-capture model has not been verified yet.",
+  counterfactual: "There is not enough evidence yet to say what might have changed the outcome.",
+  risks_and_unknowns: "The evidence-backed risk record is not complete yet.",
+  lifecycle: "We do not have a current, dated lifecycle record for this profile yet.",
+  outlook_and_watch: "We do not have enough current evidence to publish an outlook yet.",
+});
 const PROFILE_TYPE_META = Object.freeze({
   blockchain: ['Blockchain', 'blockchain-analysis'],
   dex: ['DEX', 'exchange-analysis'],
@@ -3132,9 +3144,10 @@ function profileSectionBody(profile, key) {
   const value = profile?.analysis?.sections?.[key]?.body;
   if (typeof value !== 'string' || !value.trim()) return '';
   const body = value.trim();
-  // Database sentinels describe missing research; presenting one as the body of
-  // a report section reads like broken customer copy. Keep it in the single,
-  // honest research-gaps callout instead.
+  // Database sentinels describe missing research; presenting one as authored
+  // analysis reads like broken customer copy. The shared renderer substitutes
+  // one short, section-specific sentence so every entity keeps the same report
+  // anatomy without pretending the evidence exists.
   if (/^(unknown|unresolved|not (?:yet )?(?:known|published|available)|pending|n\/?a|—)$/i.test(body)) return '';
   return typeof customerCopy === 'function' ? customerCopy(body) : body;
 }
@@ -3190,25 +3203,13 @@ function canonicalProfileHtml(profile) {
       : `Evidence current through ${asOf}`)
     : 'The report shows only what the published evidence currently supports.';
   const sections = [];
-  const gaps = [];
   PROFILE_SECTION_ORDER.forEach(([key, label]) => {
-    const body = profileSectionBody(profile, key);
-    if (!body) { gaps.push(key); return; }
-    sections.push(`<section class="normalized-section" data-profile-section="${key}"><div class="gsec">${label}</div><div class="gbody">${esc(body)}</div></section>`);
+    const researchedBody = profileSectionBody(profile, key);
+    const body = researchedBody || PROFILE_SECTION_EMPTY_COPY[key];
+    sections.push(`<section class="normalized-section${researchedBody ? '' : ' profile-section-missing'}" data-profile-section="${key}"${researchedBody ? '' : ' data-profile-section-missing="true"'}><div class="gsec">${label}</div><div class="gbody${researchedBody ? '' : ' muted'}">${esc(body)}</div></section>`);
   });
   const sources = canonicalProfileSources(profile);
-  if (!sources) gaps.push('evidence');
-  const gapLabels = gaps.map((key) => ({
-    what_it_is:'what it is', what_happened:'what happened',
-    why_this_outcome:'why this outcome', token_and_value_capture:'token/value capture',
-    strategic_choices:'strategic choices', operating_model:'operating model',
-    counterfactual:'what could have been different', lifecycle:'lifecycle',
-    risks_and_unknowns:'risks and unknowns', outlook_and_watch:'outlook and watch signals',
-    evidence:'evidence and sources',
-  }[key] || normalizedLabel(key)));
-  const gapsHtml = gapLabels.length
-    ? `<section class="normalized-research-gaps analysis-note" data-profile-research-gaps="true"><b>Research gaps.</b> Not enough verified evidence yet for: ${esc(gapLabels.join(', '))}.</section>`
-    : '';
+  const sourcesHtml = sources || '<section class="normalized-section profile-section-missing" data-profile-evidence="sources" data-profile-section-missing="true"><div class="gsec">Evidence and sources</div><div class="gbody muted">No verified sources are published for this profile yet.</div></section>';
   const parent = profileParentView(type);
   return `<article class="profile-page" data-entity-profile="${esc(type || '')}">
     <a class="profile-back" href="/${esc(parent)}" data-profile-back="${esc(parent)}">← Back to ${esc(profileTypeLabel(type))} research</a>
@@ -3217,7 +3218,7 @@ function canonicalProfileHtml(profile) {
       <div class="profile-title-row"><h2 class="profile-title" id="profileTitle" tabindex="-1">${esc(name)}</h2>${outcome ? `<span class="gverdict ${verdictClass(rawOutcome)}">${esc(outcome)}</span>` : ''}</div>
       <div class="profile-summary">${context.length ? `${esc(context.join(' · '))} · ` : ''}${esc(freshnessSummary)}</div>
     </header>
-    <div class="profile-report">${sections.join('')}${gapsHtml}${canonicalProfileMetrics(profile)}${sources}</div>
+    <div class="profile-report">${sections.join('')}${canonicalProfileMetrics(profile)}${sourcesHtml}</div>
   </article>`;
 }
 function renderProfileView({ focus = false } = {}) {

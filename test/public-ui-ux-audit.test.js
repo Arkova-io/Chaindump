@@ -45,8 +45,9 @@ describe('public UI/UX audit guards', () => {
   });
 
   it('writes incomplete report sections as a readable sentence', () => {
-    expect(html).toContain("strategic_choices:'strategic choices'");
-    expect(html).toContain("operating_model:'operating model'");
-    expect(html).toContain("counterfactual:'what could have been different'");
+    expect(html).toContain('strategic_choices: "The choices behind this outcome have not been verified yet."');
+    expect(html).toContain('operating_model: "The operating model has not been verified yet."');
+    expect(html).toContain('counterfactual: "There is not enough evidence yet to say what might have changed the outcome."');
+    expect(html).toContain('data-profile-section-missing="true"');
   });
 });

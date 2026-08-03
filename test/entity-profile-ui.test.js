@@ -89,7 +89,7 @@ describe('shared human-facing entity profile UI', () => {
     }
   });
 
-  it('omits empty report sections and emits one compact research-gaps block', () => {
+  it('keeps all ten headings visible and uses short human copy for missing research', () => {
     const { canonicalProfileHtml } = profileRenderer();
     const fixture = structuredClone(ENTITY_PROFILE_BROWSER_FIXTURES.dex);
     fixture.analysis.sections.strategic_choices.body = null;
@@ -97,11 +97,12 @@ describe('shared human-facing entity profile UI', () => {
     fixture.sources = [];
     const output = canonicalProfileHtml(fixture);
 
-    expect(output).not.toContain('data-profile-section="strategic_choices"');
-    expect(output).not.toContain('data-profile-section="lifecycle"');
-    expect(output.match(/data-profile-research-gaps="true"/g)).toHaveLength(1);
-    expect(output).toContain('strategic choices');
-    expect(output).toContain('evidence and sources');
+    expect(output).toContain('data-profile-section="strategic_choices" data-profile-section-missing="true"');
+    expect(output).toContain('data-profile-section="lifecycle" data-profile-section-missing="true"');
+    expect(output).toContain('The choices behind this outcome have not been verified yet.');
+    expect(output).toContain('We do not have a current, dated lifecycle record for this profile yet.');
+    expect(output).toContain('No verified sources are published for this profile yet.');
+    expect(output).not.toContain('data-profile-research-gaps="true"');
   });
 
   it('treats database missing-value sentinels as research gaps, not customer copy', () => {
@@ -110,9 +111,26 @@ describe('shared human-facing entity profile UI', () => {
     fixture.analysis.sections.token_and_value_capture.body = 'unresolved';
     const output = canonicalProfileHtml(fixture);
 
-    expect(output).not.toContain('data-profile-section="token_and_value_capture"');
+    expect(output).toContain('data-profile-section="token_and_value_capture" data-profile-section-missing="true"');
     expect(output).not.toContain('>unresolved<');
-    expect(output).toContain('token/value capture');
+    expect(output).toContain('The token and value-capture model has not been verified yet.');
+  });
+
+  it('renders the exact ten-section report template for every entity family', () => {
+    const { canonicalProfileHtml } = profileRenderer();
+    for (const fixture of Object.values(ENTITY_PROFILE_BROWSER_FIXTURES)) {
+      const thin = structuredClone(fixture);
+      thin.analysis.sections.strategic_choices.body = null;
+      thin.analysis.sections.lifecycle.body = 'unknown';
+      const output = canonicalProfileHtml(thin);
+      for (const [key] of [
+        ['what_it_is'], ['what_happened'], ['why_this_outcome'], ['strategic_choices'],
+        ['operating_model'], ['token_and_value_capture'], ['counterfactual'],
+        ['risks_and_unknowns'], ['lifecycle'], ['outlook_and_watch'],
+      ]) {
+        expect(output, `${thin.identity.type}:${key}`).toContain(`data-profile-section="${key}"`);
+      }
+    }
   });
 
   it('wires the canonical page route and maps every legacy report URL into it', () => {
