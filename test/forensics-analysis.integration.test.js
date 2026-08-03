@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'fs';
+import { runInNewContext } from 'node:vm';
 
 const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
 const sidebar = html.match(/<aside class="tabs" id="sidebar">([\s\S]*?)<\/aside>/)?.[1] || '';
@@ -54,11 +55,52 @@ describe('Forensics analysis navigation', () => {
     expect(html).toContain('reports that explain the outcome');
     expect(html).toContain("row.causalStatus === state.blockchainAnalysisCausal");
     expect(html).toContain('function normalizeLegacyBlockchainAnalysis(row, lifecycle)');
+    expect(html).toContain('function mergeLegacyBlockchainAnalysisRow(byName, row, lifecycle)');
+    expect(html).toContain("canonical.coverage !== 'Research dossier'");
+    expect(html).toContain("mergeLegacyBlockchainAnalysisRow(byName, row, 'mid')");
+    expect(html).toContain("mergeLegacyBlockchainAnalysisRow(byName, row, 'dead')");
+    expect(html).not.toContain("byName.set(String(row.chain).toLowerCase(), normalizeLegacyBlockchainAnalysis(row, 'mid'))");
   expect(html).toContain('function factObjectText(value)');
   expect(html).toContain("['classification', 'most_likely', 'base', 'bull', 'bear', 'confidence']");
   expect(html).toContain("<div class=\"dsub\">Why this outcome</div><div class=\"gbody\">${esc(d.why)}</div>");
   expect(html).toContain("<div class=\"dsub\">Strategic choices</div>");
   expect(html).toContain("<div class=\"dsub\">Material unknowns</div>");
+  });
+
+  it('keeps canonical coverage when a live chain also appears in a lifecycle cohort', () => {
+    const start = html.indexOf('function normalizeLegacyBlockchainAnalysis(row, lifecycle)');
+    const end = html.indexOf('function blockchainLifecycleClass(lifecycle)');
+    expect(start).toBeGreaterThan(-1);
+    expect(end).toBeGreaterThan(start);
+    const context = {
+      parsedObject(value) {
+        if (value && typeof value === 'object') return value;
+        try { return JSON.parse(value || '{}'); } catch { return {}; }
+      },
+      sourceArray(value) { return Array.isArray(value) ? value : []; },
+      forensicReviewState() { return 'current'; },
+    };
+    runInNewContext(`${html.slice(start, end)}\nthis.normalize = normalizeBlockchainAnalysis;`, context);
+    const rows = context.normalize(
+      { chains: [{
+        name: 'Overlap', tvl: 100, updated_at: '2026-08-03',
+        dossier: {
+          dimensionCount: 8, expectedDimensionCount: 8, dataCompletenessPct: 100,
+          citationCount: 12, status: 'declining', sources: [],
+          forensicAnalysis: {
+            status: 'published', version: 'forensic-analysis-v1', outcomeAsOf: '2026-08-03',
+          },
+        },
+      }] },
+      { chains: [{ chain: 'Overlap', tvl: 80, why_stuck: 'Legacy cohort context.', profile: '{}' }] },
+      { chains: [] },
+    );
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({
+      name: 'Overlap', lifecycle: 'mid', coverage: 'Research dossier',
+      dimensionCount: 8, causalStatus: 'published', metric: 80,
+      summary: 'Legacy cohort context.',
+    });
   });
 });
 

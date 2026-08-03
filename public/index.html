@@ -1263,6 +1263,28 @@ function normalizeLegacyBlockchainAnalysis(row, lifecycle) {
   };
 }
 
+// A chain can appear in both the live top-50 feed and a researched lifecycle
+// cohort. The live row owns the richer dossier/causal fields; the lifecycle row
+// contributes its cohort, metric and narrative. Never let an older mid/dead
+// projection erase a canonical dossier just because both use the same name.
+function mergeLegacyBlockchainAnalysisRow(byName, row, lifecycle) {
+  const legacy = normalizeLegacyBlockchainAnalysis(row, lifecycle);
+  const key = String(row.chain).toLowerCase();
+  const canonical = byName.get(key);
+  if (!canonical || canonical.coverage !== 'Research dossier') {
+    byName.set(key, legacy);
+    return;
+  }
+  byName.set(key, {
+    ...legacy,
+    ...canonical,
+    lifecycle,
+    metric: legacy.metric ?? canonical.metric,
+    metricLabel: legacy.metric == null ? canonical.metricLabel : legacy.metricLabel,
+    summary: legacy.summary || canonical.summary,
+  });
+}
+
 function normalizeBlockchainAnalysis(live, mid, dead) {
   const byName = new Map();
   (live.chains || []).forEach((row) => {
@@ -1288,10 +1310,10 @@ function normalizeBlockchainAnalysis(live, mid, dead) {
     });
   });
   (mid.chains || []).forEach((row) => {
-    byName.set(String(row.chain).toLowerCase(), normalizeLegacyBlockchainAnalysis(row, 'mid'));
+    mergeLegacyBlockchainAnalysisRow(byName, row, 'mid');
   });
   (dead.chains || []).forEach((row) => {
-    byName.set(String(row.chain).toLowerCase(), normalizeLegacyBlockchainAnalysis(row, 'dead'));
+    mergeLegacyBlockchainAnalysisRow(byName, row, 'dead');
   });
   return [...byName.values()];
 }
