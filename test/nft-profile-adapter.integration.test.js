@@ -58,7 +58,7 @@ describe('NFT canonical profile API adapter', () => {
     expect(body.analysis.sections.what_happened.body).toContain('Elementals');
     expect(body.analysis.sections.why_this_outcome.body).toContain('trust deficit');
     expect(body.analysis.sections.outlook_and_watch.body).toContain('TCG sell-through');
-    expect(body.claims.length).toBeGreaterThan(20);
+    expect(body.claims).toHaveLength(34);
     expect(body.claims.every(({ review }) => review.state === 'pending')).toBe(true);
     expect(body.quality).toMatchObject({
       publication_state: 'review',
@@ -71,6 +71,7 @@ describe('NFT canonical profile API adapter', () => {
       dimension: 'supply', value: 10000,
       claim_ids: ['nft:azuki:profile-evidence-supply-or-mint'],
     });
+    expect(body.extensions.rich_profile_projection).toBe(true);
   });
 
   it('does not manufacture depth for a sparse Quantum Cats control', async () => {
@@ -117,6 +118,10 @@ describe('NFT canonical profile API adapter', () => {
     expect(body.analysis.sections.why_this_outcome.body).toBeNull();
     expect(body.analysis.sections.lifecycle.body).toBeNull();
     expect(JSON.stringify(body)).not.toContain('Unverified causal conclusion');
+    expect(JSON.stringify(body.analysis)).not.toMatch(/liquidity|valuation|value capture/i);
+    expect(body.status.operating_state).toBeNull();
+    expect(body.outcome.label).toBeNull();
+    expect(body.extensions.rich_profile_projection).toBe(false);
     expect(body.quality).toMatchObject({
       publication_state: 'review',
       completeness_pct: 10,
@@ -124,4 +129,3 @@ describe('NFT canonical profile API adapter', () => {
     expect(body.quality.unsourced_fields).toContain('analysis.sections.why_this_outcome.body');
   });
 });
-

@@ -3841,7 +3841,8 @@ async function nftEntityProfile(type, slug) {
   );
   const projection = projectFieldCitedNftProfile({
     slug,
-    profile: rawProfile,
+    profile,
+    structuredProfile: rawProfile,
     sources,
     asOf,
   });
@@ -3905,6 +3906,7 @@ async function nftEntityProfile(type, slug) {
       legacy_origin: 'nft_collections',
       publication_depth: depth,
       publication_support: profile.publication_support || {},
+      rich_profile_projection: projection.retain_rich_depth,
       evidence: Array.isArray(profile.evidence) ? profile.evidence : [],
       structured_analysis: { strategic_choices: forensic.strategic_choices || null },
     },

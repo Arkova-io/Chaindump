@@ -56,6 +56,25 @@ function sourceIdSet(sources) {
     .filter(Boolean));
 }
 
+function richDossierReady(profile, sources) {
+  const evidence = Array.isArray(profile?.evidence) ? profile.evidence : [];
+  const fields = new Set(evidence
+    .filter((item) => text(item?.value) && resolvedRefs(item?.source_ids, sources))
+    .map((item) => item.field));
+  const requiredFields = [
+    'community_history', 'founder_engagement', 'benefits', 'business', 'analysis',
+  ];
+  const forensic = objectValue(profile?.forensic_analysis);
+  return sources.size >= 4
+    && requiredFields.every((field) => fields.has(field))
+    && text(objectValue(profile?.why)?.finding || objectValue(forensic?.why)?.summary)
+    && (Array.isArray(profile?.strategic_choices) ? profile.strategic_choices.length : 0) >= 3
+    && text(objectValue(profile?.counterfactual)?.finding || objectValue(forensic?.counterfactual)?.summary)
+    && (Array.isArray(profile?.risks) ? profile.risks.length : 0) >= 3
+    && (Array.isArray(profile?.unknowns) ? profile.unknowns.length : 0) >= 4
+    && (Array.isArray(forensic?.watch) ? forensic.watch.length : 0) >= 2;
+}
+
 function resolvedRefs(value, sources) {
   const refs = Array.isArray(value) ? value.filter((item) => text(item)) : [];
   return refs.length > 0 && refs.every((ref) => sources.has(ref)) ? refs : null;
@@ -275,9 +294,16 @@ function addKnownStructures({ state, slug, profile, sources, asOf }) {
   }
 }
 
-export function projectFieldCitedNftProfile({ slug, profile, sources, asOf = null } = {}) {
+export function projectFieldCitedNftProfile({
+  slug,
+  profile,
+  structuredProfile = profile,
+  sources,
+  asOf = null,
+} = {}) {
   const sourceIds = sourceIdSet(sources);
   const sourceProfile = objectValue(profile) || {};
+  const legacyProfile = objectValue(structuredProfile) || sourceProfile;
   const state = {
     parts: Object.fromEntries(SECTION_KEYS.map((key) => [key, []])),
     claimIds: Object.fromEntries(SECTION_KEYS.map((key) => [key, new Set()])),
@@ -288,8 +314,12 @@ export function projectFieldCitedNftProfile({ slug, profile, sources, asOf = nul
     return { sections: {}, section_dates: {}, section_claim_ids: {}, claims: [] };
   }
 
-  evidenceProjection({ state, slug, profile: sourceProfile, sources: sourceIds });
-  addKnownStructures({ state, slug, profile: sourceProfile, sources: sourceIds, asOf });
+  const retainRichDepth = richDossierReady(legacyProfile, sourceIds);
+  const evidenceProfile = retainRichDepth ? legacyProfile : sourceProfile;
+  evidenceProjection({ state, slug, profile: evidenceProfile, sources: sourceIds });
+  if (retainRichDepth) {
+    addKnownStructures({ state, slug, profile: legacyProfile, sources: sourceIds, asOf });
+  }
 
   return {
     sections: Object.fromEntries(SECTION_KEYS
@@ -302,6 +332,6 @@ export function projectFieldCitedNftProfile({ slug, profile, sources, asOf = nul
       .filter((key) => state.claimIds[key].size)
       .map((key) => [key, [...state.claimIds[key]]])),
     claims: state.claims,
+    retain_rich_depth: retainRichDepth,
   };
 }
-

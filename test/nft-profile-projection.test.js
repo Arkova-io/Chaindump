@@ -35,7 +35,8 @@ describe('field-cited NFT canonical profile projection', () => {
     expect(projection.sections.outlook_and_watch).toContain('TCG sell-through');
 
     const sourceIds = new Set(azuki.sources.map(({ id }) => id));
-    expect(projection.claims.length).toBeGreaterThan(20);
+    expect(projection.claims).toHaveLength(34);
+    expect(projection.retain_rich_depth).toBe(true);
     expect(projection.claims.every(({ review }) => review.state === 'pending')).toBe(true);
     expect(projection.claims.every(({ source_ids: refs }) => (
       refs.length > 0 && refs.every((id) => sourceIds.has(id))
@@ -50,6 +51,16 @@ describe('field-cited NFT canonical profile projection', () => {
     const projection = projectFieldCitedNftProfile({
       slug: 'quantum-cats',
       profile: {
+        citation_schema: 'field-v1',
+        evidence: [
+          {
+            field: 'launch', value: 'Launched in 2024', as_of: '2024-01-01',
+            source_ids: ['qc-launch'],
+          },
+        ],
+        analysis: null,
+      },
+      structuredProfile: {
         citation_schema: 'field-v1',
         evidence: [
           {
@@ -76,6 +87,7 @@ describe('field-cited NFT canonical profile projection', () => {
       what_it_is: ['nft:quantum-cats:profile-evidence-launch'],
     });
     expect(projection.claims).toHaveLength(1);
+    expect(projection.retain_rich_depth).toBe(false);
     expect(JSON.stringify(projection)).not.toContain('market conclusion');
     expect(JSON.stringify(projection)).not.toContain('causal conclusion');
   });
