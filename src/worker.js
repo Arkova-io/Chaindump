@@ -4290,7 +4290,7 @@ async function simpleEntityProfile(type, slug) {
         : {}),
       legacy_origin: row.legacy_origin,
       category_data: Object.fromEntries(Object.entries(profile).filter(
-        ([key]) => !['sources', 'canonical_profile'].includes(key),
+        ([key]) => !['sources', 'canonical_profile', 'legacy_preservation'].includes(key),
       )),
     },
   });
