@@ -71,6 +71,7 @@ describe('promotionPlan', () => {
       'exchange_analysis_candidate',
       'casino_analysis_candidate',
       'nft_lifecycle_candidate',
+      'entity_analysis_candidate',
     ]);
     for (const dataset of REVIEW_REQUIRED_PROPOSAL_DATASETS) {
       expect(PROMOTABLE[dataset]).toBeUndefined();
@@ -143,5 +144,30 @@ describe('research candidate evidence contract', () => {
     );
     expect(invalid.ok).toBe(false);
     expect(invalid.errors.join(' ')).toMatch(/timezone/i);
+  });
+
+  it('limits generic entity candidates to canonical newer-vertical identifiers', () => {
+    const genericPayload = {
+      ...payload,
+      entity_id: 'stablecoin:usdc',
+      field_path: 'analysis.sections.outlook_and_watch',
+    };
+    const slug = researchCandidateSlug(genericPayload);
+    expect(validateResearchCandidateProposal(
+      'entity_analysis_candidate',
+      slug,
+      genericPayload,
+      sources,
+    ).ok).toBe(true);
+
+    const invalidPayload = { ...genericPayload, entity_id: 'blockchain:ethereum' };
+    const invalid = validateResearchCandidateProposal(
+      'entity_analysis_candidate',
+      researchCandidateSlug(invalidPayload),
+      invalidPayload,
+      sources,
+    );
+    expect(invalid.ok).toBe(false);
+    expect(invalid.errors.join(' ')).toMatch(/canonical newer-vertical type/i);
   });
 });

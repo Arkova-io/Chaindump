@@ -188,10 +188,13 @@ describe('/api/desk/promote', () => {
       'exchange_analysis_candidate',
       'casino_analysis_candidate',
       'nft_lifecycle_candidate',
+      'entity_analysis_candidate',
     ];
 
     for (const dataset of datasets) {
-      const slug = 'candidate-entity--lifecycle-status--2026-07-29';
+      const slug = dataset === 'entity_analysis_candidate'
+        ? 'stablecoin-candidate-entity--lifecycle-status--2026-07-29'
+        : 'candidate-entity--lifecycle-status--2026-07-29';
       const response = await worker.fetch(new Request('http://localhost/api/desk/propose', {
         method: 'POST',
         headers: { authorization: 'Bearer proposal-secret', 'content-type': 'application/json' },
@@ -203,7 +206,9 @@ describe('/api/desk/promote', () => {
           // A stale/compromised client must not be able to lower the gate.
           needs_human_review: false,
           payload: {
-            entity_id: 'candidate-entity',
+            entity_id: dataset === 'entity_analysis_candidate'
+              ? 'stablecoin:candidate-entity'
+              : 'candidate-entity',
             field_path: 'lifecycle.status',
             claim: 'The lifecycle status requires reviewer reconciliation.',
             as_of: '2026-07-29',

@@ -67,7 +67,7 @@ const FUNCTION_DECLARATIONS = [{
       parametersJsonSchema: {
         type: "object",
         properties: {
-          dataset: { type: "string", enum: ["blockchain_analysis_candidate", "exchange_analysis_candidate", "casino_analysis_candidate", "nft_lifecycle_candidate"] },
+          dataset: { type: "string", enum: ["blockchain_analysis_candidate", "exchange_analysis_candidate", "casino_analysis_candidate", "nft_lifecycle_candidate", "entity_analysis_candidate"] },
           slug: { type: "string" }, title: { type: "string" }, summary: { type: "string" },
           payload: { type: "object" },
           sources: { type: "array", items: { type: "object", properties: {

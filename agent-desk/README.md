@@ -1,7 +1,8 @@
 # chaindump-agent-desk — proposal-only research
 
 An opt-in **Gemini (default) / Claude** process that researches fresh evidence for
-Chaindump's blockchain, DEX/CEX, Web3 casino, and NFT/Ordinals analyses.
+Chaindump's blockchain, DEX/CEX, Web3 casino, NFT/Ordinals, stablecoin, RWA,
+DePIN, infrastructure, treasury-company, miner, and ETF analyses.
 
 **It never publishes.** It reads Chaindump's public freshness and analysis APIs,
 verifies external sources with WebFetch, deduplicates against the current
@@ -66,6 +67,15 @@ Each run first reads these public Chaindump surfaces:
 - `/api/exchange-analysis?kind=cex`
 - `/api/casinos` and `/api/casino/{case_id}`
 - `/api/nft`
+- `/api/stablecoins`
+- `/api/rwa`
+- `/api/infra`
+- `/api/markets`
+- `/api/profile-contract` and one selected `/api/profile/{entity_type}/{slug}`
+
+The default budget selects one surface and at most one field-level candidate per
+run. It does not bulk-fetch every canonical profile; that keeps the four-times-
+daily Gemini job bounded as the corpus grows.
 
 It then verifies each new source with WebFetch and deduplicates by entity,
 field/claim, source URL, and as-of date. The Worker enforces one canonical
@@ -82,12 +92,15 @@ dates, causal reasoning, counterevidence/unknowns, and suggested reviewer
 action. Full dossier replacements, bulk status rewrites, and freshness claims
 unsupported by current evidence are forbidden.
 
-The four cross-vertical queue types are:
+The five cross-vertical queue types are:
 
 - `blockchain_analysis_candidate`
 - `exchange_analysis_candidate`
 - `casino_analysis_candidate`
 - `nft_lifecycle_candidate`
+- `entity_analysis_candidate` for stablecoins, RWA, DePIN, infrastructure,
+  crypto treasury companies, miners, and ETFs. Its `entity_id` must use the
+  canonical entity type and slug returned by `/api/profile-contract`.
 
 These types always receive `needs_human_review=true` and are intentionally
 absent from the Worker's direct-promotion allowlist. For NFT/Ordinals, lifecycle

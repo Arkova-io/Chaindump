@@ -40,12 +40,13 @@ describe("gateProposal", () => {
 });
 
 describe("proposal dataset safety contract", () => {
-  it("allows all four forensic analysis verticals in the proposal queue", () => {
+  it("allows every forensic analysis family in the proposal queue", () => {
     expect(RESEARCH_CANDIDATE_DATASETS).toEqual([
       "blockchain_analysis_candidate",
       "exchange_analysis_candidate",
       "casino_analysis_candidate",
       "nft_lifecycle_candidate",
+      "entity_analysis_candidate",
     ]);
     for (const dataset of RESEARCH_CANDIDATE_DATASETS) {
       expect(PROPOSAL_DATASETS).toContain(dataset);

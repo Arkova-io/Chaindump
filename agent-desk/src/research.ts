@@ -12,6 +12,12 @@ export const ANALYSIS_ENDPOINT_PATHS = {
   casinos: "/api/casinos",
   casinoDetail: "/api/casino/{case_id}",
   nftOrdinals: "/api/nft",
+  stablecoins: "/api/stablecoins",
+  rwaDepin: "/api/rwa",
+  infrastructure: "/api/infra",
+  publicMarkets: "/api/markets",
+  profileContract: "/api/profile-contract",
+  entityProfile: "/api/profile/{entity_type}/{slug}",
 } as const;
 
 export function analysisEndpointUrls(baseUrl: string): Record<keyof typeof ANALYSIS_ENDPOINT_PATHS, string> {
@@ -34,6 +40,11 @@ ACCURACY IS SACRED (non-negotiable):
   - CEXs: ${endpoints.cex}
   - Web3 casinos: ${endpoints.casinos}, then ${endpoints.casinoDetail} for a selected case
   - NFT / Ordinals: ${endpoints.nftOrdinals}
+  - stablecoins: ${endpoints.stablecoins}
+  - RWA and DePIN: ${endpoints.rwaDepin}
+  - decentralized infrastructure: ${endpoints.infrastructure}
+  - crypto treasury companies, miners, and ETFs: ${endpoints.publicMarkets}
+- Load ${endpoints.profileContract} before proposing for a newer vertical, then load only the selected entity at ${endpoints.entityProfile}. Do not bulk-fetch every entity profile in one run.
 - Deduplicate against the public record by entity slug, proposed field or claim, source URL, and as-of date. Use the chain-intel MCP tools as a second dedupe check when relevant.
 - Every material figure, name, address, transaction, status, strategic choice, causal claim, lifecycle conclusion, or date must come from a resolving source that you personally verify with WebFetch. Prefer primary records, protocol documentation, regulators, court records, financial filings, and reputable data providers. Never invent or silently infer a fact.
 - Adversarially test each causal conclusion: record alternative explanations, contradictions, missing evidence, and confidence. A source showing what happened is not automatically proof of why it happened.
@@ -50,9 +61,10 @@ DATASET CONTRACT:
 - exchange_analysis_candidate: field-level evidence for a DEX or CEX dossier.
 - casino_analysis_candidate: field-level evidence for a Web3 casino dossier.
 - nft_lifecycle_candidate: field-level lifecycle evidence for an NFT or Ordinals dossier.
-All four are proposal-only, always require human review, and cannot be directly promoted by this agent.
+- entity_analysis_candidate: field-level evidence for stablecoins, RWA, DePIN, infrastructure networks, crypto treasury companies, miners, or ETFs. The payload entity_id MUST begin with the canonical entity type returned by the profile contract.
+All five are proposal-only, always require human review, and cannot be directly promoted by this agent.
 
 YOUR ONLY OUTPUT is queue_proposal calls. Queue one candidate per distinct field/claim, only after verification and deduplication. A thin or duplicative candidate should not be queued.`;
 }
 
-export const DEFAULT_RESEARCH_TASK = `Run one bounded cross-vertical review-debt pass. Inspect the public freshness status, trend taxonomy, SLM schema, and existing analysis first. Then research at most one genuinely novel, decision-useful evidence candidate in each of five surfaces: blockchain, DEX, CEX, Web3 casino, and NFT/Ordinals lifecycle. Prioritize overdue or materially changing outlook/watch/unknowns/licensing/status fields. Verify every source with WebFetch, adversarially test causal claims, deduplicate, and queue only field-level evidence candidates. It is valid to queue nothing when the existing record is current or the evidence is weak.`;
+export const DEFAULT_RESEARCH_TASK = `Run one bounded cross-vertical review-debt pass. Inspect the public freshness status, trend taxonomy, SLM schema, and existing analysis first. Select at most one overdue entity from one surface in this run: blockchain; DEX; CEX; Web3 casino; NFT/Ordinals; stablecoin; RWA; DePIN; infrastructure; crypto treasury company; miner; or ETF. For newer verticals, load the canonical profile contract and only the selected entity profile. Research at most one genuinely novel, decision-useful field-level evidence candidate. Prioritize materially changing outlook/watch/unknowns/licensing/status fields. Verify every source with WebFetch, adversarially test causal claims, deduplicate, and queue only one field-level evidence candidate. It is valid to queue nothing when the existing record is current or the evidence is weak.`;
