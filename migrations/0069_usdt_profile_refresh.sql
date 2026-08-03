@@ -153,6 +153,11 @@ INSERT INTO _usdt_profile_refresh (payload) VALUES ('
       "freshness": {"state":"current","last_reviewed_at":"2026-08-03","next_review_at":"2026-08-10","field_reviews":[]},
       "confidence": "medium",
       "extensions": {
+        "methodology_notes": [
+          "freshness.last_reviewed_at records evidence assembly and source verification, not human approval; every claim remains pending until an editor reviews it.",
+          "Issuer-wide reserve totals are not USDT-only balances, and the point-in-time assurance report is not a completed financial-statement audit.",
+          "Aggregator-reported chain representations are not treated as native issuer-supported USDT without contract-level reconciliation."
+        ],
         "structured_analysis": {
           "strategic_choices": [
             {"decision":"Distribute USDT across multiple issuer-supported protocols.","consequence":"Liquidity can meet users on several settlement rails, while token provenance and deprecated-network support become harder to explain.","claim_ids":["claim:usdt:strategy","claim:usdt:protocol-scope"]},

@@ -226,6 +226,9 @@ describe('USDT gold-standard profile refresh migration', () => {
     }
 
     expect(canonical.claims).toHaveLength(24);
+    expect(canonical.extensions.methodology_notes[0]).toContain(
+      'records evidence assembly and source verification, not human approval',
+    );
     for (const claim of canonical.claims) {
       expect(claim.source_ids.length, claim.id).toBeGreaterThan(0);
       for (const sourceId of claim.source_ids) {
