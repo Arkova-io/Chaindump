@@ -427,6 +427,16 @@ describe('chain causal completion migration 0062', () => {
   });
 
   it('serves each causal dossier through the chain API and has a visible chain UI section', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-07-30T00:00:00Z'));
+    try {
+      await runCausalDossierApiAssertions();
+    } finally {
+      vi.useRealTimers();
+    }
+  }, 20_000);
+
+  async function runCausalDossierApiAssertions() {
     const { document } = loadArtifacts();
     stubChainFeeds();
     const boardResponse = await apiWorker.fetch(
@@ -540,5 +550,5 @@ describe('chain causal completion migration 0062', () => {
     expect(html).toContain('What could have been different');
     expect(html).toContain('What would change our mind');
     expect(html).toContain('Material unknowns');
-  }, 20_000);
+  }
 });
