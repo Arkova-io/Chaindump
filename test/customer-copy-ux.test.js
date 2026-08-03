@@ -122,6 +122,21 @@ describe('customer-facing analysis copy', () => {
     expect(exchangeMetric({ metric: 7, metricUnit: 'daily_active_users' })).toBe('7 daily active users');
   });
 
+  it('renders shared profile metric units as reader language', () => {
+    const source = block('function profileMetricUnit(value)', 'function canonicalProfileMetrics(profile)');
+    const profileMetricValue = new Function(`
+      const normalizedText = (value) => typeof value === 'string' ? value.trim() : '';
+      const fmtUsd = (value) => '$' + value;
+      ${source}
+      return profileMetricValue;
+    `)();
+
+    expect(profileMetricValue({ value: 42, unit: 'usd_per_gigabyte' })).toBe('42 USD per gigabyte');
+    expect(profileMetricValue({ value: 0.5, unit: 'hnt' })).toBe('0.5 HNT');
+    expect(profileMetricValue({ value: 7, unit: 'nfts' })).toBe('7 NFTs');
+    expect(profileMetricValue({ value: 42, unit: 'usd_per_gigabyte' })).not.toContain('_');
+  });
+
   it('keeps public page metadata and share copy in reader language', () => {
     expect(worker).not.toContain('forensic dossier | Chaindump');
     expect(worker).not.toContain('indexed lifecycle dossier with per-claim support status');

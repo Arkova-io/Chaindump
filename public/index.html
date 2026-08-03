@@ -3163,13 +3163,20 @@ function profileSectionBody(profile, key) {
   if (/^(unknown|unresolved|not (?:yet )?(?:known|published|available)|pending|n\/?a|—)$/i.test(body)) return '';
   return typeof customerCopy === 'function' ? customerCopy(body) : body;
 }
+function profileMetricUnit(value) {
+  return normalizedText(value)
+    .replaceAll('_', ' ')
+    .replace(/\b(?:usd|btc|eth|hnt)\b/gi, (token) => token.toUpperCase())
+    .replace(/\bnfts\b/gi, 'NFTs');
+}
 function profileMetricValue(metric) {
   const value = Number(metric?.value);
   if (!Number.isFinite(value)) return '';
   if (metric.currency === 'USD' || metric.unit === 'usd') return fmtUsd(value);
   if (metric.unit === 'percent' || metric.unit === 'pct') return `${Intl.NumberFormat('en', { maximumFractionDigits:2 }).format(value)}%`;
   const formatted = Intl.NumberFormat('en', { notation: Math.abs(value) >= 100000 ? 'compact' : 'standard', maximumFractionDigits:2 }).format(value);
-  return metric.unit && metric.unit !== 'count' ? `${formatted} ${metric.unit}` : formatted;
+  const unit = profileMetricUnit(metric.unit);
+  return unit && unit !== 'count' ? `${formatted} ${unit}` : formatted;
 }
 function canonicalProfileMetrics(profile) {
   const rows = (Array.isArray(profile?.metrics) ? profile.metrics : []).map((metric) => {
