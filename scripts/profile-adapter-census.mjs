@@ -103,7 +103,9 @@ export function enumerateProfileRoutes(database) {
       UNION ALL
       SELECT chain, chain, length(COALESCE(profile, '')) FROM mid_chains
       UNION ALL
-      SELECT chain, chain, length(COALESCE(profile, '')) FROM chain_analysis
+      SELECT chain, chain,
+             length(COALESCE(json_remove(profile, '$.canonical_profile'), ''))
+        FROM chain_analysis
       UNION ALL
       SELECT chain, chain,
              SUM(length(COALESCE(data, '')) + length(COALESCE(sources, '')))
@@ -237,6 +239,7 @@ function profileAssessment(route, status, profile) {
     what_it_is: profile?.analysis?.sections?.what_it_is?.body || null,
     what_happened: profile?.analysis?.sections?.what_happened?.body || null,
     legacy_origin: profile?.extensions?.legacy_origin || null,
+    embedded_canonical: profile?.extensions?.legacy_origin === 'chain_analysis_and_chain_facts',
   };
 }
 
@@ -256,7 +259,9 @@ async function blockchainPrecedenceAssessment(database, env, context, rows) {
     ));
     return !actual
       || actual.outcome_label !== expected.outcome_label
-      || (expected.what_happened && actual.what_happened !== expected.what_happened);
+      || (expected.what_happened
+        && actual.what_happened !== expected.what_happened
+        && !actual.embedded_canonical);
   });
 
   const sentinel = {
