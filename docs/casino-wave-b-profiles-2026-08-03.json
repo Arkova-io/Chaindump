@@ -3497,7 +3497,7 @@
               ]
             },
             "what_happened": {
-              "body": "Augur launched its original mainnet in 2018 and later lost normal product momentum. In April 2026, the Lituus Foundation intentionally triggered a fork to test the mechanism and coordinate a reboot. Phase two opened a one-way token-migration window with an August 1 deadline. That date had passed by this August 3 review. ForkWatch showed a zero countdown but its migration-progress field remained unavailable, while Kraken separately said it expected to convert supported customer balances 1:1 to AUGUR by July 31. Official repositories were still active on August 3, so development is live while the migration result remains unresolved.",
+              "body": "Augur launched its original mainnet in 2018 and later lost normal product momentum. In April 2026, the Lituus Foundation intentionally triggered a fork to test the mechanism and coordinate a reboot. Phase two opened a one-way token-migration window, but official pages published conflicting cutoffs: August 1, August 3 and a late-migration completion range extending to August 10. On this August 3 review, ForkWatch showed a zero countdown while migration progress remained unavailable. Kraken separately expected to convert supported customer balances by July 31. Development is live; the authoritative cutoff, window state and migration result are unresolved.",
               "as_of": "2026-08-03",
               "claim_ids": [
                 "claim:augur-protocol-reboot:section:what_happened:1",
@@ -3521,7 +3521,7 @@
               ]
             },
             "operating_model": {
-              "body": "Historically, users created or traded prediction markets while designated participants reported outcomes and REP holders could dispute them. The 2026 fork creates multiple universes, and REP can move only one way into a chosen universe before the stated deadline. Lituus is the new implementation workstream; the Moon Fork is the test and coordination event; a frontend would still need to provide markets, trading and customer support. Self-custodied holders handle their own migration, while an exchange such as Kraken may migrate balances it custodies under its own process. Current production market and settlement service levels are not established.",
+              "body": "Historically, users created or traded prediction markets while designated participants reported outcomes and REP holders could dispute them. The 2026 fork creates multiple universes, and REP can move only one way into a chosen universe during the migration window. Official pages do not agree on the window’s cutoff. Lituus is the new implementation workstream; the Moon Fork is the test and coordination event; a frontend would still need to provide markets, trading and support. Self-custodied holders handle their own migration, while Kraken may migrate balances it custodies under its own process. Current production market and settlement service levels are not established.",
               "as_of": "2026-08-03",
               "claim_ids": [
                 "claim:augur-protocol-reboot:section:operating_model:1",
@@ -3529,7 +3529,7 @@
               ]
             },
             "token_and_value_capture": {
-              "body": "REP historically supported reporting and dispute participation rather than representing equity in a casino operator. During the 2026 fork, old REP and REPV2 holders had to move to a universe-specific token, and the selected canonical asset is described as AUGUR. Kraken expected a 1:1 conversion for eligible balances on its platform, but that does not measure self-custodied or other-exchange migration. The August 1 deadline creates stranded-token risk. No current source establishes total migrated supply, token concentration, protocol fees, treasury income, holder cash distributions or an enforceable claim on future products.",
+              "body": "REP historically supported reporting and dispute participation rather than representing equity in a casino operator. During the 2026 fork, old REP and REPV2 holders had to move to a universe-specific token, and the selected canonical asset is described as AUGUR. Kraken expected a 1:1 conversion for eligible balances on its platform, but that does not measure self-custodied or other-exchange migration. Conflicting official cutoffs create stranded-token risk without proving the window was closed on August 3. No current source establishes total migrated supply, token concentration, fees, treasury income, holder distributions or a claim on future products.",
               "as_of": "2026-08-03",
               "claim_ids": [
                 "claim:augur-protocol-reboot:section:token_and_value_capture:1",
@@ -3545,7 +3545,7 @@
               ]
             },
             "risks_and_unknowns": {
-              "body": "The immediate risk is migration uncertainty. The deadline passed, the FAQ still used pre-deadline language and ForkWatch did not expose a usable completion number. Some holders may have relied on custodians, while self-custodied holders bore their own execution risk. The rebuild also faces contract, oracle, dispute, governance, frontend and market-liquidity risk. A public repository can be active while production has no users. Current markets, traders, open interest, fees, liquidity, migrated supply, production reliability, legal operators and jurisdiction-specific access are unknown.",
+              "body": "The immediate risk is migration uncertainty. The FAQ and July update use August 1, the phase-two notice uses August 3, and the migration guide says late migration may finish between August 2 and August 10. ForkWatch did not expose a usable completion number on August 3, so neither closure nor continuation is asserted. Some holders relied on custodians, while self-custodied holders bore execution risk. The rebuild also faces contract, oracle, governance, frontend and liquidity risk. Current markets, traders, open interest, fees, migrated supply, reliability and legal access are unknown.",
               "as_of": "2026-08-03",
               "claim_ids": [
                 "claim:augur-protocol-reboot:section:risks_and_unknowns:1",
@@ -3553,7 +3553,7 @@
               ]
             },
             "lifecycle": {
-              "body": "Augur published its original protocol paper in January 2015 and launched mainnet in 2018. After the original market lost momentum, the Lituus Foundation triggered the Moon Fork on April 8, 2026, opened phase-two migration in June and set August 1 as the deadline. On July 21 it reported that the fork was live and ChainSafe implementation work continued. By August 3, the reboot repository had fresh activity, but ForkWatch did not reveal a completed migration share or a commercial market. The lifecycle is therefore an active technical recovery with adoption and migration outcome unproven.",
+              "body": "Augur published its original protocol paper in January 2015 and launched mainnet in 2018. After the original market lost momentum, the Lituus Foundation triggered the Moon Fork on April 8, 2026 and opened phase-two migration in June. Its materials then published August 1, August 3 and August 2–10 timing. On July 21 it reported the fork live and ChainSafe implementation work underway. By August 3, repositories had fresh activity, but ForkWatch did not reveal a completed migration share or commercial market. The lifecycle is active technical recovery with window state, adoption and migration outcome unproven.",
               "as_of": "2026-08-03",
               "claim_ids": [
                 "claim:augur-protocol-reboot:section:lifecycle:1",
@@ -3603,12 +3603,12 @@
             "date_precision": "day"
           },
           {
-            "id": "event:augur-protocol-reboot:migration-deadline",
-            "type": "token_migration_deadline",
-            "date": "2026-08-01",
-            "description": "The stated one-way token-migration deadline passed; total completion remained unresolved.",
+            "id": "event:augur-protocol-reboot:migration-timing-conflict",
+            "type": "timeline_conflict_observation",
+            "date": "2026-08-03",
+            "description": "Official Augur materials published August 1, August 3 and August 2–10 migration timing; window state and completion were unresolved.",
             "claim_ids": [
-              "claim:augur-protocol-reboot:event:migration-deadline"
+              "claim:augur-protocol-reboot:event:migration-timing-conflict"
             ],
             "date_precision": "day"
           },
@@ -3669,7 +3669,23 @@
             "access_state": "reachable",
             "checked_at": "2026-08-03T19:54:08Z",
             "content_hash": null,
-            "evidence_locator": "Official phase-two notice describes the two-month token-migration window and stranded-token risk.",
+            "evidence_locator": "Official phase-two notice tells holders to migrate by or until August 3, which conflicts with the August 1 language in other official material.",
+            "resolving": true
+          },
+          {
+            "id": "source:augur-protocol-reboot:migration-guide",
+            "title": "Moon Fork Migration Guide",
+            "url": "https://www.augur.net/learn/fork/migration/",
+            "publisher": "Lituus Foundation / Augur",
+            "published_at": null,
+            "accessed_at": "2026-08-03T19:54:08Z",
+            "archive_url": null,
+            "tier": "B",
+            "role": "primary",
+            "access_state": "reachable",
+            "checked_at": "2026-08-03T19:54:08Z",
+            "content_hash": null,
+            "evidence_locator": "Official guide says migrate before August 1 while its schedule says late migration may finish between August 2 and August 10; this internal timing conflict prevents a settled window-status call.",
             "resolving": true
           },
           {
@@ -3685,7 +3701,7 @@
             "access_state": "reachable",
             "checked_at": "2026-08-03T19:54:08Z",
             "content_hash": null,
-            "evidence_locator": "FAQ documents the fork, per-universe tokens, one-way migration and stated August 1 deadline; its copy remained pre-deadline during the August 3 review.",
+            "evidence_locator": "FAQ documents the fork, per-universe tokens, one-way migration and an August 1 cutoff, conflicting with the phase-two notice and migration-guide schedule.",
             "resolving": true
           },
           {
@@ -3882,17 +3898,18 @@
           {
             "id": "claim:augur-protocol-reboot:section:what_happened:2",
             "field_path": "analysis.sections.what_happened.body",
-            "assertion": "Development continued after the deadline, but a usable total migration result was not available.",
-            "value": "Development continued after the deadline, but a usable total migration result was not available.",
+            "assertion": "Official pages conflict on the migration cutoff, and neither window state nor total completion was verifiable on 2026-08-03.",
+            "value": "Official pages conflict on the migration cutoff, and neither window state nor total completion was verifiable on 2026-08-03.",
             "as_of": "2026-08-03",
             "confidence": "high",
             "kind": "unknown",
             "source_ids": [
-              "source:augur-protocol-reboot:forkwatch",
-              "source:augur-protocol-reboot:reboot-repo",
-              "source:augur-protocol-reboot:lituus-repo"
+              "source:augur-protocol-reboot:faq",
+              "source:augur-protocol-reboot:migration",
+              "source:augur-protocol-reboot:migration-guide",
+              "source:augur-protocol-reboot:forkwatch"
             ],
-            "evidence_locator": "Current dashboard and repository observations.",
+            "evidence_locator": "Conflicting official timing language and unavailable dashboard progress.",
             "support_direction": "supports",
             "note": null,
             "review": {
@@ -4117,16 +4134,19 @@
           {
             "id": "claim:augur-protocol-reboot:section:risks_and_unknowns:1",
             "field_path": "analysis.sections.risks_and_unknowns.body",
-            "assertion": "Post-deadline migration completion could not be verified from the official dashboard.",
-            "value": "Post-deadline migration completion could not be verified from the official dashboard.",
+            "assertion": "Official timing conflicts prevent a verified migration-window or completion call on 2026-08-03.",
+            "value": "Official timing conflicts prevent a verified migration-window or completion call on 2026-08-03.",
             "as_of": "2026-08-03",
             "confidence": "high",
             "kind": "unknown",
             "source_ids": [
               "source:augur-protocol-reboot:faq",
+              "source:augur-protocol-reboot:current",
+              "source:augur-protocol-reboot:migration",
+              "source:augur-protocol-reboot:migration-guide",
               "source:augur-protocol-reboot:forkwatch"
             ],
-            "evidence_locator": "Stale FAQ state and unavailable progress.",
+            "evidence_locator": "Conflicting official cutoffs and unavailable progress.",
             "support_direction": "supports",
             "note": null,
             "review": {
@@ -4306,18 +4326,20 @@
             }
           },
           {
-            "id": "claim:augur-protocol-reboot:event:migration-deadline",
-            "field_path": "events[event:augur-protocol-reboot:migration-deadline]",
-            "assertion": "The stated one-way token-migration deadline passed; total completion remained unresolved.",
-            "value": "2026-08-01",
-            "as_of": "2026-08-01",
+            "id": "claim:augur-protocol-reboot:event:migration-timing-conflict",
+            "field_path": "events[event:augur-protocol-reboot:migration-timing-conflict]",
+            "assertion": "Official Augur materials published August 1, August 3 and August 2–10 migration timing; window state and completion were unresolved.",
+            "value": "2026-08-03",
+            "as_of": "2026-08-03",
             "confidence": "high",
             "kind": "fact",
             "source_ids": [
               "source:augur-protocol-reboot:faq",
+              "source:augur-protocol-reboot:migration",
+              "source:augur-protocol-reboot:migration-guide",
               "source:augur-protocol-reboot:forkwatch"
             ],
-            "evidence_locator": "Official FAQ deadline and current dashboard observation.",
+            "evidence_locator": "Conflicting official timing language and unavailable progress on the review date.",
             "support_direction": "supports",
             "note": null,
             "review": {
@@ -4359,6 +4381,8 @@
           "completeness_pct": 100,
           "confidence": "high",
           "unsourced_fields": [
+            "authoritative_migration_cutoff",
+            "migration_window_state",
             "migration_completion",
             "supply_by_universe",
             "active_markets",
@@ -4378,6 +4402,7 @@
           "identity_boundary": "The profile separates the Augur protocol and REP/AUGUR universes, the Lituus Foundation stewardship effort, ChainSafe implementation work, Zoltar as a separate product track, independent frontends and custodians such as Kraken.",
           "metric_boundary": "No current verified users, market count, open interest, liquidity, settled volume, fees, protocol revenue, migrated REP share or production reliability series was available. A zero countdown is not a zero or complete migration measurement.",
           "explicit_unknowns": [
+            "authoritative migration cutoff and whether the window remained open",
             "REP migration completion and supply by universe",
             "current production markets and users",
             "open interest and settled volume",
@@ -4389,7 +4414,7 @@
           ],
           "methodology_notes": [
             "Repository activity proves current engineering, not production readiness or commercial adoption.",
-            "The August 1 deadline passed before review, but the official FAQ remained pre-deadline and ForkWatch did not provide a usable completion value.",
+            "Official pages conflict on the cutoff: August 1 in the FAQ and July update, August 3 in the phase-two notice, and an August 2–10 completion range in the migration guide. Window status is not inferred on the August 3 review date.",
             "Kraken’s custodial conversion applies only to balances it supported and is not treated as total migration evidence."
           ]
         }
