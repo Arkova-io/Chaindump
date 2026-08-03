@@ -24,7 +24,7 @@ const RICHEST_CONTROLS = {
   nft_collection: ['bored-ape-yacht-club', 10],
   ordinals_collection: ['runestone', 10],
   web3_casino: ['polymarket-international', 10],
-  stablecoin: ['usdt', 10],
+  stablecoin: ['dai', 10],
   rwa: ['ondo-finance', 10],
   depin: ['helium', 10],
   infrastructure_network: ['factom', 6],
