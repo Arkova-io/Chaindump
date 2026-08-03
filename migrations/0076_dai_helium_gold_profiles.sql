@@ -1,6 +1,17 @@
--- DAI and Helium normalized gold profiles, researched 2026-08-03; all claims await human review.
+-- DAI and Helium normalized profiles, researched 2026-08-03; all claims await human review.
+-- Existing profile fields remain in place; the exact prior profile and source list are stored once under legacy_preservation.
 DROP TABLE IF EXISTS _dai_helium_gold_0076;
-CREATE TABLE _dai_helium_gold_0076 (table_name TEXT,slug TEXT,profile TEXT CHECK(json_valid(profile)),sources TEXT CHECK(json_valid(sources)),name TEXT,symbol TEXT,category TEXT,status TEXT,PRIMARY KEY(table_name,slug));
+CREATE TABLE _dai_helium_gold_0076 (
+  table_name TEXT,
+  slug TEXT,
+  profile TEXT CHECK(json_valid(profile)),
+  sources TEXT CHECK(json_valid(sources)),
+  name TEXT,
+  symbol TEXT,
+  category TEXT,
+  status TEXT,
+  PRIMARY KEY(table_name, slug)
+);
 WITH research_document(payload) AS (VALUES ('{
   "schema": "chaindump-dai-helium-gold-v1",
   "as_of": "2026-08-03",
@@ -14,7 +25,7 @@ WITH research_document(payload) AS (VALUES ('{
       "category": null,
       "status": null,
       "profile": {
-        "editorial_guardrails": "Keep DAI separate from USDS; do not call PSM liquidity a universal cash redemption right or combined Sky figures DAI-only.",
+        "editorial_guardrails": "Keep DAI separate from USDS. Do not call LitePSM liquidity a universal cash redemption right or call combined Sky figures DAI-only.",
         "current_observation": {
           "observed_at": "2026-08-03T17:26:35Z",
           "circulating_supply_usd": 4795469810.824513,
@@ -48,23 +59,25 @@ WITH research_document(payload) AS (VALUES ('{
             ]
           },
           "outcome": {
-            "label": null,
-            "as_of": null,
-            "rule_id": null,
-            "confidence": null,
-            "claim_ids": []
+            "label": "operating_established",
+            "as_of": "2026-08-03",
+            "rule_id": "forensic-lifecycle-v1",
+            "confidence": "medium",
+            "claim_ids": [
+              "claim:dai:outcome"
+            ]
           },
           "sections": {
-            "what_it_is": "DAI is an overcollateralized dollar-denominated token created by the Maker/Sky credit system. It is not a bank deposit and it is not the same product as USDS. Users create DAI by borrowing against approved collateral in protocol vaults; DAI also circulates independently through exchanges, applications and bridges.",
-            "what_happened": "Maker launched the multi-collateral system and built a large on-chain credit market around DAI. In September 2024 governance initialized USDS as the upgraded token and a 1:1 DAI-to-USDS converter, but it did not erase DAI. Current Sky governance still administers DAI debt ceilings and DAI/USDS liquidity modules. DefiLlama observed about $4.80 billion of DAI representations at 2026-08-03T17:26:35Z, with most reported supply on Ethereum; that aggregator total must not be combined with Sky dashboard figures that aggregate DAI and USDS.",
-            "why_this_outcome": "DAI became durable because it gave DeFi a composable dollar unit without requiring every holder to open an account with a single issuer. Deep Ethereum integrations, multiple collateral types and automated liquidations helped it scale. That flexibility came with a trade-off: stablecoin collateral and governance-controlled modules now make parts of DAI economically dependent on regulated off-chain issuers. The evidence supports the mechanisms and current scale, but it does not isolate how much each factor caused adoption.",
-            "strategic_choices": "Maker chose collateralized borrowing instead of issuing redeemable bank IOUs, then broadened beyond crypto collateral to stablecoins and real-world credit exposures. Peg Stability Modules exchanged some censorship resistance for tighter dollar liquidity. The 2024 Sky upgrade added USDS beside DAI and offered a 1:1 converter rather than forcing migration. In June 2026 governance doubled a LitePSM USDC buffer and gap from 400 million to 800 million DAI, strengthening conversion capacity while increasing operational and counterparty concentration around USDC.",
-            "operating_model": "Vault users lock approved collateral and draw DAI subject to collateral-specific debt ceilings, stability fees and liquidation ratios. If a vault becomes unsafe, the protocol can auction its collateral for DAI and cancel debt. Peg modules let the system exchange DAI or USDS against approved stablecoins under governance-set limits and fees. This is protocol liquidity, not a promise that every DAI holder can redeem one token directly for one dollar at a bank.",
-            "token_and_value_capture": "DAI itself does not promise interest. Borrowers pay stability fees, liquidations can impose penalties and protocol earnings flow through governance-controlled accounting. Savings products are separate: USDS and sUSDS have their own upgrade and yield mechanics. DAI holders should not be described as receiving USDS savings rewards, reserve earnings or ownership in Sky merely because a converter exists.",
-            "counterfactual": "A crypto-only collateral policy would reduce exposure to centralized stablecoin issuers but would likely make the peg and credit supply more volatile. A forced migration to USDS could simplify branding and liquidity while breaking integrations and user choice. A direct legal redemption claim on segregated dollars would make the product easier to explain but would replace Maker’s pooled collateral system with issuer, banking and eligibility risk. These alternatives are analytical and are not quantified by the reviewed sources.",
-            "risks_and_unknowns": "DAI can lose its peg; falling collateral values can outrun auctions; oracle, contract or governance failures can create bad debt; and stablecoin collateral can be frozen or impaired. Emergency Shutdown lets holders claim a proportional share of settled collateral after system processing, not a guaranteed one-dollar cash redemption. The reviewed public dashboards do not provide one clean, audited split of DAI-only collateral versus USDS, current PSM liquidity, or every bridged representation. DAI’s treatment under each jurisdiction’s stablecoin rules also requires entity- and activity-specific legal analysis.",
-            "lifecycle": "DAI remains operating, liquid and integrated after the Sky rebrand, but it is now a legacy-compatible member of a two-token system rather than the protocol’s only dollar token. The 2024 1:1 converter and active 2026 governance show coexistence with USDS. Current independent data still observes material DAI circulation, so it should not be collapsed into USDS or labeled discontinued.",
-            "outlook_and_watch": "Base case: DAI persists where integrations, neutrality preferences and existing liquidity make migration costly, while USDS captures more of Sky’s new savings and distribution activity. Watch DAI-only supply, price deviation, vault collateral and debt by type, auction performance, PSM balances and limits, DAI-to-USDS conversion, USDC concentration, emergency-governance changes and jurisdiction-specific stablecoin rules. The call changes if DAI liquidity or integrations fall sharply, conversion becomes one-way or mandatory, or a collateral impairment produces unrecovered bad debt."
+            "what_it_is": "DAI is a dollar-denominated token issued by the Maker/Sky credit system. It is not a bank deposit and it is not USDS. Borrowers can create DAI by locking approved collateral in protocol vaults. DAI also moves through exchanges, applications and bridges after it is issued. Some peg support now depends on governance-controlled modules that hold or route stablecoins such as USDC.",
+            "what_happened": "Maker built DAI as an on-chain, overcollateralized credit product and later expanded the collateral mix and peg tools. On Sept. 17, 2024, an executed governance transaction initialized the newer USDS system and a one-for-one conversion path between DAI and USDS. DAI remained live. On Aug. 3, 2026, DefiLlama reported about $4.80 billion of DAI representations across 49 chains. That figure is an aggregator snapshot and should not be combined with Sky-wide totals that include USDS.",
+            "why_this_outcome": "DAI is still material because it remains embedded in DeFi and the protocol kept it usable while introducing USDS. The vault system, liquidations and peg modules explain how the product can issue credit and defend its price. They do not prove which feature caused adoption. The evidence supports an established, operating product with meaningful circulation; it does not support calling DAI fully decentralized or legally redeemable for dollars.",
+            "strategic_choices": "Maker chose pooled collateral and governance-managed risk instead of a single company holding dollars and promising cash redemption. It later added stablecoin-based peg modules, accepting more issuer and freeze exposure in exchange for a tighter route to dollar liquidity. The Sky transition kept DAI live beside USDS rather than forcing every integration to migrate. On June 22, 2026, a governance spell changed LitePSM parameters after a proposal to raise its buffer and gap from 400 million to 800 million DAI. The transaction proves execution; it does not by itself prove better liquidity or lower risk.",
+            "operating_model": "Borrowers lock approved collateral and draw DAI under governance-set debt ceilings, fees and liquidation ratios. Unsafe positions can be liquidated and their collateral sold to cancel debt. The LitePSM provides governed swap capacity between DAI, USDS and USDC through linked modules. Independent analysis describes DAI and USDS as sharing aggregate system backing, which makes a clean token-by-token collateral split impractical. Module liquidity can be paused, capped or depleted; it is not a promise that every holder can redeem at a bank.",
+            "token_and_value_capture": "DAI is the debt token, not an ownership claim. Borrowers pay stability fees and liquidations may add penalties; protocol accounting and governance decide where those economics go. Savings USDS and other Sky products have separate reward rules. A DAI holder should not be described as receiving USDS savings returns, reserve income or equity in Sky merely because a conversion route exists.",
+            "counterfactual": "A crypto-only collateral policy would reduce dependence on stablecoin issuers and off-chain credit, but likely make credit supply and the peg more volatile. A forced move to USDS could concentrate liquidity and branding, but would break some integrations and remove user choice. A direct legal claim on segregated dollars would be easier to explain, but it would create a conventional issuer, banking and eligibility model. The reviewed evidence does not quantify which alternative would have produced more durable demand.",
+            "risks_and_unknowns": "DAI can trade away from one dollar. Fast collateral declines, weak auctions, oracle failures, contract bugs or governance mistakes can create losses. USDC and off-chain credit add issuer, custody, freeze and legal exposure. Emergency Shutdown offers a process for claiming a share of settled collateral after system accounting; it is not guaranteed one-dollar cash redemption. A current audited DAI-only split of collateral, LitePSM liquidity and bridged representations was not found, so those values remain unknown.",
+            "lifecycle": "DAI is operating and established, but its role has changed. It moved from being Maker’s only dollar token to being the legacy-compatible side of a DAI/USDS system. The executed 2024 conversion path, active 2026 governance and roughly $4.80 billion reported on Aug. 3, 2026 show that it was not discontinued. Its future depends on whether integrations and liquidity remain in DAI or continue moving to USDS.",
+            "outlook_and_watch": "Base case: DAI persists where existing integrations and user preference make migration costly, while USDS receives more of Sky’s new distribution and savings activity. Watch DAI-only supply, price deviations, vault debt and collateral, auction performance, LitePSM balances and limits, DAI-to-USDS conversion, USDC concentration and changes to stablecoin rules. Revisit the call if liquidity falls sharply, conversion becomes mandatory or one-way, or a collateral loss leaves unrecovered debt."
           },
           "section_dates": {
             "what_it_is": "2026-08-03",
@@ -80,34 +93,46 @@ WITH research_document(payload) AS (VALUES ('{
           },
           "section_claim_ids": {
             "what_it_is": [
-              "claim:dai:what_it_is"
+              "claim:dai:what_it_is:vault-credit",
+              "claim:dai:what_it_is:shared-modules"
             ],
             "what_happened": [
-              "claim:dai:what_happened"
+              "claim:dai:what_happened:system-development",
+              "claim:dai:what_happened:upgrade-executed",
+              "claim:dai:what_happened:current-supply"
             ],
             "why_this_outcome": [
-              "claim:dai:why_this_outcome"
+              "claim:dai:why_this_outcome:mechanism",
+              "claim:dai:why_this_outcome:durability-inference"
             ],
             "strategic_choices": [
-              "claim:dai:strategic_choices"
+              "claim:dai:strategic_choices:collateral-and-psm",
+              "claim:dai:strategic_choices:coexistence",
+              "claim:dai:strategic_choices:litepsm-change"
             ],
             "operating_model": [
-              "claim:dai:operating_model"
+              "claim:dai:operating_model:vaults-liquidations",
+              "claim:dai:operating_model:litepsm-liquidity"
             ],
             "token_and_value_capture": [
-              "claim:dai:token_and_value_capture"
+              "claim:dai:token_and_value_capture:borrower-fees",
+              "claim:dai:token_and_value_capture:separate-products"
             ],
             "counterfactual": [
-              "claim:dai:counterfactual"
+              "claim:dai:counterfactual:collateral-tradeoff",
+              "claim:dai:counterfactual:migration-tradeoff"
             ],
             "risks_and_unknowns": [
-              "claim:dai:risks_and_unknowns"
+              "claim:dai:risks_and_unknowns:liquidation-shutdown",
+              "claim:dai:risks_and_unknowns:legal-and-collateral-gaps"
             ],
             "lifecycle": [
-              "claim:dai:lifecycle"
+              "claim:dai:lifecycle:coexistence",
+              "claim:dai:lifecycle:material-circulation"
             ],
             "outlook_and_watch": [
-              "claim:dai:outlook_and_watch"
+              "claim:dai:outlook_and_watch:supply-and-conversion",
+              "claim:dai:outlook_and_watch:module-risk"
             ]
           },
           "metrics": [
@@ -124,7 +149,7 @@ WITH research_document(payload) AS (VALUES ('{
                 "definition": "point_in_time"
               },
               "as_of": "2026-08-03T17:26:35Z",
-              "method": "DefiLlama stablecoin observation",
+              "method": "DefiLlama stablecoin observation checked Aug. 3, 2026",
               "scope": {
                 "product": "DAI",
                 "chains": []
@@ -152,7 +177,7 @@ WITH research_document(payload) AS (VALUES ('{
                 "definition": "point_in_time"
               },
               "as_of": "2026-08-03T17:26:35Z",
-              "method": "DefiLlama price observation",
+              "method": "DefiLlama price observation checked Aug. 3, 2026",
               "scope": {
                 "product": "DAI",
                 "chains": []
@@ -177,7 +202,7 @@ WITH research_document(payload) AS (VALUES ('{
                 "definition": "point_in_time"
               },
               "as_of": "2026-08-03T17:26:35Z",
-              "method": "Derived from observed price",
+              "method": "Derived from the DefiLlama price observation",
               "scope": {
                 "product": "DAI",
                 "chains": []
@@ -187,30 +212,32 @@ WITH research_document(payload) AS (VALUES ('{
               "claim_ids": [
                 "claim:dai:metric:peg-deviation:2026-08-03"
               ],
-              "quality_flags": []
+              "quality_flags": [
+                "derived"
+              ]
             }
           ],
           "events": [
             {
-              "id": "event:dai:usds-upgrade:2024-09-18",
+              "id": "event:dai:usds-upgrade:2024-09-17",
               "type": "token_upgrade",
-              "date": "2024-09-18",
+              "date": "2024-09-17",
               "date_precision": "day",
               "amount_usd": null,
-              "description": "Governance initialized USDS and the 1:1 DAI-USDS converter.",
+              "description": "A governance transaction initialized USDS and the one-for-one DAI/USDS conversion path.",
               "claim_ids": [
-                "claim:dai:event:usds-upgrade:2024-09-18"
+                "claim:dai:event:usds-upgrade:2024-09-17"
               ]
             },
             {
-              "id": "event:dai:litepsm-capacity:2026-06-18",
+              "id": "event:dai:litepsm-capacity:2026-06-22",
               "type": "governance_parameter_change",
-              "date": "2026-06-18",
+              "date": "2026-06-22",
               "date_precision": "day",
               "amount_usd": null,
-              "description": "Governance approved larger LitePSM USDC buffer and gap parameters.",
+              "description": "A governance transaction executed the proposed LitePSM parameter changes.",
               "claim_ids": [
-                "claim:dai:event:litepsm-capacity:2026-06-18"
+                "claim:dai:event:litepsm-capacity:2026-06-22"
               ]
             }
           ],
@@ -222,7 +249,7 @@ WITH research_document(payload) AS (VALUES ('{
                 "dai-current-governance",
                 "dai-market"
               ],
-              "evidence_locator": "Current governance activity and dated independent circulation observation.",
+              "evidence_locator": "Current executive-vote index and DefiLlama DAI observation checked Aug. 3, 2026.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -232,12 +259,29 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:dai:what_it_is",
+              "id": "claim:dai:outcome",
+              "field_path": "outcome.label",
+              "source_ids": [
+                "dai-market",
+                "dai-upgrade-exec",
+                "dai-current-governance"
+              ],
+              "evidence_locator": "Material DAI circulation, executed DAI/USDS conversion and current governance activity as of Aug. 3, 2026.",
+              "support_direction": "supports",
+              "note": "Established describes continued material operation, not a legal, investment or decentralization judgment.",
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:dai:what_it_is:vault-credit",
               "field_path": "analysis.sections.what_it_is.body",
               "source_ids": [
                 "dai-vat"
               ],
-              "evidence_locator": "Maker/Sky documentation, governance and current market observation: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Vat documentation: sections describing collateralized debt accounting and internally represented Dai balances.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -247,16 +291,46 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:dai:what_happened",
+              "id": "claim:dai:what_it_is:shared-modules",
+              "field_path": "analysis.sections.what_it_is.body",
+              "source_ids": [
+                "dai-guides",
+                "dai-ark-2026"
+              ],
+              "evidence_locator": "Sky guides: LitePSM and USDS guide entries; ARK report: reserve components and LitePSM sections.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:dai:what_happened:system-development",
+              "field_path": "analysis.sections.what_happened.body",
+              "source_ids": [
+                "dai-vat",
+                "dai-liquidation",
+                "dai-ark-2026"
+              ],
+              "evidence_locator": "Maker core-accounting and liquidation documentation plus the ARK report sections on collateral evolution and peg-stability modules.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:dai:what_happened:upgrade-executed",
               "field_path": "analysis.sections.what_happened.body",
               "source_ids": [
                 "dai-upgrade-poll",
-                "dai-upgrade-exec",
-                "dai-current-governance",
-                "dai-market",
-                "dai-sky-dashboard"
+                "dai-upgrade-exec"
               ],
-              "evidence_locator": "Maker/Sky documentation, governance and current market observation: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Maker poll proposing the one-for-one token upgrade and Blockscout transaction dated 2024-09-17 showing execution.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -266,30 +340,29 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:dai:why_this_outcome",
+              "id": "claim:dai:what_happened:current-supply",
+              "field_path": "analysis.sections.what_happened.body",
+              "source_ids": [
+                "dai-market"
+              ],
+              "evidence_locator": "DefiLlama stablecoin 5 response checked 2026-08-03: circulating representations, price and chain balances.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:dai:why_this_outcome:mechanism",
               "field_path": "analysis.sections.why_this_outcome.body",
               "source_ids": [
                 "dai-vat",
                 "dai-liquidation",
-                "dai-market"
+                "dai-guides"
               ],
-              "evidence_locator": "Maker/Sky documentation, governance and current market observation: evidence cited for the section''s mechanism, event or dated observation.",
-              "support_direction": "context_only",
-              "note": "Inference bounded by cited mechanisms and current observation.",
-              "review": {
-                "state": "pending",
-                "reviewer": null,
-                "reviewed_at": null
-              }
-            },
-            {
-              "id": "claim:dai:strategic_choices",
-              "field_path": "analysis.sections.strategic_choices.body",
-              "source_ids": [
-                "dai-upgrade-poll",
-                "dai-litepsm-2026"
-              ],
-              "evidence_locator": "Maker/Sky documentation, governance and current market observation: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Maker technical docs for debt and liquidation; Sky guides for current peg modules.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -299,13 +372,79 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:dai:operating_model",
+              "id": "claim:dai:why_this_outcome:durability-inference",
+              "field_path": "analysis.sections.why_this_outcome.body",
+              "source_ids": [
+                "dai-market",
+                "dai-current-governance",
+                "dai-ark-2026"
+              ],
+              "evidence_locator": "Dated supply observation, current executive-vote index and ARK section describing DAI liquidity concentration in DeFi.",
+              "support_direction": "context_only",
+              "note": "Analytical inference: these observations support continued material operation, not a measured causal attribution.",
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:dai:strategic_choices:collateral-and-psm",
+              "field_path": "analysis.sections.strategic_choices.body",
+              "source_ids": [
+                "dai-vat",
+                "dai-guides",
+                "dai-ark-2026"
+              ],
+              "evidence_locator": "Vat collateral accounting, LitePSM implementation overview and ARK reserve/peg-stability analysis.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:dai:strategic_choices:coexistence",
+              "field_path": "analysis.sections.strategic_choices.body",
+              "source_ids": [
+                "dai-upgrade-poll",
+                "dai-upgrade-exec"
+              ],
+              "evidence_locator": "Upgrade poll and 2024-09-17 execution transaction for the optional DAI/USDS conversion path.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:dai:strategic_choices:litepsm-change",
+              "field_path": "analysis.sections.strategic_choices.body",
+              "source_ids": [
+                "dai-litepsm-proposal",
+                "dai-litepsm-exec"
+              ],
+              "evidence_locator": "June 18 proposal parameter table and June 22 execution transaction; outcome impact is not asserted.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:dai:operating_model:vaults-liquidations",
               "field_path": "analysis.sections.operating_model.body",
               "source_ids": [
                 "dai-vat",
                 "dai-liquidation"
               ],
-              "evidence_locator": "Maker/Sky documentation, governance and current market observation: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Vat debt-ceiling and collateral accounting sections; Dog/Clipper liquidation flow.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -315,13 +454,28 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:dai:token_and_value_capture",
+              "id": "claim:dai:operating_model:litepsm-liquidity",
+              "field_path": "analysis.sections.operating_model.body",
+              "source_ids": [
+                "dai-guides",
+                "dai-ark-2026"
+              ],
+              "evidence_locator": "Sky LitePSM guide entry and ARK sections “Peg Stability” and “Mint/Redemption Mechanisms.”",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:dai:token_and_value_capture:borrower-fees",
               "field_path": "analysis.sections.token_and_value_capture.body",
               "source_ids": [
-                "dai-vat",
-                "dai-upgrade-exec"
+                "dai-vat"
               ],
-              "evidence_locator": "Maker/Sky documentation, governance and current market observation: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Vat documentation fields for accumulated stability fees and system debt accounting.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -331,16 +485,31 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:dai:counterfactual",
+              "id": "claim:dai:token_and_value_capture:separate-products",
+              "field_path": "analysis.sections.token_and_value_capture.body",
+              "source_ids": [
+                "dai-guides",
+                "dai-ark-2026"
+              ],
+              "evidence_locator": "Sky guide entries and ARK product comparison separating DAI, USDS and savings products.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:dai:counterfactual:collateral-tradeoff",
               "field_path": "analysis.sections.counterfactual.body",
               "source_ids": [
                 "dai-vat",
-                "dai-upgrade-poll",
-                "dai-litepsm-2026"
+                "dai-ark-2026"
               ],
-              "evidence_locator": "Maker/Sky documentation, governance and current market observation: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Observed collateral architecture used as context for the crypto-only alternative.",
               "support_direction": "context_only",
-              "note": "Inference; alternatives are not quantitatively estimated.",
+              "note": "Counterfactual; reviewed sources do not measure the alternative outcome.",
               "review": {
                 "state": "pending",
                 "reviewer": null,
@@ -348,14 +517,29 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:dai:risks_and_unknowns",
+              "id": "claim:dai:counterfactual:migration-tradeoff",
+              "field_path": "analysis.sections.counterfactual.body",
+              "source_ids": [
+                "dai-upgrade-poll",
+                "dai-upgrade-exec"
+              ],
+              "evidence_locator": "Optional upgrade design used as context for the forced-migration alternative.",
+              "support_direction": "context_only",
+              "note": "Counterfactual; not a claim that governance considered or rejected this exact alternative.",
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:dai:risks_and_unknowns:liquidation-shutdown",
               "field_path": "analysis.sections.risks_and_unknowns.body",
               "source_ids": [
                 "dai-liquidation",
-                "dai-shutdown",
-                "dai-mica"
+                "dai-shutdown"
               ],
-              "evidence_locator": "Maker/Sky documentation, governance and current market observation: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Liquidation documentation and Cage Keeper settlement process.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -365,14 +549,29 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:dai:lifecycle",
+              "id": "claim:dai:risks_and_unknowns:legal-and-collateral-gaps",
+              "field_path": "analysis.sections.risks_and_unknowns.body",
+              "source_ids": [
+                "dai-ark-2026",
+                "dai-mica"
+              ],
+              "evidence_locator": "ARK limitations on token-specific backing and MiCA text for entity- and activity-specific legal review.",
+              "support_direction": "context_only",
+              "note": "No blanket legal classification is asserted.",
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:dai:lifecycle:coexistence",
               "field_path": "analysis.sections.lifecycle.body",
               "source_ids": [
                 "dai-upgrade-exec",
-                "dai-current-governance",
-                "dai-market"
+                "dai-current-governance"
               ],
-              "evidence_locator": "Maker/Sky documentation, governance and current market observation: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Executed 2024 upgrade transaction and current Sky executive-vote index.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -382,16 +581,47 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:dai:outlook_and_watch",
+              "id": "claim:dai:lifecycle:material-circulation",
+              "field_path": "analysis.sections.lifecycle.body",
+              "source_ids": [
+                "dai-market"
+              ],
+              "evidence_locator": "DefiLlama DAI response checked 2026-08-03.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:dai:outlook_and_watch:supply-and-conversion",
               "field_path": "analysis.sections.outlook_and_watch.body",
               "source_ids": [
-                "dai-current-governance",
                 "dai-market",
-                "dai-litepsm-2026"
+                "dai-upgrade-exec"
               ],
-              "evidence_locator": "Maker/Sky documentation, governance and current market observation: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Current DAI supply observation and executed conversion path define measurable watch signals.",
               "support_direction": "context_only",
-              "note": "Inference; scenario analysis, not a price forecast.",
+              "note": "Scenario analysis, not a price forecast.",
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:dai:outlook_and_watch:module-risk",
+              "field_path": "analysis.sections.outlook_and_watch.body",
+              "source_ids": [
+                "dai-litepsm-proposal",
+                "dai-litepsm-exec",
+                "dai-ark-2026"
+              ],
+              "evidence_locator": "LitePSM proposal, execution and independent module description define liquidity and concentration signals.",
+              "support_direction": "context_only",
+              "note": "Scenario analysis; no future outcome is claimed.",
               "review": {
                 "state": "pending",
                 "reviewer": null,
@@ -404,7 +634,7 @@ WITH research_document(payload) AS (VALUES ('{
               "source_ids": [
                 "dai-market"
               ],
-              "evidence_locator": "Reported circulating DAI representations field in the dated response.",
+              "evidence_locator": "DefiLlama stablecoin observation checked Aug. 3, 2026",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -419,7 +649,7 @@ WITH research_document(payload) AS (VALUES ('{
               "source_ids": [
                 "dai-market"
               ],
-              "evidence_locator": "DAI price field in the dated response.",
+              "evidence_locator": "DefiLlama price observation checked Aug. 3, 2026",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -434,7 +664,7 @@ WITH research_document(payload) AS (VALUES ('{
               "source_ids": [
                 "dai-market"
               ],
-              "evidence_locator": "DAI deviation from one dollar field in the dated response.",
+              "evidence_locator": "Derived from the DefiLlama price observation",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -444,13 +674,13 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:dai:event:usds-upgrade:2024-09-18",
-              "field_path": "events[usds-upgrade:2024-09-18]",
+              "id": "claim:dai:event:usds-upgrade:2024-09-17",
+              "field_path": "events[usds-upgrade:2024-09-17]",
               "source_ids": [
                 "dai-upgrade-poll",
                 "dai-upgrade-exec"
               ],
-              "evidence_locator": "Governance initialized USDS and the 1:1 DAI-USDS converter. in the dated source.",
+              "evidence_locator": "Dated record for A governance transaction initialized USDS and the one-for-one DAI/USDS conversion path.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -460,12 +690,13 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:dai:event:litepsm-capacity:2026-06-18",
-              "field_path": "events[litepsm-capacity:2026-06-18]",
+              "id": "claim:dai:event:litepsm-capacity:2026-06-22",
+              "field_path": "events[litepsm-capacity:2026-06-22]",
               "source_ids": [
-                "dai-litepsm-2026"
+                "dai-litepsm-proposal",
+                "dai-litepsm-exec"
               ],
-              "evidence_locator": "Governance approved larger LitePSM USDC buffer and gap parameters. in the dated source.",
+              "evidence_locator": "Dated record for A governance transaction executed the proposed LitePSM parameter changes.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -484,30 +715,30 @@ WITH research_document(payload) AS (VALUES ('{
           "confidence": "medium",
           "extensions": {
             "methodology_notes": [
-              "freshness.last_reviewed_at records evidence assembly and source verification, not human approval; every claim remains pending until an editor reviews it.",
-              "DAI and USDS are separate products; combined Sky dashboard figures are not reported as DAI-only.",
-              "PSM liquidity is not described as a universal bank redemption right.",
+              "The evidence was assembled and checked on Aug. 3, 2026. Every claim remains pending until a person reviews it.",
+              "DAI and USDS are separate products. Sky-wide totals are not reported as DAI-only.",
+              "LitePSM liquidity is not described as a universal bank redemption right.",
               "Collateral exposure, conversion liquidity and bridged supply require contract-level reconciliation."
             ],
             "structured_analysis": {
               "strategic_choices": [
                 {
-                  "decision": "Keep DAI live while adding a 1:1 USDS upgrade path.",
-                  "consequence": "Preserves integrations and choice while splitting branding and liquidity."
+                  "decision": "Keep DAI live while adding a one-for-one USDS conversion path.",
+                  "consequence": "Preserved compatibility and user choice while splitting branding and liquidity."
                 },
                 {
-                  "decision": "Use stablecoin Peg Stability Modules.",
-                  "consequence": "Tightens dollar liquidity while increasing centralized issuer and freeze exposure."
+                  "decision": "Use stablecoin peg modules.",
+                  "consequence": "Added a direct route to dollar liquidity while increasing issuer, freeze and governance exposure."
                 }
               ],
               "unknowns": [
                 {
-                  "question": "What is the current DAI-only collateral and PSM exposure after separating USDS?",
+                  "question": "What is the current DAI-only collateral and LitePSM exposure after separating USDS?",
                   "resolution_trigger": "A dated contract-level debt, collateral and module reconciliation."
                 },
                 {
-                  "question": "How much DAI is irreversibly converting to USDS?",
-                  "resolution_trigger": "Converter flows and supply by token over time."
+                  "question": "How quickly is DAI liquidity moving to USDS?",
+                  "resolution_trigger": "Converter flows and venue liquidity tracked separately by token."
                 }
               ]
             },
@@ -581,20 +812,20 @@ WITH research_document(payload) AS (VALUES ('{
         },
         {
           "id": "dai-upgrade-exec",
-          "title": "USDS, sUSDS and SKY token initialization executive vote",
-          "url": "https://vote.makerdao.com/executive/template-executive-vote-out-of-schedule-executive-vote-usds-susds-and-sky-tokens-initialization-sbe-upgrade-sky-dssvestmintable-setup-usds-sky-farming-setup-miscellaneous-actions-september-13-2024",
-          "publisher": "Maker Governance",
-          "published_at": "2024-09-13",
+          "title": "Ethereum transaction — USDS and DAI converter execution",
+          "url": "https://eth.blockscout.com/tx/0x2221973333bd0c22f8b1b2593fa9817765bafcf65a2d3c25ebde8df06bbd197c",
+          "publisher": "Blockscout",
+          "published_at": "2024-09-17",
           "accessed_at": "2026-08-03T17:26:35Z",
           "archive_url": null,
-          "tier": "A",
-          "role": "primary",
+          "tier": "B",
+          "role": "aggregator",
           "access_state": "reachable",
           "checked_at": "2026-08-03T17:26:35Z",
           "content_hash": null
         },
         {
-          "id": "dai-litepsm-2026",
+          "id": "dai-litepsm-proposal",
           "title": "Sky executive vote — update LitePSM parameters",
           "url": "https://vote.sky.money/executive/template-executive-vote-onboard-allocator-grove-a-vault-update-litepsm-parameters-replace-stusds-mom-monthly-settlement-cycle-for-may-2026-staking-rewards-normalization-update-safe-harbor-agreement-prime-agent-proxy-spell-june-18-2026",
           "publisher": "Sky Governance",
@@ -608,10 +839,38 @@ WITH research_document(payload) AS (VALUES ('{
           "content_hash": null
         },
         {
+          "id": "dai-litepsm-exec",
+          "title": "Ethereum transaction — LitePSM parameter execution",
+          "url": "https://eth.blockscout.com/tx/0xa2bffc99b76e5a2e2733ac1f5c350c1d7590e5ae74862fad58b2816b7ab8fba6",
+          "publisher": "Blockscout",
+          "published_at": "2026-06-22",
+          "accessed_at": "2026-08-03T17:26:35Z",
+          "archive_url": null,
+          "tier": "B",
+          "role": "aggregator",
+          "access_state": "reachable",
+          "checked_at": "2026-08-03T17:26:35Z",
+          "content_hash": null
+        },
+        {
           "id": "dai-current-governance",
           "title": "Sky executive votes",
           "url": "https://vote.sky.money/executive",
           "publisher": "Sky Governance",
+          "published_at": null,
+          "accessed_at": "2026-08-03T17:26:35Z",
+          "archive_url": null,
+          "tier": "A",
+          "role": "primary",
+          "access_state": "reachable",
+          "checked_at": "2026-08-03T17:26:35Z",
+          "content_hash": null
+        },
+        {
+          "id": "dai-guides",
+          "title": "LitePSM implementation and operating constraints",
+          "url": "https://github.com/makerdao/dss-lite-psm",
+          "publisher": "Sky Ecosystem",
           "published_at": null,
           "accessed_at": "2026-08-03T17:26:35Z",
           "archive_url": null,
@@ -636,15 +895,15 @@ WITH research_document(payload) AS (VALUES ('{
           "content_hash": null
         },
         {
-          "id": "dai-sky-dashboard",
-          "title": "Sky Protocol dashboard",
-          "url": "https://sky.money/",
-          "publisher": "Sky Ecosystem",
-          "published_at": null,
+          "id": "dai-ark-2026",
+          "title": "A Guide To Stablecoins: Multi-Collateral-Backed Stablecoins — DAI, USDS",
+          "url": "https://www.ark-invest.com/articles/analyst-research/multi-collateral-backed-stablecoins-dai-usds",
+          "publisher": "ARK Investment Management",
+          "published_at": "2026-06-25",
           "accessed_at": "2026-08-03T17:26:35Z",
           "archive_url": null,
           "tier": "B",
-          "role": "primary",
+          "role": "independent",
           "access_state": "reachable",
           "checked_at": "2026-08-03T17:26:35Z",
           "content_hash": null
@@ -673,12 +932,12 @@ WITH research_document(payload) AS (VALUES ('{
       "category": "depin-wireless",
       "status": "operating",
       "profile": {
-        "what_it_does": "Community-built LoRaWAN IoT coverage and Wi-Fi carrier offload, with paid use settled in Data Credits and eligible operators rewarded in HNT.",
-        "how_it_works": "Independent operators provide radios, sites, power and internet backhaul; IoT users and mobile carriers pay fixed-dollar Data Credit rates for qualifying traffic.",
-        "traction": "Operating after its Solana migration and return to HNT rewards; current adoption must be judged by paid traffic and repeat carrier demand, not hotspot or token counts alone.",
-        "business_model": "HNT burns create Data Credits for network fees while scheduled HNT emissions reward coverage and traffic. Burns, fees, emissions and token-market value are separate measurements.",
-        "outlook": "Base case: carrier offload leads growth while LoRaWAN remains a specialist network. Watch traffic-only Data Credit spend, active radios, carrier concentration, emissions and operator churn.",
-        "editorial_guardrails": "Keep paid usage, onboarding burns, emissions, hotspot supply and token price separate; MOBILE and IOT still exist after reward emissions ended.",
+        "what_it_does": "Community-built LoRaWAN connectivity and Wi-Fi carrier offload, paid through Data Credits.",
+        "how_it_works": "Local operators provide radios and backhaul; IoT users and mobile carriers pay fixed-dollar Data Credit rates for qualifying traffic.",
+        "traction": "Operating after its Solana migration and HIP 138. Blockworks reported 8,281.1 terabytes of carrier-offload traffic in the first quarter of 2026.",
+        "business_model": "HNT burns create Data Credits for network fees while scheduled HNT emissions reward network participation. Burns, contracted receipts, emissions and token value are separate measurements.",
+        "outlook": "Base case: carrier offload remains the largest observed Mobile use. Watch repeat traffic, contracted rates, carrier concentration, emissions and operator churn.",
+        "editorial_guardrails": "Keep traffic, Data Credit burns, cash receipts, emissions and token price separate. Disclose the current HNT/MOBILE reward-documentation conflict.",
         "current_observation": {
           "observed_at": "2026-08-03T17:26:30.797Z",
           "hnt_price_usd": 0.183,
@@ -715,23 +974,25 @@ WITH research_document(payload) AS (VALUES ('{
             ]
           },
           "outcome": {
-            "label": null,
-            "as_of": null,
-            "rule_id": null,
-            "confidence": null,
-            "claim_ids": []
+            "label": "operating_mixed",
+            "as_of": "2026-08-03",
+            "rule_id": "forensic-lifecycle-v1",
+            "confidence": "medium",
+            "claim_ids": [
+              "claim:helium:outcome"
+            ]
           },
           "sections": {
-            "what_it_is": "Helium is a community-built wireless infrastructure network with two distinct demand systems: low-bandwidth LoRaWAN connectivity for Internet-of-Things devices and Wi-Fi-based cellular offload for mobile carriers. Independent hotspot owners provide local coverage. Network users pay with non-transferable Data Credits, while eligible operators currently earn HNT. Helium is an application network on Solana, not a separate layer-one blockchain.",
-            "what_happened": "Helium began with LoRaWAN hotspots and an HNT reward model, expanded into mobile coverage, and migrated its chain state to Solana on 2023-04-18. HIP 138 was approved and labeled deployed in early 2025: new MOBILE and IOT emissions stopped and network rewards returned to HNT, while existing MOBILE and IOT tokens and treasuries remained. CoinGecko observed HNT at $0.183 and about $33.23 million market capitalization at 2026-08-03T17:26:30.797Z. That market snapshot says nothing by itself about network usage.",
-            "why_this_outcome": "Helium lowered the cost of deploying coverage by shifting site acquisition, hardware and backhaul to local operators, then used token emissions to coordinate early supply. The mobile offload product gives carriers a concrete buyer for coverage in busy locations, while LoRaWAN serves devices that need small inexpensive packets. Adoption still must be judged by paid Data Credit use, repeat carrier traffic and operator economics—not hotspot counts or token price alone. The reviewed evidence supports the design and live products but does not isolate causal contribution.",
-            "strategic_choices": "Helium first built its own chain, then moved execution to Solana so its teams could focus on wireless protocols instead of maintaining a layer one. It split Mobile and IoT into separate tokens under HIP 51, then reversed course under HIP 138 after treasury imbalances and complexity became visible. Returning rewards to HNT simplified the system and redirected emissions, but it did not delete MOBILE or IOT: holders can still use treasury conversion and legacy governance until later changes. Carrier offload also prioritizes verified traffic and quality over blanket coverage rewards.",
-            "operating_model": "Hotspot owners buy and operate radios, secure locations, power and internet backhaul. IoT customers fund organizational accounts and pay one Data Credit per 24-byte payload increment; mobile data currently costs 10,000 Data Credits, or $0.10, per gigabyte. One Data Credit equals $0.00001 and can be created only by burning HNT. Mobile carriers authorize offload through Passpoint, and qualifying traffic rewards operators in HNT under network rules. Counts of installed hotspots are therefore supply indicators, not proof of paying demand.",
-            "token_and_value_capture": "HNT coordinates operator rewards, governance and Data Credit creation. Burning HNT creates fixed-dollar Data Credits, but gross burns include onboarding and other fees as well as data traffic, so burns must not automatically be called customer revenue. Net Emissions can re-mint burned HNT up to 1,643.83561643 HNT per day, and scheduled issuance is 7.5 million HNT for the year beginning 2026-08-01. MOBILE and IOT no longer emit as network rewards under deployed HIP 138, yet their treasury conversion and governance roles persist. Usage, emissions and token price must be reported separately.",
-            "counterfactual": "Keeping a proprietary layer one would preserve more control over execution but require ongoing consensus and tooling work. Keeping separate MOBILE and IOT emissions could preserve subnetwork-specific incentives while retaining the complexity and treasury imbalance HIP 138 identified. Paying operators only for traffic would tie rewards more tightly to demand but could starve new coverage before customers arrive. The reviewed sources do not quantify which alternative would produce better coverage or lower acquisition cost.",
-            "risks_and_unknowns": "The core risk is subsidized supply without enough recurring paid use. Hotspots can be poorly located, carrier contracts can change, emissions can exceed demand burns and HNT price declines can weaken operator payback. Mobile traffic also depends on carrier authorization, quality controls and Nova Labs or related service infrastructure; IoT demand depends on device and LNS operators. Current operator statements do not name all participating U.S. carriers or expose contract economics. Public data still needs a reconciled split between Mobile data, IoT data, onboarding burns, HNT net emissions, unique active radios and operator churn.",
-            "lifecycle": "Helium is operating after two major architecture corrections: the 2023 Solana migration and the 2025 return from MOBILE/IOT emissions to HNT rewards. Telefónica independently announced a Mexico trial in 2024, and current Helium documentation describes live carrier offload and IoT products. The protocol has moved beyond a hotspot-count story, but the evidence contract should remain centered on verified traffic, Data Credit spend and subsidy-adjusted operator economics.",
-            "outlook_and_watch": "Base case: Helium remains a useful specialist network where community-deployed Wi-Fi or LoRaWAN is cheaper than traditional buildout, while carrier offload drives most growth. The upside requires repeat carrier traffic, wider named partnerships and Data Credit demand that grows faster than subsidy cost. The downside is weak repeat use, contract concentration or falling operator returns. Watch Data Credits by Mobile data, IoT data and onboarding; active traffic-carrying radios; carrier concentration; gigabytes offloaded; HNT burns, net emissions and rewards; MOBILE/IOT treasury conversions; operator churn; and Solana program incidents."
+            "what_it_is": "Helium is a community-built wireless network with two products: low-bandwidth LoRaWAN service for connected devices and Wi-Fi carrier offload for mobile subscribers. Local operators provide radios, sites, power and internet access. Network customers use fixed-dollar Data Credits. Reward language is not fully consistent: protocol documents say network participants receive HNT after HIP 138, while a Feb. 25, 2026 carrier FAQ still says some hotspot owners may earn MOBILE. This report treats the denomination as a documentation conflict that needs verification.",
+            "what_happened": "Helium began as a LoRaWAN network with its own blockchain, added mobile coverage, and moved protocol execution to Solana on April 18, 2023. HIP 138 later ended new MOBILE and IOT reward emissions and returned protocol rewards to HNT, while legacy tokens, treasuries and governance remained. Blockworks reported 8,281.1 terabytes of carrier-offload traffic and $3.56 million of carrier-offload Data Credit burn in the first quarter of 2026. CoinGecko observed HNT at about $0.18 and a $33.2 million market value on Aug. 3, 2026. Token price does not measure network use.",
+            "why_this_outcome": "Helium has moved beyond a coverage-only experiment because the network recorded substantial carrier-offload traffic in the first quarter of 2026. Its operator model can place radios without a carrier owning every site, and Data Credits give customers a fixed-dollar unit for network fees. Those features explain how the system works; they do not prove that it is cheaper than every conventional deployment or that demand will persist. The current evidence supports an operating network with real usage and unresolved economic questions.",
+            "strategic_choices": "Helium chose community-owned hardware, token incentives and fixed-dollar Data Credits. It then moved execution from its own chain to Solana, exchanging control of the base layer for dependence on Solana programs and infrastructure. HIP 138 reversed the separate MOBILE/IOT reward design after the proposal identified complexity and treasury imbalances. Carrier offload adds quality and verified-traffic rules instead of paying every hotspot equally. The reviewed sources describe these choices; they do not isolate how much each choice changed demand or cost.",
+            "operating_model": "Hotspot operators buy hardware, secure a location, supply power and internet backhaul, and follow network quality rules. IoT users pay Data Credits in 24-byte increments. Mobile carriers use Passpoint to authorize subscriber offload, and qualifying traffic can earn operator rewards. One Data Credit is priced at $0.00001 and is created by burning HNT. Protocol documents point to HNT rewards after HIP 138, but the current carrier FAQ still references MOBILE; operators should verify the program’s actual payout asset before relying on either page.",
+            "token_and_value_capture": "HNT is burned to create Data Credits and is emitted under a schedule to reward network participation. Gross Data Credit burn includes more than paid traffic, so it should not automatically be called cash revenue. Blockworks values first-quarter carrier-offload burn at the protocol’s $0.50-per-gigabyte accounting rate and warns that contracted carrier rates can be lower. Scheduled net emissions can replace about 1,644 HNT per day of burns, and the annual schedule beginning Aug. 1, 2026 is 7.5 million HNT. Usage, cash receipts, token burns, emissions and market price are different measures.",
+            "counterfactual": "Keeping a proprietary blockchain would preserve more control but require continued consensus and tooling work. Keeping separate MOBILE and IOT emissions could retain subnetwork-specific incentives while preserving the complexity and treasury imbalance described in HIP 138. Paying only for traffic would align rewards more tightly with demand but could leave new areas uncovered before customers arrive. The reviewed sources do not establish which alternative would produce more durable coverage or better operator returns.",
+            "risks_and_unknowns": "The main risk is that operator rewards and hardware costs outrun recurring customer demand. Carrier contracts can change, traffic may be concentrated, poor locations may earn little, and a lower HNT price can weaken operator payback. First-quarter Data Credit burn is protocol accounting, not audited cash receipts. Current public sources do not disclose all carrier names, contract rates, unique traffic-carrying radios or operator churn. The conflict between current MOBILE wording and HIP 138’s HNT design is another unresolved operational risk.",
+            "lifecycle": "Helium is operating after two major design changes: the 2023 Solana migration and the 2025 deployment of HIP 138. Telefónica and Nova Labs announced a Mexico trial in 2024; that is a commercial partner statement about one trial, not independent proof of broad carrier adoption. More recent Blockworks data shows material carrier-offload traffic in the first quarter of 2026. The network has evidence of use, but its long-term outcome still depends on repeat traffic and subsidy-adjusted operator economics.",
+            "outlook_and_watch": "Base case: carrier offload remains the largest observed source of Helium Mobile usage while LoRaWAN serves a narrower device market. The first-quarter 2026 data supports that dated statement, not a permanent growth forecast. Watch carrier-offload terabytes, traffic-only Data Credit burn, contracted rates, named-carrier concentration, active traffic-carrying radios, IoT packets, HNT emissions, MOBILE/IOT treasury conversions and operator churn. Revisit the call if repeat traffic weakens, rewards materially exceed demand, or documentation and payouts remain inconsistent."
           },
           "section_dates": {
             "what_it_is": "2026-08-03",
@@ -747,34 +1008,47 @@ WITH research_document(payload) AS (VALUES ('{
           },
           "section_claim_ids": {
             "what_it_is": [
-              "claim:helium:what_it_is"
+              "claim:helium:what_it_is:network-products",
+              "claim:helium:what_it_is:reward-conflict"
             ],
             "what_happened": [
-              "claim:helium:what_happened"
+              "claim:helium:what_happened:architecture-changes",
+              "claim:helium:what_happened:usage-and-market"
             ],
             "why_this_outcome": [
-              "claim:helium:why_this_outcome"
+              "claim:helium:why_this_outcome:observed-usage",
+              "claim:helium:why_this_outcome:mechanism-inference"
             ],
             "strategic_choices": [
-              "claim:helium:strategic_choices"
+              "claim:helium:strategic_choices:operator-and-data-credit-model",
+              "claim:helium:strategic_choices:solana-dependency",
+              "claim:helium:strategic_choices:token-reversal",
+              "claim:helium:strategic_choices:traffic-quality"
             ],
             "operating_model": [
-              "claim:helium:operating_model"
+              "claim:helium:operating_model:operator-and-carrier-flow",
+              "claim:helium:operating_model:data-credit-rates",
+              "claim:helium:operating_model:reward-conflict"
             ],
             "token_and_value_capture": [
-              "claim:helium:token_and_value_capture"
+              "claim:helium:token_and_value_capture:burn-and-emissions",
+              "claim:helium:token_and_value_capture:dc-burn-not-cash"
             ],
             "counterfactual": [
-              "claim:helium:counterfactual"
+              "claim:helium:counterfactual:chain-alternative",
+              "claim:helium:counterfactual:reward-alternative"
             ],
             "risks_and_unknowns": [
-              "claim:helium:risks_and_unknowns"
+              "claim:helium:risks_and_unknowns:economics-gap",
+              "claim:helium:risks_and_unknowns:carrier-and-reward-gaps"
             ],
             "lifecycle": [
-              "claim:helium:lifecycle"
+              "claim:helium:lifecycle:design-corrections",
+              "claim:helium:lifecycle:commercial-and-usage-evidence"
             ],
             "outlook_and_watch": [
-              "claim:helium:outlook_and_watch"
+              "claim:helium:outlook_and_watch:dated-demand-base",
+              "claim:helium:outlook_and_watch:economic-signals"
             ]
           },
           "metrics": [
@@ -791,7 +1065,7 @@ WITH research_document(payload) AS (VALUES ('{
                 "definition": "point_in_time"
               },
               "as_of": "2026-08-03T17:26:30.797Z",
-              "method": "CoinGecko market snapshot",
+              "method": "CoinGecko market snapshot checked Aug. 3, 2026",
               "scope": {
                 "product": "HNT",
                 "chains": [
@@ -818,7 +1092,7 @@ WITH research_document(payload) AS (VALUES ('{
                 "definition": "point_in_time"
               },
               "as_of": "2026-08-03T17:26:30.797Z",
-              "method": "CoinGecko market snapshot",
+              "method": "CoinGecko market snapshot checked Aug. 3, 2026",
               "scope": {
                 "product": "HNT",
                 "chains": [
@@ -860,6 +1134,65 @@ WITH research_document(payload) AS (VALUES ('{
               "quality_flags": [
                 "scheduled-not-realized"
               ]
+            },
+            {
+              "id": "metric:helium:carrier-offload-dc-burn:q1-2026",
+              "dimension": "fees",
+              "label": "Carrier-offload Data Credit burn",
+              "value": 3560000,
+              "unit": "usd",
+              "currency": "USD",
+              "window": {
+                "start": "2026-01-01",
+                "end": "2026-03-31",
+                "definition": "calendar_quarter"
+              },
+              "as_of": "2026-03-31",
+              "method": "Blockworks Q1 2026 protocol-accounting value; contracted carrier cash rates can be lower",
+              "scope": {
+                "product": "Helium Mobile",
+                "chains": [
+                  "Solana"
+                ]
+              },
+              "formula": null,
+              "raw_input_ids": [],
+              "claim_ids": [
+                "claim:helium:metric:carrier-offload-dc-burn:q1-2026"
+              ],
+              "quality_flags": [
+                "protocol-dc-burn-not-cash-receipts",
+                "blockworks-methodology"
+              ]
+            },
+            {
+              "id": "metric:helium:carrier-offload-transfer:q1-2026",
+              "dimension": "utilization",
+              "label": "Carrier-offload data transferred",
+              "value": 8281.1,
+              "unit": "terabytes",
+              "currency": null,
+              "window": {
+                "start": "2026-01-01",
+                "end": "2026-03-31",
+                "definition": "calendar_quarter"
+              },
+              "as_of": "2026-03-31",
+              "method": "Blockworks Q1 2026 carrier-offload transfer total",
+              "scope": {
+                "product": "Helium Mobile",
+                "chains": [
+                  "Solana"
+                ]
+              },
+              "formula": null,
+              "raw_input_ids": [],
+              "claim_ids": [
+                "claim:helium:metric:carrier-offload-transfer:q1-2026"
+              ],
+              "quality_flags": [
+                "independent-reporting"
+              ]
             }
           ],
           "events": [
@@ -891,7 +1224,7 @@ WITH research_document(payload) AS (VALUES ('{
               "date": "2025-02-24",
               "date_precision": "day",
               "amount_usd": null,
-              "description": "The HIP 138 tracker was labeled deployed after governance approved the return to HNT rewards.",
+              "description": "The HIP 138 tracker was labeled deployed after votes to return network rewards to HNT.",
               "claim_ids": [
                 "claim:helium:event:hip138-deployed:2025-02-24"
               ]
@@ -904,9 +1237,9 @@ WITH research_document(payload) AS (VALUES ('{
               "source_ids": [
                 "mobile-docs",
                 "dc-docs",
-                "hnt-market"
+                "hnt-q1-2026"
               ],
-              "evidence_locator": "Current product documentation and dated independent HNT market observation.",
+              "evidence_locator": "Current product documentation and independently reported Q1 2026 usage.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -916,14 +1249,30 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:helium:what_it_is",
+              "id": "claim:helium:outcome",
+              "field_path": "outcome.label",
+              "source_ids": [
+                "hnt-q1-2026",
+                "hip138-track",
+                "carrier-offload"
+              ],
+              "evidence_locator": "Q1 2026 carrier-offload usage, deployed HIP 138 tracker and current carrier-program documentation.",
+              "support_direction": "supports",
+              "note": "Mixed reflects verified usage alongside unresolved reward, contract and operator-economics gaps.",
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:what_it_is:network-products",
               "field_path": "analysis.sections.what_it_is.body",
               "source_ids": [
-                "hnt-docs",
-                "dc-docs",
-                "mobile-docs"
+                "mobile-docs",
+                "dc-docs"
               ],
-              "evidence_locator": "Helium documentation, governance, partner announcement and independent market/usage source: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Helium documentation sections describing the Mobile network and fixed-dollar Data Credits.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -933,15 +1282,30 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:helium:what_happened",
+              "id": "claim:helium:what_it_is:reward-conflict",
+              "field_path": "analysis.sections.what_it_is.body",
+              "source_ids": [
+                "hip138",
+                "carrier-offload"
+              ],
+              "evidence_locator": "HIP 138 summary and reward-payout sections compared with FAQ lines “Key Benefits for Hotspot Owners” and “MOBILE rewards.”",
+              "support_direction": "supports",
+              "note": "The sources conflict; this claim reports the conflict instead of selecting one page as current truth.",
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:what_happened:architecture-changes",
               "field_path": "analysis.sections.what_happened.body",
               "source_ids": [
                 "solana-migration",
                 "hip138",
-                "hip138-track",
-                "hnt-market"
+                "hip138-track"
               ],
-              "evidence_locator": "Helium documentation, governance, partner announcement and independent market/usage source: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Legacy-data migration page, HIP 138 implementation text and deployed tracking issue.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -951,16 +1315,46 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:helium:why_this_outcome",
+              "id": "claim:helium:what_happened:usage-and-market",
+              "field_path": "analysis.sections.what_happened.body",
+              "source_ids": [
+                "hnt-q1-2026",
+                "hnt-market"
+              ],
+              "evidence_locator": "Blockworks Q1 2026 traffic and Data Credit burn tables; CoinGecko response checked Aug. 3, 2026.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:why_this_outcome:observed-usage",
+              "field_path": "analysis.sections.why_this_outcome.body",
+              "source_ids": [
+                "hnt-q1-2026"
+              ],
+              "evidence_locator": "Q1 2026 Mobile Offload KPI table: carrier-offload transfer and Data Credit burn.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:why_this_outcome:mechanism-inference",
               "field_path": "analysis.sections.why_this_outcome.body",
               "source_ids": [
                 "dc-docs",
-                "mobile-docs",
                 "carrier-offload"
               ],
-              "evidence_locator": "Helium documentation, governance, partner announcement and independent market/usage source: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Data Credit mechanics and carrier-offload program description.",
               "support_direction": "context_only",
-              "note": "Inference bounded by cited mechanisms; causal weights are not established.",
+              "note": "Mechanism-level inference; no universal cost advantage or causal weight is asserted.",
               "review": {
                 "state": "pending",
                 "reviewer": null,
@@ -968,14 +1362,13 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:helium:strategic_choices",
+              "id": "claim:helium:strategic_choices:operator-and-data-credit-model",
               "field_path": "analysis.sections.strategic_choices.body",
               "source_ids": [
-                "solana-migration",
-                "hip138",
-                "rewardable-data"
+                "mobile-docs",
+                "dc-docs"
               ],
-              "evidence_locator": "Helium documentation, governance, partner announcement and independent market/usage source: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Helium Mobile network overview and Data Credit price/burn documentation.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -985,14 +1378,60 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:helium:operating_model",
+              "id": "claim:helium:strategic_choices:solana-dependency",
+              "field_path": "analysis.sections.strategic_choices.body",
+              "source_ids": [
+                "solana-migration"
+              ],
+              "evidence_locator": "Helium legacy-blockchain page documenting the April 2023 Solana migration.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:strategic_choices:token-reversal",
+              "field_path": "analysis.sections.strategic_choices.body",
+              "source_ids": [
+                "hip138",
+                "hip138-track"
+              ],
+              "evidence_locator": "HIP 138 summary, value-imbalance and implementation sections plus deployed tracker.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:strategic_choices:traffic-quality",
+              "field_path": "analysis.sections.strategic_choices.body",
+              "source_ids": [
+                "rewardable-data",
+                "carrier-offload"
+              ],
+              "evidence_locator": "Rewardable Data eligibility and carrier program rules.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:operating_model:operator-and-carrier-flow",
               "field_path": "analysis.sections.operating_model.body",
               "source_ids": [
-                "dc-docs",
                 "mobile-docs",
                 "carrier-offload"
               ],
-              "evidence_locator": "Helium documentation, governance, partner announcement and independent market/usage source: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Mobile network overview and carrier FAQ Passpoint/operator sections.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -1002,14 +1441,45 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:helium:token_and_value_capture",
+              "id": "claim:helium:operating_model:data-credit-rates",
+              "field_path": "analysis.sections.operating_model.body",
+              "source_ids": [
+                "dc-docs"
+              ],
+              "evidence_locator": "Data Credit price and network-fee schedule.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:operating_model:reward-conflict",
+              "field_path": "analysis.sections.operating_model.body",
+              "source_ids": [
+                "hip138",
+                "carrier-offload"
+              ],
+              "evidence_locator": "HIP 138 direct-HNT payout language versus February 2026 FAQ MOBILE language.",
+              "support_direction": "supports",
+              "note": "Current operator documentation conflict; payout denomination is withheld.",
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:token_and_value_capture:burn-and-emissions",
               "field_path": "analysis.sections.token_and_value_capture.body",
               "source_ids": [
                 "hnt-docs",
                 "dc-docs",
                 "hip138"
               ],
-              "evidence_locator": "Helium documentation, governance, partner announcement and independent market/usage source: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "HNT burn, net-emission schedule and HIP 138 reward sections.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -1019,15 +1489,14 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:helium:counterfactual",
-              "field_path": "analysis.sections.counterfactual.body",
+              "id": "claim:helium:token_and_value_capture:dc-burn-not-cash",
+              "field_path": "analysis.sections.token_and_value_capture.body",
               "source_ids": [
-                "solana-migration",
-                "hip138"
+                "hnt-q1-2026"
               ],
-              "evidence_locator": "Helium documentation, governance, partner announcement and independent market/usage source: evidence cited for the section''s mechanism, event or dated observation.",
-              "support_direction": "context_only",
-              "note": "Inference; alternatives are not quantitatively estimated.",
+              "evidence_locator": "Blockworks Q1 2026 methodology note that protocol valuation uses $0.50/GB while contracted carrier rates can be lower.",
+              "support_direction": "supports",
+              "note": null,
               "review": {
                 "state": "pending",
                 "reviewer": null,
@@ -1035,14 +1504,60 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:helium:risks_and_unknowns",
+              "id": "claim:helium:counterfactual:chain-alternative",
+              "field_path": "analysis.sections.counterfactual.body",
+              "source_ids": [
+                "solana-migration"
+              ],
+              "evidence_locator": "Documented migration used as context for the proprietary-chain alternative.",
+              "support_direction": "context_only",
+              "note": "Counterfactual; no measured alternative outcome.",
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:counterfactual:reward-alternative",
+              "field_path": "analysis.sections.counterfactual.body",
+              "source_ids": [
+                "hip138"
+              ],
+              "evidence_locator": "HIP 138 alternatives and drawbacks sections.",
+              "support_direction": "context_only",
+              "note": "Counterfactual; outcomes are not quantitatively estimated.",
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:risks_and_unknowns:economics-gap",
+              "field_path": "analysis.sections.risks_and_unknowns.body",
+              "source_ids": [
+                "hnt-q1-2026",
+                "hnt-docs"
+              ],
+              "evidence_locator": "Q1 2026 income-statement methodology and HNT emissions schedule.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:risks_and_unknowns:carrier-and-reward-gaps",
               "field_path": "analysis.sections.risks_and_unknowns.body",
               "source_ids": [
                 "carrier-offload",
                 "rewardable-data",
-                "hnt-revenue"
+                "hip138"
               ],
-              "evidence_locator": "Helium documentation, governance, partner announcement and independent market/usage source: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "FAQ confidentiality disclaimer, reward eligibility rules and HIP 138 reward design.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -1052,15 +1567,13 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:helium:lifecycle",
+              "id": "claim:helium:lifecycle:design-corrections",
               "field_path": "analysis.sections.lifecycle.body",
               "source_ids": [
                 "solana-migration",
-                "hip138-track",
-                "telefonica",
-                "mobile-docs"
+                "hip138-track"
               ],
-              "evidence_locator": "Helium documentation, governance, partner announcement and independent market/usage source: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Dated Solana migration record and deployed HIP 138 tracker.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -1070,16 +1583,47 @@ WITH research_document(payload) AS (VALUES ('{
               }
             },
             {
-              "id": "claim:helium:outlook_and_watch",
+              "id": "claim:helium:lifecycle:commercial-and-usage-evidence",
+              "field_path": "analysis.sections.lifecycle.body",
+              "source_ids": [
+                "telefonica",
+                "hnt-q1-2026"
+              ],
+              "evidence_locator": "Telefónica/Nova Labs trial announcement and independent Q1 2026 usage report.",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:outlook_and_watch:dated-demand-base",
+              "field_path": "analysis.sections.outlook_and_watch.body",
+              "source_ids": [
+                "hnt-q1-2026"
+              ],
+              "evidence_locator": "Q1 2026 carrier-offload transfer, burn and daily-user observations.",
+              "support_direction": "context_only",
+              "note": "Scenario baseline; not an evergreen growth claim.",
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:outlook_and_watch:economic-signals",
               "field_path": "analysis.sections.outlook_and_watch.body",
               "source_ids": [
                 "dc-docs",
-                "carrier-offload",
-                "hnt-revenue"
+                "hnt-docs",
+                "carrier-offload"
               ],
-              "evidence_locator": "Helium documentation, governance, partner announcement and independent market/usage source: evidence cited for the section''s mechanism, event or dated observation.",
+              "evidence_locator": "Data Credit, emissions and carrier-program mechanics define the watch signals.",
               "support_direction": "context_only",
-              "note": "Inference; scenario analysis, not a token price forecast.",
+              "note": "Scenario analysis, not a token price forecast.",
               "review": {
                 "state": "pending",
                 "reviewer": null,
@@ -1092,7 +1636,7 @@ WITH research_document(payload) AS (VALUES ('{
               "source_ids": [
                 "hnt-market"
               ],
-              "evidence_locator": "HNT price field in the dated response.",
+              "evidence_locator": "CoinGecko market snapshot checked Aug. 3, 2026",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -1107,7 +1651,7 @@ WITH research_document(payload) AS (VALUES ('{
               "source_ids": [
                 "hnt-market"
               ],
-              "evidence_locator": "HNT market capitalization field in the dated response.",
+              "evidence_locator": "CoinGecko market snapshot checked Aug. 3, 2026",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -1122,7 +1666,37 @@ WITH research_document(payload) AS (VALUES ('{
               "source_ids": [
                 "hnt-docs"
               ],
-              "evidence_locator": "Scheduled annual HNT emissions field in the dated response.",
+              "evidence_locator": "Helium emissions schedule",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:metric:carrier-offload-dc-burn:q1-2026",
+              "field_path": "metrics[carrier-offload-dc-burn:q1-2026].value",
+              "source_ids": [
+                "hnt-q1-2026"
+              ],
+              "evidence_locator": "Blockworks Q1 2026 protocol-accounting value; contracted carrier cash rates can be lower",
+              "support_direction": "supports",
+              "note": null,
+              "review": {
+                "state": "pending",
+                "reviewer": null,
+                "reviewed_at": null
+              }
+            },
+            {
+              "id": "claim:helium:metric:carrier-offload-transfer:q1-2026",
+              "field_path": "metrics[carrier-offload-transfer:q1-2026].value",
+              "source_ids": [
+                "hnt-q1-2026"
+              ],
+              "evidence_locator": "Blockworks Q1 2026 carrier-offload transfer total",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -1137,7 +1711,7 @@ WITH research_document(payload) AS (VALUES ('{
               "source_ids": [
                 "solana-migration"
               ],
-              "evidence_locator": "Helium completed migration from its purpose-built blockchain to Solana. in the dated source.",
+              "evidence_locator": "Dated record for Helium completed migration from its purpose-built blockchain to Solana.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -1152,7 +1726,7 @@ WITH research_document(payload) AS (VALUES ('{
               "source_ids": [
                 "telefonica"
               ],
-              "evidence_locator": "Telefónica and Nova Labs announced a Helium Mobile hotspot trial in Mexico. in the dated source.",
+              "evidence_locator": "Dated record for Telefónica and Nova Labs announced a Helium Mobile hotspot trial in Mexico.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -1168,7 +1742,7 @@ WITH research_document(payload) AS (VALUES ('{
                 "hip138",
                 "hip138-track"
               ],
-              "evidence_locator": "The HIP 138 tracker was labeled deployed after governance approved the return to HNT rewards. in the dated source.",
+              "evidence_locator": "Dated record for The HIP 138 tracker was labeled deployed after votes to return network rewards to HNT.",
               "support_direction": "supports",
               "note": null,
               "review": {
@@ -1187,30 +1761,34 @@ WITH research_document(payload) AS (VALUES ('{
           "confidence": "medium",
           "extensions": {
             "methodology_notes": [
-              "freshness.last_reviewed_at records evidence assembly and source verification, not human approval; every claim remains pending until an editor reviews it.",
-              "Installed hotspots, Data Credit burns, carrier traffic, emissions and token price are separate signals.",
-              "Data Credit burns include usage and non-usage fees and are not automatically protocol revenue.",
-              "MOBILE and IOT emissions ended under HIP 138, but legacy tokens and treasury conversion remain."
+              "The evidence was assembled and checked on Aug. 3, 2026. Every claim remains pending until a person reviews it.",
+              "Installed hotspots, traffic, Data Credit burns, cash receipts, emissions and token price are separate signals.",
+              "Blockworks values Data Credit burn at protocol rates; it warns contracted carrier rates can be lower.",
+              "HIP 138 and a current carrier FAQ conflict on HNT versus MOBILE reward wording; the report does not hide that conflict."
             ],
             "structured_analysis": {
               "strategic_choices": [
                 {
-                  "decision": "Migrate protocol execution to Solana.",
-                  "consequence": "Reduced layer-one maintenance while adding Solana program and ecosystem dependency."
+                  "decision": "Move protocol execution to Solana.",
+                  "consequence": "Removed a proprietary base layer while adding Solana program and infrastructure dependency."
                 },
                 {
-                  "decision": "Reverse subnetwork emissions and pay HNT directly.",
-                  "consequence": "Simplified rewards and corrected treasury imbalances while leaving legacy token conversion and governance."
+                  "decision": "End new subnetwork-token reward emissions and return rewards to HNT.",
+                  "consequence": "Simplified the token system while leaving legacy tokens, treasuries and governance in place."
                 }
               ],
               "unknowns": [
                 {
                   "question": "How much current Data Credit spend is repeat carrier and IoT traffic rather than onboarding?",
-                  "resolution_trigger": "Reconciled onchain burn categories with payer and traffic cohorts."
+                  "resolution_trigger": "Reconciled burn categories, payer cohorts and contracted cash rates."
                 },
                 {
-                  "question": "Are operator rewards sustainable after emissions?",
-                  "resolution_trigger": "Traffic revenue, rewards, hardware cost and churn by hotspot cohort."
+                  "question": "Are operator rewards sustainable?",
+                  "resolution_trigger": "Traffic receipts, rewards, hardware cost and churn by hotspot cohort."
+                },
+                {
+                  "question": "Which asset do current carrier-offload participants actually receive?",
+                  "resolution_trigger": "Reconciled protocol payout data and corrected operator documentation."
                 }
               ]
             },
@@ -1347,7 +1925,7 @@ WITH research_document(payload) AS (VALUES ('{
           "accessed_at": "2026-08-03T17:26:35Z",
           "archive_url": null,
           "tier": "A",
-          "role": "independent",
+          "role": "primary",
           "access_state": "reachable",
           "checked_at": "2026-08-03T17:26:35Z",
           "content_hash": null
@@ -1367,9 +1945,9 @@ WITH research_document(payload) AS (VALUES ('{
           "content_hash": null
         },
         {
-          "id": "hnt-revenue",
-          "title": "Helium Network Revenue",
-          "url": "https://blockworks.com/analytics/helium/helium-overview/helium-protocol-revenue",
+          "id": "hnt-q1-2026",
+          "title": "Helium Network Q1 2026 report",
+          "url": "https://blockworks.com/api/investor-report/investor-relations-report-q1-2026/pdf",
           "publisher": "Blockworks Research",
           "published_at": null,
           "accessed_at": "2026-08-03T17:26:35Z",
@@ -1384,7 +1962,52 @@ WITH research_document(payload) AS (VALUES ('{
     }
   ]
 }'))
-INSERT INTO _dai_helium_gold_0076 SELECT json_extract(j.value,'$.table'),json_extract(j.value,'$.slug'),json_extract(j.value,'$.profile'),json_extract(j.value,'$.sources'),json_extract(j.value,'$.name'),json_extract(j.value,'$.symbol'),json_extract(j.value,'$.category'),json_extract(j.value,'$.status') FROM research_document,json_each(json_extract(payload,'$.cases')) j;
-UPDATE stablecoin_meta AS row SET name=s.name,symbol=s.symbol,profile=json(s.profile),sources=s.sources,updated_at='2026-08-03' FROM _dai_helium_gold_0076 s WHERE s.table_name='stablecoin_meta' AND lower(row.slug)=s.slug;
-UPDATE rwa_depin AS row SET name=s.name,category=s.category,status=s.status,profile=json(s.profile),sources=s.sources,updated_at='2026-08-03' FROM _dai_helium_gold_0076 s WHERE s.table_name='rwa_depin' AND lower(row.slug)=s.slug;
+INSERT INTO _dai_helium_gold_0076
+SELECT
+  json_extract(j.value, '$.table'),
+  json_extract(j.value, '$.slug'),
+  json_extract(j.value, '$.profile'),
+  json_extract(j.value, '$.sources'),
+  json_extract(j.value, '$.name'),
+  json_extract(j.value, '$.symbol'),
+  json_extract(j.value, '$.category'),
+  json_extract(j.value, '$.status')
+FROM research_document, json_each(json_extract(payload, '$.cases')) j;
+UPDATE stablecoin_meta AS row
+SET
+  name = s.name,
+  symbol = s.symbol,
+  profile = CASE
+    WHEN json_type(COALESCE(row.profile, '{}'), '$.legacy_preservation.previous_profile') IS NULL THEN
+      json_set(
+        json_remove(json_patch(COALESCE(row.profile, '{}'), json(s.profile)), '$.sources'),
+        '$.legacy_preservation.previous_profile', json(COALESCE(row.profile, '{}')),
+        '$.legacy_preservation.previous_sources', json(COALESCE(row.sources, '[]')),
+        '$.legacy_preservation.preserved_at', '2026-08-03'
+      )
+    ELSE json_remove(json_patch(COALESCE(row.profile, '{}'), json(s.profile)), '$.sources')
+  END,
+  sources = s.sources,
+  updated_at = '2026-08-03'
+FROM _dai_helium_gold_0076 s
+WHERE s.table_name = 'stablecoin_meta' AND lower(row.slug) = s.slug;
+UPDATE rwa_depin AS row
+SET
+  name = s.name,
+  category = s.category,
+  status = s.status,
+  profile = CASE
+    WHEN json_type(COALESCE(row.profile, '{}'), '$.legacy_preservation.previous_profile') IS NULL THEN
+      json_set(
+        json_remove(json_patch(COALESCE(row.profile, '{}'), json(s.profile)), '$.sources'),
+        '$.legacy_preservation.previous_profile', json(COALESCE(row.profile, '{}')),
+        '$.legacy_preservation.previous_sources', json(COALESCE(row.sources, '[]')),
+        '$.legacy_preservation.preserved_at', '2026-08-03'
+      )
+    ELSE json_remove(json_patch(COALESCE(row.profile, '{}'), json(s.profile)), '$.sources')
+  END,
+  sources = s.sources,
+  updated_at = '2026-08-03'
+FROM _dai_helium_gold_0076 s
+WHERE s.table_name = 'rwa_depin' AND lower(row.slug) = s.slug;
 DROP TABLE _dai_helium_gold_0076;
