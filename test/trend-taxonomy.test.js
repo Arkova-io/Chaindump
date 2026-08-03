@@ -83,16 +83,19 @@ describe('trend taxonomy', () => {
     expect((await schemaResponse.json()).label_targets).toContain('trend_ids');
   });
 
-  it('surfaces trend taxonomy and SLM export links in every forensic analysis UI', () => {
+  it('keeps machine schemas out of category pages and explains the method in its own view', () => {
     const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
 
-    expect(html).toContain("trendTaxonomyPanel('blockchain'");
-    expect(html).toContain("trendTaxonomyPanel(['dex', 'cex']");
-    expect(html).toContain("trendTaxonomyPanel('casino'");
-    expect(html).toContain("trendTaxonomyPanel('nft_ordinals'");
-    expect(html).toContain('Refreshed outlook contract');
-    expect(html).toContain('comparable dated observations minimum');
-    expect(html).toContain('/api/trend-taxonomy');
-    expect(html).toContain('/api/slm/training-schema');
+    expect(html).toContain('data-view="methodology">Intelligence Methodology</button>');
+    expect(html).toContain('id="methodologyview"');
+    expect(html).toContain("pageHead('Intelligence Methodology'");
+    expect(html).toContain('How to read a report');
+    expect(html).toContain('How evidence works');
+    expect(html).toContain('How comparisons work');
+    expect(html).toContain('What we look for by category');
+    expect(html).toContain('<div class="gname">Infrastructure</div>');
+    expect(html).not.toContain('function trendTaxonomyPanel(');
+    expect(html).not.toContain('/api/trend-taxonomy"');
+    expect(html).not.toContain('/api/slm/training-schema"');
   });
 });
