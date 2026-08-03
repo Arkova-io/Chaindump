@@ -81,6 +81,7 @@ export const METRIC_DIMENSIONS = Object.freeze({
     'circulating_supply', 'price', 'peg_deviation', 'reserve_assets',
     'reserve_coverage', 'redemption_volume', 'transfer_volume',
     'active_addresses', 'holder_count', 'yield', 'attestation_coverage',
+    'tokenized_asset_value', 'nav', 'price_premium_to_initial_unit',
   ]),
   rwa: Object.freeze([
     'tvl', 'aum', 'outstanding_value', 'issuance', 'redemption', 'yield',
