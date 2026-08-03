@@ -104,6 +104,24 @@ describe('customer-facing analysis copy', () => {
       .toBe('Injective is pivoting (current read: quietly building/pivoting). The reason: demand stayed thin. What makes it different: a native order book.');
   });
 
+  it('renders exchange metric units as reader language', () => {
+    const exchangeMetricSource = block('function exchangeMetric(row)', 'function lifecycleLabel(value)');
+    const exchangeLabelSource = block('function exchangeLabel(value)', 'function exchangeFindingLabel(lifecycle)');
+    const exchangeMetric = new Function(`
+      const fmtUsd = (value) => '$' + value;
+      const fmtTok = (value) => String(value);
+      const fmtNum = (value) => String(value);
+      const esc = (value) => String(value);
+      ${exchangeLabelSource}
+      ${exchangeMetricSource}
+      return exchangeMetric;
+    `)();
+
+    expect(exchangeMetric({ metric: 0.42, metricUnit: 'usd_per_token' })).toBe('$0.42 per token');
+    expect(exchangeMetric({ metric: 1250, metricUnit: 'btc_equivalent' })).toBe('1250 BTC equivalent');
+    expect(exchangeMetric({ metric: 7, metricUnit: 'daily_active_users' })).toBe('7 daily active users');
+  });
+
   it('keeps public page metadata and share copy in reader language', () => {
     expect(worker).not.toContain('forensic dossier | Chaindump');
     expect(worker).not.toContain('indexed lifecycle dossier with per-claim support status');
