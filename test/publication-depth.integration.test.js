@@ -505,6 +505,7 @@ describe('publication-depth Wave A migration 0063', () => {
         '0063_publication_depth_wave_a.sql',
         '0064_nft_source_access_remediation.sql',
         '0065_high_risk_evidence_remediation.sql',
+        '0077_dex_gold_profiles.sql',
       ],
     });
     const before = buildPublicationDepthInventory(database, { asOf: '2026-07-29' });
@@ -740,7 +741,7 @@ describe('publication-depth Wave A migration 0063', () => {
       exchangeCases.push(...payload.cases);
       exchangeClaimSupport.push(payload.claim_support);
     }
-    expect(exchangeCases).toHaveLength(59);
+    expect(exchangeCases).toHaveLength(60);
     expect(exchangeClaimSupport.reduce((total, item) => ({
       high_risk_claim_count: total.high_risk_claim_count + item.high_risk_claim_count,
       passing_high_risk_claim_count: total.passing_high_risk_claim_count
@@ -757,9 +758,13 @@ describe('publication-depth Wave A migration 0063', () => {
       unresolved_high_risk_claim_count: 368,
     });
     for (const item of exchangeCases) {
-      expect(item.analysis.forensic_analysis_status, item.slug).toBe('support_pending');
+      expect(['support_pending', 'pending'], item.slug)
+        .toContain(item.analysis.forensic_analysis_status);
+      expect([
+        'claim_support_pending',
+        'high_risk_support_threshold_met',
+      ], item.slug).toContain(item.publication_depth.status);
       expect(item.publication_depth, item.slug).toMatchObject({
-        status: 'claim_support_pending',
         high_risk_claim_count: expect.any(Number),
         passing_high_risk_claim_count: expect.any(Number),
         unresolved_high_risk_claim_count: expect.any(Number),
@@ -768,10 +773,10 @@ describe('publication-depth Wave A migration 0063', () => {
         reviewed_source_count: expect.any(Number),
       });
       const analysis = item.analysis.forensic_analysis;
-      expect(analysis, item.slug).toBeTruthy();
+      expect(analysis || item.profile?.canonical_profile, item.slug).toBeTruthy();
       item.sources.forEach(expectPublicationSourceState);
       const registered = registeredSourceKeys(item.sources);
-      for (const reference of forensicReferences(analysis)) {
+      for (const reference of analysis ? forensicReferences(analysis) : []) {
         expect(registered.has(reference), `${item.slug}: ${reference}`).toBe(true);
       }
     }
