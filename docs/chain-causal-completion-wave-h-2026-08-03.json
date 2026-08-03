@@ -1692,18 +1692,18 @@
         },
         {
           "id": "source:doma:halborn",
-          "title": "Doma protocol security review case study",
+          "title": "Doma protocol security review guest case study",
           "url": "https://blog.doma.xyz/case-study-securing-360b-in-tokenized-domains-with-doma-protocol/",
-          "publisher": "Halborn",
+          "publisher": "Doma Foundation (guest content attributed to Halborn)",
           "published_at": "2026-03-12",
           "accessed_at": "2026-08-03T20:23:55.000Z",
           "archive_url": null,
           "tier": "B",
-          "role": "independent",
+          "role": "primary",
           "access_state": "reachable",
           "checked_at": "2026-08-03T20:23:55.000Z",
           "content_hash": null,
-          "evidence_locator": "Guest case study describing hybrid registrar, contract and cross-chain review scope; not a guarantee of safety."
+          "evidence_locator": "Operator-hosted guest case study describing hybrid registrar, contract and cross-chain review scope; not an independent audit report or guarantee of safety."
         },
         {
           "id": "source:doma:tvl",
@@ -2056,7 +2056,7 @@
             "id": "event:doma:security-review",
             "type": "security_review",
             "date": "2026-03-12",
-            "description": "Halborn published a case study describing its review scope for Doma.",
+            "description": "Doma Foundation hosted a guest case study attributed to Halborn describing the review scope.",
             "claim_ids": [
               "claim:doma:event:security-review"
             ]
@@ -2149,18 +2149,18 @@
           },
           {
             "id": "source:doma:halborn",
-            "title": "Doma protocol security review case study",
+            "title": "Doma protocol security review guest case study",
             "url": "https://blog.doma.xyz/case-study-securing-360b-in-tokenized-domains-with-doma-protocol/",
-            "publisher": "Halborn",
+            "publisher": "Doma Foundation (guest content attributed to Halborn)",
             "published_at": "2026-03-12",
             "accessed_at": "2026-08-03T20:23:55.000Z",
             "archive_url": null,
             "tier": "B",
-            "role": "independent",
+            "role": "primary",
             "access_state": "reachable",
             "checked_at": "2026-08-03T20:23:55.000Z",
             "content_hash": null,
-            "evidence_locator": "Guest case study describing hybrid registrar, contract and cross-chain review scope; not a guarantee of safety."
+            "evidence_locator": "Operator-hosted guest case study describing hybrid registrar, contract and cross-chain review scope; not an independent audit report or guarantee of safety."
           },
           {
             "id": "source:doma:tvl",
@@ -2843,7 +2843,7 @@
           {
             "id": "claim:doma:event:security-review",
             "field_path": "events[event:doma:security-review]",
-            "assertion": "Halborn published a case study describing its review scope for Doma.",
+            "assertion": "Doma Foundation hosted a guest case study attributed to Halborn describing the review scope.",
             "value": "2026-03-12",
             "as_of": "2026-03-12",
             "confidence": "high",
@@ -2851,7 +2851,7 @@
             "source_ids": [
               "source:doma:halborn"
             ],
-            "evidence_locator": "Dated guest case study; not a guarantee of safety.",
+            "evidence_locator": "Dated operator-hosted guest case study; not an independent audit report or guarantee of safety.",
             "support_direction": "supports",
             "note": null,
             "review": {
@@ -2929,7 +2929,7 @@
         "observation_snapshot": {
           "observed_at": "2026-08-03T20:23:49.000Z",
           "observation_completed_at": "2026-08-03T20:23:55.000Z",
-          "provider": "Doma Foundation, Halborn and DefiLlama",
+          "provider": "Doma Foundation, operator-hosted guest content attributed to Halborn, and DefiLlama",
           "historical_tvl_point_date": "2026-08-03",
           "latest_tvl_usd": 821886,
           "peak_tvl_usd": 822025,

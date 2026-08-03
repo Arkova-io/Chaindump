@@ -191,6 +191,10 @@ describe('chain causal and canonical wave 0091', () => {
     expect(doma.analysis.sections.what_it_is.body).toContain('no verified native DOMA token');
     expect(doma.metrics.find(({ dimension }) => dimension === 'dex_spot_volume').quality_flags)
       .toContain('domain_pool_concentration_unknown');
+    expect(doma.sources.find(({ id }) => id === 'source:doma:halborn')).toMatchObject({
+      publisher: 'Doma Foundation (guest content attributed to Halborn)',
+      role: 'primary',
+    });
     const fraxtal = document.cases.find(({ slug }) => slug === 'fraxtal').canonical_profile;
     expect(fraxtal.analysis.sections.what_it_is.body).toContain('current network page and independent risk analysis still identify the live chain as an L2');
     expect(fraxtal.metrics.some(({ dimension }) => dimension === 'token_price')).toBe(false);
