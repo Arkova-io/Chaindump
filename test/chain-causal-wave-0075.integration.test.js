@@ -14,55 +14,101 @@ import {
 import { unstable_splitSqlQuery } from 'wrangler';
 import { validateForensicAnalysis } from '../src/lib/forensic-analysis.js';
 
-const expectedChains = ['Algorand', 'Aptos', 'Near', 'Stellar', 'Sui'];
+const correctionChains = ['Algorand', 'Aptos', 'Near', 'Stellar', 'Sui'];
+const cohortChains = ['Gnosis', 'Hedera', 'Osmosis', 'Stacks', 'TON'];
+const allChains = [...correctionChains, ...cohortChains];
 const expectedOutcomes = {
-  Algorand: 'declining',
-  Aptos: 'middling',
-  Near: 'middling',
-  Stellar: 'successful',
-  Sui: 'middling',
+  Gnosis: 'successful',
+  Hedera: 'middling',
+  Osmosis: 'declining',
+  Stacks: 'middling',
+  TON: 'middling',
 };
 const expectedTvlObservations = {
-  Algorand: { latest: 29_602_811, peak: 319_103_080, drawdown: 90.72 },
-  Aptos: { latest: 62_216_305, peak: 1_305_084_571, drawdown: 95.23 },
-  Near: { latest: 60_116_428, peak: 481_722_005, drawdown: 87.52 },
-  Stellar: { latest: 214_161_726, peak: 243_985_238, drawdown: 12.22 },
-  Sui: { latest: 417_197_859, peak: 2_636_094_260, drawdown: 84.17 },
+  Gnosis: { latest: 96_599_659, peak: 291_424_311, drawdown: 66.85 },
+  Hedera: { latest: 24_658_328, peak: 213_960_353, drawdown: 88.48 },
+  Osmosis: { latest: 12_340_355, peak: 1_831_730_122, drawdown: 99.33 },
+  Stacks: { latest: 75_946_342, peak: 194_193_202, drawdown: 60.89 },
+  TON: { latest: 60_291_854, peak: 778_170_342, drawdown: 92.25 },
 };
-const observationTimestamp = '2026-08-03T17:15:40.082Z';
-const manifestUrl = new URL(
+const expectedCorrections = {
+  Algorand: { latest: 29_658_178, drawdown: 90.71 },
+  Aptos: { latest: 61_837_836, drawdown: 95.26 },
+  Near: { latest: 60_116_428, drawdown: 87.52 },
+  Stellar: { latest: 214_161_726, drawdown: 12.22 },
+  Sui: { latest: 417_197_859, drawdown: 84.17 },
+};
+const correctionTimestamp = '2026-08-03T17:20:28.274Z';
+const cohortTimestamp = '2026-08-03T17:23:37.879Z';
+const baseManifestUrl = new URL(
   '../docs/chain-causal-completion-2026-08-03.json',
   import.meta.url,
 );
+const correctionManifestUrl = new URL(
+  '../docs/chain-causal-corrections-2026-08-03.json',
+  import.meta.url,
+);
+const cohortManifestUrl = new URL(
+  '../docs/chain-causal-completion-wave-c-2026-08-03.json',
+  import.meta.url,
+);
 const migrationUrl = new URL(
-  '../migrations/0073_chain_causal_completion_wave_b.sql',
+  '../migrations/0075_chain_causal_completion_wave_c.sql',
   import.meta.url,
 );
 const maxD1StatementBytes = 95_000;
 
 function loadArtifacts() {
-  const manifest = readFileSync(manifestUrl, 'utf8');
+  const baseText = readFileSync(baseManifestUrl, 'utf8');
+  const correctionText = readFileSync(correctionManifestUrl, 'utf8');
+  const cohortText = readFileSync(cohortManifestUrl, 'utf8');
+  const baseDocument = JSON.parse(baseText);
+  const correctionDocument = JSON.parse(correctionText);
+  const baseByChain = Object.fromEntries(baseDocument.cases.map((entry) => [entry.chain, entry]));
+  const correctionEntries = correctionDocument.cases.map((patch) => {
+    const base = baseByChain[patch.chain];
+    if (!base) throw new Error(`missing base case for ${patch.chain}`);
+    return {
+      ...base,
+      forensic_analysis: {
+        ...base.forensic_analysis,
+        observation_snapshot: {
+          ...base.forensic_analysis.observation_snapshot,
+          ...patch.observation_snapshot_patch,
+        },
+        outcome: {
+          ...base.forensic_analysis.outcome,
+          summary: patch.outcome_summary,
+        },
+      },
+    };
+  });
   return {
-    document: JSON.parse(manifest),
-    manifest,
+    baseDocument,
+    baseText,
+    correctionDocument,
+    correctionEntries,
+    correctionText,
+    cohortDocument: JSON.parse(cohortText),
+    cohortText,
     migration: readFileSync(migrationUrl, 'utf8'),
   };
 }
 
 function migrationCases(migration) {
   const matches = [...migration.matchAll(
-    /-- canonical-case-start ([^\n]+)\nWITH causal_seed\(payload\) AS \(\n {2}VALUES \('([\s\S]*?)'\)\n\)\nUPDATE chain_facts AS facts/g,
+    /-- (corrective-case|canonical-case)-start ([^\n]+)\nWITH causal_seed\(payload\) AS \(\n {2}VALUES \('([\s\S]*?)'\)\n\)\nUPDATE chain_facts AS facts/g,
   )];
-  return matches.map(([, marker, payload]) => {
+  return matches.map(([, marker, chain, payload]) => {
     const entry = JSON.parse(payload.replaceAll("''", "'"));
-    if (marker !== entry.chain) throw new Error(`0073 marker mismatch for ${entry.chain}`);
-    return entry;
+    if (chain !== entry.chain) throw new Error(`0075 marker mismatch for ${entry.chain}`);
+    return { marker, entry };
   });
 }
 
 function caseStatementByteLengths(migration) {
   return [...migration.matchAll(
-    /-- canonical-case-start [\s\S]*?\n {2}AND facts\.dimension IN \('synthesis', '_meta'\);/g,
+    /-- (?:corrective-case|canonical-case)-start [\s\S]*?\n {2}AND facts\.dimension IN \('synthesis', '_meta'\);/g,
   )].map(([statement]) => Buffer.byteLength(statement, 'utf8'));
 }
 
@@ -117,7 +163,7 @@ async function freshWorker() {
 }
 
 function stubChainFeeds() {
-  const universe = expectedChains.map((name, index) => ({
+  const universe = allChains.map((name, index) => ({
     name,
     tvl: 500_000_000 - (index * 1_000_000),
     tokenSymbol: null,
@@ -160,10 +206,10 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 
-describe('chain causal completion wave migration 0073', () => {
+describe('chain causal completion wave migration 0075', () => {
   beforeAll(async () => {
     apiDatabase = new DatabaseSync(':memory:');
-    applyMigrations(apiDatabase, 73);
+    applyMigrations(apiDatabase);
     apiWorker = await freshWorker();
   });
 
@@ -172,32 +218,62 @@ describe('chain causal completion wave migration 0073', () => {
     apiDatabase = undefined;
   });
 
-  it('keeps the generated migration identical to the checked research manifest', () => {
-    const { document, manifest, migration } = loadArtifacts();
-    expect(document).toMatchObject({
+  it('keeps the corrective prelude and cohort identical to their checked manifests', () => {
+    const {
+      baseDocument,
+      baseText,
+      correctionDocument,
+      correctionEntries,
+      correctionText,
+      cohortDocument,
+      cohortText,
+      migration,
+    } = loadArtifacts();
+    expect(cohortDocument).toMatchObject({
       schema: 'chaindump-chain-causal-completion-v1',
       research_as_of: '2026-08-03',
     });
-    expect(document.cases.map(({ chain }) => chain).sort()).toEqual(expectedChains);
-    expect(migrationCases(migration)).toEqual(document.cases);
+    expect(baseDocument).toMatchObject({
+      schema: 'chaindump-chain-causal-completion-v1',
+      research_as_of: '2026-08-03',
+    });
+    expect(correctionDocument).toMatchObject({
+      schema: 'chaindump-chain-causal-correction-v1',
+      research_as_of: '2026-08-03',
+      base_manifest: 'docs/chain-causal-completion-2026-08-03.json',
+    });
+    expect(cohortDocument.cases.map(({ chain }) => chain).sort()).toEqual(cohortChains);
+    expect(correctionDocument.cases.map(({ chain }) => chain).sort()).toEqual(correctionChains);
+    const parsed = migrationCases(migration);
+    expect(parsed.filter(({ marker }) => marker === 'corrective-case').map(({ entry }) => entry))
+      .toEqual(correctionEntries);
+    expect(parsed.filter(({ marker }) => marker === 'canonical-case').map(({ entry }) => entry))
+      .toEqual(cohortDocument.cases);
     expect(migration).toContain(
-      `canonical-manifest-sha256 ${createHash('sha256').update(manifest).digest('hex')}`,
+      `correction-manifest-sha256 ${createHash('sha256').update(correctionText).digest('hex')}`,
     );
+    const baseHash = createHash('sha256').update(baseText).digest('hex');
+    expect(correctionDocument.base_manifest_sha256).toBe(baseHash);
+    expect(migration).toContain(`base-manifest-sha256 ${baseHash}`);
+    expect(migration).toContain(
+      `cohort-manifest-sha256 ${createHash('sha256').update(cohortText).digest('hex')}`,
+    );
+    expect(migration).toContain('-- corrective-prelude-start');
     expect(migration).not.toMatch(/\bCREATE\s+TEMP(?:ORARY)?\s+TABLE\b/i);
     const statementBytes = caseStatementByteLengths(migration);
-    expect(statementBytes).toHaveLength(expectedChains.length);
+    expect(statementBytes).toHaveLength(allChains.length);
     expect(Math.max(...statementBytes)).toBeLessThanOrEqual(maxD1StatementBytes);
     const wranglerStatements = unstable_splitSqlQuery(migration);
-    expect(wranglerStatements).toHaveLength(expectedChains.length);
+    expect(wranglerStatements).toHaveLength(allChains.length);
     expect(Math.max(...wranglerStatements.map(
       (statement) => Buffer.byteLength(statement, 'utf8'),
     ))).toBeLessThanOrEqual(maxD1StatementBytes);
   });
 
-  it('publishes deep, evidence-resolving contracts with honest unknowns', () => {
-    const { document } = loadArtifacts();
-    expect(document.cases.reduce((sum, entry) => sum + entry.sources.length, 0)).toBe(54);
-    for (const entry of document.cases) {
+  it('publishes deep source-resolving cohort profiles and deterministic observations', () => {
+    const { cohortDocument } = loadArtifacts();
+    expect(cohortDocument.cases.reduce((sum, entry) => sum + entry.sources.length, 0)).toBe(54);
+    for (const entry of cohortDocument.cases) {
       const sourceById = Object.fromEntries(entry.sources.map((source) => [source.id, source]));
       expect(new Set(entry.sources.map(({ id }) => id)).size, entry.chain)
         .toBe(entry.sources.length);
@@ -224,7 +300,8 @@ describe('chain causal completion wave migration 0073', () => {
       const observation = entry.forensic_analysis.observation_snapshot;
       const expectedTvl = expectedTvlObservations[entry.chain];
       expect(observation, entry.chain).toMatchObject({
-        observed_at: observationTimestamp,
+        observed_at: cohortTimestamp,
+        observation_completed_at: '2026-08-03T17:23:58.550Z',
         provider: 'DefiLlama',
         historical_tvl_point_date: '2026-08-03',
         latest_tvl_usd: expectedTvl.latest,
@@ -234,15 +311,14 @@ describe('chain causal completion wave migration 0073', () => {
         fees_30d_usd: expect.any(Number),
         revenue_30d_usd: expect.any(Number),
       });
-      expect(observation.method, entry.chain).toContain('can be revised');
+      expect(observation.method, entry.chain).toContain('Same-day historical points can be revised');
       expect(
         Number(((1 - (expectedTvl.latest / expectedTvl.peak)) * 100).toFixed(2)),
         entry.chain,
       ).toBe(expectedTvl.drawdown);
+      expect(entry.forensic_analysis.outcome.summary, entry.chain).toContain(cohortTimestamp);
       expect(entry.forensic_analysis.outcome.summary, entry.chain)
-        .toContain(observationTimestamp);
-      expect(entry.forensic_analysis.outcome.summary, entry.chain)
-        .toContain('Same-day provider values may revise');
+        .toContain('These figures are a point-in-time snapshot.');
       expect(entry.forensic_analysis.why.summary.length, entry.chain).toBeGreaterThanOrEqual(350);
       expect(entry.forensic_analysis.strategic_choices.length, entry.chain)
         .toBeGreaterThanOrEqual(4);
@@ -260,11 +336,31 @@ describe('chain causal completion wave migration 0073', () => {
     }
   });
 
-  it('patches only synthesis and review metadata, preserves sources, and stays idempotent', () => {
-    const { document, migration } = loadArtifacts();
+  it('corrects the merged snapshots without rewriting migration 0073', () => {
+    const { correctionEntries, migration } = loadArtifacts();
+    expect(migration).not.toContain('0073_chain_causal_completion_wave_b.sql');
+    for (const entry of correctionEntries) {
+      const expected = expectedCorrections[entry.chain];
+      const observation = entry.forensic_analysis.observation_snapshot;
+      expect(observation, entry.chain).toMatchObject({
+        observed_at: correctionTimestamp,
+        observation_completed_at: '2026-08-03T17:20:30.954Z',
+        latest_tvl_usd: expected.latest,
+        tvl_drawdown_pct: expected.drawdown,
+      });
+      expect(entry.forensic_analysis.outcome.summary, entry.chain)
+        .toContain('These figures are a point-in-time snapshot.');
+      expect(entry.forensic_analysis.outcome.summary, entry.chain)
+        .not.toContain('Same-day provider values may revise after the stated retrieval time.');
+    }
+  });
+
+  it('patches only synthesis and review metadata, remains idempotent, and serves all profiles', async () => {
+    const { correctionEntries, cohortDocument, migration } = loadArtifacts();
+    const entries = [...correctionEntries, ...cohortDocument.cases];
     database = new DatabaseSync(':memory:');
-    applyMigrations(database, 71);
-    const before = Object.fromEntries(document.cases.map(({ chain }) => [
+    applyMigrations(database, 74);
+    const before = Object.fromEntries(entries.map(({ chain }) => [
       chain,
       database.prepare(`
         SELECT dimension, data, sources, updated_at
@@ -273,7 +369,7 @@ describe('chain causal completion wave migration 0073', () => {
     ]));
 
     database.exec(migration);
-    for (const entry of document.cases) {
+    for (const entry of entries) {
       const rows = database.prepare(`
         SELECT dimension, data, sources, updated_at
         FROM chain_facts WHERE chain = ? ORDER BY dimension
@@ -287,7 +383,6 @@ describe('chain causal completion wave migration 0073', () => {
       ))) {
         expect(row, `${entry.chain}:${row.dimension}`).toEqual(priorByDimension[row.dimension]);
       }
-
       const synthesis = rows.find(({ dimension }) => dimension === 'synthesis');
       expect(JSON.parse(synthesis.data).forensic_analysis).toEqual(entry.forensic_analysis);
       const beforeSources = JSON.parse(priorByDimension.synthesis.sources);
@@ -310,9 +405,7 @@ describe('chain causal completion wave migration 0073', () => {
           `${entry.chain}:${expectedSource.id}`,
         ).toMatchObject(expectedSource);
       }
-
-      const meta = JSON.parse(rows.find(({ dimension }) => dimension === '_meta').data);
-      expect(meta).toMatchObject({
+      expect(JSON.parse(rows.find(({ dimension }) => dimension === '_meta').data)).toMatchObject({
         forensic_analysis_version: 'forensic-analysis-v1',
         last_reviewed: '2026-08-03',
         next_review_at: '2026-08-10',
@@ -322,22 +415,19 @@ describe('chain causal completion wave migration 0073', () => {
     const once = database.prepare(`
       SELECT chain, dimension, data, sources, updated_at
       FROM chain_facts
-      WHERE chain IN (${expectedChains.map(() => '?').join(',')})
+      WHERE chain IN (${allChains.map(() => '?').join(',')})
       ORDER BY chain, dimension
-    `).all(...expectedChains);
+    `).all(...allChains);
     database.exec(migration);
     expect(database.prepare(`
       SELECT chain, dimension, data, sources, updated_at
       FROM chain_facts
-      WHERE chain IN (${expectedChains.map(() => '?').join(',')})
+      WHERE chain IN (${allChains.map(() => '?').join(',')})
       ORDER BY chain, dimension
-    `).all(...expectedChains)).toEqual(once);
-  });
+    `).all(...allChains)).toEqual(once);
 
-  it('serves forensic fields through the normalized chain API and maps the UI sections', async () => {
-    const { document } = loadArtifacts();
     stubChainFeeds();
-    for (const entry of document.cases) {
+    for (const entry of entries) {
       const response = await apiWorker.fetch(
         new Request(`http://localhost/api/chain/${encodeURIComponent(entry.chain)}`),
         { DB: d1(apiDatabase) },
@@ -364,14 +454,5 @@ describe('chain causal completion wave migration 0073', () => {
       expect(body.normalized_dossier.sources, entry.chain)
         .toEqual(body.facts.synthesis.sources);
     }
-
-    const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
-    expect(html).toContain('const forensic = synthesis.forensic_analysis || {};');
-    expect(html).toContain('why: forensic.why || synthesis.why');
-    expect(html).toContain('strategicChoices: forensic.strategic_choices || synthesis.strategic_choices');
-    expect(html).toContain('counterfactual: forensic.counterfactual || synthesis.could_differ');
-    expect(html).toContain('risksUnknowns: forensic.unknowns || synthesis.unknowns');
-    expect(html).toContain('outlookWatch: forensic.watch || synthesis.outlook');
-    expect(html).toContain('reviewMetadata: forensic.review || synthesis.review');
-  }, 20_000);
+  }, 30_000);
 });

@@ -2,7 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { buildProfileAdapterCensus } from '../scripts/profile-adapter-census.mjs';
 
 const EXPECTED_COUNTS = {
-  blockchain: [90, 0, 0, 90, 0, 90, 2631],
+  blockchain: [90, 0, 0, 90, 0, 90, 2637],
   dex: [29, 0, 27, 0, 2, 27, 92],
   cex: [30, 0, 27, 1, 2, 28, 46],
   nft_collection: [39, 0, 20, 0, 19, 0, 0],
@@ -74,7 +74,7 @@ describe('full-corpus canonical profile adapter', () => {
 
   it('prefers forensic chain facts and identity-matched canonical profiles over thinner legacy rows', () => {
     expect(census.blockchain_precedence).toEqual({
-      forensic_fact_profiles: 20,
+      forensic_fact_profiles: 25,
       forensic_fact_mismatches: [],
       embedded_canonical_over_lower_depth_legacy: true,
     });
@@ -112,7 +112,7 @@ describe('full-corpus canonical profile adapter', () => {
     }, {});
     expect(classes).toEqual({
       source_metadata_debt: 2800,
-      citation_debt: 1458,
+      citation_debt: 1464,
     });
 
     const structural = census.rows.filter((row) => row.validation_error_classes.structural_contract_error);
