@@ -93,6 +93,7 @@ describe('trend taxonomy', () => {
     expect(html).toContain('How evidence works');
     expect(html).toContain('How comparisons work');
     expect(html).toContain('What we look for by category');
+    expect(html).toContain('<div class="gname">Infrastructure</div>');
     expect(html).not.toContain('function trendTaxonomyPanel(');
     expect(html).not.toContain('/api/trend-taxonomy"');
     expect(html).not.toContain('/api/slm/training-schema"');

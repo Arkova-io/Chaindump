@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs';
+import vm from 'node:vm';
 import { describe, expect, it } from 'vitest';
 import {
   NORMALIZED_DOSSIER_SECTIONS,
@@ -8,6 +9,26 @@ import {
 } from '../src/lib/normalized-dossier.js';
 
 const html = readFileSync(new URL('../public/index.html', import.meta.url), 'utf8');
+
+function renderNormalizedDossier(input) {
+  const start = html.indexOf('const NORMALIZED_DOSSIER_SECTIONS');
+  const end = html.indexOf('\nfunction synthesisHtml', start);
+  const rendererSource = html.slice(start, end);
+  const esc = (value) => String(value).replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
+  }[char]));
+  const context = {
+    esc,
+    proseBox: (value) => `<div class="prose">${esc(value)}</div>`,
+    safeUrl: (value) => (/^https?:\/\//.test(String(value || '')) ? String(value) : '#'),
+    sourceArray: (value) => (Array.isArray(value) ? value : [])
+      .map((source) => (typeof source === 'string' ? { url: source } : source))
+      .filter((source) => source?.url),
+    verdictClass: () => 'declining',
+  };
+  vm.runInNewContext(rendererSource, context);
+  return context.normalizedDossierHtml(input);
+}
 
 describe('normalized cross-vertical dossier template', () => {
   it('defines one stable section order with explicit unknown-safe values', () => {
@@ -35,10 +56,34 @@ describe('normalized cross-vertical dossier template', () => {
     expect(html).toContain('category: `NFT / Ordinals · ${chainLabel(c.chain)}`');
   });
 
-  it('keeps evidence and unknowns visible instead of silently dropping them', () => {
-    expect(html).toContain('Unknown / not published for this report');
+  it('keeps evidence and research gaps visible without repeating empty-section boilerplate', () => {
+    expect(html).toContain('Not enough verified evidence yet for:');
+    expect(html.toLowerCase()).not.toContain('unknown / not published for this report');
     expect(html).toContain('function normalizedSourceLedger(sources)');
     expect(html).toContain('source coverage does not by itself prove every conclusion');
+  });
+
+  it('runs the real renderer with one compact gaps block and no empty sections', () => {
+    const rendered = renderNormalizedDossier({
+      category: 'Blockchain',
+      name: 'Example',
+      whatItIs: 'A settlement network.',
+      sources: [{ title: 'Primary filing', url: 'https://example.com/source' }],
+    });
+
+    expect(rendered.match(/data-normalized-research-gaps="true"/g)).toHaveLength(1);
+    expect(rendered).toContain('Not enough verified evidence yet for:');
+    expect(rendered).toContain('strategic choices');
+    expect(rendered).toContain('token/value capture');
+    expect(rendered).toContain('lifecycle');
+    expect(rendered.toLowerCase()).not.toContain('unknown / not published');
+    expect(rendered).not.toContain('data-normalized-section="what_happened"');
+    expect(rendered).toContain('data-normalized-section="evidence"');
+    expect(rendered).toContain('Primary filing');
+
+    const noSources = renderNormalizedDossier({ name: 'No sources', whatItIs: 'A project.' });
+    expect(noSources).toContain('evidence and sources');
+    expect(noSources).not.toContain('data-normalized-section="evidence"');
   });
 
   it('renders nested report data as human rows and never as recursive key-value prose', () => {
@@ -47,7 +92,7 @@ describe('normalized cross-vertical dossier template', () => {
     expect(html).toContain('const NORMALIZED_HIDDEN_KEYS');
     expect(html).not.toContain('`${key.replaceAll(\'_\', \' \')}: ${normalizedValue(item)}`');
     expect(html).not.toContain('${normalizedValue(values[key]) ? proseBox(normalizedValue(values[key])) : \'\'}');
-    expect(html).toContain("if (key === 'evidence') return");
+    expect(html).toContain("if (key === 'evidence') {");
     expect(html).toContain('normalizedSourceLedger(d.sources)');
   });
 });

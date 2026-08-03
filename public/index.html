@@ -779,6 +779,7 @@ function renderMethodology() {
       <div class="gcard"><div class="gname">NFTs and Ordinals</div><div class="gbody">Launch quality, holder retention, community health, founder execution, royalties and products that outlive the initial sale.</div></div>
       <div class="gcard"><div class="gname">Stablecoins</div><div class="gbody">Reserves, redemption, issuer rights, liquidity, disclosures, regulation and the conditions required to hold the peg.</div></div>
       <div class="gcard"><div class="gname">RWA and DePIN</div><div class="gbody">The real asset or service, customer demand, operating costs, token incentives and whether usage continues when rewards fall.</div></div>
+      <div class="gcard"><div class="gname">Infrastructure</div><div class="gbody">Storage, compute and verification demand, service quality, provider concentration, unit economics and whether a token is necessary to buy or secure the service.</div></div>
       <div class="gcard"><div class="gname">Treasuries, miners and ETFs</div><div class="gbody">Cash flow, fees, leverage, dilution, custody and how crypto exposure changes the underlying business or fund.</div></div>
     </div>`;
 }
@@ -2965,12 +2966,9 @@ function normalizedStructuredHtml(value, depth = 0) {
   }).filter(Boolean);
   return rows.join('');
 }
-function normalizedUnknown(label) {
-  return `<div class="gnar muted">Unknown / not published for this report. ${esc(label)} needs a dated, verifiable observation before we make a call.</div>`;
-}
 function normalizedSourceLedger(sources) {
   const list = sourceArray(sources);
-  if (!list.length) return normalizedUnknown('The source ledger');
+  if (!list.length) return '';
   const links = list.map((source) => {
     const url = safeUrl(source.url);
     if (url === '#') return '';
@@ -2978,12 +2976,31 @@ function normalizedSourceLedger(sources) {
     const title = source.title || source.publisher || domain;
     return `<a href="${esc(url)}" target="_blank" rel="noopener noreferrer">${esc(title)} ↗</a>`;
   }).filter(Boolean);
-  if (!links.length) return normalizedUnknown('The source ledger');
+  if (!links.length) return '';
   return `<div class="asrc">Cited sources: ${links.join(' · ')}</div><div class="gnar muted">Each link is a source used by this report; source coverage does not by itself prove every conclusion.</div>`;
+}
+const NORMALIZED_GAP_LABELS = Object.freeze({
+  what_it_is: 'what it is',
+  what_happened: 'what happened',
+  why: 'why this outcome',
+  strategic_choices: 'strategic choices',
+  operating_model: 'operating model',
+  token_value_capture: 'token/value capture',
+  evidence: 'evidence and sources',
+  counterfactual: 'what could have been different',
+  risks_unknowns: 'risks and unknowns',
+  lifecycle: 'lifecycle',
+  outlook_watch: 'outlook and watch signals',
+  review_metadata: 'review metadata',
+});
+function normalizedResearchGapsHtml(keys) {
+  if (!keys.length) return '';
+  const labels = keys.map((key) => NORMALIZED_GAP_LABELS[key] || normalizedLabel(key));
+  return `<section class="normalized-research-gaps analysis-note" data-normalized-research-gaps="true"><b>Research gaps.</b> Not enough verified evidence yet for: ${esc(labels.join(', '))}.</section>`;
 }
 function normalizedDossierHtml(input = {}) {
   const d = input || {};
-  const status = normalizedText(d.status) || 'unknown / not published';
+  const status = normalizedText(d.status) || 'status pending';
   const metric = normalizedText(d.metric) || '—';
   const asOf = normalizedText(d.asOf) || 'date unknown';
   const header = `<div class="normalized-dossier" data-normalized-dossier="v1">
@@ -3004,12 +3021,20 @@ function normalizedDossierHtml(input = {}) {
     outlook_watch: d.outlookWatch,
     review_metadata: d.reviewMetadata,
   };
-  const sections = NORMALIZED_DOSSIER_SECTIONS.map(([key, label]) => {
-    if (key === 'evidence') return `<section class="normalized-section" data-normalized-section="${key}"><div class="gsec">${label}</div>${normalizedSourceLedger(d.sources)}</section>`;
+  const sections = [];
+  const gaps = [];
+  NORMALIZED_DOSSIER_SECTIONS.forEach(([key, label]) => {
+    if (key === 'evidence') {
+      const ledger = normalizedSourceLedger(d.sources);
+      if (ledger) sections.push(`<section class="normalized-section" data-normalized-section="${key}"><div class="gsec">${label}</div>${ledger}</section>`);
+      else gaps.push(key);
+      return;
+    }
     const content = normalizedStructuredHtml(values[key]);
-    return `<section class="normalized-section" data-normalized-section="${key}"><div class="gsec">${label}</div>${content || normalizedUnknown(label)}</section>`;
-  }).join('');
-  return `${header}${sections}<div class="stampline">Unknowns stay visible until a reviewer adds dated, verifiable evidence.</div></div>`;
+    if (content) sections.push(`<section class="normalized-section" data-normalized-section="${key}"><div class="gsec">${label}</div>${content}</section>`);
+    else gaps.push(key);
+  });
+  return `${header}${sections.join('')}${normalizedResearchGapsHtml(gaps)}</div>`;
 }
 
 function synthesisHtml(f){
