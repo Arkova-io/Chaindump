@@ -3824,6 +3824,8 @@ async function nftEntityProfile(type, slug) {
   const row = rows[0];
   const isOrdinals = String(row.chain || '').toLowerCase().includes('ordinals');
   if ((type === 'ordinals_collection') !== isOrdinals) return null;
+  const embeddedProfile = embeddedCanonicalEntityProfile(row.profile, { type, slug });
+  if (embeddedProfile) return embeddedProfile;
   const rawProfile = profileJson(row.profile, {});
   const sources = publicationSourceRecords(profileSourceValues(row.sources, rawProfile.sources));
   const depth = assessNftPublicationDepth({
