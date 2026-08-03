@@ -62,7 +62,9 @@ describe('canonical exchange profiles on the exchange index', () => {
     expect(payload.cases).toHaveLength(1);
     expect(payload.cases[0]).toMatchObject({
       lifecycle: 'successful',
-      status: 'successful_established',
+      status: null,
+      summary: null,
+      outlook: null,
       analysis: {
         forensic_analysis_status: 'support_pending',
         canonical_evidence: {
@@ -74,10 +76,14 @@ describe('canonical exchange profiles on the exchange index', () => {
           source_count: 13,
           publication_state: 'review',
           freshness_state: 'current',
+          preview: {
+            outcome_label: 'successful_established',
+            summary: expect.stringContaining('The strongest supported explanation is a reinforcing combination'),
+            outlook: expect.any(String),
+          },
         },
       },
     });
-    expect(payload.cases[0].summary).toContain('The strongest supported explanation is a reinforcing combination');
     expect(payload.cases[0].sources.length).toBeGreaterThanOrEqual(13);
     expect(payload.cases[0].publication_depth.status).toBe('claim_support_pending');
     expect(payload.cases[0].publication_support.status).toBe('pending_independent_support');
@@ -138,6 +144,7 @@ describe('canonical exchange profiles on the exchange index', () => {
       complete_sections: 0,
       total_sections: 10,
       quality_completeness_pct: 100,
+      preview: null,
     });
     expect(payload.cases[0].analysis.forensic_analysis_status).toBe('support_pending');
     expect(payload.summary.trendReadiness.causalDossiers).toBe(0);
@@ -167,6 +174,7 @@ describe('canonical exchange profiles on the exchange index', () => {
       complete_sections: 10,
       total_sections: 10,
       quality_completeness_pct: 99,
+      preview: null,
     });
     expect(payload.summary.trendReadiness.causalDossiers).toBe(0);
   });

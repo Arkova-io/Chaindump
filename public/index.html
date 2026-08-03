@@ -1440,19 +1440,23 @@ function normalizeExchangeResearchCase(row) {
   const metric = parsedObject(analysis.metric);
   const quality = parsedObject(analysis.data_quality);
   const canonicalEvidence = parsedObject(analysis.canonical_evidence);
+  const canonicalPreview = canonicalEvidence.explanation_complete === true
+    ? parsedObject(canonicalEvidence.preview)
+    : {};
   const explanationPublished = analysis.forensic_analysis_status === 'published'
     || canonicalEvidence.explanation_complete === true;
   return {
     slug: row.slug || row.name, kind: row.kind, venueType: row.venue_type || profile.venue_type || row.kind,
     name: row.name || row.slug || 'Unnamed venue', lifecycle: row.lifecycle,
-    status: row.status || row.lifecycle, launched: row.launched || profile.founded || profile.launched || '',
+    status: row.status || canonicalPreview.outcome_label || row.lifecycle, launched: row.launched || profile.founded || profile.launched || '',
     primaryChain: row.primary_chain || analysis.primary_chain || '',
     metric: row.metric, peakMetric: row.peak_metric,
     metricLabel: row.metric_label || 'Metric', metricType: metric.type || row.metric_type || '',
     metricUnit: metric.unit || row.metric_unit || 'usd', metricWindow: metric.window || 'unknown',
     metricAsOf: metric.as_of || '', metricObservedAt: metric.observed_at || '',
     comparisonKey: metric.comparability_key || '',
-    summary: row.summary || '', outlook: row.outlook || '',
+    summary: row.summary || canonicalPreview.summary || '',
+    outlook: row.outlook || canonicalPreview.outlook || '',
     productCohort: analysis.product_cohort || 'unclassified',
     operatingModel: analysis.operating_model || '',
     custodyModel: analysis.custody_model || '',
@@ -1661,7 +1665,7 @@ function exchangeAnalysisDetails(row, profile, tokenLine) {
 }
 function exchangeAnalysisCard(row) {
   const p = row.profile || {};
-  const canonicalOutcome = Boolean(row.analysis?.canonical_evidence?.outcome_available);
+  const canonicalOutcome = row.analysis?.canonical_evidence?.explanation_complete === true;
   const outcomeGap = canonicalOutcome ? null : publicationDepthGap(
     row.publicationDepth,
     'forensic_analysis.outcome',

@@ -2284,22 +2284,7 @@ function canonicalExchangeIndexProjection(row, canonicalProfile) {
   ].map((source) => [source.url || source.id, source])).values()];
   return {
     ...row,
-    status: outcome || row.status,
-    summary: sections.why_this_outcome?.body || sections.what_happened?.body || row.summary,
-    outlook: sections.outlook_and_watch?.body || row.outlook,
     sources: projectedSources.length ? projectedSources : row.sources,
-    profile: {
-      ...row.profile,
-      purpose: sections.what_it_is?.body || row.profile?.purpose,
-      why: sections.why_this_outcome?.body || row.profile?.why,
-      strategic_choices: sections.strategic_choices?.body || row.profile?.strategic_choices,
-      operating_model: sections.operating_model?.body || row.profile?.operating_model,
-      token_value_capture: sections.token_and_value_capture?.body
-        || row.profile?.token_value_capture,
-      counterfactual: sections.counterfactual?.body || row.profile?.counterfactual,
-      risks: sections.risks_and_unknowns?.body || row.profile?.risks,
-      synthesis: sections.lifecycle?.body || row.profile?.synthesis,
-    },
     analysis: {
       ...row.analysis,
       canonical_evidence: {
@@ -2311,6 +2296,15 @@ function canonicalExchangeIndexProjection(row, canonicalProfile) {
         source_count: canonicalSources.length,
         publication_state: canonicalProfile.quality?.publication_state || 'unknown',
         freshness_state: canonicalProfile.freshness?.state || 'unknown',
+        // This preview is intentionally namespaced away from the formally
+        // gated legacy fields. It lets the customer index agree with the
+        // already-public canonical report without repopulating status,
+        // summary or outlook after publication-depth redaction.
+        preview: explanationComplete ? {
+          outcome_label: outcome,
+          summary: sections.why_this_outcome?.body || sections.what_happened?.body || null,
+          outlook: sections.outlook_and_watch?.body || null,
+        } : null,
       },
     },
   };
