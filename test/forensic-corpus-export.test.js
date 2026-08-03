@@ -71,6 +71,7 @@ describe('forensic corpus export', () => {
 
     expect(record.training_eligible).toBe(false);
     expect(record.withheld).toBe(true);
+    expect(record.withheld_reasons).toContain('unresolved_high_risk_claims');
     expect(record.state_tags).toContain('support_pending');
     expect(record.text.why).toBeNull();
   });
@@ -85,6 +86,9 @@ describe('forensic corpus export', () => {
 
     expect(jsonl.split('\n').filter(Boolean)).toHaveLength(2);
     expect(manifest.record_count).toBe(2);
+    expect(manifest.training_eligible_count).toBe(0);
+    expect(manifest.withheld_count).toBe(2);
+    expect(manifest.unclassified_count).toBe(0);
     expect(manifest.sha256).toMatch(/^[a-f0-9]{64}$/);
     expect(manifest.vertical_counts).toEqual({ blockchain: 1, cex: 1 });
   });
@@ -110,6 +114,27 @@ describe('forensic corpus export', () => {
     expect(record.entity.lifecycle).toBe('thriving');
     expect(record.outcome.summary).toBe('Canonical chain dossier outcome.');
     expect(record.sources[0].url).toBe('https://ethereum.org/en/whitepaper/');
-    expect(record.training_eligible).toBe(true);
+    expect(record.training_eligible).toBe(false);
+    expect(record.withheld).toBe(true);
+    expect(record.withheld_reasons).toEqual(expect.arrayContaining([
+      'no_publication_source_inventory',
+      'no_reviewed_sources',
+      'no_high_risk_claim_inventory',
+      'causal_why_missing',
+      'outlook_missing',
+      'freshness_not_current',
+    ]));
+  });
+
+  it('does not treat the absence of a recorded support failure as training approval', () => {
+    const record = normalizeTrainingRecord({
+      name: 'Link-only profile',
+      sources: [{ url: 'https://example.com/source' }],
+    }, { vertical: 'blockchain' });
+
+    expect(record.training_eligible).toBe(false);
+    expect(record.withheld).toBe(true);
+    expect(record.withheld_reasons).toContain('no_high_risk_claim_inventory');
+    expect(record.withheld_reasons).toContain('causal_why_missing');
   });
 });
