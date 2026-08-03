@@ -45,6 +45,7 @@ function buildCasinoCardRenderer() {
     const casinoLabel = (value) => String(value || '').replaceAll('_', ' ');
     const analysisText = (value) => Array.isArray(value) ? value.map(String).join(' · ') : (value == null ? '' : String(value));
     const proseBox = (value) => '<div class="prose">' + esc(value) + '</div>';
+    const fmtProse = (value) => '<p>' + esc(value) + '</p>';
     const casinoDetailBody = () => '';
     const state = {
       casinoAnalysisExpanded: null,

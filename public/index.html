@@ -348,7 +348,7 @@
   .tab.active { color:var(--text); background:var(--surface3); font-weight:600; box-shadow:inset 2px 0 0 var(--accent); }
   @media(max-width:900px){
     .tabs { position:static; width:auto; flex-direction:row; flex-wrap:wrap; gap:4px; border-right:none; border-bottom:1px solid var(--border); padding:12px 0; margin:0 0 10px; background:none; }
-    .navbrand { width:100%; padding:0 0 8px; }
+    .navbrand, .navtag { display:none; }
     .navgroup-h { display:none; }
     .tab { border:1px solid var(--border); border-radius:8px; padding:6px 11px; font-size:12px; }
     .tab.active { box-shadow:none; background:var(--accent); color:#05070b; }
@@ -1046,7 +1046,10 @@ function plainEnglishRead(fields = {}) {
   const read = [fields.summary, fields.why, fields.present_situation, fields.analysis, outlookText, choices]
     .map(analysisText).map((value) => value.trim()).find(Boolean);
   if (!read) return '';
-  return `<div class="plainread"><div class="plainread-title">At a glance</div>${proseBox(read)}</div>`;
+  const clean = read.replace(/\s+/g, ' ').trim();
+  const firstSentence = clean.match(/^.{80,320}?[.!?](?=\s|$)/)?.[0];
+  const preview = firstSentence || (clean.length > 320 ? `${clean.slice(0, 317).trimEnd()}…` : clean);
+  return `<div class="plainread"><div class="plainread-title">At a glance</div><div class="prose">${fmtProse(preview)}</div></div>`;
 }
 function distributionItems(rows, getValue, labels = {}) {
   const counts = new Map();
@@ -1277,10 +1280,10 @@ function blockchainLifecycleClass(lifecycle) {
 function blockchainSummary(row) {
   if (row.summary) return `<div class="gbody">${esc(row.summary)}</div>`;
   if (row.dimensionCount && row.causalStatus === 'published') {
-    return '<div class="gbody muted">A full report is published. Open it for the evidence-backed why, the choices that shaped the outcome, what could have gone differently, and what we are watching now.</div>';
+    return '<div class="gbody muted">Open the report for what happened, why it happened, the choices behind it and what could change the outlook.</div>';
   }
   if (row.dimensionCount) {
-    return '<div class="gbody muted">A research report is published, but the evidence-backed explanation is still being reviewed. Do not read this as a finished why.</div>';
+    return '<div class="gbody muted">The report covers the project, but the evidence does not yet support a firm explanation for the outcome.</div>';
   }
   return '<div class="gbody muted">Live numbers are available; a full research report has not been published yet.</div>';
 }
@@ -1288,10 +1291,12 @@ function blockchainMetricHtml(row) {
   const metric = row.metric == null ? '—' : fmtUsd(row.metric);
   return `${metric}<span class="gddl">${esc(row.metricLabel)}</span>`;
 }
-function blockchainFreshnessMeta(freshness, label) {
+function blockchainFreshnessMeta(freshness) {
   if (!freshness) return '';
-  const reviewDue = freshness.nextReviewAt ? ` by ${esc(freshness.nextReviewAt)}` : '';
-  return ` · ${label} ${esc(freshness.status)}${reviewDue}`;
+  const checkedAt = freshness.lastReviewedAt || freshness.lastVerifiedAt;
+  if (freshness.status === 'review_due') return ` · needs review${checkedAt ? ` · checked ${esc(checkedAt)}` : ''}`;
+  if (checkedAt) return ` · checked ${esc(checkedAt)}`;
+  return freshness.status === 'unknown' ? ' · review date unknown' : '';
 }
 function blockchainMetaHtml(row) {
   const coverage = row.coverage === 'Research dossier' ? 'Full research report' : row.coverage === 'Legacy postmortem' ? 'Earlier report' : 'Live numbers only';
@@ -1300,7 +1305,7 @@ function blockchainMetaHtml(row) {
     `${esc(coverage)} · ${esc(causal)}`,
     row.causalAsOf ? ` as of ${esc(row.causalAsOf)}` : '',
     ` · ${row.citationCount} cited source${row.citationCount === 1 ? '' : 's'}`,
-    blockchainFreshnessMeta(row.freshness, 'checked'),
+    blockchainFreshnessMeta(row.freshness),
   ].join('');
 }
 function renderBlockchainAnalysis() {
