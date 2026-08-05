@@ -28,7 +28,7 @@
     "eslint": "10.8.0",
     "tla-precheck": "0.1.7",
     "vitest": "4.1.10",
-    "wrangler": "^4.115.0"
+    "wrangler": "^4.118.0"
   },
   "overrides": {
     "brace-expansion": "5.0.9",
